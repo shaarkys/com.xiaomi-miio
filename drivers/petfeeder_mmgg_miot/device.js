@@ -64,7 +64,7 @@ class PetwaterFeederMmggMiotDevice extends Device {
             this.bootSequence();
 
             // DEVICE VARIABLES
-            this.deviceProperties = properties[mapping[this.getStoreValue('model')]] !== undefined ? properties[mapping[this.getStoreValue('model')]] : properties[mapping[this.getStoreValue('mmgg.feeder.*')]];
+            this.deviceProperties = properties[mapping[this.getStoreValue('model')]] || properties['default'];
 
             this.errorCodes = {
                 0: 'No Error',
@@ -83,16 +83,30 @@ class PetwaterFeederMmggMiotDevice extends Device {
             const model = this.getStoreValue('model');
             if (model === 'xiaomi.feeder.pi2001' && !this.hasCapability('measure_battery')) {
                 await this.addCapability('measure_battery');
-            }
-
-            if (model === 'xiaomi.feeder.iv2001' && this.hasCapability('measure_battery')) {
+            } else if (model === 'xiaomi.feeder.iv2001' && this.hasCapability('measure_battery')) {
                 await this.removeCapability('measure_battery');
             }
 
             // FLOW TRIGGER CARDS
             this.homey.flow.getDeviceTriggerCard('triggerModeChanged');
+            
+            // CAPABILITY LISTENER for 'serve food'
+            this.registerCapabilityListener('petfeeder_serve_food', async () => {
+                try {
+                    const action = this.deviceProperties.set_properties.serve_food;
+                    if (!action) {
+                        throw new Error('Serve food action not supported for this device.');
+                    }
+                    await this.miio.call('action', { siid: action.siid, aiid: action.aiid, in: [] }, { retries: 1 });
+                    this.log('Serve food action successfully executed');
+                    return true;
+                } catch (error) {
+                    this.error('Error executing serve food:', error);
+                    throw error;
+                }
+            });
         } catch (error) {
-            this.error(error);
+            this.error('Initialization error:', error);
         }
     }
 
@@ -120,22 +134,53 @@ class PetwaterFeederMmggMiotDevice extends Device {
     async retrieveDeviceData() {
         try {
             this.log('Retrieving device data for model:', this.getStoreValue('model'));
-
             const result = await this.miio.call('get_properties', this.deviceProperties.get_properties, { retries: 1 });
             this.log('Received data:', result);
 
-            if (!this.getAvailable()) {
-                await this.setAvailable();
-            }
+            if (!this.getAvailable()) await this.setAvailable();
 
             const battery = result.find((obj) => obj.did === 'battery');
             if (battery && battery.code === -4001) {
                 this.warn('Battery property not supported on device model:', this.getStoreValue('model'));
+            } else if (battery && battery.value !== undefined) {
+                await this.updateCapabilityValue('measure_battery', battery.value);
             }
 
-            // existing property handling remains unchanged...
+            const led = result.find((obj) => obj.did === 'light');
+            if (led !== undefined) {
+                await this.updateSettingValue('led', led.value !== 0);
+            }
+
+            const buzzer = result.find((obj) => obj.did === 'buzzer');
+            if (buzzer !== undefined) {
+                await this.updateSettingValue('buzzer', buzzer.value !== 0);
+            }
+
+            const error_value = result.find((obj) => obj.did === 'error');
+            if (error_value) {
+                const error = this.errorCodes[error_value.value] || 'Unknown Error';
+                await this.updateSettingValue('error', error);
+            }
+
+            const foodlevel = result.find((obj) => obj.did === 'foodlevel');
+            if (foodlevel && foodlevel.value !== undefined) {
+                if (this.getCapabilityValue('petfeeder_foodlevel') !== foodlevel.value.toString()) {
+                    const previous_mode = this.getCapabilityValue('petfeeder_foodlevel');
+                    await this.setCapabilityValue('petfeeder_foodlevel', foodlevel.value.toString());
+                    await this.homey.flow.getDeviceTriggerCard('triggerModeChanged').trigger(this, { new_mode: this.modes[foodlevel.value], previous_mode: this.modes[+previous_mode] });
+                }
+            }
         } catch (error) {
             this.error('Failed retrieving device data:', error);
+            this.homey.clearInterval(this.pollingInterval);
+
+            if (this.getAvailable()) {
+                this.setUnavailable(this.homey.__('device.unreachable') + error.message).catch(this.error);
+            }
+
+            this.homey.setTimeout(() => {
+                this.createDevice();
+            }, 60000);
         }
     }
 }
