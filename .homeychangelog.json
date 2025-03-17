@@ -277,5 +277,8 @@
   },
   "3.4.14": {
     "en": "Additional logging for Use Smart Pet Food Feeder MIoT driver"
+  },
+  "3.4.15": {
+    "en": "Removing battery level capability for xiaomi.feeder.iv2001"
   }
 }
