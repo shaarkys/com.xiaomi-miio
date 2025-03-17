@@ -100,61 +100,81 @@ class PetwaterFeederMmggMiotDevice extends Device {
 
     async retrieveDeviceData() {
         try {
+            this.log('Retrieving device data for model:', this.getStoreValue('model'));
+
             const result = await this.miio.call('get_properties', this.deviceProperties.get_properties, { retries: 1 });
+            this.log('Received data:', result);
+
             if (!this.getAvailable()) {
                 await this.setAvailable();
+                this.log('Device set as available');
             }
 
-            /* data */
+            // Extract properties
             const battery = result.find((obj) => obj.did === 'battery');
             const led = result.find((obj) => obj.did === 'light');
             const buzzer = result.find((obj) => obj.did === 'buzzer');
 
-            /* capabilities */
-            if (battery !== undefined && this.hasCapability('measure_battery')) {
-                await this.updateCapabilityValue('measure_battery', battery.value);
+            // Update battery capability
+            if (battery !== undefined) {
+                if (this.hasCapability('measure_battery')) {
+                    this.log('Battery level:', battery.value);
+                    await this.updateCapabilityValue('measure_battery', battery.value);
+                } else {
+                    this.warn('Battery capability missing, adding capability.');
+                    await this.addCapability('measure_battery');
+                    await this.updateCapabilityValue('measure_battery', battery.value);
+                }
+            } else {
+                this.warn('Battery data missing from response:', result);
             }
 
-            /* settings */
+            // Update settings if applicable
             if (led !== undefined) {
-                await this.updateSettingValue('led', led.value === 0 ? false : true);
+                await this.updateSettingValue('led', led.value !== 0);
             }
 
             if (buzzer !== undefined) {
-                await this.updateSettingValue('buzzer', buzzer.value === 0 ? false : true);
+                await this.updateSettingValue('buzzer', buzzer.value !== 0);
             }
 
-            /* settings device error */
+            // Update error setting
             const error_value = result.find((obj) => obj.did === 'error');
-            const error = this.errorCodes[error_value.value];
-            await this.updateSettingValue('error', error);
+            if (error_value) {
+                const error = this.errorCodes[error_value.value] || 'Unknown Error';
+                await this.updateSettingValue('error', error);
+            } else {
+                this.warn('Error value missing from response:', result);
+            }
 
-            /* foodlevel capability */
+            // Update food level capability
             const foodlevel = result.find((obj) => obj.did === 'foodlevel');
-            if (this.getCapabilityValue('petfeeder_foodlevel') !== foodlevel.value.toString()) {
-                const previous_mode = this.getCapabilityValue('petfeeder_foodlevel');
-                await this.setCapabilityValue('petfeeder_foodlevel', foodlevel.value.toString());
-                await this.homey.flow
-                    .getDeviceTriggerCard('triggerModeChanged')
-                    .trigger(this, { new_mode: this.modes[foodlevel.value], previous_mode: this.modes[+previous_mode] })
-                    .catch((error) => {
-                        this.error(error);
-                    });
+            if (foodlevel && foodlevel.value !== undefined) {
+                if (this.getCapabilityValue('petfeeder_foodlevel') !== foodlevel.value.toString()) {
+                    const previous_mode = this.getCapabilityValue('petfeeder_foodlevel');
+                    await this.setCapabilityValue('petfeeder_foodlevel', foodlevel.value.toString());
+                    this.log('Food level changed from', previous_mode, 'to', foodlevel.value);
+
+                    await this.homey.flow
+                        .getDeviceTriggerCard('triggerModeChanged')
+                        .trigger(this, { new_mode: this.modes[foodlevel.value], previous_mode: this.modes[+previous_mode] })
+                        .catch((error) => this.error('Flow trigger error:', error));
+                }
+            } else {
+                this.warn('Food level missing from response:', result);
             }
         } catch (error) {
+            this.error('Failed retrieving device data:', error);
+
             this.homey.clearInterval(this.pollingInterval);
 
             if (this.getAvailable()) {
-                this.setUnavailable(this.homey.__('device.unreachable') + error.message).catch((error) => {
-                    this.error(error);
-                });
+                this.setUnavailable(this.homey.__('device.unreachable') + error.message).catch(this.error);
             }
 
             this.homey.setTimeout(() => {
                 this.createDevice();
             }, 60000);
-
-            this.error(error.message);
         }
     }
 }

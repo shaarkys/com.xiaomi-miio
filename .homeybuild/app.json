@@ -187,7 +187,7 @@
       "게이트웨이"
     ]
   },
-  "version": "3.4.12",
+  "version": "3.4.13",
   "compatibility": ">=12.2.0",
   "platforms": [
     "local"
@@ -198,7 +198,7 @@
   "contributing": {
     "donate": {
       "paypal": {
-        "username": "jghaanstra"
+        "username": "bkubesa"
       }
     }
   },
