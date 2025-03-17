@@ -280,5 +280,8 @@
   },
   "3.4.15": {
     "en": "Removing battery level capability for xiaomi.feeder.iv2001"
+  },
+  "3.4.16": {
+    "en": "Flow card trigger for petfeeder_mmgg_miot"
   }
 }
