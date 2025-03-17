@@ -274,5 +274,8 @@
   },
   "3.4.13": {
     "en": "Fix for Mi Smart Antibacterial Humidifier JSQ2W - the tank is empty"
+  },
+  "3.4.14": {
+    "en": "Additional logging for Use Smart Pet Food Feeder MIoT driver"
   }
 }
