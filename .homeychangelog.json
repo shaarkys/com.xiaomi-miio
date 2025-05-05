@@ -283,5 +283,8 @@
   },
   "3.4.16": {
     "en": "Flow card trigger for petfeeder_mmgg_miot"
+  },
+  "3.4.17": {
+    "en": "Added support for Xiaomi Smart Tower Fan 2 (xiaomi.fan.p45)"
   }
 }
