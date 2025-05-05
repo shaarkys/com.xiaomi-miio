@@ -92,6 +92,7 @@ class Util {
     'zhimi.fan.za3': 'Smartmi Standing Fan 2',
     'zhimi.fan.za4': 'Smartmi Standing Fan 2S',
     'zhimi.fan.za5': 'Smartmi Standing Fan 3',
+    "xiaomi.fan.p45": "Xiaomi Smart Tower Fan 2",
 
     'zhimi.heater.mc2': 'Smart Space Heater S',
     'zhimi.heater.za2': 'Smart Space Heater 1S',
