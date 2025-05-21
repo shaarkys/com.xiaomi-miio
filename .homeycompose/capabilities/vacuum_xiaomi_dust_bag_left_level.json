@@ -1,0 +1,9 @@
+{
+    "title": { "en": "Dust bag left (%)" },
+    "type": "number",
+    "getable": true,
+    "setable": false,
+    "units": { "en": "%" },
+    "uiComponent": "sensor"
+  }
+  

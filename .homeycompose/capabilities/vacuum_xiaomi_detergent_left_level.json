@@ -1,0 +1,9 @@
+{
+    "title": { "en": "Water left (%)" },
+    "type": "number",
+    "getable": true,
+    "setable": false,
+    "units": { "en": "%" },
+    "uiComponent": "sensor"
+  }
+  

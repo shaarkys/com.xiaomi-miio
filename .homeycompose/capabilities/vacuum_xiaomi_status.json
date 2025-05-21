@@ -1,0 +1,11 @@
+{
+    "type": "string",
+    "title": {
+      "en": "Status / error"
+    },
+    "getable": true,
+    "setable": false,
+    "insights": false,
+    "icon": "/assets/icons/alarm_generic.svg"
+  }
+  

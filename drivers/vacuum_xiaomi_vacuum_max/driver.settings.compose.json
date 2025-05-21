@@ -1,0 +1,244 @@
+[
+  {
+    "type": "group",
+    "label": {
+      "en": "Consumables",
+      "nl": "Verbruiksartikelen",
+      "da": "Forbrugsvarer",
+      "de": "Verbrauchsmaterialien",
+      "es": "Consumibles",
+      "fr": "Consommables",
+      "it": "Consumabili",
+      "no": "Forbruksvarer",
+      "sv": "Förbrukningsvaror",
+      "pl": "Materiały eksploatacyjne",
+      "ru": "Расходные материалы",
+      "ko": "소모품"
+    },
+    "children": [
+      {
+        "id": "alarm_threshold",
+        "type": "number",
+        "label": {
+          "en": "Alarm threshold",
+          "nl": "Alarm ondergrens",
+          "da": "Alarmgrænse",
+          "de": "Alarmschwelle",
+          "es": "Umbral de alarma",
+          "fr": "Seuil d'alarme",
+          "it": "Soglia di allarme",
+          "no": "Alarm terskel",
+          "sv": "Alarmtröskel",
+          "pl": "Próg alarmowy",
+          "ru": "Порог тревоги",
+          "ko": "알람 임계 값"
+        },
+        "hint": {
+          "en": "Threshold below which the alarm will be activated.",
+          "nl": "Ondergrens voor het triggeren van het alarm",
+          "da": "Grænse under hvilken alarmen aktiveres.",
+          "de": "Schwelle, unter der der Alarm aktiviert wird.",
+          "es": "Umbral por debajo del cual se activará la alarma.",
+          "fr": "Seuil en dessous duquel l'alarme sera activée.",
+          "it": "Soglia al di sotto della quale l'allarme verrà attivato.",
+          "no": "Grensen under hvilken alarmen blir aktivert.",
+          "sv": "Tröskeln under vilken larmet aktiveras.",
+          "pl": "Próg, poniżej którego alarm zostanie aktywowany.",
+          "ru": "Порог, ниже которого будет активирована тревога.",
+          "ko": "알람이 활성화되는 임계 값"
+        },
+        "value": 20,
+        "attr": {
+          "min": 1,
+          "max": 90
+        }
+      },
+      {
+        "id": "main_brush_work_time",
+        "type": "label",
+        "label": {
+          "en": "Main brush remaining (%)",
+          "nl": "Hoofdborstel over (%)",
+          "da": "Hovedbørste tilbage (%)",
+          "de": "Verbleibende Hauptbürste (%)",
+          "es": "Cepillo principal restante (%)",
+          "fr": "Brosse principale restante (%)",
+          "it": "Spazzola principale rimanente (%)",
+          "no": "Hovedbørste gjenstår (%)",
+          "sv": "Huvudborste återstående (%)",
+          "pl": "Pozostało głównej szczotki (%)",
+          "ru": "Осталось главной щетки (%)",
+          "ko": "남은 주요 브러시 (%)"
+        },
+        "value": "0%"
+      },
+      {
+        "id": "side_brush_work_time",
+        "type": "label",
+        "label": {
+          "en": "Side brush remaining",
+          "nl": "Zijborstel over",
+          "da": "Sidebørste tilbage",
+          "de": "Verbleibende Seitenbürste",
+          "es": "Cepillo lateral restante",
+          "fr": "Brosse latérale restante",
+          "it": "Spazzola laterale rimanente",
+          "no": "Sidebørste gjenstår",
+          "sv": "Sidoborste återstående",
+          "pl": "Pozostało szczotki bocznej",
+          "ru": "Осталось боковой щетки",
+          "ko": "남은 사이드 브러시"
+        },
+        "value": "0%"
+      },
+      {
+        "id": "filter_work_time",
+        "type": "label",
+        "label": {
+          "en": "Filter remaining",
+          "nl": "Filter over",
+          "da": "Filter tilbage",
+          "de": "Verbleibender Filter",
+          "es": "Filtro restante",
+          "fr": "Filtre restant",
+          "it": "Filtro rimanente",
+          "no": "Filter gjenstår",
+          "sv": "Filter kvar",
+          "pl": "Pozostało filtra",
+          "ru": "Осталось фильтра",
+          "ko": "남은 필터"
+        },
+        "value": "0%"
+      },
+      {
+        "id": "total_work_time",
+        "type": "number",
+        "label": {
+          "en": "Total work time (h)",
+          "nl": "Totale gebruikstijd (u)",
+          "da": "Samlet arbejdstid (t)",
+          "de": "Gesamtarbeitszeit (h)",
+          "es": "Tiempo total de trabajo (h)",
+          "fr": "Temps de travail total (h)",
+          "it": "Tempo di lavoro totale (h)",
+          "no": "Total arbeidstid (t)",
+          "sv": "Total arbetstid (h)",
+          "pl": "Całkowity czas pracy (h)",
+          "ru": "Общее время работы (ч)",
+          "ko": "총 작업 시간 (h)"
+        },
+        "value": 0,
+        "attr": {
+          "min": 0,
+          "step": 0.1
+        }
+      },
+      {
+        "id": "total_cleared_area",
+        "type": "number",
+        "label": {
+          "en": "Total cleaned area (m²)",
+          "nl": "Totaal geschoont (m²)",
+          "da": "Samlet rengjort område (m²)",
+          "de": "Gesamt gereinigte Fläche (m²)",
+          "es": "Área total limpia (m²)",
+          "fr": "Surface totale nettoyée (m²)",
+          "it": "Area totale pulita (m²)",
+          "no": "Totalt rengjort område (m²)",
+          "sv": "Totalt rengjort område (m²)",
+          "pl": "Całkowita oczyszczona powierzchnia (m²)",
+          "ru": "Общая очищенная площадь (м²)",
+          "ko": "총 청소 면적 (m²)"
+        },
+        "value": 0,
+        "attr": {
+          "min": 0,
+          "step": 0.1
+        }
+      },
+      {
+        "id": "total_clean_count",
+        "type": "number",
+        "label": {
+          "en": "Total clean count",
+          "nl": "Totaal aantal opschoningen",
+          "da": "Samlet rengøringsantal",
+          "de": "Gesamt Reinigungsanzahl",
+          "es": "Conteo total de limpiezas",
+          "fr": "Nombre total de nettoyages",
+          "it": "Conteggio totale pulizie",
+          "no": "Total rengjøringsteller",
+          "sv": "Totalstädningsräkning",
+          "pl": "Całkowita liczba sprzątań",
+          "ru": "Общее количество уборок",
+          "ko": "총 청소 횟수"
+        },
+        "value": 0,
+        "attr": {
+          "min": 0,
+          "step": 1
+        }
+      }
+    ]
+  },
+  {
+    "type": "group",
+    "label": {
+      "en": "Device data",
+      "nl": "Apparaat data",
+      "da": "Enhedsdata",
+      "de": "Gerätedaten",
+      "es": "Datos del dispositivo",
+      "fr": "Données de l'appareil",
+      "it": "Dati del dispositivo",
+      "no": "Enhetsdata",
+      "sv": "Enhetsdata",
+      "pl": "Dane urządzenia",
+      "ru": "Данные устройства",
+      "ko": "장치 데이터"
+    },
+    "children": [
+      {
+        "id": "error",
+        "type": "label",
+        "label": {
+          "en": "Error",
+          "nl": "Error",
+          "da": "Fejl",
+          "de": "Fehler",
+          "es": "Error",
+          "fr": "Erreur",
+          "it": "Errore",
+          "no": "Feil",
+          "sv": "Fel",
+          "pl": "Błąd",
+          "ru": "Ошибка",
+          "ko": "오류"
+        },
+        "value": "No error"
+      }
+    ]
+  },
+  {
+    "type": "group",
+    "label": {
+      "en": "Device Settings",
+      "nl": "Apparaat instellingen",
+      "da": "Enhedsindstillinger",
+      "de": "Geräteeinstellungen",
+      "es": "Configuración del dispositivo",
+      "fr": "Paramètres de l'appareil",
+      "it": "Impostazioni del dispositivo",
+      "no": "Enhetsinnstillinger",
+      "sv": "Enhetsinställningar",
+      "pl": "Ustawienia urządzenia",
+      "ru": "Настройки устройства",
+      "ko": "장치 설정"
+    },
+    "children": [
+      { "id": "address", "$extends": "address" },
+      { "id": "token",   "$extends": "token"   },
+      { "id": "polling", "$extends": "polling" }
+    ]
+  }
+]

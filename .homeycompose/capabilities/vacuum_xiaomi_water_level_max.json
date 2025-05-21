@@ -1,0 +1,26 @@
+{
+    "type": "enum",
+    "title": {
+      "en": "Water Output",
+      "nl": "Wateroutput",
+      "de": "Wasserausgabe"
+    },
+    "values": [
+      {
+        "id": "1",
+        "title": { "en": "Level 1", "nl": "Niveau 1", "de": "Stufe 1" }
+      },
+      {
+        "id": "2",
+        "title": { "en": "Level 2", "nl": "Niveau 2", "de": "Stufe 2" }
+      },
+      {
+        "id": "3",
+        "title": { "en": "Level 3", "nl": "Niveau 3", "de": "Stufe 3" }
+      }
+    ],
+    "getable": true,
+    "setable": true,
+    "icon": "/assets/icons/water-level.svg"
+  }
+  

@@ -168,6 +168,7 @@ class Util {
     'xiaomi.vacuum.b112': 'Xiaomi Robot Vacuum E10',
     'xiaomi.vacuum.c101': 'Xiaomi Self-Cleaning Vacuum Robot 2 C101',
     'xiaomi.vacuum.c102gl': 'Xiaomi Robot Vacuum X20+',
+    'xiaomi.vacuum.d109gl': 'Xiaomi Robot Vacuum X20 Max',
 
     'ijai.vacuum.v1': 'Mi Robot Vacuum-Mop Pro',
     'ijai.vacuum.v2': 'Mi Robot Vacuum-Mop 2',

@@ -1,0 +1,16 @@
+{
+  "type": "enum",
+  "title": {
+    "en": "Path Mode",
+    "nl": "Padmodus",
+    "de": "Pfadmodus"
+  },
+  "values": [
+    { "id": "1", "title": { "en": "Quick",    "nl": "Snel",     "de": "Schnell"  } },
+    { "id": "2", "title": { "en": "Standard", "nl": "Standaard","de": "Standard" } },
+    { "id": "3", "title": { "en": "Deep",     "nl": "Diep",     "de": "Tief"     } }
+  ],
+  "getable": true,
+  "setable": true,
+  "icon": "/assets/icons/vacuum-path-mode.svg"
+}

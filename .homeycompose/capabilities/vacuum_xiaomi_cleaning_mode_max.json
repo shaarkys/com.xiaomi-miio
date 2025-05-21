@@ -1,0 +1,30 @@
+{
+    "type": "enum",
+    "title": {
+      "en": "Cleaning Power",
+      "nl": "Reinigingskracht",
+      "de": "Reinigungsleistung"
+    },
+    "values": [
+      {
+        "id": "1",
+        "title": { "en": "Silent", "nl": "Stil", "de": "Leise" }
+      },
+      {
+        "id": "2",
+        "title": { "en": "Standard", "nl": "Standaard", "de": "Standard" }
+      },
+      {
+        "id": "3",
+        "title": { "en": "Strong", "nl": "Sterk", "de": "Stark" }
+      },
+      {
+        "id": "4",
+        "title": { "en": "Turbo", "nl": "Turbo", "de": "Turbo" }
+      }
+    ],
+    "getable": true,
+    "setable": true,
+    "icon": "/assets/icons/fanlevel.svg"
+  }
+  

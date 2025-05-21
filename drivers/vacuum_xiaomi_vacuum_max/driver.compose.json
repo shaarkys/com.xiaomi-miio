@@ -1,0 +1,43 @@
+{
+  "name": {
+    "en": "Xiaomi Vacuum Cleaner MIoT MAX (WiFi)",
+    "nl": "Xiaomi stofzuiger MIoT MAX (WiFi)",
+    "da": "Xiaomi Støvsuger MIoT MAX (WiFi)",
+    "de": "Xiaomi Staubsauger MIoT MAX (WiFi)",
+    "es": "Aspiradora Xiaomi MIoT MAX (WiFi)",
+    "fr": "Aspirateur Xiaomi MIoT MAX (WiFi)",
+    "it": "Aspirapolvere Xiaomi MIoT MAX (WiFi)",
+    "no": "Xiaomi Støvsuger MIoT MAX (WiFi)",
+    "sv": "Xiaomi Dammsugare MIoT MAX (WiFi)",
+    "pl": "Odkurzacz Xiaomi MIoT MAX (WiFi)",
+    "ru": "Пылесос Xiaomi MIoT MAX (WiFi)",
+    "ko": "샤오미 진공 청소기 MIoT MAX (WiFi)"
+  },
+  "images": {
+    "large": "drivers/vacuum_xiaomi_vacuum_miot/assets/images/large.jpg",
+    "small": "drivers/vacuum_xiaomi_vacuum_miot/assets/images/small.jpg"
+  },
+  "class": "vacuumcleaner",
+  "$extends": [
+    "defaults"
+  ],
+  "capabilities": [
+    "onoff",
+    "vacuumcleaner_state",
+    "vacuum_xiaomi_mop_mode_max",
+    "vacuum_xiaomi_cleaning_mode_max",
+    "vacuum_xiaomi_water_level_max",
+    "vacuum_xiaomi_path_mode_max",
+    "vacuum_xiaomi_status",
+    "measure_battery",
+    "alarm_battery",
+    "alarm_main_brush_work_time",
+    "alarm_side_brush_work_time",
+    "alarm_filter_work_time"
+  ],
+  "energy": {
+    "batteries": [
+      "INTERNAL"
+    ]
+  }
+}

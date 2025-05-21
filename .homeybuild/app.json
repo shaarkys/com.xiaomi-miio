@@ -24817,6 +24817,370 @@
       ]
     },
     {
+      "icon": "/drivers/vacuum_xiaomi_vacuum_max/assets/icon.svg",
+      "pair": [
+        {
+          "id": "start",
+          "navigation": {
+            "next": "pair"
+          }
+        },
+        {
+          "id": "pair"
+        },
+        {
+          "id": "add_device"
+        }
+      ],
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [
+        "lan"
+      ],
+      "name": {
+        "en": "Xiaomi Vacuum Cleaner MIoT MAX (WiFi)",
+        "nl": "Xiaomi stofzuiger MIoT MAX (WiFi)",
+        "da": "Xiaomi Støvsuger MIoT MAX (WiFi)",
+        "de": "Xiaomi Staubsauger MIoT MAX (WiFi)",
+        "es": "Aspiradora Xiaomi MIoT MAX (WiFi)",
+        "fr": "Aspirateur Xiaomi MIoT MAX (WiFi)",
+        "it": "Aspirapolvere Xiaomi MIoT MAX (WiFi)",
+        "no": "Xiaomi Støvsuger MIoT MAX (WiFi)",
+        "sv": "Xiaomi Dammsugare MIoT MAX (WiFi)",
+        "pl": "Odkurzacz Xiaomi MIoT MAX (WiFi)",
+        "ru": "Пылесос Xiaomi MIoT MAX (WiFi)",
+        "ko": "샤오미 진공 청소기 MIoT MAX (WiFi)"
+      },
+      "images": {
+        "large": "drivers/vacuum_xiaomi_vacuum_miot/assets/images/large.jpg",
+        "small": "drivers/vacuum_xiaomi_vacuum_miot/assets/images/small.jpg"
+      },
+      "class": "vacuumcleaner",
+      "capabilities": [
+        "onoff",
+        "vacuumcleaner_state",
+        "vacuum_xiaomi_mop_mode_max",
+        "vacuum_xiaomi_cleaning_mode_max",
+        "vacuum_xiaomi_water_level_max",
+        "vacuum_xiaomi_path_mode_max",
+        "vacuum_xiaomi_status",
+        "measure_battery",
+        "alarm_battery",
+        "alarm_main_brush_work_time",
+        "alarm_side_brush_work_time",
+        "alarm_filter_work_time"
+      ],
+      "energy": {
+        "batteries": [
+          "INTERNAL"
+        ]
+      },
+      "id": "vacuum_xiaomi_vacuum_max",
+      "settings": [
+        {
+          "type": "group",
+          "label": {
+            "en": "Consumables",
+            "nl": "Verbruiksartikelen",
+            "da": "Forbrugsvarer",
+            "de": "Verbrauchsmaterialien",
+            "es": "Consumibles",
+            "fr": "Consommables",
+            "it": "Consumabili",
+            "no": "Forbruksvarer",
+            "sv": "Förbrukningsvaror",
+            "pl": "Materiały eksploatacyjne",
+            "ru": "Расходные материалы",
+            "ko": "소모품"
+          },
+          "children": [
+            {
+              "id": "alarm_threshold",
+              "type": "number",
+              "label": {
+                "en": "Alarm threshold",
+                "nl": "Alarm ondergrens",
+                "da": "Alarmgrænse",
+                "de": "Alarmschwelle",
+                "es": "Umbral de alarma",
+                "fr": "Seuil d'alarme",
+                "it": "Soglia di allarme",
+                "no": "Alarm terskel",
+                "sv": "Alarmtröskel",
+                "pl": "Próg alarmowy",
+                "ru": "Порог тревоги",
+                "ko": "알람 임계 값"
+              },
+              "hint": {
+                "en": "Threshold below which the alarm will be activated.",
+                "nl": "Ondergrens voor het triggeren van het alarm",
+                "da": "Grænse under hvilken alarmen aktiveres.",
+                "de": "Schwelle, unter der der Alarm aktiviert wird.",
+                "es": "Umbral por debajo del cual se activará la alarma.",
+                "fr": "Seuil en dessous duquel l'alarme sera activée.",
+                "it": "Soglia al di sotto della quale l'allarme verrà attivato.",
+                "no": "Grensen under hvilken alarmen blir aktivert.",
+                "sv": "Tröskeln under vilken larmet aktiveras.",
+                "pl": "Próg, poniżej którego alarm zostanie aktywowany.",
+                "ru": "Порог, ниже которого будет активирована тревога.",
+                "ko": "알람이 활성화되는 임계 값"
+              },
+              "value": 20,
+              "attr": {
+                "min": 1,
+                "max": 90
+              }
+            },
+            {
+              "id": "main_brush_work_time",
+              "type": "label",
+              "label": {
+                "en": "Main brush remaining (%)",
+                "nl": "Hoofdborstel over (%)",
+                "da": "Hovedbørste tilbage (%)",
+                "de": "Verbleibende Hauptbürste (%)",
+                "es": "Cepillo principal restante (%)",
+                "fr": "Brosse principale restante (%)",
+                "it": "Spazzola principale rimanente (%)",
+                "no": "Hovedbørste gjenstår (%)",
+                "sv": "Huvudborste återstående (%)",
+                "pl": "Pozostało głównej szczotki (%)",
+                "ru": "Осталось главной щетки (%)",
+                "ko": "남은 주요 브러시 (%)"
+              },
+              "value": "0%"
+            },
+            {
+              "id": "side_brush_work_time",
+              "type": "label",
+              "label": {
+                "en": "Side brush remaining",
+                "nl": "Zijborstel over",
+                "da": "Sidebørste tilbage",
+                "de": "Verbleibende Seitenbürste",
+                "es": "Cepillo lateral restante",
+                "fr": "Brosse latérale restante",
+                "it": "Spazzola laterale rimanente",
+                "no": "Sidebørste gjenstår",
+                "sv": "Sidoborste återstående",
+                "pl": "Pozostało szczotki bocznej",
+                "ru": "Осталось боковой щетки",
+                "ko": "남은 사이드 브러시"
+              },
+              "value": "0%"
+            },
+            {
+              "id": "filter_work_time",
+              "type": "label",
+              "label": {
+                "en": "Filter remaining",
+                "nl": "Filter over",
+                "da": "Filter tilbage",
+                "de": "Verbleibender Filter",
+                "es": "Filtro restante",
+                "fr": "Filtre restant",
+                "it": "Filtro rimanente",
+                "no": "Filter gjenstår",
+                "sv": "Filter kvar",
+                "pl": "Pozostało filtra",
+                "ru": "Осталось фильтра",
+                "ko": "남은 필터"
+              },
+              "value": "0%"
+            },
+            {
+              "id": "total_work_time",
+              "type": "number",
+              "label": {
+                "en": "Total work time (h)",
+                "nl": "Totale gebruikstijd (u)",
+                "da": "Samlet arbejdstid (t)",
+                "de": "Gesamtarbeitszeit (h)",
+                "es": "Tiempo total de trabajo (h)",
+                "fr": "Temps de travail total (h)",
+                "it": "Tempo di lavoro totale (h)",
+                "no": "Total arbeidstid (t)",
+                "sv": "Total arbetstid (h)",
+                "pl": "Całkowity czas pracy (h)",
+                "ru": "Общее время работы (ч)",
+                "ko": "총 작업 시간 (h)"
+              },
+              "value": 0,
+              "attr": {
+                "min": 0,
+                "step": 0.1
+              }
+            },
+            {
+              "id": "total_cleared_area",
+              "type": "number",
+              "label": {
+                "en": "Total cleaned area (m²)",
+                "nl": "Totaal geschoont (m²)",
+                "da": "Samlet rengjort område (m²)",
+                "de": "Gesamt gereinigte Fläche (m²)",
+                "es": "Área total limpia (m²)",
+                "fr": "Surface totale nettoyée (m²)",
+                "it": "Area totale pulita (m²)",
+                "no": "Totalt rengjort område (m²)",
+                "sv": "Totalt rengjort område (m²)",
+                "pl": "Całkowita oczyszczona powierzchnia (m²)",
+                "ru": "Общая очищенная площадь (м²)",
+                "ko": "총 청소 면적 (m²)"
+              },
+              "value": 0,
+              "attr": {
+                "min": 0,
+                "step": 0.1
+              }
+            },
+            {
+              "id": "total_clean_count",
+              "type": "number",
+              "label": {
+                "en": "Total clean count",
+                "nl": "Totaal aantal opschoningen",
+                "da": "Samlet rengøringsantal",
+                "de": "Gesamt Reinigungsanzahl",
+                "es": "Conteo total de limpiezas",
+                "fr": "Nombre total de nettoyages",
+                "it": "Conteggio totale pulizie",
+                "no": "Total rengjøringsteller",
+                "sv": "Totalstädningsräkning",
+                "pl": "Całkowita liczba sprzątań",
+                "ru": "Общее количество уборок",
+                "ko": "총 청소 횟수"
+              },
+              "value": 0,
+              "attr": {
+                "min": 0,
+                "step": 1
+              }
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Device data",
+            "nl": "Apparaat data",
+            "da": "Enhedsdata",
+            "de": "Gerätedaten",
+            "es": "Datos del dispositivo",
+            "fr": "Données de l'appareil",
+            "it": "Dati del dispositivo",
+            "no": "Enhetsdata",
+            "sv": "Enhetsdata",
+            "pl": "Dane urządzenia",
+            "ru": "Данные устройства",
+            "ko": "장치 데이터"
+          },
+          "children": [
+            {
+              "id": "error",
+              "type": "label",
+              "label": {
+                "en": "Error",
+                "nl": "Error",
+                "da": "Fejl",
+                "de": "Fehler",
+                "es": "Error",
+                "fr": "Erreur",
+                "it": "Errore",
+                "no": "Feil",
+                "sv": "Fel",
+                "pl": "Błąd",
+                "ru": "Ошибка",
+                "ko": "오류"
+              },
+              "value": "No error"
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Device Settings",
+            "nl": "Apparaat instellingen",
+            "da": "Enhedsindstillinger",
+            "de": "Geräteeinstellungen",
+            "es": "Configuración del dispositivo",
+            "fr": "Paramètres de l'appareil",
+            "it": "Impostazioni del dispositivo",
+            "no": "Enhetsinnstillinger",
+            "sv": "Enhetsinställningar",
+            "pl": "Ustawienia urządzenia",
+            "ru": "Настройки устройства",
+            "ko": "장치 설정"
+          },
+          "children": [
+            {
+              "id": "address",
+              "type": "text",
+              "value": "0.0.0.0",
+              "label": {
+                "en": "IP Address",
+                "nl": "IP adres",
+                "da": "IP-adresse",
+                "de": "IP-Adresse",
+                "es": "Dirección IP",
+                "fr": "Adresse IP",
+                "it": "Indirizzo IP",
+                "no": "IP-adresse",
+                "sv": "IP-adress",
+                "pl": "Adres IP",
+                "ru": "IP-адрес",
+                "ko": "IP 주소"
+              }
+            },
+            {
+              "id": "token",
+              "type": "text",
+              "value": "",
+              "label": {
+                "en": "Mi Device Token",
+                "nl": "Mi Apparaat Token",
+                "da": "Mi Enheds Token",
+                "de": "Mi Gerätetoken",
+                "es": "Token del Dispositivo Mi",
+                "fr": "Jeton de l'Appareil Mi",
+                "it": "Token Dispositivo Mi",
+                "no": "Mi Enhet Token",
+                "sv": "Mi Enhetstoken",
+                "pl": "Token Urządzenia Mi",
+                "ru": "Токен Устройства Mi",
+                "ko": "Mi 기기 토큰"
+              }
+            },
+            {
+              "id": "polling",
+              "type": "number",
+              "value": 60,
+              "attr": {
+                "min": 5,
+                "max": 3600
+              },
+              "label": {
+                "en": "Polling Frequency",
+                "nl": "Polling frequentie",
+                "da": "Polling Frekvens",
+                "de": "Abfragefrequenz",
+                "es": "Frecuencia de sondeo",
+                "fr": "Fréquence de sondage",
+                "it": "Frequenza di polling",
+                "no": "Polling Frekvens",
+                "sv": "Pollingfrekvens",
+                "pl": "Częstotliwość odpytywania",
+                "ru": "Частота опроса",
+                "ko": "폴링 빈도"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
       "icon": "/drivers/vacuum_xiaomi_vacuum_miot/assets/icon.svg",
       "pair": [
         {
@@ -28681,6 +29045,75 @@
       "setable": true,
       "icon": "/assets/icons/vacuum-mop.svg"
     },
+    "vacuum_xiaomi_cleaning_mode_max": {
+      "type": "enum",
+      "title": {
+        "en": "Cleaning Power",
+        "nl": "Reinigingskracht",
+        "de": "Reinigungsleistung"
+      },
+      "values": [
+        {
+          "id": "1",
+          "title": {
+            "en": "Silent",
+            "nl": "Stil",
+            "de": "Leise"
+          }
+        },
+        {
+          "id": "2",
+          "title": {
+            "en": "Standard",
+            "nl": "Standaard",
+            "de": "Standard"
+          }
+        },
+        {
+          "id": "3",
+          "title": {
+            "en": "Strong",
+            "nl": "Sterk",
+            "de": "Stark"
+          }
+        },
+        {
+          "id": "4",
+          "title": {
+            "en": "Turbo",
+            "nl": "Turbo",
+            "de": "Turbo"
+          }
+        }
+      ],
+      "getable": true,
+      "setable": true,
+      "icon": "/assets/icons/fanlevel.svg"
+    },
+    "vacuum_xiaomi_detergent_left_level": {
+      "title": {
+        "en": "Water left (%)"
+      },
+      "type": "number",
+      "getable": true,
+      "setable": false,
+      "units": {
+        "en": "%"
+      },
+      "uiComponent": "sensor"
+    },
+    "vacuum_xiaomi_dust_bag_left_level": {
+      "title": {
+        "en": "Dust bag left (%)"
+      },
+      "type": "number",
+      "getable": true,
+      "setable": false,
+      "units": {
+        "en": "%"
+      },
+      "uiComponent": "sensor"
+    },
     "vacuum_xiaomi_mop_mode": {
       "type": "enum",
       "title": {
@@ -28753,6 +29186,180 @@
       "getable": true,
       "setable": true,
       "icon": "/assets/icons/vacuum-mop.svg"
+    },
+    "vacuum_xiaomi_mop_mode_max": {
+      "type": "enum",
+      "title": {
+        "en": "Sweep and Mop Mode",
+        "nl": "Sweep en Mop modus",
+        "da": "Feje og Moppe Tilstand",
+        "de": "Kehr- und Wischmodus",
+        "es": "Modo Barrer y Trapear",
+        "fr": "Mode Balayage et Lavage",
+        "it": "Modalità Spazza e Passa",
+        "no": "Feie- og Moppemodus",
+        "sv": "Sopa och Mopp-läge",
+        "pl": "Tryb zamiatania i mopowania",
+        "ru": "Режим подметания и мытья",
+        "ko": "청소 및 물걸레 모드"
+      },
+      "values": [
+        {
+          "id": "1",
+          "title": {
+            "en": "Sweep",
+            "nl": "Sweep",
+            "da": "Feje",
+            "de": "Kehren",
+            "es": "Barrer",
+            "fr": "Balayer",
+            "it": "Spazza",
+            "no": "Feie",
+            "sv": "Sopa",
+            "pl": "Zamiatać",
+            "ru": "Подметать",
+            "ko": "청소"
+          }
+        },
+        {
+          "id": "2",
+          "title": {
+            "en": "Mop",
+            "nl": "Mop",
+            "da": "Moppe",
+            "de": "Wischen",
+            "es": "Trapear",
+            "fr": "Laver",
+            "it": "Passa",
+            "no": "Moppe",
+            "sv": "Mopp",
+            "pl": "Mopować",
+            "ru": "Мыть",
+            "ko": "물걸레질"
+          }
+        },
+        {
+          "id": "3",
+          "title": {
+            "en": "Sweep & Mop",
+            "nl": "Sweep & Mop",
+            "da": "Feje & Moppe",
+            "de": "Kehren & Wischen",
+            "es": "Barrer y Trapear",
+            "fr": "Balayer & Laver",
+            "it": "Spazza & Passa",
+            "no": "Feie & Moppe",
+            "sv": "Sopa & Mopp",
+            "pl": "Zamiatać i mopować",
+            "ru": "Подметать и мыть",
+            "ko": "청소 및 물걸레질"
+          }
+        },
+        {
+          "id": "4",
+          "title": {
+            "en": "Sweep Before Mopping",
+            "nl": "Vegen voor Dweilen",
+            "da": "Fej før mopning",
+            "de": "Kehren vor dem Wischen",
+            "es": "Barrer antes de trapear",
+            "fr": "Balayer avant de laver",
+            "it": "Spazza prima di passare",
+            "no": "Feie før mopping",
+            "sv": "Sopa före moppning",
+            "pl": "Zamiataj przed mopowaniem",
+            "ru": "Подметать перед мытьём",
+            "ko": "물걸레질 전 청소"
+          }
+        }
+      ],
+      "getable": true,
+      "setable": true,
+      "icon": "/assets/icons/vacuum-mop.svg"
+    },
+    "vacuum_xiaomi_path_mode_max": {
+      "type": "enum",
+      "title": {
+        "en": "Path Mode",
+        "nl": "Padmodus",
+        "de": "Pfadmodus"
+      },
+      "values": [
+        {
+          "id": "1",
+          "title": {
+            "en": "Quick",
+            "nl": "Snel",
+            "de": "Schnell"
+          }
+        },
+        {
+          "id": "2",
+          "title": {
+            "en": "Standard",
+            "nl": "Standaard",
+            "de": "Standard"
+          }
+        },
+        {
+          "id": "3",
+          "title": {
+            "en": "Deep",
+            "nl": "Diep",
+            "de": "Tief"
+          }
+        }
+      ],
+      "getable": true,
+      "setable": true,
+      "icon": "/assets/icons/vacuum-path-mode.svg"
+    },
+    "vacuum_xiaomi_status": {
+      "type": "string",
+      "title": {
+        "en": "Status / error"
+      },
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "icon": "/assets/icons/alarm_generic.svg"
+    },
+    "vacuum_xiaomi_water_level_max": {
+      "type": "enum",
+      "title": {
+        "en": "Water Output",
+        "nl": "Wateroutput",
+        "de": "Wasserausgabe"
+      },
+      "values": [
+        {
+          "id": "1",
+          "title": {
+            "en": "Level 1",
+            "nl": "Niveau 1",
+            "de": "Stufe 1"
+          }
+        },
+        {
+          "id": "2",
+          "title": {
+            "en": "Level 2",
+            "nl": "Niveau 2",
+            "de": "Stufe 2"
+          }
+        },
+        {
+          "id": "3",
+          "title": {
+            "en": "Level 3",
+            "nl": "Niveau 3",
+            "de": "Stufe 3"
+          }
+        }
+      ],
+      "getable": true,
+      "setable": true,
+      "icon": "/assets/icons/water-level.svg"
     }
   }
 }
