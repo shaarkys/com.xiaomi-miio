@@ -507,12 +507,11 @@ class MiWifiDeviceDevice extends Homey.Device {
             this.homey.clearInterval(this.pollingInterval);
 
             if (this.getAvailable()) {
-                this.setUnavailable(this.homey.__('device.unreachable') + error.message).catch((error) => {
-                    this.error(error);
-                });
+                this.setUnavailable(this.homey.__('device.unreachable') + error.message).catch((error) => this.error(error));
             }
 
-            this.homey.setTimeout(() => {
+            /* RETRY AFTER 60 s — **now tracked so onDeleted/onUninit can clear it** */
+            this.recreateTimeout = this.homey.setTimeout(() => {
                 this.createDevice();
             }, 60000);
 
