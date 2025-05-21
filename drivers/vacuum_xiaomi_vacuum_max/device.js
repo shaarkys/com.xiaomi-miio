@@ -6,9 +6,11 @@ const Util = require('../../lib/util.js');
 
 /* supported devices */
 // https://home.miot-spec.com/spec/xiaomi.vacuum.d109gl // Xiaomi Robot Vacuum X20 Max
+// https://home.miot-spec.com/spec/xiaomi.vacuum.d102gl // Xiaomi Robot Vacuum X20 Pro
 
 const mapping = {
-    'xiaomi.vacuum.d109gl': 'properties_d109gl'
+    'xiaomi.vacuum.d109gl': 'properties_d109gl',
+    'xiaomi.vacuum.d102gl': 'properties_d109gl'
 };
 
 const properties = {
@@ -491,7 +493,6 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             if (path_mode) {
                 await this.updateCapabilityValue('vacuum_xiaomi_path_mode_max', path_mode.value.toString());
             }
-            
 
             /* detergent left (%) */
             /*if (detergent_left_level) {
@@ -722,6 +723,12 @@ class XiaomiVacuumMiotDeviceMax extends Device {
      * – Resets the live trackers for the next run
      */
     async _accumulateJobTotals() {
+        // Before adding delta, check state
+        if (this.lastVacState !== 'cleaning') {
+            this.log('[WARN] Area/time delta received while not cleaning. Ignoring delta.');
+            return;
+        }
+
         // Final total area (0.01 m²) and time (seconds) reported by the robot
         const [{ value: area01 }, { value: timeSec }] = await this.miio.call(
             'get_properties',
@@ -757,6 +764,13 @@ class XiaomiVacuumMiotDeviceMax extends Device {
         const totTime = Number(this.getSetting('total_work_time') || 0) + deltaHours;
         const totCnt = Number(this.getSetting('total_clean_count') || 0) + 1;
 
+        // Logging
+        const prevArea = Number(this.getSetting('total_cleared_area') || 0);
+        const prevTime = Number(this.getSetting('total_work_time') || 0);
+
+        this.log('[DIAG] [JOB END] Cleaned area update:', `Read (delta): ${(deltaArea01 / 100).toFixed(2)} m², Previous: ${prevArea.toFixed(2)} m², New: ${totArea.toFixed(2)} m²`);
+        this.log('[DIAG] [JOB END] Cleaning time update:', `Read (delta): ${(totalSecDelta / 3600).toFixed(4)} h, Previous: ${prevTime.toFixed(4)} h, New: ${totTime.toFixed(4)} h`);
+
         // Persist the new totals
         await this.setSettings({
             total_cleared_area: +totArea.toFixed(1), // keep one decimal
@@ -782,18 +796,32 @@ class XiaomiVacuumMiotDeviceMax extends Device {
      * update settings **and** tokens in one go.
      */
     async _addLiveDelta(deltaAreaM2, deltaHours) {
+        // Before adding delta, check state
+        if (this.lastVacState !== 'cleaning') {
+            this.log('[WARN] Area/time delta received while not cleaning. Ignoring delta.');
+            return;
+        }
+
         if (deltaAreaM2 <= 0 && deltaHours <= 0) return; // nothing to do
 
-        const totArea = Number(this.getSetting('total_cleared_area') || 0) + deltaAreaM2;
-        const totTime = Number(this.getSetting('total_work_time') || 0) + deltaHours;
+        // Previous values before update
+        const prevArea = Number(this.getSetting('total_cleared_area') || 0);
+        const prevTime = Number(this.getSetting('total_work_time') || 0);
+
+        const newArea = prevArea + deltaAreaM2;
+        const newTime = prevTime + deltaHours;
+
+        // Logging
+        this.log('[DIAG] [LIVE] Cleaned area update:', `Read (delta): ${deltaAreaM2.toFixed(2)} m², Previous: ${prevArea.toFixed(2)} m², New: ${newArea.toFixed(2)} m²`);
+        this.log('[DIAG] [LIVE] Cleaning time update:', `Read (delta): ${deltaHours.toFixed(4)} h, Previous: ${prevTime.toFixed(4)} h, New: ${newTime.toFixed(4)} h`);
 
         await this.setSettings({
-            total_cleared_area: +totArea.toFixed(1),
-            total_work_time: +totTime.toFixed(2)
+            total_cleared_area: +newArea.toFixed(1),
+            total_work_time: +newTime.toFixed(2)
         });
 
-        await this.total_cleared_area_token.setValue(totArea);
-        await this.total_work_time_token.setValue(totTime);
+        await this.total_cleared_area_token.setValue(newArea);
+        await this.total_work_time_token.setValue(newTime);
     }
 
     /**
