@@ -286,5 +286,8 @@
   },
   "3.4.17": {
     "en": "Added support for Xiaomi Smart Tower Fan 2 (xiaomi.fan.p45)"
+  },
+  "3.4.18": {
+    "en": "Xiaomi Robot Vacuum X20 Pro and Xiaomi Robot Vacuum X20 Max"
   }
 }
