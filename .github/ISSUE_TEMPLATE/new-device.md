@@ -22,4 +22,4 @@ assignees: ''
 
 ---- STOP EDITING HERE----
 ### Donation
-I enjoy creating apps for Homey and try to support them as best as I can. If you enjoy using my apps a [donation](https://www.paypal.me/jghaanstra) in return for the time I put into this is much appreciated.
+I enjoy creating apps for Homey and try to support them as best as I can. If you enjoy using my apps a [donation](https://www.paypal.me/bkubesa) in return for the time I put into this is much appreciated.
