@@ -237,7 +237,9 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                 //let actions = { siid: 2, aiid: 16, in: [{ siid: 2, piid: 15, code: 0, value: room_list }] };
                 //debug
                 this.log(
-                    '[ADV_ROOM_CLEAN] Cleaning rooms:',room_list, '| Room names:',
+                    '[ADV_ROOM_CLEAN] Cleaning rooms:',
+                    room_list,
+                    '| Room names:',
                     selected_room
                         .map((id) => {
                             let room = list_room.find((r) => r.id === id);
@@ -436,8 +438,27 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                 await this.setAvailable();
             }
 
-            // Log the full raw property data for reference
-            this.log('Raw property data: ' + this.prettyPrintProperties(result, this.deviceProperties.get_properties));
+            // Store previous values to compare
+            const prevProps = this._lastPropertyValues || {};
+
+            const resultValues = {};
+            for (const def of this.deviceProperties.get_properties) {
+                const found = result.find((obj) => obj.siid === def.siid && obj.piid === def.piid);
+                resultValues[def.did] = found ? found.value : null;
+            }
+
+            // Compare all props, only log if any value changed
+            let valueChanged = false;
+            for (const key of Object.keys(resultValues)) {
+                if (prevProps[key] !== resultValues[key]) {
+                    valueChanged = true;
+                    break;
+                }
+            }
+            if (valueChanged) {
+                this.log('Raw property data: ' + this.prettyPrintProperties(result, this.deviceProperties.get_properties));
+            }
+            this._lastPropertyValues = resultValues;
 
             //temporary debug !!!
             /*
@@ -550,7 +571,18 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             }
 
             // --- DEBUG --------------------------------------------------------------
-            this.log(`status code = ${device_status ? device_status.value : 'n/a'}`, `→ key = ${stateKey}`, `| lastVacState = ${this.lastVacState}`);
+            // Only log state if it actually changed since last time
+            const lastLogState = this._lastStatusLogState || {};
+            const currLogState = {
+                device_status: device_status ? device_status.value : 'n/a',
+                stateKey: stateKey,
+                lastVacState: this.lastVacState
+            };
+
+            if (currLogState.device_status !== lastLogState.device_status || currLogState.stateKey !== lastLogState.stateKey || currLogState.lastVacState !== lastLogState.lastVacState) {
+                this.log(`status code = ${currLogState.device_status}`, `→ key = ${currLogState.stateKey}`, `| lastVacState = ${currLogState.lastVacState}`);
+                this._lastStatusLogState = currLogState;
+            }
             // -----------------------------------------------------------------------
 
             // Manage this.initialTokenTotal for the very first run of customVacuumTotals
@@ -667,7 +699,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             }
 
             // In case of error, Trigger the flow with the error code
-            this.log('Device Fault Value:', device_fault ? device_fault.value : 'undefined');
+            // this.log('Device Fault Value:', device_fault ? device_fault.value : 'undefined');
             let currentError = this.getCapabilityValue('vacuum_xiaomi_status');
             if (safeError !== 'OK' && safeError !== 'OK - Working' && safeError !== currentError) {
                 await this.homey.flow
@@ -720,7 +752,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
     async customVacuumTotals(totals) {
         // 'totals' object contains robot's current report for PII 6, 7, 8
         try {
-            this.log(`[DIAG] [CUSTOM_TOTALS_D109GL] Received totals from robot: clean_time=${totals.clean_time}, clean_area=${totals.clean_area}, clean_count=${totals.clean_count}`);
+            //this.log(`[DIAG] Received totals from robot: clean_time=${totals.clean_time}, clean_area=${totals.clean_area}, clean_count=${totals.clean_count}`);
 
             const robotReportedCleanCount = totals.clean_count;
 
@@ -732,7 +764,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                 const initialWorkTimeH = +(initialWorkTimeSec / 3600).toFixed(1);
                 await this.setSettings({ total_work_time: initialWorkTimeH });
                 await this.total_work_time_token.setValue(initialWorkTimeH);
-                this.log(`[DIAG] [CUSTOM_TOTALS_D109GL] Initialized total_work_time to ${initialWorkTimeH}h from robot report.`);
+                this.log(`[DIAG] Initialized total_work_time to ${initialWorkTimeH}h from robot report.`);
             }
 
             if (this.getSetting('total_cleared_area') === undefined) {
@@ -740,30 +772,28 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                 const initialClearedAreaM2 = +(initialClearedArea01 / 100).toFixed(0);
                 await this.setSettings({ total_cleared_area: initialClearedAreaM2 });
                 await this.total_cleared_area_token.setValue(initialClearedAreaM2);
-                this.log(`[DIAG] [CUSTOM_TOTALS_D109GL] Initialized total_cleared_area to ${initialClearedAreaM2}m² from robot report.`);
+                this.log(`[DIAG] Initialized total_cleared_area to ${initialClearedAreaM2}m² from robot report.`);
             }
 
             if (this.getSetting('total_clean_count') === undefined) {
                 await this.setSettings({ total_clean_count: robotReportedCleanCount });
                 await this.total_clean_count_token.setValue(robotReportedCleanCount);
-                this.log(`[DIAG] [CUSTOM_TOTALS_D109GL] Initialized total_clean_count to ${robotReportedCleanCount} from robot report.`);
+                this.log(`[DIAG] Initialized total_clean_count to ${robotReportedCleanCount} from robot report.`);
             } else {
                 // Optional: Sync count if robot's count is higher (e.g. if Homey's count got reset somehow)
                 // forceUpdateTotals is the primary incrementer during normal operation.
                 const currentHomeyCount = Number(this.getSetting('total_clean_count'));
                 if (robotReportedCleanCount > currentHomeyCount) {
-                    this.log(`[DIAG] [CUSTOM_TOTALS_D109GL] Robot count (${robotReportedCleanCount}) is higher than Homey count (${currentHomeyCount}). Syncing count.`);
+                    this.log(`[DIAG] Robot count (${robotReportedCleanCount}) is higher than Homey count (${currentHomeyCount}). Syncing count.`);
                     await this.setSettings({ total_clean_count: robotReportedCleanCount });
                     await this.total_clean_count_token.setValue(robotReportedCleanCount);
                 }
             }
             this.initialTokenTotal = true; // Mark that initial value consideration has occurred.
         } catch (err) {
-            this.error('[ERROR] [CUSTOM_TOTALS_D109GL] Failed:', err);
+            this.error('[ERROR] [CUSTOM_TOTALS] Failed:', err);
         }
     }
-
-    /* Custom VacuumConsumables for xiaomi.vacuum.d109gl */
 
     async customVacuumConsumables(consumables) {
         try {
@@ -772,7 +802,14 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             let filter_remaining_value = 0;
 
             // debug purposes only
-            this.log('Consumables input:', JSON.stringify(consumables));
+            // Compare with previous consumables, only log if changed
+            const prevConsumables = this._lastConsumablesJSON || '';
+            const currConsumables = JSON.stringify(consumables);
+
+            if (currConsumables !== prevConsumables) {
+                this.log('Consumables input:', currConsumables);
+                this._lastConsumablesJSON = currConsumables;
+            }
 
             if (Array.isArray(consumables) && consumables.length > 0) {
                 const data = consumables[0];
@@ -1017,14 +1054,14 @@ class XiaomiVacuumMiotDeviceMax extends Device {
     }
 
     prettyPrintProperties(rawProps, propertyDefs) {
-        return rawProps.map((item) => {
-            const def = propertyDefs.find(d => d.siid === item.siid && d.piid === item.piid);
-            const name = def ? def.did : `siid:${item.siid}/piid:${item.piid}`;
-            return `${name}: ${item.value} (code:${item.code})`;
-        }).join(', ');
+        return rawProps
+            .map((item) => {
+                const def = propertyDefs.find((d) => d.siid === item.siid && d.piid === item.piid);
+                const name = def ? def.did : `siid:${item.siid}/piid:${item.piid}`;
+                return `${name}: ${item.value} (code:${item.code})`;
+            })
+            .join(', ');
     }
-
 }
-
 
 module.exports = XiaomiVacuumMiotDeviceMax;
