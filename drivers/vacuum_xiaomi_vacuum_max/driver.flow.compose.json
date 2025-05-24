@@ -1,0 +1,427 @@
+{
+    "triggers": [
+        {
+            "id": "vacuum_on_error",
+            "title": {
+                "en": "The vacuum encountered an error",
+                "it": "Il robot aspirapolvere ha riscontrato un problema.",
+                "nl": "De robotstofzuiger heeft een foutmelding gegeven. ",
+                "da": "Robotstøvsugeren har givet en fejl",
+                "de": "Der Saugroboter hat einen Fehler gemeldet",
+                "es": "El robot aspirador ha dado un error",
+                "fr": "L'aspirateur robot a rencontré une erreur",
+                "no": "Robotstøvsugeren har gitt en feil",
+                "sv": "Robotdammsugaren har rapporterat ett fel",
+                "pl": "Odkurzacz robot zgłosił błąd",
+                "ru": "Робот-пылесос сообщил об ошибке",
+                "ko": "로봇 청소기가 오류를 발생시켰습니다"
+            },
+            "description": {
+                "en": "the vacuum has raised an error. Please check the device for details.",
+                "it": "il robot aspirapolvere è andato in errore. Per favore controlla il dispositivo per i dettagli.",
+                "nl": "De robotstofzuiger heeft een foutmelding gegeven. Controleer het apparaat voor meer details.",
+                "da": "Robotstøvsugeren har givet en fejl. Kontroller enheden for flere detaljer.",
+                "de": "Der Saugroboter hat einen Fehler gemeldet. Bitte überprüfen Sie das Gerät für weitere Details.",
+                "es": "El robot aspirador ha dado un error. Por favor, revise el dispositivo para más detalles.",
+                "fr": "L'aspirateur robot a rencontré une erreur. Veuillez vérifier l'appareil pour plus de détails.",
+                "no": "Robotstøvsugeren har gitt en feil. Vennligst sjekk enheten for flere detaljer.",
+                "sv": "Robotdammsugaren har rapporterat ett fel. Kontrollera enheten för mer information.",
+                "pl": "Odkurzacz robot zgłosił błąd. Proszę sprawdzić urządzenie, aby uzyskać więcej szczegółów.",
+                "ru": "Робот-пылесос сообщил об ошибке. Пожалуйста, проверьте устройство для получения подробной информации.",
+                "ko": "로봇 청소기가 오류를 발생시켰습니다. 자세한 내용은 장치를 확인하십시오."
+            }
+        }
+    ],
+    "conditions": [],
+    "actions": [
+        {
+            "id": "advanced_room_cleaning",
+            "title": {
+                "en": "advanced cleaning",
+                "it": "Pulizia avanzata",
+                "nl": "Geavanceerde reiniging",
+                "da": "Avanceret rengøring",
+                "de": "Erweiterte Reinigung",
+                "es": "Limpieza avanzada",
+                "fr": "Nettoyage avancé",
+                "no": "Avansert rengjøring",
+                "sv": "Avancerad rengöring",
+                "pl": "Zaawansowane czyszczenie",
+                "ru": "Расширенная очистка",
+                "ko": "고급 청소"
+            },
+            "titleFormatted": {
+                "en": "Start [[mode]] with accuracy [[accuracy]]. Sweep [[mode_sweep]] and mop [[mode_mop]] on room [[room]]",
+                "it": "Attiva [[mode]] con accuratezza percorso [[accuracy]]. Aspirazione [[mode_sweep]] e lavaggio [[mode_mop]] nelle stanze [[room]]",
+                "nl": "Start [[mode]] met nauwkeurigheid [[accuracy]]. Stofzuigen [[mode_sweep]] en dweilen [[mode_mop]] in kamer [[room]]",
+                "da": "Start [[mode]] med nøjagtighed [[accuracy]]. Støvsug [[mode_sweep]] og moppe [[mode_mop]] i rum [[room]]",
+                "de": "Starte [[mode]] mit Genauigkeit [[accuracy]]. Saugen [[mode_sweep]] und wischen [[mode_mop]] im Raum [[room]]",
+                "es": "Iniciar [[mode]] con precisión [[accuracy]]. Barrer [[mode_sweep]] y fregar [[mode_mop]] en la habitación [[room]]",
+                "fr": "Démarrer [[mode]] avec précision [[accuracy]]. Balayer [[mode_sweep]] et frotter [[mode_mop]] dans la pièce [[room]]",
+                "no": "Start [[mode]] med nøyaktighet [[accuracy]]. Støvsuge [[mode_sweep]] og moppe [[mode_mop]] i rom [[room]]",
+                "sv": "Starta [[mode]] med noggrannhet [[accuracy]]. Dammsuga [[mode_sweep]] och moppa [[mode_mop]] i rum [[room]]",
+                "pl": "Rozpocznij [[mode]] z dokładnością [[accuracy]]. Odkurzanie [[mode_sweep]] i mycie [[mode_mop]] w pokoju [[room]]",
+                "ru": "Запустить [[mode]] с точностью [[accuracy]]. Пылесосить [[mode_sweep]] и мыть [[mode_mop]] в комнате [[room]]",
+                "ko": "[[mode]]를 [[accuracy]] 정확도로 시작합니다. [[mode_sweep]] 청소 및 [[mode_mop]] 방 [[room]]"
+            },
+            "args": [
+                {
+                    "name": "mode",
+                    "type": "dropdown",
+                    "title": {
+                        "en": "Select mode",
+                        "it": "Seleziona modalità",
+                        "nl": "Selecteer modus",
+                        "da": "Vælg tilstand",
+                        "de": "Modus auswählen",
+                        "es": "Seleccionar modo",
+                        "fr": "Sélectionner le mode",
+                        "no": "Velg modus",
+                        "sv": "Välj läge",
+                        "pl": "Wybierz tryb",
+                        "ru": "Выберите режим",
+                        "ko": "모드 선택"
+                    },
+                    "values": [
+                        {
+                            "id": "1",
+                            "label": {
+                                "en": "Sweep",
+                                "it": "Aspirazione",
+                                "nl": "Stofzuigen",
+                                "da": "Støvsugning",
+                                "de": "Saugen",
+                                "es": "Aspirar",
+                                "fr": "Aspirer",
+                                "no": "Støvsuging",
+                                "sv": "Dammsugning",
+                                "pl": "Odkurzanie",
+                                "ru": "Пылесосить",
+                                "ko": "청소하기"
+                            }
+                        },
+                        {
+                            "id": "2",
+                            "label": {
+                                "en": "Mop",
+                                "it": "Lavaggio",
+                                "nl": "Dweilen",
+                                "da": "Gulvvask",
+                                "de": "Wischen",
+                                "es": "Fregar",
+                                "fr": "Laver",
+                                "no": "Vask",
+                                "sv": "Moppning",
+                                "pl": "Mycie",
+                                "ru": "Мытье",
+                                "ko": "청소하기"
+                            }
+                        },
+                        {
+                            "id": "3",
+                            "label": {
+                                "en": "Sweep and mop",
+                                "it": "Aspirazione e lavaggio",
+                                "nl": "Stofzuigen en dweilen",
+                                "da": "Støvsugning og gulvvask",
+                                "de": "Saugen und Wischen",
+                                "es": "Aspirar y fregar",
+                                "fr": "Aspirer et laver",
+                                "no": "Støvsuging og vask",
+                                "sv": "Dammsugning och moppning",
+                                "pl": "Odkurzanie i mycie",
+                                "ru": "Пылесосить и мыть",
+                                "ko": "청소 및 세척"
+                            }
+                        },
+                        {
+                            "id": "4",
+                            "label": {
+                                "en": "Sweep and after mop",
+                                "it": "Aspirazione e successivamente lavaggio",
+                                "nl": "Stofzuigen en daarna dweilen",
+                                "da": "Støvsugning og derefter gulvvask",
+                                "de": "Saugen und anschließend wischen",
+                                "es": "Aspirar y luego fregar",
+                                "fr": "Aspirer puis laver",
+                                "no": "Støvsuging og deretter vask",
+                                "sv": "Dammsugning och sedan moppning",
+                                "pl": "Odkurzanie, a następnie mycie",
+                                "ru": "Сначала пылесосить, а затем мыть",
+                                "ko": "먼저 청소한 후 세척"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "accuracy",
+                    "type": "dropdown",
+                    "title": {
+                        "en": "Select clean accuracy",
+                        "it": "Seleziona accuratezza percorso pulizia",
+                        "nl": "Selecteer reinigingsnauwkeurigheid",
+                        "da": "Vælg rengøringsnøjagtighed",
+                        "de": "Reinigungsgenauigkeit auswählen",
+                        "es": "Seleccionar precisión de limpieza",
+                        "fr": "Sélectionner la précision de nettoyage",
+                        "no": "Velg rengjøringsnøyaktighet",
+                        "sv": "Välj rengöringsnoggrannhet",
+                        "pl": "Wybierz dokładność czyszczenia",
+                        "ru": "Выберите точность очистки",
+                        "ko": "청소 정확도 선택"
+                    },
+                    "values": [
+                        {
+                            "id": "1",
+                            "label": {
+                                "en": "Rapid",
+                                "it": "Rapida",
+                                "nl": "Snelle",
+                                "da": "Hurtig",
+                                "de": "Schnell",
+                                "es": "Rápida",
+                                "fr": "Rapide",
+                                "no": "Rask",
+                                "sv": "Snabb",
+                                "pl": "Szybka",
+                                "ru": "Быстрая",
+                                "ko": "빠른"
+                            }
+                        },
+                        {
+                            "id": "2",
+                            "label": {
+                                "en": "Standard",
+                                "it": "Standard",
+                                "nl": "Standaard",
+                                "da": "Standard",
+                                "de": "Standard",
+                                "es": "Estándar",
+                                "fr": "Standard",
+                                "no": "Standard",
+                                "sv": "Standard",
+                                "pl": "Standardowy",
+                                "ru": "Стандартный",
+                                "ko": "표준"
+                            }
+                        },
+                        {
+                            "id": "3",
+                            "label": {
+                                "en": "Accurate",
+                                "it": "Profonda",
+                                "nl": "Nauwkeurig",
+                                "da": "Præcis",
+                                "de": "Genau",
+                                "es": "Precisa",
+                                "fr": "Précise",
+                                "no": "Nøyaktig",
+                                "sv": "Noggrann",
+                                "pl": "Dokładny",
+                                "ru": "Точный",
+                                "ko": "정확한"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "mode_sweep",
+                    "type": "dropdown",
+                    "title": {
+                        "en": "Select sweep power",
+                        "it": "Seleziona potenza aspirazione",
+                        "nl": "Selecteer stofzuigkracht",
+                        "da": "Vælg støvsugerkraft",
+                        "de": "Saugleistung auswählen",
+                        "es": "Seleccionar potencia de succión",
+                        "fr": "Sélectionner la puissance d'aspiration",
+                        "no": "Velg sugekraft",
+                        "sv": "Välj sugkraft",
+                        "pl": "Wybierz moc ssania",
+                        "ru": "Выберите мощность всасывания",
+                        "ko": "흡입력 선택"
+                    },
+                    "values": [
+                        {
+                            "id": "1",
+                            "label": {
+                                "en": "Silent",
+                                "it": "Silenzioso",
+                                "nl": "Stil",
+                                "da": "Stille",
+                                "de": "Leise",
+                                "es": "Silencioso",
+                                "fr": "Silencieux",
+                                "no": "Stille",
+                                "sv": "Tyst",
+                                "pl": "Cichy",
+                                "ru": "Тихий",
+                                "ko": "조용한"
+                            }
+                        },
+                        {
+                            "id": "2",
+                            "label": {
+                                "en": "Basic",
+                                "it": "Normale",
+                                "nl": "Basis",
+                                "da": "Basis",
+                                "de": "Basis",
+                                "es": "Básico",
+                                "fr": "Basique",
+                                "no": "Grunnleggende",
+                                "sv": "Grundläggande",
+                                "pl": "Podstawowy",
+                                "ru": "Базовый",
+                                "ko": "기본"
+                            }
+                        },
+                        {
+                            "id": "3",
+                            "label": {
+                                "en": "Strong",
+                                "it": "Forte",
+                                "nl": "Sterk",
+                                "da": "Stærk",
+                                "de": "Stark",
+                                "es": "Fuerte",
+                                "fr": "Forte",
+                                "no": "Sterk",
+                                "sv": "Stark",
+                                "pl": "Mocny",
+                                "ru": "Сильный",
+                                "ko": "강한"
+                            }
+                        },
+                        {
+                            "id": "4",
+                            "label": {
+                                "en": "Full Speed",
+                                "it": "Massima potenza",
+                                "nl": "Volledige snelheid",
+                                "da": "Fuld hastighed",
+                                "de": "Vollgas",
+                                "es": "A toda velocidad",
+                                "fr": "Vitesse maximale",
+                                "no": "Full hastighet",
+                                "sv": "Full hastighet",
+                                "pl": "Pełna prędkość",
+                                "ru": "Максимальная скорость",
+                                "ko": "최고 속도"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "mode_mop",
+                    "type": "dropdown",
+                    "title": {
+                        "en": "Mop mode",
+                        "it": "Modalità lavaggio",
+                        "nl": "Dweilmodus",
+                        "da": "Moppefunktion",
+                        "de": "Wischmodus",
+                        "es": "Modo fregona",
+                        "fr": "Mode serpillère",
+                        "no": "Moppemodus",
+                        "sv": "Moppläge",
+                        "pl": "Tryb mopa",
+                        "ru": "Режим швабры",
+                        "ko": "대걸레 모드"
+                    },
+                    "values": [
+                        {
+                            "id": "0",
+                            "label": {
+                                "en": "Off",
+                                "it": "Nessuno",
+                                "nl": "Uit",
+                                "da": "Fra",
+                                "de": "Aus",
+                                "es": "Apagar",
+                                "fr": "Éteindre",
+                                "no": "Av",
+                                "sv": "Av",
+                                "pl": "Wyłącz",
+                                "ru": "Выключить",
+                                "ko": "끄기"
+                            }
+                        },
+                        {
+                            "id": "1",
+                            "label": {
+                                "en": "Level 1",
+                                "it": "Livello 1",
+                                "nl": "Niveau 1",
+                                "da": "Niveau 1",
+                                "de": "Stufe 1",
+                                "es": "Nivel 1",
+                                "fr": "Niveau 1",
+                                "no": "Nivå 1",
+                                "sv": "Nivå 1",
+                                "pl": "Poziom 1",
+                                "ru": "Уровень 1",
+                                "ko": "레벨 1"
+                            }
+                        },
+                        {
+                            "id": "2",
+                            "label": {
+                                "en": "Level 2",
+                                "it": "Livello 2",
+                                "nl": "Niveau 2",
+                                "da": "Niveau 2",
+                                "de": "Stufe 2",
+                                "es": "Nivel 2",
+                                "fr": "Niveau 2",
+                                "no": "Nivå 2",
+                                "sv": "Nivå 2",
+                                "pl": "Poziom 2",
+                                "ru": "Уровень 2",
+                                "ko": "레벨 2"
+                            }
+                        },
+                        {
+                            "id": "3",
+                            "label": {
+                                "en": "Level 3",
+                                "it": "Livello 3",
+                                "nl": "Niveau 3",
+                                "da": "Niveau 3",
+                                "de": "Stufe 3",
+                                "es": "Nivel 3",
+                                "fr": "Niveau 3",
+                                "no": "Nivå 3",
+                                "sv": "Nivå 3",
+                                "pl": "Poziom 3",
+                                "ru": "Уровень 3",
+                                "ko": "레벨 3"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "text",
+                    "name": "room",
+                    "title": {
+                        "en": "Select room separated by commas ('all' for all rooms)",
+                        "it": "Seleziona stanze separate da virgole ('all' per tutte le stanze)",
+                        "nl": "Selecteer kamer gescheiden door komma's ('all' voor alle kamers)",
+                        "da": "Vælg rum adskilt af kommaer ('all' for alle rum)",
+                        "de": "Wählen Sie Räume, die durch Kommas getrennt sind ('all' für alle Räume)",
+                        "es": "Seleccionar habitación separada por comas ('all' para todas las habitaciones)",
+                        "fr": "Sélectionner la pièce séparée par des virgules ('all' pour toutes les pièces)",
+                        "no": "Velg rom atskilt med kommaer ('all' for alle rom)",
+                        "sv": "Välj rum åtskilt med kommatecken ('all' för alla rum)",
+                        "pl": "Wybierz pokój oddzielony przecinkami ('all' dla wszystkich pokoi)",
+                        "ru": "Выберите комнату, разделенную запятыми ('all' для всех комнат)",
+                        "ko": "방을 쉼표로 구분하여 선택합니다('all'은 모든 방에 해당)"
+                    },
+                    "placeholder": {
+                        "en": "all"
+                    }
+                }
+            ]
+        }
+    ]
+}

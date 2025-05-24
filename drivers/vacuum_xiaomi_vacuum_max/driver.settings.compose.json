@@ -178,6 +178,25 @@
           "min": 0,
           "step": 1
         }
+      },
+      {
+        "id": "rooms_display",
+        "type": "label",
+        "label": {
+          "en": "Room list",
+          "nl": "Kamerlijst",
+          "da": "Rumliste",
+          "de": "Raumliste",
+          "es": "Lista de habitaciones",
+          "fr": "Liste des pièces",
+          "it": "Elenco stanze",
+          "no": "Romliste",
+          "sv": "Rumslista",
+          "pl": "Lista pokoi",
+          "ru": "Список комнат",
+          "ko": "방 목록"
+        },
+        "value": "No rooms fetched yet"
       }
     ]
   },
