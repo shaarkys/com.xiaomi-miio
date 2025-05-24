@@ -292,5 +292,8 @@
   },
   "3.4.19": {
     "en": "Added room cleaning options for Xiaomi Robot Vacuum X20, credits to @te85va"
+  },
+  "3.4.20": {
+    "en": "Logging optimisations for vacuum_xiaomi_vacuum_max driver"
   }
 }
