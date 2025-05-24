@@ -289,5 +289,8 @@
   },
   "3.4.18": {
     "en": "Xiaomi Robot Vacuum X20 Pro and Xiaomi Robot Vacuum X20 Max"
+  },
+  "3.4.19": {
+    "en": "Added room cleaning options for Xiaomi Robot Vacuum X20, credits to @te85va"
   }
 }
