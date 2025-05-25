@@ -295,5 +295,8 @@
   },
   "3.4.20": {
     "en": "Logging optimisations for vacuum_xiaomi_vacuum_max driver"
+  },
+  "3.4.21": {
+    "en": "Translations"
   }
 }
