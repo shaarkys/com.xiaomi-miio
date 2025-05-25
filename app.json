@@ -2308,6 +2308,26 @@
             "name": "device",
             "filter": "driver_id=vacuum_xiaomi_vacuum_max"
           }
+        ],
+        "tokens": [
+          {
+            "name": "error",
+            "type": "string",
+            "title": {
+              "en": "vacuum error raised",
+              "it": "errore del robot aspirapolvere sollevato",
+              "nl": "robotstofzuiger foutmelding gegeven",
+              "da": "robotstøvsuger fejl",
+              "de": "Saugroboterfehler",
+              "es": "error del robot aspirador",
+              "fr": "erreur de l'aspirateur robot",
+              "no": "robotstøvsugerfeil",
+              "sv": "robotdammsugarefel",
+              "pl": "błąd odkurzacza robota",
+              "ru": "ошибка робота-пылесоса",
+              "ko": "로봇 청소기 오류"
+            }
+          }
         ]
       }
     ],
@@ -29501,7 +29521,16 @@
       "title": {
         "en": "Cleaning Power",
         "nl": "Reinigingskracht",
-        "de": "Reinigungsleistung"
+        "da": "Rengøringskraft",
+        "de": "Reinigungsleistung",
+        "es": "Potencia de limpieza",
+        "fr": "Puissance de nettoyage",
+        "it": "Potenza di pulizia",
+        "no": "Rengjøringskraft",
+        "sv": "Rengöringskraft",
+        "pl": "Moc czyszczenia",
+        "ru": "Мощность очистки",
+        "ko": "청소력"
       },
       "values": [
         {
@@ -29509,7 +29538,16 @@
           "title": {
             "en": "Silent",
             "nl": "Stil",
-            "de": "Leise"
+            "da": "Stille",
+            "de": "Leise",
+            "es": "Silencioso",
+            "fr": "Silencieux",
+            "it": "Silenzioso",
+            "no": "Stille",
+            "sv": "Tyst",
+            "pl": "Cichy",
+            "ru": "Бесшумный",
+            "ko": "조용한"
           }
         },
         {
@@ -29517,7 +29555,16 @@
           "title": {
             "en": "Standard",
             "nl": "Standaard",
-            "de": "Standard"
+            "de": "Standard",
+            "da": "Standard",
+            "es": "Estándar",
+            "fr": "Standard",
+            "it": "Standard",
+            "no": "Standard",
+            "sv": "Standard",
+            "pl": "Standardowy",
+            "ru": "Стандартный",
+            "ko": "표준"
           }
         },
         {
@@ -29525,7 +29572,16 @@
           "title": {
             "en": "Strong",
             "nl": "Sterk",
-            "de": "Stark"
+            "de": "Stark",
+            "da": "Stærk",
+            "es": "Fuerte",
+            "fr": "Fort",
+            "it": "Forte",
+            "no": "Sterk",
+            "sv": "Stark",
+            "pl": "Mocny",
+            "ru": "Сильный",
+            "ko": "강한"
           }
         },
         {
@@ -29533,7 +29589,16 @@
           "title": {
             "en": "Turbo",
             "nl": "Turbo",
-            "de": "Turbo"
+            "de": "Turbo",
+            "da": "Turbo",
+            "es": "Turbo",
+            "fr": "Turbo",
+            "it": "Turbo",
+            "no": "Turbo",
+            "sv": "Turbo",
+            "pl": "Turbo",
+            "ru": "Турбо",
+            "ko": "터보"
           }
         }
       ],
