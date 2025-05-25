@@ -98,7 +98,17 @@
     "type": "group",
     "label": {
       "en": "Device Settings",
-      "nl": "Apparaat instellingen"
+      "nl": "Apparaat instellingen",
+      "da": "Enhedsindstillinger",
+      "de": "Geräteeinstellungen",
+      "es": "Configuración del dispositivo",
+      "fr": "Paramètres de l'appareil",
+      "it": "Impostazioni dispositivo",
+      "no": "Enhetsinnstillinger",
+      "sv": "Enhetsinställningar",
+      "pl": "Ustawienia urządzenia",
+      "ru": "Настройки устройства",
+      "ko": "장치 설정"
     },
     "children": [
       {

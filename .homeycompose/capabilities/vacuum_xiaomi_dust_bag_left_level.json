@@ -1,9 +1,34 @@
 {
-    "title": { "en": "Dust bag left (%)" },
-    "type": "number",
-    "getable": true,
-    "setable": false,
-    "units": { "en": "%" },
-    "uiComponent": "sensor"
-  }
-  
+  "title": {
+    "en": "Dust bag left (%)",
+    "nl": "Stofzak over (%)",
+    "da": "Støvsugerpose tilbage (%)",
+    "de": "Staubbeutel verbleibend (%)",
+    "es": "Bolsa de polvo restante (%)",
+    "fr": "Sac à poussière restant (%)",
+    "it": "Sacchetto della polvere rimasto (%)",
+    "no": "Støvsekk igjen (%)",
+    "sv": "Dammsugarpåse kvar (%)",
+    "pl": "Pozostało worka na kurz (%)",
+    "ru": "Осталось пылесборника (%)",
+    "ko": "먼지 봉투 남음 (%)"
+  },
+  "type": "number",
+  "getable": true,
+  "setable": false,
+  "units": {
+    "en": "%",
+    "nl": "%",
+    "da": "%",
+    "de": "%",
+    "es": "%",
+    "fr": "%",
+    "it": "%",
+    "no": "%",
+    "sv": "%",
+    "pl": "%",
+    "ru": "%",
+    "ko": "%"
+  },
+  "uiComponent": "sensor"
+}

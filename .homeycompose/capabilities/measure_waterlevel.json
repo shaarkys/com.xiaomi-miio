@@ -20,7 +20,17 @@
   "uiComponent": "sensor",
   "units": {
     "en": "%",
-    "nl": "%"
+    "nl": "%",
+    "da": "%",
+    "de": "%",
+    "es": "%",
+    "fr": "%",
+    "it": "%",
+    "no": "%",
+    "sv": "%",
+    "pl": "%",
+    "ru": "%",
+    "ko": "%"
   },
   "insights": true
 }

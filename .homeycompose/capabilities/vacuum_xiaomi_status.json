@@ -1,11 +1,21 @@
 {
-    "type": "string",
-    "title": {
-      "en": "Status / error"
-    },
-    "getable": true,
-    "setable": false,
-    "insights": false,
-    "icon": "/assets/icons/alarm_generic.svg"
-  }
-  
+  "type": "string",
+  "title": {
+    "en": "Status / error",
+    "nl": "Status / fout",
+    "da": "Status / fejl",
+    "de": "Status / Fehler",
+    "es": "Estado / error",
+    "fr": "Statut / erreur",
+    "it": "Stato / errore",
+    "no": "Status / feil",
+    "sv": "Status / fel",
+    "pl": "Status / błąd",
+    "ru": "Статус / ошибка",
+    "ko": "상태 / 오류"
+  },
+  "getable": true,
+  "setable": false,
+  "insights": false,
+  "icon": "/assets/icons/alarm_generic.svg"
+}

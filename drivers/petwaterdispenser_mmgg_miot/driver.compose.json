@@ -2,16 +2,16 @@
   "name": {
     "en": "Smart Pet Water Dispenser MIoT (WiFi)",
     "nl": "Smart Pet Water Dispenser MIoT (WiFi)",
-    "da": "Smart Pet Water Dispenser MIoT (WiFi)",
-    "de": "Smart Pet Water Dispenser MIoT (WiFi)",
-    "es": "Smart Pet Water Dispenser MIoT (WiFi)",
-    "fr": "Smart Pet Water Dispenser MIoT (WiFi)",
-    "it": "Smart Pet Water Dispenser MIoT (WiFi)",
-    "no": "Smart Pet Water Dispenser MIoT (WiFi)",
-    "sv": "Smart Pet Water Dispenser MIoT (WiFi)",
-    "pl": "Smart Pet Water Dispenser MIoT (WiFi)",
-    "ru": "Smart Pet Water Dispenser MIoT (WiFi)",
-    "ko": "Smart Pet Water Dispenser MIoT (WiFi)"
+    "da": "Smart Pet Vanddispenser MIoT (WiFi)",
+    "de": "Smart Pet Wasserspender MIoT (WiFi)",
+    "es": "Dispensador de Agua Inteligente para Mascotas MIoT (WiFi)",
+    "fr": "Distributeur d'Eau Intelligent pour Animaux MIoT (WiFi)",
+    "it": "Distributore di Acqua Intelligente per Animali MIoT (WiFi)",
+    "no": "Smart Pet Vanndispenser MIoT (WiFi)",
+    "sv": "Smart Pet Vattendispensator MIoT (WiFi)",
+    "pl": "Inteligentny Podajnik Wody dla Zwierząt MIoT (WiFi)",
+    "ru": "Умный Диспенсер Для Воды Для Домашних Животных MIoT (WiFi)",
+    "ko": "스마트 애완동물 물 디스펜서 MIoT (WiFi)"
   },
   "images": {
     "large": "drivers/petwaterdispenser_mmgg_miot/assets/images/large.jpg",

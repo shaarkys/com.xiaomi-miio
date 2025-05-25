@@ -13,7 +13,10 @@
       "sv": "Användarinställningar",
       "pl": "Ustawienia użytkownika",
       "ru": "Настройки пользователя",
-      "ko": "사용자 설정"
+      "ko": "사용자 설정",
+      "pt": "Configurações do usuário",
+      "ja": "ユーザー設定",
+      "zh": "用户设置"
     },
     "children": [
       {
@@ -32,7 +35,10 @@
           "sv": "LED",
           "pl": "LED",
           "ru": "Светодиод",
-          "ko": "LED"
+          "ko": "LED",
+          "pt": "LED",
+          "ja": "LED",
+          "zh": "LED"
         }
       },
       {
@@ -51,7 +57,10 @@
           "sv": "Summer",
           "pl": "Brzęczyk",
           "ru": "Зуммер",
-          "ko": "버저"
+          "ko": "버저",
+          "pt": "Buzzer",
+          "ja": "ブザー",
+          "zh": "蜂鸣器"
         }
       },
       {
@@ -70,7 +79,10 @@
           "sv": "Barnlås",
           "pl": "Blokada dla dzieci",
           "ru": "Блокировка от детей",
-          "ko": "잠금 기능"
+          "ko": "잠금 기능",
+          "pt": "Bloqueio para crianças",
+          "ja": "チャイルドロック",
+          "zh": "儿童锁"
         }
       }
     ]
@@ -89,7 +101,10 @@
       "sv": "Enhetsdata",
       "pl": "Dane urządzenia",
       "ru": "Данные устройства",
-      "ko": "디바이스 데이터"
+      "ko": "디바이스 데이터",
+      "pt": "Dados do dispositivo",
+      "ja": "デバイスデータ",
+      "zh": "设备数据"
     },
     "children": [
       {
@@ -107,7 +122,10 @@
           "sv": "Fel",
           "pl": "Błąd",
           "ru": "Ошибка",
-          "ko": "오류"
+          "ko": "오류",
+          "pt": "Erro",
+          "ja": "エラー",
+          "zh": "错误"
         },
         "value": "No error"
       }
@@ -127,7 +145,10 @@
       "sv": "Enhetsinställningar",
       "pl": "Ustawienia urządzenia",
       "ru": "Настройки устройства",
-      "ko": "디바이스 설정"
+      "ko": "디바이스 설정",
+      "pt": "Configurações do dispositivo",
+      "ja": "デバイス設定",
+      "zh": "设备设置"
     },
     "children": [
       {

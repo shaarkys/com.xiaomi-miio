@@ -187,7 +187,7 @@
       "게이트웨이"
     ]
   },
-  "version": "3.4.19",
+  "version": "3.4.20",
   "compatibility": ">=12.2.0",
   "platforms": [
     "local"
@@ -2559,7 +2559,17 @@
             },
             "placeholder": {
               "en": "°C",
-              "nl": "°C"
+              "nl": "°C",
+              "da": "°C",
+              "de": "°C",
+              "es": "°C",
+              "fr": "°C",
+              "it": "°C",
+              "no": "°C",
+              "sv": "°C",
+              "pl": "°C",
+              "ru": "°C",
+              "ko": "°C"
             }
           },
           {
@@ -2584,7 +2594,17 @@
             },
             "placeholder": {
               "en": "°C",
-              "nl": "°C"
+              "nl": "°C",
+              "da": "°C",
+              "de": "°C",
+              "es": "°C",
+              "fr": "°C",
+              "it": "°C",
+              "no": "°C",
+              "sv": "°C",
+              "pl": "°C",
+              "ru": "°C",
+              "ko": "°C"
             }
           },
           {
@@ -2707,112 +2727,272 @@
                 "id": "1",
                 "label": {
                   "en": "1",
-                  "nl": "1"
+                  "nl": "1",
+                  "da": "1",
+                  "de": "1",
+                  "es": "1",
+                  "fr": "1",
+                  "it": "1",
+                  "no": "1",
+                  "sv": "1",
+                  "pl": "1",
+                  "ru": "1",
+                  "ko": "1"
                 }
               },
               {
                 "id": "2",
                 "label": {
                   "en": "2",
-                  "nl": "2"
+                  "nl": "2",
+                  "da": "2",
+                  "de": "2",
+                  "es": "2",
+                  "fr": "2",
+                  "it": "2",
+                  "no": "2",
+                  "sv": "2",
+                  "pl": "2",
+                  "ru": "2",
+                  "ko": "2"
                 }
               },
               {
                 "id": "3",
                 "label": {
                   "en": "3",
-                  "nl": "3"
+                  "nl": "3",
+                  "da": "3",
+                  "de": "3",
+                  "es": "3",
+                  "fr": "3",
+                  "it": "3",
+                  "no": "3",
+                  "sv": "3",
+                  "pl": "3",
+                  "ru": "3",
+                  "ko": "3"
                 }
               },
               {
                 "id": "4",
                 "label": {
                   "en": "4",
-                  "nl": "4"
+                  "nl": "4",
+                  "da": "4",
+                  "de": "4",
+                  "es": "4",
+                  "fr": "4",
+                  "it": "4",
+                  "no": "4",
+                  "sv": "4",
+                  "pl": "4",
+                  "ru": "4",
+                  "ko": "4"
                 }
               },
               {
                 "id": "5",
                 "label": {
                   "en": "5",
-                  "nl": "5"
+                  "nl": "5",
+                  "da": "5",
+                  "de": "5",
+                  "es": "5",
+                  "fr": "5",
+                  "it": "5",
+                  "no": "5",
+                  "sv": "5",
+                  "pl": "5",
+                  "ru": "5",
+                  "ko": "5"
                 }
               },
               {
                 "id": "6",
                 "label": {
                   "en": "6",
-                  "nl": "6"
+                  "nl": "6",
+                  "da": "6",
+                  "de": "6",
+                  "es": "6",
+                  "fr": "6",
+                  "it": "6",
+                  "no": "6",
+                  "sv": "6",
+                  "pl": "6",
+                  "ru": "6",
+                  "ko": "6"
                 }
               },
               {
                 "id": "7",
                 "label": {
                   "en": "7",
-                  "nl": "7"
+                  "nl": "7",
+                  "da": "7",
+                  "de": "7",
+                  "es": "7",
+                  "fr": "7",
+                  "it": "7",
+                  "no": "7",
+                  "sv": "7",
+                  "pl": "7",
+                  "ru": "7",
+                  "ko": "7"
                 }
               },
               {
                 "id": "8",
                 "label": {
                   "en": "8",
-                  "nl": "8"
+                  "nl": "8",
+                  "da": "8",
+                  "de": "8",
+                  "es": "8",
+                  "fr": "8",
+                  "it": "8",
+                  "no": "8",
+                  "sv": "8",
+                  "pl": "8",
+                  "ru": "8",
+                  "ko": "8"
                 }
               },
               {
                 "id": "9",
                 "label": {
                   "en": "9",
-                  "nl": "9"
+                  "nl": "9",
+                  "da": "9",
+                  "de": "9",
+                  "es": "9",
+                  "fr": "9",
+                  "it": "9",
+                  "no": "9",
+                  "sv": "9",
+                  "pl": "9",
+                  "ru": "9",
+                  "ko": "9"
                 }
               },
               {
                 "id": "10",
                 "label": {
                   "en": "10",
-                  "nl": "10"
+                  "nl": "10",
+                  "da": "10",
+                  "de": "10",
+                  "es": "10",
+                  "fr": "10",
+                  "it": "10",
+                  "no": "10",
+                  "sv": "10",
+                  "pl": "10",
+                  "ru": "10",
+                  "ko": "10"
                 }
               },
               {
                 "id": "11",
                 "label": {
                   "en": "11",
-                  "nl": "11"
+                  "nl": "11",
+                  "da": "11",
+                  "de": "11",
+                  "es": "11",
+                  "fr": "11",
+                  "it": "11",
+                  "no": "11",
+                  "sv": "11",
+                  "pl": "11",
+                  "ru": "11",
+                  "ko": "11"
                 }
               },
               {
                 "id": "12",
                 "label": {
                   "en": "12",
-                  "nl": "12"
+                  "nl": "12",
+                  "da": "12",
+                  "de": "12",
+                  "es": "12",
+                  "fr": "12",
+                  "it": "12",
+                  "no": "12",
+                  "sv": "12",
+                  "pl": "12",
+                  "ru": "12",
+                  "ko": "12"
                 }
               },
               {
                 "id": "13",
                 "label": {
                   "en": "13",
-                  "nl": "13"
+                  "nl": "13",
+                  "da": "13",
+                  "de": "13",
+                  "es": "13",
+                  "fr": "13",
+                  "it": "13",
+                  "no": "13",
+                  "sv": "13",
+                  "pl": "13",
+                  "ru": "13",
+                  "ko": "13"
                 }
               },
               {
                 "id": "14",
                 "label": {
                   "en": "14",
-                  "nl": "14"
+                  "nl": "14",
+                  "da": "14",
+                  "de": "14",
+                  "es": "14",
+                  "fr": "14",
+                  "it": "14",
+                  "no": "14",
+                  "sv": "14",
+                  "pl": "14",
+                  "ru": "14",
+                  "ko": "14"
                 }
               },
               {
                 "id": "15",
                 "label": {
                   "en": "15",
-                  "nl": "15"
+                  "nl": "15",
+                  "da": "15",
+                  "de": "15",
+                  "es": "15",
+                  "fr": "15",
+                  "it": "15",
+                  "no": "15",
+                  "sv": "15",
+                  "pl": "15",
+                  "ru": "15",
+                  "ko": "15"
                 }
               },
               {
                 "id": "16",
                 "label": {
                   "en": "16",
-                  "nl": "16"
+                  "nl": "16",
+                  "da": "16",
+                  "de": "16",
+                  "es": "16",
+                  "fr": "16",
+                  "it": "16",
+                  "no": "16",
+                  "sv": "16",
+                  "pl": "16",
+                  "ru": "16",
+                  "ko": "16"
                 }
               }
             ]
@@ -4236,7 +4416,7 @@
           "it": "Lascia che l'aspirapolvere ti dica dove si trova",
           "no": "La støvsugeren fortelle deg hvor den er",
           "sv": "Låt dammsugaren berätta var den är",
-          "pl": "Pozwól odkurzaczowi powiedzieć, gdzie się znajduje",
+          "pl": "Pozwól odkuraczowi powiedzieć, gdzie się znajduje",
           "ru": "Пусть пылесос скажет, где он",
           "ko": "진공 청소기가 어디에 있는지 알려주세요"
         },
@@ -7438,7 +7618,7 @@
                 "id": "2",
                 "title": {
                   "en": "Sleep",
-                  "n;": "Slaapstand",
+                  "nl": "Slaapstand",
                   "da": "Søvn",
                   "de": "Schlafmodus",
                   "es": "Dormir",
@@ -8238,42 +8418,102 @@
                 "id": "30",
                 "title": {
                   "en": "30°",
-                  "nl": "30°"
+                  "nl": "30°",
+                  "da": "30°",
+                  "de": "30°",
+                  "es": "30°",
+                  "fr": "30°",
+                  "it": "30°",
+                  "no": "30°",
+                  "sv": "30°",
+                  "pl": "30°",
+                  "ru": "30°",
+                  "ko": "30°"
                 }
               },
               {
                 "id": "60",
                 "title": {
                   "en": "60°",
-                  "nl": "60°"
+                  "nl": "60°",
+                  "da": "60°",
+                  "de": "60°",
+                  "es": "60°",
+                  "fr": "60°",
+                  "it": "60°",
+                  "no": "60°",
+                  "sv": "60°",
+                  "pl": "60°",
+                  "ru": "60°",
+                  "ko": "60°"
                 }
               },
               {
                 "id": "90",
                 "title": {
                   "en": "90°",
-                  "nl": "90°"
+                  "nl": "90°",
+                  "da": "90°",
+                  "de": "90°",
+                  "es": "90°",
+                  "fr": "90°",
+                  "it": "90°",
+                  "no": "90°",
+                  "sv": "90°",
+                  "pl": "90°",
+                  "ru": "90°",
+                  "ko": "90°"
                 }
               },
               {
                 "id": "120",
                 "title": {
                   "en": "120°",
-                  "nl": "120°"
+                  "nl": "120°",
+                  "da": "120°",
+                  "de": "120°",
+                  "es": "120°",
+                  "fr": "120°",
+                  "it": "120°",
+                  "no": "120°",
+                  "sv": "120°",
+                  "pl": "120°",
+                  "ru": "120°",
+                  "ko": "120°"
                 }
               },
               {
                 "id": "140",
                 "title": {
                   "en": "140°",
-                  "nl": "140°"
+                  "nl": "140°",
+                  "da": "140°",
+                  "de": "140°",
+                  "es": "140°",
+                  "fr": "140°",
+                  "it": "140°",
+                  "no": "140°",
+                  "sv": "140°",
+                  "pl": "140°",
+                  "ru": "140°",
+                  "ko": "140°"
                 }
               },
               {
                 "id": "150",
                 "title": {
                   "en": "150°",
-                  "nl": "150°"
+                  "nl": "150°",
+                  "da": "150°",
+                  "de": "150°",
+                  "es": "150°",
+                  "fr": "150°",
+                  "it": "150°",
+                  "no": "150°",
+                  "sv": "150°",
+                  "pl": "150°",
+                  "ru": "150°",
+                  "ko": "150°"
                 }
               }
             ]
@@ -9239,30 +9479,30 @@
         "title": {
           "en": "Set Fanspeed",
           "nl": "Stel ventilator in",
-          "da": "Sæt ventilatorhastighed",
-          "de": "Lüftergeschwindigkeit einstellen",
-          "es": "Establecer velocidad del ventilador",
-          "fr": "Définir la vitesse du ventilateur",
-          "it": "Imposta la velocità della ventola",
-          "no": "Still inn viftehastighet",
-          "sv": "Ställ in fläkthastighet",
+          "da": "Indstil blæserhastigheden",
+          "de": "Stelle die Lüftergeschwindigkeit ein",
+          "es": "Configurar la velocidad del ventilador",
+          "fr": "Ajuster la vitesse du ventilateur",
+          "it": "Regola la velocità della ventola",
+          "no": "Juster viftehastigheten",
+          "sv": "Justera fläkthastigheten",
           "pl": "Ustaw prędkość wentylatora",
-          "ru": "Установить скорость вентилятора",
-          "ko": "팬 속도 설정"
+          "ru": "Настройка скорости вентилятора",
+          "ko": "팬 속도 조정"
         },
         "titleFormatted": {
           "en": "Set Fanspeed [[fanspeed]]",
           "nl": "Stel ventilator in op [[fanspeed]]",
-          "da": "Sæt ventilatorhastighed [[fanspeed]]",
-          "de": "Lüftergeschwindigkeit einstellen [[fanspeed]]",
-          "es": "Establecer velocidad del ventilador [[fanspeed]]",
-          "fr": "Définir la vitesse du ventilateur [[fanspeed]]",
-          "it": "Imposta la velocità della ventola [[fanspeed]]",
-          "no": "Still inn viftehastighet [[fanspeed]]",
-          "sv": "Ställ in fläkthastighet [[fanspeed]]",
+          "da": "Indstil blæserhastigheden [[fanspeed]]",
+          "de": "Stelle die Lüftergeschwindigkeit ein [[fanspeed]]",
+          "es": "Configurar la velocidad del ventilador [[fanspeed]]",
+          "fr": "Ajuster la vitesse du ventilateur [[fanspeed]]",
+          "it": "Regola la velocità della ventola [[fanspeed]]",
+          "no": "Juster viftehastigheten [[fanspeed]]",
+          "sv": "Justera fläkthastigheten [[fanspeed]]",
           "pl": "Ustaw prędkość wentylatora [[fanspeed]]",
-          "ru": "Установить скорость вентилятора [[fanspeed]]",
-          "ko": "팬 속도 설정 [[fanspeed]]"
+          "ru": "Настройка скорости вентилятора [[fanspeed]]",
+          "ko": "팬 속도 조정 [[fanspeed]]"
         },
         "args": [
           {
@@ -9270,15 +9510,15 @@
             "title": {
               "en": "Fanspeed",
               "nl": "Fan snelheid",
-              "da": "Ventilatorhastighed",
+              "da": "Blæserhastighed",
               "de": "Lüftergeschwindigkeit",
-              "es": "Velocidad del ventilador",
+              "es": "Velocidad del soplador",
               "fr": "Vitesse du ventilateur",
-              "it": "Velocità della ventola",
-              "no": "Viftehastighet",
-              "sv": "Fläkthastighet",
-              "pl": "Prędkość wentylatora",
-              "ru": "Скорость вентилятора",
+              "it": "Velocità del ventilatore",
+              "no": "Blæserhastighet",
+              "sv": "Fläkt hastighet",
+              "pl": "Prędkość wentylacji",
+              "ru": "Скорость вентиляции",
               "ko": "팬 속도"
             },
             "type": "dropdown",
@@ -9305,8 +9545,8 @@
                 "title": {
                   "en": "Silent",
                   "nl": "Stil",
-                  "da": "Stille",
-                  "de": "Leise",
+                  "da": "Lydløs",
+                  "de": "Geräuschlos",
                   "es": "Silencioso",
                   "fr": "Silencieux",
                   "it": "Silenzioso",
@@ -9322,10 +9562,10 @@
                 "title": {
                   "en": "Basic",
                   "nl": "Basis",
-                  "da": "Basal",
-                  "de": "Grundlegend",
-                  "es": "Básico",
-                  "fr": "Basique",
+                  "da": "Basis",
+                  "de": "Basis",
+                  "es": "Base",
+                  "fr": "Base",
                   "it": "Base",
                   "no": "Grunnleggende",
                   "sv": "Grundläggande",
@@ -9357,14 +9597,14 @@
                   "en": "Full speed",
                   "nl": "Volle snelheid",
                   "da": "Fuld hastighed",
-                  "de": "Volle Geschwindigkeit",
+                  "de": "Vollgas",
                   "es": "Máxima velocidad",
                   "fr": "Vitesse maximale",
                   "it": "Velocità massima",
-                  "no": "Full hastighet",
-                  "sv": "Full hastighet",
-                  "pl": "Pełna prędkość",
-                  "ru": "Полная скорость",
+                  "no": "Fullt hastighet",
+                  "sv": "Hastighet",
+                  "pl": "Maksymalna prędkość",
+                  "ru": "Максимальная скорость",
                   "ko": "최고 속도"
                 }
               }
@@ -9377,14 +9617,14 @@
               "en": "Select Vacuum",
               "nl": "Selecteer stofzuiger",
               "da": "Vælg støvsuger",
-              "de": "Staubsauger auswählen",
-              "es": "Selecciona aspiradora",
-              "fr": "Sélectionnez l'aspirateur",
-              "it": "Seleziona l'aspirapolvere",
+              "de": "Wählen Sie den Staubsauger aus",
+              "es": "Seleccionar aspiradora",
+              "fr": "Choisissez le modèle d'aspirateur",
+              "it": "Seleziona il modello di aspirapolvere",
               "no": "Velg støvsuger",
               "sv": "Välj dammsugare",
               "pl": "Wybierz odkurzacz",
-              "ru": "Выбрать пылесос",
+              "ru": "Выберите пылесос",
               "ko": "청소기 선택"
             },
             "filter": "driver_id=vacuum_roidmi_vacuum_miot"
@@ -10350,7 +10590,11 @@
             "sv": "Användarinställningar",
             "pl": "Ustawienia użytkownika",
             "ru": "Настройки пользователя",
-            "ko": "사용자 설정"
+            "ko": "사용자 설정",
+            "pt": "Configurações do usuário",
+            "fi": "Käyttäjäasetukset",
+            "tr": "Kullanıcı Ayarları",
+            "zh": "用户设置"
           },
           "children": [
             {
@@ -10464,7 +10708,11 @@
             "sv": "Enhetsinställningar",
             "pl": "Ustawienia urządzenia",
             "ru": "Настройки устройства",
-            "ko": "장치 설정"
+            "ko": "장치 설정",
+            "pt": "Configurações do dispositivo",
+            "fi": "Laitteen asetukset",
+            "tr": "Aygıt Ayarları",
+            "zh": "设备设置"
           },
           "children": [
             {
@@ -10641,7 +10889,7 @@
               "label": {
                 "en": "Buzzer",
                 "nl": "Buzzer",
-                "da": "Summer",
+                "da": "Sommer",
                 "de": "Summton",
                 "es": "Zumbador",
                 "fr": "Buzzer",
@@ -10660,12 +10908,12 @@
               "label": {
                 "en": "Child Lock",
                 "nl": "Kinderslot",
-                "da": "Børnesikring",
+                "da": "Børnelås",
                 "de": "Kindersicherung",
                 "es": "Bloqueo infantil",
                 "fr": "Verrouillage enfant",
                 "it": "Blocco bambini",
-                "no": "Barnesikring",
+                "no": "Barnelås",
                 "sv": "Barnlås",
                 "pl": "Blokada rodzicielska",
                 "ru": "Родительский контроль",
@@ -10678,12 +10926,12 @@
               "label": {
                 "en": "Filter life",
                 "nl": "Filter duur",
-                "da": "Filter levetid",
+                "da": "Filtreringens liv",
                 "de": "Filterlebensdauer",
                 "es": "Vida del filtro",
                 "fr": "Durée de vie du filtre",
                 "it": "Durata del filtro",
-                "no": "Filterlevetid",
+                "no": "Filterliv",
                 "sv": "Filterlivslängd",
                 "pl": "Żywotność filtra",
                 "ru": "Срок службы фильтра",
@@ -11199,7 +11447,10 @@
             "sv": "Enhetsinställningar",
             "pl": "Ustawienia urządzenia",
             "ru": "Настройки устройства",
-            "ko": "장치 설정"
+            "ko": "장치 설정",
+            "ja": "デバイス設定",
+            "zh": "设备设置",
+            "pt": "Configurações do dispositivo"
           },
           "children": [
             {
@@ -11925,7 +12176,9 @@
         "sv": "Avancerad Mi Air Purifier MIoT (WiFi)",
         "pl": "Zaawansowany Mi Air Purifier MIoT (WiFi)",
         "ru": "Продвинутый воздухоочиститель Mi MIoT (WiFi)",
-        "ko": "고급 Mi Air Purifier MIoT (WiFi)"
+        "ko": "고급 Mi Air Purifier MIoT (WiFi)",
+        "ja": "高度なMiエア purificador MIoT（WiFi）",
+        "zh": "高级Mi空气净化器MIoT（WiFi）"
       },
       "images": {
         "large": "drivers/airpurifier_zhimi_advanced_miot/assets/images/large.jpg",
@@ -11951,7 +12204,9 @@
             "sv": "Aktivera joner",
             "pl": "Włącz jony",
             "ru": "Включить ионы",
-            "ko": "이온 활성화"
+            "ko": "이온 활성화",
+            "ja": "イオンを有効にする",
+            "zh": "启用离子"
           }
         }
       },
@@ -12391,7 +12646,11 @@
             "sv": "Enhetsinställningar",
             "pl": "Ustawienia urządzenia",
             "ru": "Настройки устройства",
-            "ko": "장치 설정"
+            "ko": "장치 설정",
+            "pt": "Configurações do dispositivo",
+            "fi": "Laitteen asetukset",
+            "ja": "デバイス設定",
+            "zh": "设备设置"
           },
           "children": [
             {
@@ -12523,7 +12782,10 @@
             "sv": "Enhetsinställningar",
             "pl": "Ustawienia urządzenia",
             "ru": "Настройки устройства",
-            "ko": "장치 설정"
+            "ko": "장치 설정",
+            "ja": "デバイス設定",
+            "zh": "设备设置",
+            "pt": "Configurações do dispositivo"
           },
           "children": [
             {
@@ -13993,7 +14255,7 @@
               "hint": {
                 "en": "Here you can specify after what time the alarm signal from the motion sensor will be stopped, if a motion is detected it is not detected. Usually this is for 60 seconds, you can set from 5 to 86400 seconds. \n \n Attention! Values less than 60 seconds are relevant only for independently modified sensors that have the ability to transmit information about the movement with a frequency of 5 seconds.",
                 "nl": "Hier kunt u opgeven hoe laat het alarmsignaal van de bewegingssensor wordt gestopt, als een beweging wordt gedetecteerd, wordt deze niet gedetecteerd. Gewoonlijk is dit 60 seconden, u kunt 5 tot 86400 seconden instellen.  n  n Let op! Waarden minder dan 60 seconden zijn alleen relevant voor onafhankelijk aangepaste sensoren die de mogelijkheid hebben om informatie over de beweging te verzenden met een frequentie van 5 seconden.",
-                "da": "Her kan du specificere, hvornår alarmsignalet fra bevægelsessensoren vil blive stoppet, hvis en bevægelse detekteres, men ikke bliver detekteret. Normalt er dette 60 sekunder, du kan indstille fra 5 til 86400 sekunder. \n \n Opmærksomhed! Værdier mindre end 60 sekunder er kun relevante for uafhængigt modificerede sensorer, der har mulighed for at sende information om bevægelsen med en frekvens på 5 sekunder.",
+                "da": "Her kan du specificere, hvornår alarmsignalet fra bevægelsessensorer vil blive stoppet, hvis en bevægelse detekteres, men ikke bliver detekteret. Normalt er dette 60 sekunder, du kan indstille fra 5 til 86400 sekunder. \n \n Opmærksomhed! Værdier mindre end 60 sekunder er kun relevante for uafhængigt modificerede sensorer, der har mulighed for at sende information om bevægelsen med en frekvens på 5 sekunder.",
                 "de": "Hier können Sie angeben, nach welcher Zeit das Alarmsignal des Bewegungssensors gestoppt wird, wenn eine Bewegung erkannt wird, sie jedoch nicht erkannt wird. Normalerweise liegt dieser Wert bei 60 Sekunden, Sie können von 5 bis 86400 Sekunden einstellen. \n \n Achtung! Werte unter 60 Sekunden sind nur für unabhängig modifizierte Sensoren relevant, die die Fähigkeit haben, Informationen über die Bewegung mit einer Frequenz von 5 Sekunden zu übertragen.",
                 "es": "Aquí puedes especificar después de cuánto tiempo se detendrá la señal de alarma del sensor de movimiento, si se detecta un movimiento no se detecta. Normalmente esto es de 60 segundos, puedes establecer desde 5 hasta 86400 segundos. \n \n ¡Atención! Los valores inferiores a 60 segundos solo son relevantes para sensores modificados independientemente que tienen la capacidad de transmitir información sobre el movimiento con una frecuencia de 5 segundos.",
                 "fr": "Ici, vous pouvez spécifier après combien de temps le signal d'alarme du capteur de mouvement sera arrêté, si un mouvement est détecté, il n'est pas détecté. En général, cela dure 60 secondes, vous pouvez régler de 5 à 86400 secondes. \n \n Attention ! Les valeurs inférieures à 60 secondes ne sont pertinentes que pour les capteurs modifiés indépendamment qui ont la capacité de transmettre des informations sur le mouvement avec une fréquence de 5 secondes.",
@@ -14246,7 +14508,17 @@
           "type": "group",
           "label": {
             "en": "Device Settings",
-            "nl": "Apparaat instellingen"
+            "nl": "Apparaat instellingen",
+            "da": "Enhedsindstillinger",
+            "de": "Geräteeinstellungen",
+            "es": "Configuración del dispositivo",
+            "fr": "Paramètres de l'appareil",
+            "it": "Impostazioni dispositivo",
+            "no": "Enhetsinnstillinger",
+            "sv": "Enhetsinställningar",
+            "pl": "Ustawienia urządzenia",
+            "ru": "Настройки устройства",
+            "ko": "장치 설정"
           },
           "children": [
             {
@@ -14470,16 +14742,16 @@
       "name": {
         "en": "Aqara Wireless Wall Single Switch (Gateway)",
         "nl": "Aqara Wireless Wall Single Switch (Gateway)",
-        "da": "Aqara Wireless Wall Single Switch (Gateway)",
-        "de": "Aqara Wireless Wall Single Switch (Gateway)",
-        "es": "Aqara Wireless Wall Single Switch (Gateway)",
-        "fr": "Aqara Wireless Wall Single Switch (Gateway)",
-        "it": "Aqara Wireless Wall Single Switch (Gateway)",
-        "no": "Aqara Wireless Wall Single Switch (Gateway)",
-        "sv": "Aqara Wireless Wall Single Switch (Gateway)",
-        "pl": "Aqara Wireless Wall Single Switch (Gateway)",
-        "ru": "Aqara Wireless Wall Single Switch (Gateway)",
-        "ko": "Aqara Wireless Wall Single Switch (Gateway)"
+        "da": "Aqara trådløs væg enkeltkontakt (gateway)",
+        "de": "Aqara kabelloser Wandschalter (Gateway)",
+        "es": "Interruptor de pared inalámbrico Aqara (Gateway)",
+        "fr": "Interrupteur mural sans fil Aqara (Gateway)",
+        "it": "Interruttore singolo a parete wireless Aqara (Gateway)",
+        "no": "Aqara trådløs vegg enkel bryter (gateway)",
+        "sv": "Aqara trådlös väggbrytare (gateway)",
+        "pl": "Aqara bezprzewodowy przełącznik ścienny (bramka)",
+        "ru": "Беспроводной настенный однокнопочный выключатель Aqara (шлюз)",
+        "ko": "아카라 무선 벽 단일 스위치 (게이트웨이)"
       },
       "images": {
         "large": "/drivers/aqara_86sw1_switch/assets/images/large.jpg",
@@ -14643,7 +14915,10 @@
             "sv": "Enhetsinställningar",
             "pl": "Ustawienia urządzenia",
             "ru": "Настройки устройства",
-            "ko": "장치 설정"
+            "ko": "장치 설정",
+            "pt": "Configurações do Dispositivo",
+            "zh": "设备设置",
+            "ja": "デバイス設定"
           },
           "children": [
             {
@@ -15010,7 +15285,10 @@
             "sv": "Enhetsinställningar",
             "pl": "Ustawienia urządzenia",
             "ru": "Настройки устройства",
-            "ko": "장치 설정"
+            "ko": "장치 설정",
+            "pt": "Configurações do dispositivo",
+            "ja": "デバイス設定",
+            "zh": "设备设置"
           },
           "children": [
             {
@@ -15990,7 +16268,9 @@
             "sv": "Användarinställningar",
             "pl": "Ustawienia użytkownika",
             "ru": "Настройки пользователя",
-            "ko": "사용자 설정"
+            "ko": "사용자 설정",
+            "pt": "Configurações do usuário",
+            "zh": "用户设置"
           },
           "children": [
             {
@@ -16009,7 +16289,9 @@
                 "sv": "LED",
                 "pl": "LED",
                 "ru": "Светодиод",
-                "ko": "LED"
+                "ko": "LED",
+                "pt": "LED",
+                "zh": "LED"
               }
             },
             {
@@ -16028,7 +16310,9 @@
                 "sv": "Summer",
                 "pl": "Brzęczyk",
                 "ru": "Зуммер",
-                "ko": "버저"
+                "ko": "버저",
+                "pt": "Buzzer",
+                "zh": "蜂鸣器"
               }
             },
             {
@@ -16047,7 +16331,9 @@
                 "sv": "Barnlås",
                 "pl": "Blokada dziecięca",
                 "ru": "Блокировка от детей",
-                "ko": "자녀 보호"
+                "ko": "자녀 보호",
+                "pt": "Bloqueio infantil",
+                "zh": "儿童锁"
               }
             }
           ]
@@ -16066,7 +16352,9 @@
             "sv": "Enhetsinställningar",
             "pl": "Ustawienia urządzenia",
             "ru": "Настройки устройства",
-            "ko": "장치 설정"
+            "ko": "장치 설정",
+            "pt": "Configurações do dispositivo",
+            "zh": "设备设置"
           },
           "children": [
             {
@@ -16793,14 +17081,14 @@
         "nl": "Smart Space/Fan Heater MIoT (WiFi)",
         "da": "Smart Space/Fan Heater MIoT (WiFi)",
         "de": "Smart Space/Fan Heater MIoT (WiFi)",
-        "es": "Smart Space/Fan Heater MIoT (WiFi)",
-        "fr": "Smart Space/Fan Heater MIoT (WiFi)",
-        "it": "Smart Space/Fan Heater MIoT (WiFi)",
-        "no": "Smart Space/Fan Heater MIoT (WiFi)",
-        "sv": "Smart Space/Fan Heater MIoT (WiFi)",
-        "pl": "Smart Space/Fan Heater MIoT (WiFi)",
-        "ru": "Smart Space/Fan Heater MIoT (WiFi)",
-        "ko": "Smart Space/Fan Heater MIoT (WiFi)"
+        "es": "Espacio inteligente / Calefactor de ventilador MIoT (WiFi)",
+        "fr": "Chauffage de ventilateur/espace intelligent MIoT (WiFi)",
+        "it": "Riscaldatore a ventola / Spazio Intelligente MIoT (WiFi)",
+        "no": "Smart Space/Viftevarmer MIoT (WiFi)",
+        "sv": "Smart Space/Värmefläkt MIoT (WiFi)",
+        "pl": "Inteligentna przestrzeń / Grzejnik wentylator MIoT (WiFi)",
+        "ru": "Умное пространство / Обогреватель-вентилятор MIoT (WiFi)",
+        "ko": "스마트 공간 / 팬 히터 MIoT (WiFi)"
       },
       "images": {
         "large": "drivers/heater_zhimi_heater_miot/assets/images/large.jpg",
@@ -16862,7 +17150,7 @@
                 "es": "Zumbador",
                 "fr": "Sonnerie",
                 "it": "Cicalino",
-                "no": "Summer",
+                "no": "Sommer",
                 "sv": "Summer",
                 "pl": "Brzęczyk",
                 "ru": "Зуммер",
@@ -16876,15 +17164,15 @@
               "label": {
                 "en": "Child Lock",
                 "nl": "Kinderslot",
-                "da": "Børnesikring",
+                "da": "Børnelås",
                 "de": "Kindersicherung",
                 "es": "Bloqueo infantil",
                 "fr": "Sécurité enfant",
                 "it": "Blocco bambini",
-                "no": "Barnesikring",
+                "no": "Barnelås",
                 "sv": "Barnlås",
-                "pl": "Blokada rodzicielska",
-                "ru": "Блокировка от детей",
+                "pl": "Blokada dzieci",
+                "ru": "Детская блокировка",
                 "ko": "어린이 잠금"
               }
             }
@@ -17212,14 +17500,14 @@
         "nl": "Mi Smart Antibacterial Humidifier MIoT (WiFi)",
         "da": "Mi Smart Antibacterial Humidifier MIoT (WiFi)",
         "de": "Mi Smart Antibacterial Humidifier MIoT (WiFi)",
-        "es": "Mi Smart Antibacterial Humidifier MIoT (WiFi)",
-        "fr": "Mi Smart Antibacterial Humidifier MIoT (WiFi)",
-        "it": "Mi Smart Antibacterial Humidifier MIoT (WiFi)",
-        "no": "Mi Smart Antibacterial Humidifier MIoT (WiFi)",
-        "sv": "Mi Smart Antibacterial Humidifier MIoT (WiFi)",
-        "pl": "Mi Smart Antibacterial Humidifier MIoT (WiFi)",
-        "ru": "Mi Smart Antibacterial Humidifier MIoT (WiFi)",
-        "ko": "Mi Smart Antibacterial Humidifier MIoT (WiFi)"
+        "es": "Mi Humidificador Antibacteriano Inteligente MIoT (WiFi)",
+        "fr": "Humidificateur Antibactérien Intelligent MIoT (WiFi)",
+        "it": "Umidificatore Antibatterico Intelligente MIoT (WiFi)",
+        "no": "Mi Smart Antibakterielle Luftfukter MIoT (WiFi)",
+        "sv": "Mi Smart Antibakteriell Luftrenare MIoT (WiFi)",
+        "pl": "Inteligentny Nawilżacz Antybakteryjny MIoT (WiFi)",
+        "ru": "Умный Антибактериальный Увлажнитель MIoT (WiFi)",
+        "ko": "Mi 스마트 항균 가습기 MIoT (WiFi)"
       },
       "images": {
         "large": "drivers/humidifier_deerma_humidifier_miot/assets/images/large.jpg",
@@ -17285,8 +17573,8 @@
               "label": {
                 "en": "Buzzer",
                 "nl": "Buzzer",
-                "da": "Summer",
-                "de": "Summer",
+                "da": "Summerton",
+                "de": "Sommer",
                 "es": "Zumbador",
                 "fr": "Vibreur",
                 "it": "Cicalino",
@@ -17646,7 +17934,10 @@
             "sv": "Användarinställningar",
             "pl": "Ustawienia użytkownika",
             "ru": "Настройки пользователя",
-            "ko": "사용자 설정"
+            "ko": "사용자 설정",
+            "pt": "Configurações do usuário",
+            "ja": "ユーザー設定",
+            "zh": "用户设置"
           },
           "children": [
             {
@@ -17665,7 +17956,10 @@
                 "sv": "LED",
                 "pl": "LED",
                 "ru": "Светодиод",
-                "ko": "LED"
+                "ko": "LED",
+                "pt": "LED",
+                "ja": "LED",
+                "zh": "LED"
               }
             },
             {
@@ -17684,7 +17978,10 @@
                 "sv": "Summer",
                 "pl": "Brzęczyk",
                 "ru": "Зуммер",
-                "ko": "버저"
+                "ko": "버저",
+                "pt": "Buzzer",
+                "ja": "ブザー",
+                "zh": "蜂鸣器"
               }
             },
             {
@@ -17703,7 +18000,10 @@
                 "sv": "Barnlås",
                 "pl": "Blokada dla dzieci",
                 "ru": "Блокировка от детей",
-                "ko": "잠금 기능"
+                "ko": "잠금 기능",
+                "pt": "Bloqueio para crianças",
+                "ja": "チャイルドロック",
+                "zh": "儿童锁"
               }
             }
           ]
@@ -17722,7 +18022,10 @@
             "sv": "Enhetsdata",
             "pl": "Dane urządzenia",
             "ru": "Данные устройства",
-            "ko": "디바이스 데이터"
+            "ko": "디바이스 데이터",
+            "pt": "Dados do dispositivo",
+            "ja": "デバイスデータ",
+            "zh": "设备数据"
           },
           "children": [
             {
@@ -17740,7 +18043,10 @@
                 "sv": "Fel",
                 "pl": "Błąd",
                 "ru": "Ошибка",
-                "ko": "오류"
+                "ko": "오류",
+                "pt": "Erro",
+                "ja": "エラー",
+                "zh": "错误"
               },
               "value": "No error"
             }
@@ -17760,7 +18066,10 @@
             "sv": "Enhetsinställningar",
             "pl": "Ustawienia urządzenia",
             "ru": "Настройки устройства",
-            "ko": "디바이스 설정"
+            "ko": "디바이스 설정",
+            "pt": "Configurações do dispositivo",
+            "ja": "デバイス設定",
+            "zh": "设备设置"
           },
           "children": [
             {
@@ -17852,7 +18161,6 @@
       ],
       "name": {
         "en": "Smartmi Humidifier v1/v2 (WiFi)",
-        "nl": "Smartmi Humidifier v1/v2 (WiFi)",
         "da": "Smartmi Luftfugter v1/v2 (WiFi)",
         "de": "Smartmi Luftbefeuchter v1/v2 (WLAN)",
         "es": "Humidificador Smartmi v1/v2 (WiFi)",
@@ -18431,7 +18739,17 @@
           "type": "group",
           "label": {
             "en": "Duration of the lock alarm",
-            "nl": "Duur van het slot alarm"
+            "nl": "Duur van het slot alarm",
+            "da": "Varighed af alarmsystemet",
+            "de": "Dauer des Schlossalarmes",
+            "es": "Duración de la alarma de la cerradura",
+            "fr": "Durée de l'alarme de verrouillage",
+            "it": "Durata dell'allarme della serratura",
+            "no": "Varighet på låsalarm",
+            "sv": "Varaktighet av låsalarm",
+            "pl": "Czas trwania alarmu blokady",
+            "ru": "Длительность тревоги блокировки",
+            "ko": "잠금 경고의 지속 시간"
           },
           "children": [
             {
@@ -18439,7 +18757,17 @@
               "type": "number",
               "label": {
                 "en": "Disable after",
-                "nl": "Uitschakelen na"
+                "nl": "Uitschakelen na",
+                "da": "Deaktiver efter",
+                "de": "Deaktivieren nach",
+                "es": "Desactivar después",
+                "fr": "Désactiver après",
+                "it": "Disabilita dopo",
+                "no": "Deaktiver etter",
+                "sv": "Inaktivera efter",
+                "pl": "Wyłącz po",
+                "ru": "Выключить через",
+                "ko": "비활성화 후"
               },
               "value": 60,
               "attr": {
@@ -18453,7 +18781,17 @@
           "type": "group",
           "label": {
             "en": "Device Settings",
-            "nl": "Apparaat instellingen"
+            "nl": "Apparaat instellingen",
+            "da": "Enhedsindstillinger",
+            "de": "Geräteeinstellungen",
+            "es": "Configuraciones del dispositivo",
+            "fr": "Paramètres de l'appareil",
+            "it": "Impostazioni dispositivo",
+            "no": "Enhetsinnstillinger",
+            "sv": "Enhetsinställningar",
+            "pl": "Ustawienia urządzenia",
+            "ru": "Настройки устройства",
+            "ko": "디바이스 설정"
           },
           "children": [
             {
@@ -18518,14 +18856,34 @@
         {
           "type": "group",
           "label": {
-            "en": "Device information"
+            "en": "Device information",
+            "da": "Enhedsoplysninger",
+            "de": "Geräteinformationen",
+            "es": "Información sobre el dispositivo",
+            "fr": "Informations sur l'appareil",
+            "it": "Informazioni sul dispositivo",
+            "no": "Enhetsinformasjon",
+            "sv": "Enhetsinformation",
+            "pl": "Informacje o urządzeniu",
+            "ru": "Информация об устройстве",
+            "ko": "장치 정보"
           },
           "children": [
             {
               "id": "deviceSid",
               "type": "label",
               "label": {
-                "en": "Device sid"
+                "en": "Device sid",
+                "da": "Enhedsid",
+                "de": "Geräte-SID",
+                "es": "Sid del dispositivo",
+                "fr": "SID de l'appareil",
+                "it": "SID del dispositivo",
+                "no": "Enhetsside",
+                "sv": "Enhets-SID",
+                "pl": "SID urządzenia",
+                "ru": "SID устройства",
+                "ko": "장치 SID"
               },
               "value": "0123456789abcd"
             },
@@ -18533,7 +18891,17 @@
               "id": "deviceFromGatewaySid",
               "type": "label",
               "label": {
-                "en": "Gateway sid"
+                "en": "Gateway sid",
+                "da": "Gateway sid",
+                "de": "Gateway SID",
+                "es": "Sid de la puerta de enlace",
+                "fr": "SID de la passerelle",
+                "it": "SID del gateway",
+                "no": "Gateway sid",
+                "sv": "Gateway SID",
+                "pl": "SID bramy",
+                "ru": "SID шлюза",
+                "ko": "게이트웨이 SID"
               },
               "value": "0123456789ab"
             },
@@ -18541,7 +18909,17 @@
               "id": "deviceModelName",
               "type": "label",
               "label": {
-                "en": "Device model"
+                "en": "Device model",
+                "da": "Enhedsmodel",
+                "de": "Gerätemodell",
+                "es": "Modelo del dispositivo",
+                "fr": "Modèle de l'appareil",
+                "it": "Modello del dispositivo",
+                "no": "Enhetsmodell",
+                "sv": "Enhetsmodell",
+                "pl": "Model urządzenia",
+                "ru": "Модель устройства",
+                "ko": "장치 모델"
               },
               "value": "lumi.device"
             },
@@ -18549,7 +18927,17 @@
               "id": "deviceModelCodeName",
               "type": "label",
               "label": {
-                "en": "Device model code"
+                "en": "Device model code",
+                "da": "Enhedsmodelkode",
+                "de": "Gerätemodellcode",
+                "es": "Código del modelo del dispositivo",
+                "fr": "Code du modèle de l'appareil",
+                "it": "Codice del modello del dispositivo",
+                "no": "Enhetsmodells kode",
+                "sv": "Enhetsmodellkod",
+                "pl": "Kod modelu urządzenia",
+                "ru": "Код модели устройства",
+                "ko": "장치 모델 코드"
               },
               "value": "AABBCC01LM"
             }
@@ -18558,14 +18946,34 @@
         {
           "type": "group",
           "label": {
-            "en": "Lock users"
+            "en": "Lock users",
+            "da": "Låsebrugere",
+            "de": "Schlossbenutzer",
+            "es": "Usuarios de la cerradura",
+            "fr": "Utilisateurs de verrou",
+            "it": "Utenti della serratura",
+            "no": "Låsebrukere",
+            "sv": "Låsanvändare",
+            "pl": "Użytkownicy zamka",
+            "ru": "Пользователи замка",
+            "ko": "잠금 사용자"
           },
           "children": [
             {
               "id": "lock0UserName",
               "type": "text",
               "label": {
-                "en": "1 - User name"
+                "en": "1 - User name",
+                "da": "1 - Brugernavn",
+                "de": "1 - Benutzername",
+                "es": "1 - Nombre de usuario",
+                "fr": "1 - Nom d'utilisateur",
+                "it": "1 - Nome utente",
+                "no": "1 - Brukernavn",
+                "sv": "1 - Användarnamn",
+                "pl": "1 - Nazwa użytkownika",
+                "ru": "1 - Имя пользователя",
+                "ko": "1 - 사용자 이름"
               },
               "value": ""
             },
@@ -18573,7 +18981,17 @@
               "id": "user0FingerID",
               "type": "text",
               "label": {
-                "en": "Finger ID"
+                "en": "Finger ID",
+                "da": "Finger ID",
+                "de": "Finger-ID",
+                "es": "ID de dedo",
+                "fr": "ID d'empreinte",
+                "it": "ID del dito",
+                "no": "Finger-ID",
+                "sv": "Finger-ID",
+                "pl": "ID palca",
+                "ru": "ID пальца",
+                "ko": "지문 ID"
               },
               "value": ""
             },
@@ -18581,7 +18999,17 @@
               "id": "user0CodeID",
               "type": "text",
               "label": {
-                "en": "Code ID"
+                "en": "Code ID",
+                "da": "Kode ID",
+                "de": "Code-ID",
+                "es": "ID de código",
+                "fr": "ID de code",
+                "it": "ID del codice",
+                "no": "Kode-ID",
+                "sv": "Kod-ID",
+                "pl": "ID kodu",
+                "ru": "ID кода",
+                "ko": "코드 ID"
               },
               "value": ""
             },
@@ -18589,7 +19017,17 @@
               "id": "user0CardID",
               "type": "text",
               "label": {
-                "en": "Card ID"
+                "en": "Card ID",
+                "da": "Kort ID",
+                "de": "Karten-ID",
+                "es": "ID de tarjeta",
+                "fr": "ID de carte",
+                "it": "ID della carta",
+                "no": "Kort-ID",
+                "sv": "Kort-ID",
+                "pl": "ID karty",
+                "ru": "ID карты",
+                "ko": "카드 ID"
               },
               "value": ""
             },
@@ -18597,7 +19035,17 @@
               "id": "lock1UserName",
               "type": "text",
               "label": {
-                "en": "2 - User name"
+                "en": "2 - User name",
+                "da": "2 - Brugernavn",
+                "de": "2 - Benutzername",
+                "es": "2 - Nombre de usuario",
+                "fr": "2 - Nom d'utilisateur",
+                "it": "2 - Nome utente",
+                "no": "2 - Brukernavn",
+                "sv": "2 - Användarnamn",
+                "pl": "2 - Nazwa użytkownika",
+                "ru": "2 - Имя пользователя",
+                "ko": "2 - 사용자 이름"
               },
               "value": ""
             },
@@ -18605,7 +19053,17 @@
               "id": "user1FingerID",
               "type": "text",
               "label": {
-                "en": "Finger ID"
+                "en": "Finger ID",
+                "da": "Finger ID",
+                "de": "Finger-ID",
+                "es": "ID de dedo",
+                "fr": "ID d'empreinte",
+                "it": "ID del dito",
+                "no": "Finger-ID",
+                "sv": "Finger-ID",
+                "pl": "ID palca",
+                "ru": "ID пальца",
+                "ko": "지문 ID"
               },
               "value": ""
             },
@@ -18613,7 +19071,17 @@
               "id": "user1CodeID",
               "type": "text",
               "label": {
-                "en": "Code ID"
+                "en": "Code ID",
+                "da": "Kode ID",
+                "de": "Code-ID",
+                "es": "ID de código",
+                "fr": "ID de code",
+                "it": "ID del codice",
+                "no": "Kode-ID",
+                "sv": "Kod-ID",
+                "pl": "ID kodu",
+                "ru": "ID кода",
+                "ko": "코드 ID"
               },
               "value": ""
             },
@@ -18621,7 +19089,17 @@
               "id": "user1CardID",
               "type": "text",
               "label": {
-                "en": "Card ID"
+                "en": "Card ID",
+                "da": "Kort ID",
+                "de": "Karten-ID",
+                "es": "ID de tarjeta",
+                "fr": "ID de carte",
+                "it": "ID della carta",
+                "no": "Kort-ID",
+                "sv": "Kort-ID",
+                "pl": "ID karty",
+                "ru": "ID карты",
+                "ko": "카드 ID"
               },
               "value": ""
             },
@@ -18629,7 +19107,17 @@
               "id": "lock2UserName",
               "type": "text",
               "label": {
-                "en": "3 - User name"
+                "en": "3 - User name",
+                "da": "3 - Brugernavn",
+                "de": "3 - Benutzername",
+                "es": "3 - Nombre de usuario",
+                "fr": "3 - Nom d'utilisateur",
+                "it": "3 - Nome utente",
+                "no": "3 - Brukernavn",
+                "sv": "3 - Användarnamn",
+                "pl": "3 - Nazwa użytkownika",
+                "ru": "3 - Имя пользователя",
+                "ko": "3 - 사용자 이름"
               },
               "value": ""
             },
@@ -18637,7 +19125,17 @@
               "id": "user2FingerID",
               "type": "text",
               "label": {
-                "en": "Finger ID"
+                "en": "Finger ID",
+                "da": "Finger ID",
+                "de": "Finger-ID",
+                "es": "ID de dedo",
+                "fr": "ID d'empreinte",
+                "it": "ID del dito",
+                "no": "Finger-ID",
+                "sv": "Finger-ID",
+                "pl": "ID palca",
+                "ru": "ID пальца",
+                "ko": "지문 ID"
               },
               "value": ""
             },
@@ -18645,7 +19143,17 @@
               "id": "user2CodeID",
               "type": "text",
               "label": {
-                "en": "Code ID"
+                "en": "Code ID",
+                "da": "Kode ID",
+                "de": "Code-ID",
+                "es": "ID de código",
+                "fr": "ID de code",
+                "it": "ID del codice",
+                "no": "Kode-ID",
+                "sv": "Kod-ID",
+                "pl": "ID kodu",
+                "ru": "ID кода",
+                "ko": "코드 ID"
               },
               "value": ""
             },
@@ -18653,7 +19161,17 @@
               "id": "user2CardID",
               "type": "text",
               "label": {
-                "en": "Card ID"
+                "en": "Card ID",
+                "da": "Kort ID",
+                "de": "Karten-ID",
+                "es": "ID de tarjeta",
+                "fr": "ID de carte",
+                "it": "ID della carta",
+                "no": "Kort-ID",
+                "sv": "Kort-ID",
+                "pl": "ID karty",
+                "ru": "ID карты",
+                "ko": "카드 ID"
               },
               "value": ""
             },
@@ -18661,7 +19179,17 @@
               "id": "lock3UserName",
               "type": "text",
               "label": {
-                "en": "4 - User name"
+                "en": "4 - User name",
+                "da": "4 - Brugernavn",
+                "de": "4 - Benutzername",
+                "es": "4 - Nombre de usuario",
+                "fr": "4 - Nom d'utilisateur",
+                "it": "4 - Nome utente",
+                "no": "4 - Brukernavn",
+                "sv": "4 - Användarnamn",
+                "pl": "4 - Nazwa użytkownika",
+                "ru": "4 - Имя пользователя",
+                "ko": "4 - 사용자 이름"
               },
               "value": ""
             },
@@ -18669,7 +19197,17 @@
               "id": "user3FingerID",
               "type": "text",
               "label": {
-                "en": "Finger ID"
+                "en": "Finger ID",
+                "da": "Finger ID",
+                "de": "Finger-ID",
+                "es": "ID de dedo",
+                "fr": "ID d'empreinte",
+                "it": "ID del dito",
+                "no": "Finger-ID",
+                "sv": "Finger-ID",
+                "pl": "ID palca",
+                "ru": "ID пальца",
+                "ko": "지문 ID"
               },
               "value": ""
             },
@@ -18677,7 +19215,17 @@
               "id": "user3CodeID",
               "type": "text",
               "label": {
-                "en": "Code ID"
+                "en": "Code ID",
+                "da": "Kode ID",
+                "de": "Code-ID",
+                "es": "ID de código",
+                "fr": "ID de code",
+                "it": "ID del codice",
+                "no": "Kode-ID",
+                "sv": "Kod-ID",
+                "pl": "ID kodu",
+                "ru": "ID кода",
+                "ko": "코드 ID"
               },
               "value": ""
             },
@@ -18685,7 +19233,17 @@
               "id": "user3CardID",
               "type": "text",
               "label": {
-                "en": "Card ID"
+                "en": "Card ID",
+                "da": "Kort ID",
+                "de": "Karten-ID",
+                "es": "ID de tarjeta",
+                "fr": "ID de carte",
+                "it": "ID della carta",
+                "no": "Kort-ID",
+                "sv": "Kort-ID",
+                "pl": "ID karty",
+                "ru": "ID карты",
+                "ko": "카드 ID"
               },
               "value": ""
             },
@@ -18693,7 +19251,17 @@
               "id": "lock4UserName",
               "type": "text",
               "label": {
-                "en": "5 - User name"
+                "en": "5 - User name",
+                "da": "5 - Brugernavn",
+                "de": "5 - Benutzername",
+                "es": "5 - Nombre de usuario",
+                "fr": "5 - Nom d'utilisateur",
+                "it": "5 - Nome utente",
+                "no": "5 - Brukernavn",
+                "sv": "5 - Användarnamn",
+                "pl": "5 - Nazwa użytkownika",
+                "ru": "5 - Имя пользователя",
+                "ko": "5 - 사용자 이름"
               },
               "value": ""
             },
@@ -18701,7 +19269,17 @@
               "id": "user4FingerID",
               "type": "text",
               "label": {
-                "en": "Finger ID"
+                "en": "Finger ID",
+                "da": "Finger ID",
+                "de": "Finger-ID",
+                "es": "ID de dedo",
+                "fr": "ID d'empreinte",
+                "it": "ID del dito",
+                "no": "Finger-ID",
+                "sv": "Finger-ID",
+                "pl": "ID palca",
+                "ru": "ID пальца",
+                "ko": "지문 ID"
               },
               "value": ""
             },
@@ -18709,7 +19287,17 @@
               "id": "user4CodeID",
               "type": "text",
               "label": {
-                "en": "Code ID"
+                "en": "Code ID",
+                "da": "Kode ID",
+                "de": "Code-ID",
+                "es": "ID de código",
+                "fr": "ID de code",
+                "it": "ID del codice",
+                "no": "Kode-ID",
+                "sv": "Kod-ID",
+                "pl": "ID kodu",
+                "ru": "ID кода",
+                "ko": "코드 ID"
               },
               "value": ""
             },
@@ -18717,7 +19305,17 @@
               "id": "user4CardID",
               "type": "text",
               "label": {
-                "en": "Card ID"
+                "en": "Card ID",
+                "da": "Kort ID",
+                "de": "Karten-ID",
+                "es": "ID de tarjeta",
+                "fr": "ID de carte",
+                "it": "ID della carta",
+                "no": "Kort-ID",
+                "sv": "Kort-ID",
+                "pl": "ID karty",
+                "ru": "ID карты",
+                "ko": "카드 ID"
               },
               "value": ""
             },
@@ -18725,7 +19323,17 @@
               "id": "lock5UserName",
               "type": "text",
               "label": {
-                "en": "6 - User name"
+                "en": "6 - User name",
+                "da": "6 - Brugernavn",
+                "de": "6 - Benutzername",
+                "es": "6 - Nombre de usuario",
+                "fr": "6 - Nom d'utilisateur",
+                "it": "6 - Nome utente",
+                "no": "6 - Brukernavn",
+                "sv": "6 - Användarnamn",
+                "pl": "6 - Nazwa użytkownika",
+                "ru": "6 - Имя пользователя",
+                "ko": "6 - 사용자 이름"
               },
               "value": ""
             },
@@ -18733,7 +19341,17 @@
               "id": "user5FingerID",
               "type": "text",
               "label": {
-                "en": "Finger ID"
+                "en": "Finger ID",
+                "da": "Finger ID",
+                "de": "Finger-ID",
+                "es": "ID de dedo",
+                "fr": "ID d'empreinte",
+                "it": "ID del dito",
+                "no": "Finger-ID",
+                "sv": "Finger-ID",
+                "pl": "ID palca",
+                "ru": "ID пальца",
+                "ko": "지문 ID"
               },
               "value": ""
             },
@@ -18741,7 +19359,17 @@
               "id": "user5CodeID",
               "type": "text",
               "label": {
-                "en": "Code ID"
+                "en": "Code ID",
+                "da": "Kode ID",
+                "de": "Code-ID",
+                "es": "ID de código",
+                "fr": "ID de code",
+                "it": "ID del codice",
+                "no": "Kode-ID",
+                "sv": "Kod-ID",
+                "pl": "ID kodu",
+                "ru": "ID кода",
+                "ko": "코드 ID"
               },
               "value": ""
             },
@@ -18749,7 +19377,17 @@
               "id": "user5CardID",
               "type": "text",
               "label": {
-                "en": "Card ID"
+                "en": "Card ID",
+                "da": "Kort ID",
+                "de": "Karten-ID",
+                "es": "ID de tarjeta",
+                "fr": "ID de carte",
+                "it": "ID della carta",
+                "no": "Kort-ID",
+                "sv": "Kort-ID",
+                "pl": "ID karty",
+                "ru": "ID карты",
+                "ko": "카드 ID"
               },
               "value": ""
             },
@@ -18757,7 +19395,17 @@
               "id": "lock6UserName",
               "type": "text",
               "label": {
-                "en": "7 - User name"
+                "en": "7 - User name",
+                "da": "7 - Brugernavn",
+                "de": "7 - Benutzername",
+                "es": "7 - Nombre de usuario",
+                "fr": "7 - Nom d'utilisateur",
+                "it": "7 - Nome utente",
+                "no": "7 - Brukernavn",
+                "sv": "7 - Användarnamn",
+                "pl": "7 - Nazwa użytkownika",
+                "ru": "7 - Имя пользователя",
+                "ko": "7 - 사용자 이름"
               },
               "value": ""
             },
@@ -18765,7 +19413,17 @@
               "id": "user6FingerID",
               "type": "text",
               "label": {
-                "en": "Finger ID"
+                "en": "Finger ID",
+                "da": "Finger ID",
+                "de": "Finger-ID",
+                "es": "ID de dedo",
+                "fr": "ID d'empreinte",
+                "it": "ID del dito",
+                "no": "Finger-ID",
+                "sv": "Finger-ID",
+                "pl": "ID palca",
+                "ru": "ID пальца",
+                "ko": "지문 ID"
               },
               "value": ""
             },
@@ -18773,7 +19431,17 @@
               "id": "user6CodeID",
               "type": "text",
               "label": {
-                "en": "Code ID"
+                "en": "Code ID",
+                "da": "Kode ID",
+                "de": "Code-ID",
+                "es": "ID de código",
+                "fr": "ID de code",
+                "it": "ID del codice",
+                "no": "Kode-ID",
+                "sv": "Kod-ID",
+                "pl": "ID kodu",
+                "ru": "ID кода",
+                "ko": "코드 ID"
               },
               "value": ""
             },
@@ -18781,7 +19449,17 @@
               "id": "user6CardID",
               "type": "text",
               "label": {
-                "en": "Card ID"
+                "en": "Card ID",
+                "da": "Kort ID",
+                "de": "Karten-ID",
+                "es": "ID de tarjeta",
+                "fr": "ID de carte",
+                "it": "ID della carta",
+                "no": "Kort-ID",
+                "sv": "Kort-ID",
+                "pl": "ID karty",
+                "ru": "ID карты",
+                "ko": "카드 ID"
               },
               "value": ""
             },
@@ -18789,7 +19467,17 @@
               "id": "lock7UserName",
               "type": "text",
               "label": {
-                "en": "8 - User name"
+                "en": "8 - User name",
+                "da": "8 - Brugernavn",
+                "de": "8 - Benutzername",
+                "es": "8 - Nombre de usuario",
+                "fr": "8 - Nom d'utilisateur",
+                "it": "8 - Nome utente",
+                "no": "8 - Brukernavn",
+                "sv": "8 - Användarnamn",
+                "pl": "8 - Nazwa użytkownika",
+                "ru": "8 - Имя пользователя",
+                "ko": "8 - 사용자 이름"
               },
               "value": ""
             },
@@ -18797,7 +19485,17 @@
               "id": "user7FingerID",
               "type": "text",
               "label": {
-                "en": "Finger ID"
+                "en": "Finger ID",
+                "da": "Finger ID",
+                "de": "Finger-ID",
+                "es": "ID de dedo",
+                "fr": "ID d'empreinte",
+                "it": "ID del dito",
+                "no": "Finger-ID",
+                "sv": "Finger-ID",
+                "pl": "ID palca",
+                "ru": "ID пальца",
+                "ko": "지문 ID"
               },
               "value": ""
             },
@@ -18805,7 +19503,17 @@
               "id": "user7CodeID",
               "type": "text",
               "label": {
-                "en": "Code ID"
+                "en": "Code ID",
+                "da": "Kode ID",
+                "de": "Code-ID",
+                "es": "ID de código",
+                "fr": "ID de code",
+                "it": "ID del codice",
+                "no": "Kode-ID",
+                "sv": "Kod-ID",
+                "pl": "ID kodu",
+                "ru": "ID кода",
+                "ko": "코드 ID"
               },
               "value": ""
             },
@@ -18813,7 +19521,17 @@
               "id": "user7CardID",
               "type": "text",
               "label": {
-                "en": "Card ID"
+                "en": "Card ID",
+                "da": "Kort ID",
+                "de": "Karten-ID",
+                "es": "ID de tarjeta",
+                "fr": "ID de carte",
+                "it": "ID della carta",
+                "no": "Kort-ID",
+                "sv": "Kort-ID",
+                "pl": "ID karty",
+                "ru": "ID карты",
+                "ko": "카드 ID"
               },
               "value": ""
             },
@@ -18821,7 +19539,17 @@
               "id": "lock8UserName",
               "type": "text",
               "label": {
-                "en": "9 - User name"
+                "en": "9 - User name",
+                "da": "9 - Brugernavn",
+                "de": "9 - Benutzername",
+                "es": "9 - Nombre de usuario",
+                "fr": "9 - Nom d'utilisateur",
+                "it": "9 - Nome utente",
+                "no": "9 - Brukernavn",
+                "sv": "9 - Användarnamn",
+                "pl": "9 - Nazwa użytkownika",
+                "ru": "9 - Имя пользователя",
+                "ko": "9 - 사용자 이름"
               },
               "value": ""
             },
@@ -18829,7 +19557,17 @@
               "id": "user8FingerID",
               "type": "text",
               "label": {
-                "en": "Finger ID"
+                "en": "Finger ID",
+                "da": "Finger ID",
+                "de": "Finger-ID",
+                "es": "ID de dedo",
+                "fr": "ID d'empreinte",
+                "it": "ID del dito",
+                "no": "Finger-ID",
+                "sv": "Finger-ID",
+                "pl": "ID palca",
+                "ru": "ID пальца",
+                "ko": "지문 ID"
               },
               "value": ""
             },
@@ -18837,7 +19575,17 @@
               "id": "user8CodeID",
               "type": "text",
               "label": {
-                "en": "Code ID"
+                "en": "Code ID",
+                "da": "Kode ID",
+                "de": "Code-ID",
+                "es": "ID de código",
+                "fr": "ID de code",
+                "it": "ID del codice",
+                "no": "Kode-ID",
+                "sv": "Kod-ID",
+                "pl": "ID kodu",
+                "ru": "ID кода",
+                "ko": "코드 ID"
               },
               "value": ""
             },
@@ -18845,7 +19593,17 @@
               "id": "user8CardID",
               "type": "text",
               "label": {
-                "en": "Card ID"
+                "en": "Card ID",
+                "da": "Kort ID",
+                "de": "Karten-ID",
+                "es": "ID de tarjeta",
+                "fr": "ID de carte",
+                "it": "ID della carta",
+                "no": "Kort-ID",
+                "sv": "Kort-ID",
+                "pl": "ID karty",
+                "ru": "ID карты",
+                "ko": "카드 ID"
               },
               "value": ""
             },
@@ -18853,7 +19611,17 @@
               "id": "lock9UserName",
               "type": "text",
               "label": {
-                "en": "10 - User name"
+                "en": "10 - User name",
+                "da": "10 - Brugernavn",
+                "de": "10 - Benutzername",
+                "es": "10 - Nombre de usuario",
+                "fr": "10 - Nom d'utilisateur",
+                "it": "10 - Nome utente",
+                "no": "10 - Brukernavn",
+                "sv": "10 - Användarnamn",
+                "pl": "10 - Nazwa użytkownika",
+                "ru": "10 - Имя пользователя",
+                "ko": "10 - 사용자 이름"
               },
               "value": ""
             },
@@ -18861,7 +19629,17 @@
               "id": "user9FingerID",
               "type": "text",
               "label": {
-                "en": "Finger ID"
+                "en": "Finger ID",
+                "da": "Finger ID",
+                "de": "Finger-ID",
+                "es": "ID de dedo",
+                "fr": "ID d'empreinte",
+                "it": "ID del dito",
+                "no": "Finger-ID",
+                "sv": "Finger-ID",
+                "pl": "ID palca",
+                "ru": "ID пальца",
+                "ko": "지문 ID"
               },
               "value": ""
             },
@@ -18869,7 +19647,17 @@
               "id": "user9CodeID",
               "type": "text",
               "label": {
-                "en": "Code ID"
+                "en": "Code ID",
+                "da": "Kode ID",
+                "de": "Code-ID",
+                "es": "ID de código",
+                "fr": "ID de code",
+                "it": "ID del codice",
+                "no": "Kode-ID",
+                "sv": "Kod-ID",
+                "pl": "ID kodu",
+                "ru": "ID кода",
+                "ko": "코드 ID"
               },
               "value": ""
             },
@@ -18877,7 +19665,17 @@
               "id": "user9CardID",
               "type": "text",
               "label": {
-                "en": "Card ID"
+                "en": "Card ID",
+                "da": "Kort ID",
+                "de": "Karten-ID",
+                "es": "ID de tarjeta",
+                "fr": "ID de carte",
+                "it": "ID della carta",
+                "no": "Kort-ID",
+                "sv": "Kort-ID",
+                "pl": "ID karty",
+                "ru": "ID карты",
+                "ko": "카드 ID"
               },
               "value": ""
             }
@@ -18976,14 +19774,14 @@
               "label": {
                 "en": "Buzzer",
                 "nl": "Buzzer",
-                "da": "Summer",
-                "de": "Summer",
+                "da": "Buzzer",
+                "de": "Summerton",
                 "es": "Zumbador",
-                "fr": "Sonnerie",
+                "fr": "Buzzer",
                 "it": "Cicalino",
-                "no": "Summere",
-                "sv": "Summer",
-                "pl": "Brzęczyk",
+                "no": "Buzzer",
+                "sv": "Buzzer",
+                "pl": "Buzzer",
                 "ru": "Зуммер",
                 "ko": "부저"
               }
@@ -19002,8 +19800,8 @@
                 "it": "Blocco bambini",
                 "no": "Barnesikring",
                 "sv": "Barnlås",
-                "pl": "Blokada rodzicielska",
-                "ru": "Блокировка от детей",
+                "pl": "Zabezpieczenie dzieci",
+                "ru": "Блокировка для детей",
                 "ko": "어린이 잠금 장치"
               }
             }
@@ -19159,7 +19957,10 @@
             "sv": "Enhetsinställningar",
             "pl": "Ustawienia urządzenia",
             "ru": "Настройки устройства",
-            "ko": "장치 설정"
+            "ko": "장치 설정",
+            "pt": "Configurações do Dispositivo",
+            "zh": "设备设置",
+            "ja": "デバイス設定"
           },
           "children": [
             {
@@ -19541,7 +20342,7 @@
           "type": "group",
           "label": {
             "en": "User Settings",
-            "nl": "Gebruikersinstellingem",
+            "nl": "Gebruikersinstellingen",
             "da": "Brugerindstillinger",
             "de": "Benutzereinstellungen",
             "es": "Configuración de usuario",
@@ -19561,7 +20362,7 @@
               "label": {
                 "en": "LED brightness",
                 "nl": "LED helderheid",
-                "da": "LED-lysstyrke",
+                "da": "LED-ljusstyrke",
                 "de": "LED-Helligkeit",
                 "es": "Brillo LED",
                 "fr": "Luminosité LED",
@@ -20012,7 +20813,7 @@
               "hint": {
                 "en": "Here you can specify after what time the alarm signal from the motion sensor will be stopped, if a motion is detected it is not detected. Usually this is for 60 seconds, you can set from 5 to 86400 seconds. \n \n Attention! Values less than 60 seconds are relevant only for independently modified sensors that have the ability to transmit information about the movement with a frequency of 5 seconds.",
                 "nl": "Hier kunt u opgeven hoe laat het alarmsignaal van de bewegingssensor wordt gestopt, als een beweging wordt gedetecteerd, wordt deze niet gedetecteerd. Gewoonlijk is dit 60 seconden, u kunt 5 tot 86400 seconden instellen.  n  n Let op! Waarden minder dan 60 seconden zijn alleen relevant voor onafhankelijk aangepaste sensoren die de mogelijkheid hebben om informatie over de beweging te verzenden met een frequentie van 5 seconden.",
-                "da": "Her kan du angive, hvornår alarmsignalet fra bevægelsessensoren skal stoppes, hvis en bevægelse detekteres. Normalt er dette 60 sekunder, du kan indstille fra 5 til 86400 sekunder. \n \n Opmærksomhed! Værdier mindre end 60 sekunder er kun relevante for selvstændigt modificerede sensorer, der har mulighed for at transmittere information om bevægelsen med en frekvens på 5 sekunder.",
+                "da": "Her kan du angive, hvornår alarmsignalet fra bevægelsessensorer skal stoppes, hvis en bevægelse detekteres. Normalt er dette 60 sekunder, du kan indstille fra 5 til 86400 sekunder. \n \n Opmærksomhed! Værdier mindre end 60 sekunder er kun relevante for selvstændigt modificerede sensorer, der har mulighed for at transmittere information om bevægelsen med en frekvens på 5 sekunder.",
                 "de": "Hier können Sie angeben, nach welcher Zeit das Alarmsignal vom Bewegungssensor gestoppt wird, wenn eine Bewegung erkannt wird. Normalerweise dauert dies 60 Sekunden. Sie können von 5 bis 86400 Sekunden einstellen. \n \n Achtung! Werte unter 60 Sekunden sind nur für unabhängig modifizierte Sensoren relevant, die in der Lage sind, Bewegungsinformationen mit einer Frequenz von 5 Sekunden zu senden.",
                 "es": "Aquí puede especificar después de cuánto tiempo se detendrá la señal de alarma del sensor de movimiento, si se detecta un movimiento no se detecta. Por lo general, esto es durante 60 segundos, puede configurar de 5 a 86400 segundos. \n \n ¡Atención! Los valores inferiores a 60 segundos son relevantes solo para sensores modificados de forma independiente que tienen la capacidad de transmitir información sobre el movimiento con una frecuencia de 5 segundos.",
                 "fr": "Ici, vous pouvez spécifier après combien de temps le signal d'alarme du détecteur de mouvement sera arrêté, si un mouvement est détecté, il n'est pas détecté. En général, cela dure 60 secondes, vous pouvez régler de 5 à 86400 secondes. \n \n Attention ! Les valeurs inférieures à 60 secondes ne sont pertinentes que pour les détecteurs modifiés indépendamment qui ont la capacité de transmettre des informations sur les mouvements avec une fréquence de 5 secondes.",
@@ -20138,13 +20939,13 @@
         "nl": "Mi Smart Plug (Gateway)",
         "da": "Mi Smart Plug (Gateway)",
         "de": "Mi Smart Plug (Gateway)",
-        "es": "Mi Smart Plug (Gateway)",
-        "fr": "Mi Smart Plug (Gateway)",
-        "it": "Mi Smart Plug (Gateway)",
-        "no": "Mi Smart Plug (Gateway)",
-        "sv": "Mi Smart Plug (Gateway)",
-        "pl": "Mi Smart Plug (Gateway)",
-        "ru": "Mi Smart Plug (Гейтвей)",
+        "es": "Mi Enchufe Inteligente (Gateway)",
+        "fr": "Mi Prise Intelligente (Gateway)",
+        "it": "Mi Presa Intelligente (Gateway)",
+        "no": "Mi Smart Plugg (Gateway)",
+        "sv": "Mi Smart Plugg (Gateway)",
+        "pl": "Mi Inteligentny Wtyczka (Gateway)",
+        "ru": "Mi Умная Розетка (Гейтвей)",
         "ko": "Mi 스마트 플러그 (게이트웨이)"
       },
       "images": {
@@ -20410,16 +21211,16 @@
       "name": {
         "en": "Mi Power Strip Generic (WiFi)",
         "nl": "Mi Power Strip Generic (WiFi)",
-        "da": "Mi Power Strip Generic (WiFi)",
+        "da": "Mi Power Strip Generisk (WiFi)",
         "de": "Mi Power Strip Generic (WiFi)",
-        "es": "Mi Power Strip Generic (WiFi)",
-        "fr": "Mi Power Strip Generic (WiFi)",
-        "it": "Mi Power Strip Generic (WiFi)",
-        "no": "Mi Power Strip Generic (WiFi)",
-        "sv": "Mi Power Strip Generic (WiFi)",
+        "es": "Mi Power Strip Genérico (WiFi)",
+        "fr": "Mi Power Strip Générique (WiFi)",
+        "it": "Mi Power Strip Generico (WiFi)",
+        "no": "Mi Power Strip Generisk (WiFi)",
+        "sv": "Mi Power Strip Generisk (WiFi)",
         "pl": "Mi Power Strip Generic (WiFi)",
         "ru": "Mi Power Strip Generic (WiFi)",
-        "ko": "Mi Power Strip Generic (WiFi)"
+        "ko": "Mi 파워 스트립 일반 (WiFi)"
       },
       "images": {
         "large": "drivers/mi-power-strip/assets/images/large.jpg",
@@ -20582,7 +21383,10 @@
             "sv": "Enhetsinställningar",
             "pl": "Ustawienia urządzenia",
             "ru": "Настройки устройства",
-            "ko": "장치 설정"
+            "ko": "장치 설정",
+            "pt": "Configurações do dispositivo",
+            "ja": "デバイス設定",
+            "zh": "设备设置"
           },
           "children": [
             {
@@ -20805,7 +21609,17 @@
           "type": "group",
           "label": {
             "en": "Device Settings",
-            "nl": "Apparaat instellingen"
+            "nl": "Apparaat instellingen",
+            "da": "Enhedsindstillinger",
+            "de": "Geräteeinstellungen",
+            "es": "Configuraciones del dispositivo",
+            "fr": "Paramètres de l'appareil",
+            "it": "Impostazioni del dispositivo",
+            "no": "Enhetsinnstillinger",
+            "sv": "Enhetsinställningar",
+            "pl": "Ustawienia urządzenia",
+            "ru": "Настройки устройства",
+            "ko": "장치 설정"
           },
           "children": [
             {
@@ -21133,7 +21947,17 @@
               "value": true,
               "label": {
                 "en": "LED",
-                "nl": "LED"
+                "nl": "LED",
+                "da": "LED",
+                "de": "LED",
+                "es": "LED",
+                "fr": "LED",
+                "it": "LED",
+                "no": "LED",
+                "sv": "LED",
+                "pl": "LED",
+                "ru": "Светодиод",
+                "ko": "LED"
               }
             },
             {
@@ -21302,16 +22126,16 @@
       "name": {
         "en": "Smart Pet Water Dispenser MIoT (WiFi)",
         "nl": "Smart Pet Water Dispenser MIoT (WiFi)",
-        "da": "Smart Pet Water Dispenser MIoT (WiFi)",
-        "de": "Smart Pet Water Dispenser MIoT (WiFi)",
-        "es": "Smart Pet Water Dispenser MIoT (WiFi)",
-        "fr": "Smart Pet Water Dispenser MIoT (WiFi)",
-        "it": "Smart Pet Water Dispenser MIoT (WiFi)",
-        "no": "Smart Pet Water Dispenser MIoT (WiFi)",
-        "sv": "Smart Pet Water Dispenser MIoT (WiFi)",
-        "pl": "Smart Pet Water Dispenser MIoT (WiFi)",
-        "ru": "Smart Pet Water Dispenser MIoT (WiFi)",
-        "ko": "Smart Pet Water Dispenser MIoT (WiFi)"
+        "da": "Smart Pet Vanddispenser MIoT (WiFi)",
+        "de": "Smart Pet Wasserspender MIoT (WiFi)",
+        "es": "Dispensador de Agua Inteligente para Mascotas MIoT (WiFi)",
+        "fr": "Distributeur d'Eau Intelligent pour Animaux MIoT (WiFi)",
+        "it": "Distributore di Acqua Intelligente per Animali MIoT (WiFi)",
+        "no": "Smart Pet Vanndispenser MIoT (WiFi)",
+        "sv": "Smart Pet Vattendispensator MIoT (WiFi)",
+        "pl": "Inteligentny Podajnik Wody dla Zwierząt MIoT (WiFi)",
+        "ru": "Умный Диспенсер Для Воды Для Домашних Животных MIoT (WiFi)",
+        "ko": "스마트 애완동물 물 디스펜서 MIoT (WiFi)"
       },
       "images": {
         "large": "drivers/petwaterdispenser_mmgg_miot/assets/images/large.jpg",
@@ -21349,7 +22173,17 @@
               "value": true,
               "label": {
                 "en": "LED",
-                "nl": "LED"
+                "nl": "LED",
+                "da": "LED",
+                "de": "LED",
+                "es": "LED",
+                "fr": "LED",
+                "it": "LED",
+                "no": "LED",
+                "sv": "LED",
+                "pl": "LED",
+                "ru": "Светодиод",
+                "ko": "LED"
               }
             }
           ]
@@ -21414,7 +22248,7 @@
               "type": "label",
               "label": {
                 "en": "Cleaning time remaining",
-                "nl": "Opschoon tijd over",
+                "nl": "Opschoon tid over",
                 "da": "Rengøringstid tilbage",
                 "de": "Reinigungszeit verbleibend",
                 "es": "Tiempo de limpieza restante",
@@ -21452,7 +22286,17 @@
               "type": "label",
               "label": {
                 "en": "Error",
-                "nl": "Error"
+                "nl": "Error",
+                "da": "Fejl",
+                "de": "Fehler",
+                "es": "Error",
+                "fr": "Erreur",
+                "it": "Errore",
+                "no": "Feil",
+                "sv": "Fel",
+                "pl": "Błąd",
+                "ru": "Ошибка",
+                "ko": "오류"
               },
               "value": "No error"
             }
@@ -21602,7 +22446,9 @@
             "sv": "Enhetsinställningar",
             "pl": "Ustawienia urządzenia",
             "ru": "Настройки устройства",
-            "ko": "장치 설정"
+            "ko": "장치 설정",
+            "ja": "デバイス設定",
+            "zh": "设备设置"
           },
           "children": [
             {
@@ -21859,7 +22705,7 @@
       ],
       "name": {
         "en": "Mijia Philips Color Bulb (WiFi)",
-        "nl": "Mijia Philips Color Bulb (WiFi)",
+        "nl": "Mijia Philips Kleur Lamp (WiFi)",
         "da": "Mijia Philips Farve Pære (WiFi)",
         "de": "Mijia Philips Farbige Glühbirne (WiFi)",
         "es": "Mijia Philips Bombilla de Color (WiFi)",
@@ -21903,7 +22749,11 @@
             "sv": "Enhetsinställningar",
             "pl": "Ustawienia urządzenia",
             "ru": "Настройки устройства",
-            "ko": "장치 설정"
+            "ko": "장치 설정",
+            "pt": "Configurações do dispositivo",
+            "zh": "设备设置",
+            "ja": "デバイス設定",
+            "hi": "डिवाइस सेटिंग्स"
           },
           "children": [
             {
@@ -22167,7 +23017,9 @@
             "sv": "Enhetsinställningar",
             "pl": "Ustawienia urządzenia",
             "ru": "Настройки устройства",
-            "ko": "장치 설정"
+            "ko": "장치 설정",
+            "ja": "デバイス設定",
+            "zh": "设备设置"
           },
           "children": [
             {
@@ -22760,17 +23612,14 @@
       ],
       "name": {
         "en": "Chingmi Smart Power Strip (WiFi)",
-        "nl": "Chingmi Smart Power Strip (WiFi)",
-        "da": "Chingmi Smart Power Strip (WiFi)",
-        "de": "Chingmi Smart Power Strip (WiFi)",
-        "es": "Chingmi Smart Power Strip (WiFi)",
-        "fr": "Chingmi Smart Power Strip (WiFi)",
-        "it": "Chingmi Smart Power Strip (WiFi)",
-        "no": "Chingmi Smart Power Strip (WiFi)",
-        "sv": "Chingmi Smart Power Strip (WiFi)",
-        "pl": "Chingmi Smart Power Strip (WiFi)",
-        "ru": "Chingmi Smart Power Strip (WiFi)",
-        "ko": "Chingmi Smart Power Strip (WiFi)"
+        "es": "Toma de Corriente Inteligente Chingmi (WiFi)",
+        "fr": "Multiprise Intelligente Chingmi (WiFi)",
+        "it": "Ciabatta Intelligente Chingmi (WiFi)",
+        "no": "Chingmi Smart Strømuttak (WiFi)",
+        "sv": "Chingmi Smart Strömbrytare (WiFi)",
+        "pl": "Inteligentna Listwa Zasilająca Chingmi (WiFi)",
+        "ru": "Умная Линия Электропитания Chingmi (WiFi)",
+        "ko": "칭미 스마트 전원 스트립 (WiFi)"
       },
       "images": {
         "large": "drivers/powerstrip_qmi_powerstrip_v1/assets/images/large.jpg",
@@ -24960,7 +25809,17 @@
       ],
       "name": {
         "en": "Mi Robot Vacuum-Mop P (WiFi)",
-        "nl": "Mi Robot Vacuum-Mop P (WiFi)"
+        "nl": "Mi Robot Vacuum-Mop P (WiFi)",
+        "da": "Mi Robot Vacuum-Mop P (WiFi)",
+        "de": "Mi Robot Vacuum-Mop P (WiFi)",
+        "es": "Mi Robot Vacuum-Mop P (WiFi)",
+        "fr": "Mi Robot Vacuum-Mop P (WiFi)",
+        "it": "Mi Robot Vacuum-Mop P (WiFi)",
+        "no": "Mi Robot Vacuum-Mop P (WiFi)",
+        "sv": "Mi Robot Vacuum-Mop P (WiFi)",
+        "pl": "Mi Robot Vacuum-Mop P (WiFi)",
+        "ru": "Mi Robot Vacuum-Mop P (WiFi)",
+        "ko": "Mi Robot Vacuum-Mop P (WiFi)"
       },
       "images": {
         "large": "drivers/vacuum_viomi_vacuum_v7/assets/images/large.jpg",
@@ -26721,7 +27580,7 @@
         "es": "Modo de calefacción del purificador de aire",
         "fr": "Mode chauffage purificateur d'air",
         "it": "Modalità riscaldamento purificatore d'aria",
-        "no": "Luftrenser oppvarmingsmodus",
+        "no": "Luftrenser oppvarmningsmodus",
         "sv": "Luftrenare värmeläge",
         "pl": "Tryb ogrzewania oczyszczacza powietrza",
         "ru": "Режим обогрева воздухоочистителя",
@@ -27120,7 +27979,10 @@
         "sv": "Läge",
         "pl": "Tryb",
         "ru": "Режим",
-        "ko": "모드"
+        "ko": "모드",
+        "pt": "Modo",
+        "ja": "モード",
+        "zh": "模式"
       },
       "getable": true,
       "setable": true,
@@ -27139,7 +28001,10 @@
             "sv": "Auto",
             "pl": "Auto",
             "ru": "Авто",
-            "ko": "자동"
+            "ko": "자동",
+            "pt": "Automático",
+            "ja": "オート",
+            "zh": "自动"
           }
         },
         {
@@ -27156,7 +28021,10 @@
             "sv": "Natt",
             "pl": "Noc",
             "ru": "Ночь",
-            "ko": "밤"
+            "ko": "밤",
+            "pt": "Noite",
+            "ja": "夜",
+            "zh": "夜晚"
           }
         },
         {
@@ -27173,7 +28041,10 @@
             "sv": "Favorit",
             "pl": "Ulubiony",
             "ru": "Избранное",
-            "ko": "즐겨찾기"
+            "ko": "즐겨찾기",
+            "pt": "Favorito",
+            "ja": "お気に入り",
+            "zh": "最爱"
           }
         },
         {
@@ -27190,7 +28061,10 @@
             "sv": "Inaktiv",
             "pl": "Bezczynny",
             "ru": "Бездействие",
-            "ko": "대기 중"
+            "ko": "대기 중",
+            "pt": "Inativo",
+            "ja": "アイドル",
+            "zh": "闲置"
           }
         }
       ],
@@ -27526,7 +28400,10 @@
         "sv": "Läge",
         "pl": "Tryb",
         "ru": "Режим",
-        "ko": "모드"
+        "ko": "모드",
+        "ja": "モード",
+        "zh": "模式",
+        "pt": "Modo"
       },
       "values": [
         {
@@ -27543,7 +28420,10 @@
             "sv": "Rak vind",
             "pl": "Prosty wiatr",
             "ru": "Прямой ветер",
-            "ko": "직진 바람"
+            "ko": "직진 바람",
+            "ja": "真っ直ぐな風",
+            "zh": "直风",
+            "pt": "Vento Reto"
           }
         },
         {
@@ -27560,7 +28440,10 @@
             "sv": "Naturlig vind",
             "pl": "Naturalny wiatr",
             "ru": "Естественный ветер",
-            "ko": "자연 바람"
+            "ko": "자연 바람",
+            "ja": "自然な風",
+            "zh": "自然风",
+            "pt": "Vento Natural"
           }
         },
         {
@@ -27577,7 +28460,10 @@
             "sv": "Sömn",
             "pl": "Sen",
             "ru": "Сон",
-            "ko": "수면"
+            "ko": "수면",
+            "ja": "睡眠",
+            "zh": "睡觉",
+            "pt": "Sono"
           }
         },
         {
@@ -27594,7 +28480,10 @@
             "sv": "Kall Luft",
             "pl": "Zimne Powietrze",
             "ru": "Холодный воздух",
-            "ko": "찬 공기"
+            "ko": "찬 공기",
+            "ja": "冷たい空気",
+            "zh": "冷空气",
+            "pt": "Ar Frio"
           }
         }
       ],
@@ -27623,42 +28512,102 @@
           "id": "30",
           "title": {
             "en": "30°",
-            "nl": "30°"
+            "nl": "30°",
+            "da": "30°",
+            "de": "30°",
+            "es": "30°",
+            "fr": "30°",
+            "it": "30°",
+            "no": "30°",
+            "sv": "30°",
+            "pl": "30°",
+            "ru": "30°",
+            "ko": "30°"
           }
         },
         {
           "id": "60",
           "title": {
             "en": "60°",
-            "nl": "60°"
+            "nl": "60°",
+            "da": "60°",
+            "de": "60°",
+            "es": "60°",
+            "fr": "60°",
+            "it": "60°",
+            "no": "60°",
+            "sv": "60°",
+            "pl": "60°",
+            "ru": "60°",
+            "ko": "60°"
           }
         },
         {
           "id": "90",
           "title": {
             "en": "90°",
-            "nl": "90°"
+            "nl": "90°",
+            "da": "90°",
+            "de": "90°",
+            "es": "90°",
+            "fr": "90°",
+            "it": "90°",
+            "no": "90°",
+            "sv": "90°",
+            "pl": "90°",
+            "ru": "90°",
+            "ko": "90°"
           }
         },
         {
           "id": "120",
           "title": {
             "en": "120°",
-            "nl": "120°"
+            "nl": "120°",
+            "da": "120°",
+            "de": "120°",
+            "es": "120°",
+            "fr": "120°",
+            "it": "120°",
+            "no": "120°",
+            "sv": "120°",
+            "pl": "120°",
+            "ru": "120°",
+            "ko": "120°"
           }
         },
         {
           "id": "140",
           "title": {
             "en": "140°",
-            "nl": "140°"
+            "nl": "140°",
+            "da": "140°",
+            "de": "140°",
+            "es": "140°",
+            "fr": "140°",
+            "it": "140°",
+            "no": "140°",
+            "sv": "140°",
+            "pl": "140°",
+            "ru": "140°",
+            "ko": "140°"
           }
         },
         {
           "id": "150",
           "title": {
             "en": "150°",
-            "nl": "150°"
+            "nl": "150°",
+            "da": "150°",
+            "de": "150°",
+            "es": "150°",
+            "fr": "150°",
+            "it": "150°",
+            "no": "150°",
+            "sv": "150°",
+            "pl": "150°",
+            "ru": "150°",
+            "ko": "150°"
           }
         }
       ],
@@ -27854,7 +28803,10 @@
         "sv": "Läge",
         "pl": "Tryb",
         "ru": "Режим",
-        "ko": "모드"
+        "ko": "모드",
+        "ja": "モード",
+        "zh": "模式",
+        "pt": "Modo"
       },
       "values": [
         {
@@ -27871,7 +28823,10 @@
             "sv": "Låg",
             "pl": "Niski",
             "ru": "Низкий",
-            "ko": "낮은"
+            "ko": "낮은",
+            "ja": "低い",
+            "zh": "低",
+            "pt": "Baixo"
           }
         },
         {
@@ -27888,7 +28843,10 @@
             "sv": "Medel",
             "pl": "Średni",
             "ru": "Средний",
-            "ko": "중간"
+            "ko": "중간",
+            "ja": "中",
+            "zh": "中",
+            "pt": "Médio"
           }
         },
         {
@@ -27905,7 +28863,10 @@
             "sv": "Hög",
             "pl": "Wysoki",
             "ru": "Высокий",
-            "ko": "높은"
+            "ko": "높은",
+            "ja": "高い",
+            "zh": "高",
+            "pt": "Alto"
           }
         },
         {
@@ -27922,7 +28883,10 @@
             "sv": "Fuktighet",
             "pl": "Wilgotność",
             "ru": "Влажность",
-            "ko": "습도"
+            "ko": "습도",
+            "ja": "湿度",
+            "zh": "湿度",
+            "pt": "Umidade"
           }
         }
       ],
@@ -28160,7 +29124,7 @@
             "sv": "Av",
             "pl": "Wył.",
             "ru": "Выкл.",
-            "ko": "끔"
+            "ko": "낌"
           }
         },
         {
@@ -28592,7 +29556,17 @@
       "uiComponent": "sensor",
       "units": {
         "en": "%",
-        "nl": "%"
+        "nl": "%",
+        "da": "%",
+        "de": "%",
+        "es": "%",
+        "fr": "%",
+        "it": "%",
+        "no": "%",
+        "sv": "%",
+        "pl": "%",
+        "ru": "%",
+        "ko": "%"
       },
       "insights": true
     },
@@ -29501,7 +30475,16 @@
       "title": {
         "en": "Cleaning Power",
         "nl": "Reinigingskracht",
-        "de": "Reinigungsleistung"
+        "de": "Reinigungsleistung",
+        "da": "Rengøringskraft",
+        "es": "Potencia de limpieza",
+        "fr": "Pouvoir de nettoyage",
+        "it": "Potenza di pulizia",
+        "no": "Rengjøringskraft",
+        "sv": "Rengöringskraft",
+        "pl": "Moc czyszczenia",
+        "ru": "Сила очистки",
+        "ko": "청소 능력"
       },
       "values": [
         {
@@ -29509,7 +30492,16 @@
           "title": {
             "en": "Silent",
             "nl": "Stil",
-            "de": "Leise"
+            "de": "Leise",
+            "da": "Stille",
+            "es": "Silencioso",
+            "fr": "Silencieux",
+            "it": "Silenzioso",
+            "no": "Stille",
+            "sv": "Tyst",
+            "pl": "Cichy",
+            "ru": "Тихий",
+            "ko": "조용한"
           }
         },
         {
@@ -29517,7 +30509,16 @@
           "title": {
             "en": "Standard",
             "nl": "Standaard",
-            "de": "Standard"
+            "de": "Standard",
+            "da": "Standard",
+            "es": "Estándar",
+            "fr": "Standard",
+            "it": "Standard",
+            "no": "Standard",
+            "sv": "Standard",
+            "pl": "Standardowy",
+            "ru": "Стандартный",
+            "ko": "표준"
           }
         },
         {
@@ -29525,7 +30526,16 @@
           "title": {
             "en": "Strong",
             "nl": "Sterk",
-            "de": "Stark"
+            "de": "Stark",
+            "da": "Stærk",
+            "es": "Fuerte",
+            "fr": "Fort",
+            "it": "Forte",
+            "no": "Sterk",
+            "sv": "Stark",
+            "pl": "Silny",
+            "ru": "Сильный",
+            "ko": "강한"
           }
         },
         {
@@ -29533,7 +30543,16 @@
           "title": {
             "en": "Turbo",
             "nl": "Turbo",
-            "de": "Turbo"
+            "de": "Turbo",
+            "da": "Turbo",
+            "es": "Turbo",
+            "fr": "Turbo",
+            "it": "Turbo",
+            "no": "Turbo",
+            "sv": "Turbo",
+            "pl": "Turbo",
+            "ru": "Турбо",
+            "ko": "터보"
           }
         }
       ],
@@ -29543,25 +30562,69 @@
     },
     "vacuum_xiaomi_detergent_left_level": {
       "title": {
-        "en": "Water left (%)"
+        "en": "Water left (%)",
+        "nl": "Overgebleven water (%)",
+        "da": "Resterende vand (%)",
+        "de": "Verbleibendes Wasser (%)",
+        "es": "Agua restante (%)",
+        "fr": "Eau restante (%)",
+        "it": "Acqua rimasta (%)",
+        "no": "Vann igjen (%)",
+        "sv": "Vatten kvar (%)",
+        "pl": "Pozostała woda (%)",
+        "ru": "Остаток воды (%)",
+        "ko": "남은 물 (%)"
       },
       "type": "number",
       "getable": true,
       "setable": false,
       "units": {
-        "en": "%"
+        "en": "%",
+        "nl": "%",
+        "da": "%",
+        "de": "%",
+        "es": "%",
+        "fr": "%",
+        "it": "%",
+        "no": "%",
+        "sv": "%",
+        "pl": "%",
+        "ru": "%",
+        "ko": "%"
       },
       "uiComponent": "sensor"
     },
     "vacuum_xiaomi_dust_bag_left_level": {
       "title": {
-        "en": "Dust bag left (%)"
+        "en": "Dust bag left (%)",
+        "nl": "Stofzak over (%)",
+        "da": "Støvsugerpose tilbage (%)",
+        "de": "Staubbeutel verbleibend (%)",
+        "es": "Bolsa de polvo restante (%)",
+        "fr": "Sac à poussière restant (%)",
+        "it": "Sacchetto della polvere rimasto (%)",
+        "no": "Støvsekk igjen (%)",
+        "sv": "Dammsugarpåse kvar (%)",
+        "pl": "Pozostało worka na kurz (%)",
+        "ru": "Осталось пылесборника (%)",
+        "ko": "먼지 봉투 남음 (%)"
       },
       "type": "number",
       "getable": true,
       "setable": false,
       "units": {
-        "en": "%"
+        "en": "%",
+        "nl": "%",
+        "da": "%",
+        "de": "%",
+        "es": "%",
+        "fr": "%",
+        "it": "%",
+        "no": "%",
+        "sv": "%",
+        "pl": "%",
+        "ru": "%",
+        "ko": "%"
       },
       "uiComponent": "sensor"
     },
@@ -29641,18 +30704,18 @@
     "vacuum_xiaomi_mop_mode_max": {
       "type": "enum",
       "title": {
-        "en": "Sweep and Mop Mode",
-        "nl": "Sweep en Mop modus",
-        "da": "Feje og Moppe Tilstand",
-        "de": "Kehr- und Wischmodus",
-        "es": "Modo Barrer y Trapear",
-        "fr": "Mode Balayage et Lavage",
+        "en": "Sweep & Mop Mode",
         "it": "Modalità Spazza e Passa",
         "no": "Feie- og Moppemodus",
         "sv": "Sopa och Mopp-läge",
         "pl": "Tryb zamiatania i mopowania",
         "ru": "Режим подметания и мытья",
-        "ko": "청소 및 물걸레 모드"
+        "ko": "청소 및 물걸레 모드",
+        "nl": "Vegen en Dweilen modus",
+        "da": "Fej & Moppe tilstand",
+        "de": "Kehren & Wischen Modus",
+        "es": "Modo Barrer y Trapear",
+        "fr": "Mode Balayer & Laver"
       },
       "values": [
         {
@@ -29733,7 +30796,16 @@
       "title": {
         "en": "Path Mode",
         "nl": "Padmodus",
-        "de": "Pfadmodus"
+        "de": "Pfadmodus",
+        "da": "Sti mode",
+        "es": "Modo de ruta",
+        "fr": "Mode chemin",
+        "it": "Modalità percorso",
+        "no": "Bane modus",
+        "sv": "Sätt för väg",
+        "pl": "Tryb ścieżki",
+        "ru": "Режим пути",
+        "ko": "경로 모드"
       },
       "values": [
         {
@@ -29741,7 +30813,16 @@
           "title": {
             "en": "Quick",
             "nl": "Snel",
-            "de": "Schnell"
+            "de": "Schnell",
+            "da": "Hurtig",
+            "es": "Rápido",
+            "fr": "Rapide",
+            "it": "Veloce",
+            "no": "Rask",
+            "sv": "Snabb",
+            "pl": "Szybki",
+            "ru": "Быстрый",
+            "ko": "빠른"
           }
         },
         {
@@ -29749,7 +30830,16 @@
           "title": {
             "en": "Standard",
             "nl": "Standaard",
-            "de": "Standard"
+            "de": "Standard",
+            "da": "Standard",
+            "es": "Estándar",
+            "fr": "Standard",
+            "it": "Standard",
+            "no": "Standard",
+            "sv": "Standard",
+            "pl": "Standard",
+            "ru": "Стандарт",
+            "ko": "표준"
           }
         },
         {
@@ -29757,7 +30847,16 @@
           "title": {
             "en": "Deep",
             "nl": "Diep",
-            "de": "Tief"
+            "de": "Tief",
+            "da": "Dyb",
+            "es": "Profundo",
+            "fr": "Profond",
+            "it": "Profondo",
+            "no": "Dyp",
+            "sv": "Djupt",
+            "pl": "Głęboki",
+            "ru": "Глубокий",
+            "ko": "깊은"
           }
         }
       ],
@@ -29768,7 +30867,18 @@
     "vacuum_xiaomi_status": {
       "type": "string",
       "title": {
-        "en": "Status / error"
+        "en": "Status / error",
+        "nl": "Status / fout",
+        "da": "Status / fejl",
+        "de": "Status / Fehler",
+        "es": "Estado / error",
+        "fr": "Statut / erreur",
+        "it": "Stato / errore",
+        "no": "Status / feil",
+        "sv": "Status / fel",
+        "pl": "Status / błąd",
+        "ru": "Статус / ошибка",
+        "ko": "상태 / 오류"
       },
       "getable": true,
       "setable": false,
@@ -29780,7 +30890,16 @@
       "title": {
         "en": "Water Output",
         "nl": "Wateroutput",
-        "de": "Wasserausgabe"
+        "de": "Wasserausgabe",
+        "es": "Salida de Agua",
+        "fr": "Sortie d'Eau",
+        "it": "Uscita dell'Acqua",
+        "da": "Vandoutput",
+        "no": "Vannutgang",
+        "sv": "Vattenutgång",
+        "pl": "Wydajność wody",
+        "ru": "Вывод воды",
+        "ko": "물 출력"
       },
       "values": [
         {
@@ -29788,7 +30907,16 @@
           "title": {
             "en": "Level 1",
             "nl": "Niveau 1",
-            "de": "Stufe 1"
+            "de": "Stufe 1",
+            "es": "Nivel 1",
+            "fr": "Niveau 1",
+            "it": "Livello 1",
+            "da": "Niveau 1",
+            "no": "Nivå 1",
+            "sv": "Nivå 1",
+            "pl": "Poziom 1",
+            "ru": "Уровень 1",
+            "ko": "레벨 1"
           }
         },
         {
@@ -29796,7 +30924,16 @@
           "title": {
             "en": "Level 2",
             "nl": "Niveau 2",
-            "de": "Stufe 2"
+            "de": "Stufe 2",
+            "es": "Nivel 2",
+            "fr": "Niveau 2",
+            "it": "Livello 2",
+            "da": "Niveau 2",
+            "no": "Nivå 2",
+            "sv": "Nivå 2",
+            "pl": "Poziom 2",
+            "ru": "Уровень 2",
+            "ko": "레벨 2"
           }
         },
         {
@@ -29804,7 +30941,16 @@
           "title": {
             "en": "Level 3",
             "nl": "Niveau 3",
-            "de": "Stufe 3"
+            "de": "Stufe 3",
+            "es": "Nivel 3",
+            "fr": "Niveau 3",
+            "it": "Livello 3",
+            "da": "Niveau 3",
+            "no": "Nivå 3",
+            "sv": "Nivå 3",
+            "pl": "Poziom 3",
+            "ru": "Уровень 3",
+            "ko": "레벨 3"
           }
         }
       ],

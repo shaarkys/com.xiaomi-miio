@@ -1,7 +1,17 @@
 {
   "name": {
     "en": "Mi Robot Vacuum-Mop P (WiFi)",
-    "nl": "Mi Robot Vacuum-Mop P (WiFi)"
+    "nl": "Mi Robot Vacuum-Mop P (WiFi)",
+    "da": "Mi Robot Vacuum-Mop P (WiFi)",
+    "de": "Mi Robot Vacuum-Mop P (WiFi)",
+    "es": "Mi Robot Vacuum-Mop P (WiFi)",
+    "fr": "Mi Robot Vacuum-Mop P (WiFi)",
+    "it": "Mi Robot Vacuum-Mop P (WiFi)",
+    "no": "Mi Robot Vacuum-Mop P (WiFi)",
+    "sv": "Mi Robot Vacuum-Mop P (WiFi)",
+    "pl": "Mi Robot Vacuum-Mop P (WiFi)",
+    "ru": "Mi Robot Vacuum-Mop P (WiFi)",
+    "ko": "Mi Robot Vacuum-Mop P (WiFi)"
   },
   "images": {
     "large": "drivers/vacuum_viomi_vacuum_v7/assets/images/large.jpg",

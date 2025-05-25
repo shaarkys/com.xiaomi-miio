@@ -3,12 +3,69 @@
   "title": {
     "en": "Path Mode",
     "nl": "Padmodus",
-    "de": "Pfadmodus"
+    "de": "Pfadmodus",
+    "da": "Sti mode",
+    "es": "Modo de ruta",
+    "fr": "Mode chemin",
+    "it": "Modalità percorso",
+    "no": "Bane modus",
+    "sv": "Sätt för väg",
+    "pl": "Tryb ścieżki",
+    "ru": "Режим пути",
+    "ko": "경로 모드"
   },
   "values": [
-    { "id": "1", "title": { "en": "Quick",    "nl": "Snel",     "de": "Schnell"  } },
-    { "id": "2", "title": { "en": "Standard", "nl": "Standaard","de": "Standard" } },
-    { "id": "3", "title": { "en": "Deep",     "nl": "Diep",     "de": "Tief"     } }
+    {
+      "id": "1",
+      "title": {
+        "en": "Quick",
+        "nl": "Snel",
+        "de": "Schnell",
+        "da": "Hurtig",
+        "es": "Rápido",
+        "fr": "Rapide",
+        "it": "Veloce",
+        "no": "Rask",
+        "sv": "Snabb",
+        "pl": "Szybki",
+        "ru": "Быстрый",
+        "ko": "빠른"
+      }
+    },
+    {
+      "id": "2",
+      "title": {
+        "en": "Standard",
+        "nl": "Standaard",
+        "de": "Standard",
+        "da": "Standard",
+        "es": "Estándar",
+        "fr": "Standard",
+        "it": "Standard",
+        "no": "Standard",
+        "sv": "Standard",
+        "pl": "Standard",
+        "ru": "Стандарт",
+        "ko": "표준"
+      }
+    },
+    {
+      "id": "3",
+      "title": {
+        "en": "Deep",
+        "nl": "Diep",
+        "de": "Tief",
+        "da": "Dyb",
+        "es": "Profundo",
+        "fr": "Profond",
+        "it": "Profondo",
+        "no": "Dyp",
+        "sv": "Djupt",
+        "pl": "Głęboki",
+        "ru": "Глубокий",
+        "ko": "깊은"
+      }
+    }
   ],
   "getable": true,
   "setable": true,

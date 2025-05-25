@@ -42,14 +42,14 @@
         "label": {
           "en": "Buzzer",
           "nl": "Buzzer",
-          "da": "Summer",
-          "de": "Summer",
+          "da": "Buzzer",
+          "de": "Summerton",
           "es": "Zumbador",
-          "fr": "Sonnerie",
+          "fr": "Buzzer",
           "it": "Cicalino",
-          "no": "Summere",
-          "sv": "Summer",
-          "pl": "Brzęczyk",
+          "no": "Buzzer",
+          "sv": "Buzzer",
+          "pl": "Buzzer",
           "ru": "Зуммер",
           "ko": "부저"
         }
@@ -68,8 +68,8 @@
           "it": "Blocco bambini",
           "no": "Barnesikring",
           "sv": "Barnlås",
-          "pl": "Blokada rodzicielska",
-          "ru": "Блокировка от детей",
+          "pl": "Zabezpieczenie dzieci",
+          "ru": "Блокировка для детей",
           "ko": "어린이 잠금 장치"
         }
       }

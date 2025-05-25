@@ -1,30 +1,90 @@
 {
-    "type": "enum",
-    "title": {
-      "en": "Cleaning Power",
-      "nl": "Reinigingskracht",
-      "de": "Reinigungsleistung"
-    },
-    "values": [
-      {
-        "id": "1",
-        "title": { "en": "Silent", "nl": "Stil", "de": "Leise" }
-      },
-      {
-        "id": "2",
-        "title": { "en": "Standard", "nl": "Standaard", "de": "Standard" }
-      },
-      {
-        "id": "3",
-        "title": { "en": "Strong", "nl": "Sterk", "de": "Stark" }
-      },
-      {
-        "id": "4",
-        "title": { "en": "Turbo", "nl": "Turbo", "de": "Turbo" }
+  "type": "enum",
+  "title": {
+    "en": "Cleaning Power",
+    "nl": "Reinigingskracht",
+    "de": "Reinigungsleistung",
+    "da": "Rengøringskraft",
+    "es": "Potencia de limpieza",
+    "fr": "Pouvoir de nettoyage",
+    "it": "Potenza di pulizia",
+    "no": "Rengjøringskraft",
+    "sv": "Rengöringskraft",
+    "pl": "Moc czyszczenia",
+    "ru": "Сила очистки",
+    "ko": "청소 능력"
+  },
+  "values": [
+    {
+      "id": "1",
+      "title": {
+        "en": "Silent",
+        "nl": "Stil",
+        "de": "Leise",
+        "da": "Stille",
+        "es": "Silencioso",
+        "fr": "Silencieux",
+        "it": "Silenzioso",
+        "no": "Stille",
+        "sv": "Tyst",
+        "pl": "Cichy",
+        "ru": "Тихий",
+        "ko": "조용한"
       }
-    ],
-    "getable": true,
-    "setable": true,
-    "icon": "/assets/icons/fanlevel.svg"
-  }
-  
+    },
+    {
+      "id": "2",
+      "title": {
+        "en": "Standard",
+        "nl": "Standaard",
+        "de": "Standard",
+        "da": "Standard",
+        "es": "Estándar",
+        "fr": "Standard",
+        "it": "Standard",
+        "no": "Standard",
+        "sv": "Standard",
+        "pl": "Standardowy",
+        "ru": "Стандартный",
+        "ko": "표준"
+      }
+    },
+    {
+      "id": "3",
+      "title": {
+        "en": "Strong",
+        "nl": "Sterk",
+        "de": "Stark",
+        "da": "Stærk",
+        "es": "Fuerte",
+        "fr": "Fort",
+        "it": "Forte",
+        "no": "Sterk",
+        "sv": "Stark",
+        "pl": "Silny",
+        "ru": "Сильный",
+        "ko": "강한"
+      }
+    },
+    {
+      "id": "4",
+      "title": {
+        "en": "Turbo",
+        "nl": "Turbo",
+        "de": "Turbo",
+        "da": "Turbo",
+        "es": "Turbo",
+        "fr": "Turbo",
+        "it": "Turbo",
+        "no": "Turbo",
+        "sv": "Turbo",
+        "pl": "Turbo",
+        "ru": "Турбо",
+        "ko": "터보"
+      }
+    }
+  ],
+  "getable": true,
+  "setable": true,
+  "icon": "/assets/icons/fanlevel.svg"
+}

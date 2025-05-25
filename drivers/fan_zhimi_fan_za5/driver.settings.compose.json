@@ -13,7 +13,9 @@
       "sv": "Användarinställningar",
       "pl": "Ustawienia użytkownika",
       "ru": "Настройки пользователя",
-      "ko": "사용자 설정"
+      "ko": "사용자 설정",
+      "pt": "Configurações do usuário",
+      "zh": "用户设置"
     },
     "children": [
       {
@@ -32,7 +34,9 @@
           "sv": "LED",
           "pl": "LED",
           "ru": "Светодиод",
-          "ko": "LED"
+          "ko": "LED",
+          "pt": "LED",
+          "zh": "LED"
         }
       },
       {
@@ -51,7 +55,9 @@
           "sv": "Summer",
           "pl": "Brzęczyk",
           "ru": "Зуммер",
-          "ko": "버저"
+          "ko": "버저",
+          "pt": "Buzzer",
+          "zh": "蜂鸣器"
         }
       },
       {
@@ -70,7 +76,9 @@
           "sv": "Barnlås",
           "pl": "Blokada dziecięca",
           "ru": "Блокировка от детей",
-          "ko": "자녀 보호"
+          "ko": "자녀 보호",
+          "pt": "Bloqueio infantil",
+          "zh": "儿童锁"
         }
       }
     ]
@@ -89,7 +97,9 @@
       "sv": "Enhetsinställningar",
       "pl": "Ustawienia urządzenia",
       "ru": "Настройки устройства",
-      "ko": "장치 설정"
+      "ko": "장치 설정",
+      "pt": "Configurações do dispositivo",
+      "zh": "设备设置"
     },
     "children": [
       {

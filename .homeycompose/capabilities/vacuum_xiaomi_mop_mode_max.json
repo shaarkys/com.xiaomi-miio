@@ -1,91 +1,90 @@
 {
-    "type": "enum",
-    "title": {
-      "en": "Sweep and Mop Mode",
-      "nl": "Sweep en Mop modus",
-      "da": "Feje og Moppe Tilstand",
-      "de": "Kehr- und Wischmodus",
-      "es": "Modo Barrer y Trapear",
-      "fr": "Mode Balayage et Lavage",
-      "it": "Modalità Spazza e Passa",
-      "no": "Feie- og Moppemodus",
-      "sv": "Sopa och Mopp-läge",
-      "pl": "Tryb zamiatania i mopowania",
-      "ru": "Режим подметания и мытья",
-      "ko": "청소 및 물걸레 모드"
-    },
-    "values": [
-      {
-        "id": "1",
-        "title": {
-          "en": "Sweep",
-          "nl": "Sweep",
-          "da": "Feje",
-          "de": "Kehren",
-          "es": "Barrer",
-          "fr": "Balayer",
-          "it": "Spazza",
-          "no": "Feie",
-          "sv": "Sopa",
-          "pl": "Zamiatać",
-          "ru": "Подметать",
-          "ko": "청소"
-        }
-      },
-      {
-        "id": "2",
-        "title": {
-          "en": "Mop",
-          "nl": "Mop",
-          "da": "Moppe",
-          "de": "Wischen",
-          "es": "Trapear",
-          "fr": "Laver",
-          "it": "Passa",
-          "no": "Moppe",
-          "sv": "Mopp",
-          "pl": "Mopować",
-          "ru": "Мыть",
-          "ko": "물걸레질"
-        }
-      },
-      {
-        "id": "3",
-        "title": {
-          "en": "Sweep & Mop",
-          "nl": "Sweep & Mop",
-          "da": "Feje & Moppe",
-          "de": "Kehren & Wischen",
-          "es": "Barrer y Trapear",
-          "fr": "Balayer & Laver",
-          "it": "Spazza & Passa",
-          "no": "Feie & Moppe",
-          "sv": "Sopa & Mopp",
-          "pl": "Zamiatać i mopować",
-          "ru": "Подметать и мыть",
-          "ko": "청소 및 물걸레질"
-        }
-      },
-      {
-        "id": "4",
-        "title": {
-          "en": "Sweep Before Mopping",
-          "nl": "Vegen voor Dweilen",
-          "da": "Fej før mopning",
-          "de": "Kehren vor dem Wischen",
-          "es": "Barrer antes de trapear",
-          "fr": "Balayer avant de laver",
-          "it": "Spazza prima di passare",
-          "no": "Feie før mopping",
-          "sv": "Sopa före moppning",
-          "pl": "Zamiataj przed mopowaniem",
-          "ru": "Подметать перед мытьём",
-          "ko": "물걸레질 전 청소"
-        }
+  "type": "enum",
+  "title": {
+    "en": "Sweep & Mop Mode",
+    "it": "Modalità Spazza e Passa",
+    "no": "Feie- og Moppemodus",
+    "sv": "Sopa och Mopp-läge",
+    "pl": "Tryb zamiatania i mopowania",
+    "ru": "Режим подметания и мытья",
+    "ko": "청소 및 물걸레 모드",
+    "nl": "Vegen en Dweilen modus",
+    "da": "Fej & Moppe tilstand",
+    "de": "Kehren & Wischen Modus",
+    "es": "Modo Barrer y Trapear",
+    "fr": "Mode Balayer & Laver"
+  },
+  "values": [
+    {
+      "id": "1",
+      "title": {
+        "en": "Sweep",
+        "nl": "Sweep",
+        "da": "Feje",
+        "de": "Kehren",
+        "es": "Barrer",
+        "fr": "Balayer",
+        "it": "Spazza",
+        "no": "Feie",
+        "sv": "Sopa",
+        "pl": "Zamiatać",
+        "ru": "Подметать",
+        "ko": "청소"
       }
-    ],
-    "getable": true,
-    "setable": true,
-    "icon": "/assets/icons/vacuum-mop.svg"
-  }
-  
+    },
+    {
+      "id": "2",
+      "title": {
+        "en": "Mop",
+        "nl": "Mop",
+        "da": "Moppe",
+        "de": "Wischen",
+        "es": "Trapear",
+        "fr": "Laver",
+        "it": "Passa",
+        "no": "Moppe",
+        "sv": "Mopp",
+        "pl": "Mopować",
+        "ru": "Мыть",
+        "ko": "물걸레질"
+      }
+    },
+    {
+      "id": "3",
+      "title": {
+        "en": "Sweep & Mop",
+        "nl": "Sweep & Mop",
+        "da": "Feje & Moppe",
+        "de": "Kehren & Wischen",
+        "es": "Barrer y Trapear",
+        "fr": "Balayer & Laver",
+        "it": "Spazza & Passa",
+        "no": "Feie & Moppe",
+        "sv": "Sopa & Mopp",
+        "pl": "Zamiatać i mopować",
+        "ru": "Подметать и мыть",
+        "ko": "청소 및 물걸레질"
+      }
+    },
+    {
+      "id": "4",
+      "title": {
+        "en": "Sweep Before Mopping",
+        "nl": "Vegen voor Dweilen",
+        "da": "Fej før mopning",
+        "de": "Kehren vor dem Wischen",
+        "es": "Barrer antes de trapear",
+        "fr": "Balayer avant de laver",
+        "it": "Spazza prima di passare",
+        "no": "Feie før mopping",
+        "sv": "Sopa före moppning",
+        "pl": "Zamiataj przed mopowaniem",
+        "ru": "Подметать перед мытьём",
+        "ko": "물걸레질 전 청소"
+      }
+    }
+  ],
+  "getable": true,
+  "setable": true,
+  "icon": "/assets/icons/vacuum-mop.svg"
+}

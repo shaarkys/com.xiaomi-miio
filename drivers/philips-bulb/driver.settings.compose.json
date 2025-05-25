@@ -13,7 +13,9 @@
       "sv": "Enhetsinställningar",
       "pl": "Ustawienia urządzenia",
       "ru": "Настройки устройства",
-      "ko": "장치 설정"
+      "ko": "장치 설정",
+      "ja": "デバイス設定",
+      "zh": "设备设置"
     },
     "children": [
       {

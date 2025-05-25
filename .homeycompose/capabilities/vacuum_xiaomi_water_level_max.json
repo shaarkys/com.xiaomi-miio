@@ -1,26 +1,73 @@
 {
-    "type": "enum",
-    "title": {
-      "en": "Water Output",
-      "nl": "Wateroutput",
-      "de": "Wasserausgabe"
-    },
-    "values": [
-      {
-        "id": "1",
-        "title": { "en": "Level 1", "nl": "Niveau 1", "de": "Stufe 1" }
-      },
-      {
-        "id": "2",
-        "title": { "en": "Level 2", "nl": "Niveau 2", "de": "Stufe 2" }
-      },
-      {
-        "id": "3",
-        "title": { "en": "Level 3", "nl": "Niveau 3", "de": "Stufe 3" }
+  "type": "enum",
+  "title": {
+    "en": "Water Output",
+    "nl": "Wateroutput",
+    "de": "Wasserausgabe",
+    "es": "Salida de Agua",
+    "fr": "Sortie d'Eau",
+    "it": "Uscita dell'Acqua",
+    "da": "Vandoutput",
+    "no": "Vannutgang",
+    "sv": "Vattenutgång",
+    "pl": "Wydajność wody",
+    "ru": "Вывод воды",
+    "ko": "물 출력"
+  },
+  "values": [
+    {
+      "id": "1",
+      "title": {
+        "en": "Level 1",
+        "nl": "Niveau 1",
+        "de": "Stufe 1",
+        "es": "Nivel 1",
+        "fr": "Niveau 1",
+        "it": "Livello 1",
+        "da": "Niveau 1",
+        "no": "Nivå 1",
+        "sv": "Nivå 1",
+        "pl": "Poziom 1",
+        "ru": "Уровень 1",
+        "ko": "레벨 1"
       }
-    ],
-    "getable": true,
-    "setable": true,
-    "icon": "/assets/icons/water-level.svg"
-  }
-  
+    },
+    {
+      "id": "2",
+      "title": {
+        "en": "Level 2",
+        "nl": "Niveau 2",
+        "de": "Stufe 2",
+        "es": "Nivel 2",
+        "fr": "Niveau 2",
+        "it": "Livello 2",
+        "da": "Niveau 2",
+        "no": "Nivå 2",
+        "sv": "Nivå 2",
+        "pl": "Poziom 2",
+        "ru": "Уровень 2",
+        "ko": "레벨 2"
+      }
+    },
+    {
+      "id": "3",
+      "title": {
+        "en": "Level 3",
+        "nl": "Niveau 3",
+        "de": "Stufe 3",
+        "es": "Nivel 3",
+        "fr": "Niveau 3",
+        "it": "Livello 3",
+        "da": "Niveau 3",
+        "no": "Nivå 3",
+        "sv": "Nivå 3",
+        "pl": "Poziom 3",
+        "ru": "Уровень 3",
+        "ko": "레벨 3"
+      }
+    }
+  ],
+  "getable": true,
+  "setable": true,
+  "icon": "/assets/icons/water-level.svg"
+}

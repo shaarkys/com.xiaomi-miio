@@ -47,7 +47,7 @@
           "es": "Zumbador",
           "fr": "Sonnerie",
           "it": "Cicalino",
-          "no": "Summer",
+          "no": "Sommer",
           "sv": "Summer",
           "pl": "Brzęczyk",
           "ru": "Зуммер",
@@ -61,15 +61,15 @@
         "label": {
           "en": "Child Lock",
           "nl": "Kinderslot",
-          "da": "Børnesikring",
+          "da": "Børnelås",
           "de": "Kindersicherung",
           "es": "Bloqueo infantil",
           "fr": "Sécurité enfant",
           "it": "Blocco bambini",
-          "no": "Barnesikring",
+          "no": "Barnelås",
           "sv": "Barnlås",
-          "pl": "Blokada rodzicielska",
-          "ru": "Блокировка от детей",
+          "pl": "Blokada dzieci",
+          "ru": "Детская блокировка",
           "ko": "어린이 잠금"
         }
       }

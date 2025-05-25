@@ -2,16 +2,16 @@
   "name": {
     "en": "Aqara Wireless Wall Single Switch (Gateway)",
     "nl": "Aqara Wireless Wall Single Switch (Gateway)",
-    "da": "Aqara Wireless Wall Single Switch (Gateway)",
-    "de": "Aqara Wireless Wall Single Switch (Gateway)",
-    "es": "Aqara Wireless Wall Single Switch (Gateway)",
-    "fr": "Aqara Wireless Wall Single Switch (Gateway)",
-    "it": "Aqara Wireless Wall Single Switch (Gateway)",
-    "no": "Aqara Wireless Wall Single Switch (Gateway)",
-    "sv": "Aqara Wireless Wall Single Switch (Gateway)",
-    "pl": "Aqara Wireless Wall Single Switch (Gateway)",
-    "ru": "Aqara Wireless Wall Single Switch (Gateway)",
-    "ko": "Aqara Wireless Wall Single Switch (Gateway)"
+    "da": "Aqara trådløs væg enkeltkontakt (gateway)",
+    "de": "Aqara kabelloser Wandschalter (Gateway)",
+    "es": "Interruptor de pared inalámbrico Aqara (Gateway)",
+    "fr": "Interrupteur mural sans fil Aqara (Gateway)",
+    "it": "Interruttore singolo a parete wireless Aqara (Gateway)",
+    "no": "Aqara trådløs vegg enkel bryter (gateway)",
+    "sv": "Aqara trådlös väggbrytare (gateway)",
+    "pl": "Aqara bezprzewodowy przełącznik ścienny (bramka)",
+    "ru": "Беспроводной настенный однокнопочный выключатель Aqara (шлюз)",
+    "ko": "아카라 무선 벽 단일 스위치 (게이트웨이)"
   },
   "images": {
     "large": "/drivers/aqara_86sw1_switch/assets/images/large.jpg",

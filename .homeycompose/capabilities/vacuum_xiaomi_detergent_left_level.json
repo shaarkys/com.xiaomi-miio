@@ -1,9 +1,34 @@
 {
-    "title": { "en": "Water left (%)" },
-    "type": "number",
-    "getable": true,
-    "setable": false,
-    "units": { "en": "%" },
-    "uiComponent": "sensor"
-  }
-  
+  "title": {
+    "en": "Water left (%)",
+    "nl": "Overgebleven water (%)",
+    "da": "Resterende vand (%)",
+    "de": "Verbleibendes Wasser (%)",
+    "es": "Agua restante (%)",
+    "fr": "Eau restante (%)",
+    "it": "Acqua rimasta (%)",
+    "no": "Vann igjen (%)",
+    "sv": "Vatten kvar (%)",
+    "pl": "Pozostała woda (%)",
+    "ru": "Остаток воды (%)",
+    "ko": "남은 물 (%)"
+  },
+  "type": "number",
+  "getable": true,
+  "setable": false,
+  "units": {
+    "en": "%",
+    "nl": "%",
+    "da": "%",
+    "de": "%",
+    "es": "%",
+    "fr": "%",
+    "it": "%",
+    "no": "%",
+    "sv": "%",
+    "pl": "%",
+    "ru": "%",
+    "ko": "%"
+  },
+  "uiComponent": "sensor"
+}

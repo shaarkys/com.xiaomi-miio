@@ -3,7 +3,7 @@
     "type": "group",
     "label": {
       "en": "User Settings",
-      "nl": "Gebruikersinstellingem",
+      "nl": "Gebruikersinstellingen",
       "da": "Brugerindstillinger",
       "de": "Benutzereinstellungen",
       "es": "Configuración de usuario",
@@ -23,7 +23,7 @@
         "label": {
           "en": "LED brightness",
           "nl": "LED helderheid",
-          "da": "LED-lysstyrke",
+          "da": "LED-ljusstyrke",
           "de": "LED-Helligkeit",
           "es": "Brillo LED",
           "fr": "Luminosité LED",

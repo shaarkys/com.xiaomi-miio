@@ -11,7 +11,9 @@
     "sv": "Avancerad Mi Air Purifier MIoT (WiFi)",
     "pl": "Zaawansowany Mi Air Purifier MIoT (WiFi)",
     "ru": "Продвинутый воздухоочиститель Mi MIoT (WiFi)",
-    "ko": "고급 Mi Air Purifier MIoT (WiFi)"
+    "ko": "고급 Mi Air Purifier MIoT (WiFi)",
+    "ja": "高度なMiエア purificador MIoT（WiFi）",
+    "zh": "高级Mi空气净化器MIoT（WiFi）"
   },
   "images": {
     "large": "drivers/airpurifier_zhimi_advanced_miot/assets/images/large.jpg",
@@ -40,7 +42,9 @@
         "sv": "Aktivera joner",
         "pl": "Włącz jony",
         "ru": "Включить ионы",
-        "ko": "이온 활성화"
+        "ko": "이온 활성화",
+        "ja": "イオンを有効にする",
+        "zh": "启用离子"
       }
     }
   }

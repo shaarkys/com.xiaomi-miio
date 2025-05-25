@@ -4,14 +4,14 @@
     "nl": "Mi Smart Antibacterial Humidifier MIoT (WiFi)",
     "da": "Mi Smart Antibacterial Humidifier MIoT (WiFi)",
     "de": "Mi Smart Antibacterial Humidifier MIoT (WiFi)",
-    "es": "Mi Smart Antibacterial Humidifier MIoT (WiFi)",
-    "fr": "Mi Smart Antibacterial Humidifier MIoT (WiFi)",
-    "it": "Mi Smart Antibacterial Humidifier MIoT (WiFi)",
-    "no": "Mi Smart Antibacterial Humidifier MIoT (WiFi)",
-    "sv": "Mi Smart Antibacterial Humidifier MIoT (WiFi)",
-    "pl": "Mi Smart Antibacterial Humidifier MIoT (WiFi)",
-    "ru": "Mi Smart Antibacterial Humidifier MIoT (WiFi)",
-    "ko": "Mi Smart Antibacterial Humidifier MIoT (WiFi)"
+    "es": "Mi Humidificador Antibacteriano Inteligente MIoT (WiFi)",
+    "fr": "Humidificateur Antibactérien Intelligent MIoT (WiFi)",
+    "it": "Umidificatore Antibatterico Intelligente MIoT (WiFi)",
+    "no": "Mi Smart Antibakterielle Luftfukter MIoT (WiFi)",
+    "sv": "Mi Smart Antibakteriell Luftrenare MIoT (WiFi)",
+    "pl": "Inteligentny Nawilżacz Antybakteryjny MIoT (WiFi)",
+    "ru": "Умный Антибактериальный Увлажнитель MIoT (WiFi)",
+    "ko": "Mi 스마트 항균 가습기 MIoT (WiFi)"
   },
   "images": {
     "large": "drivers/humidifier_deerma_humidifier_miot/assets/images/large.jpg",

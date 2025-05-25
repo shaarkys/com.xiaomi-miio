@@ -22,7 +22,17 @@
         "value": true,
         "label": {
           "en": "LED",
-          "nl": "LED"
+          "nl": "LED",
+          "da": "LED",
+          "de": "LED",
+          "es": "LED",
+          "fr": "LED",
+          "it": "LED",
+          "no": "LED",
+          "sv": "LED",
+          "pl": "LED",
+          "ru": "Светодиод",
+          "ko": "LED"
         }
       },
       {

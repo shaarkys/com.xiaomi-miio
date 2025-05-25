@@ -13,7 +13,11 @@
       "sv": "Användarinställningar",
       "pl": "Ustawienia użytkownika",
       "ru": "Настройки пользователя",
-      "ko": "사용자 설정"
+      "ko": "사용자 설정",
+      "pt": "Configurações do usuário",
+      "fi": "Käyttäjäasetukset",
+      "tr": "Kullanıcı Ayarları",
+      "zh": "用户设置"
     },
     "children": [
       {
@@ -127,7 +131,11 @@
       "sv": "Enhetsinställningar",
       "pl": "Ustawienia urządzenia",
       "ru": "Настройки устройства",
-      "ko": "장치 설정"
+      "ko": "장치 설정",
+      "pt": "Configurações do dispositivo",
+      "fi": "Laitteen asetukset",
+      "tr": "Aygıt Ayarları",
+      "zh": "设备设置"
     },
     "children": [
       {

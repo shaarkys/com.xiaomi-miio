@@ -255,9 +255,18 @@
       "ko": "장치 설정"
     },
     "children": [
-      { "id": "address", "$extends": "address" },
-      { "id": "token",   "$extends": "token"   },
-      { "id": "polling", "$extends": "polling" }
+      {
+        "id": "address",
+        "$extends": "address"
+      },
+      {
+        "id": "token",
+        "$extends": "token"
+      },
+      {
+        "id": "polling",
+        "$extends": "polling"
+      }
     ]
   }
 ]

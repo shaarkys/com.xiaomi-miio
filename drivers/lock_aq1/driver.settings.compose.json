@@ -3,7 +3,17 @@
     "type": "group",
     "label": {
       "en": "Duration of the lock alarm",
-      "nl": "Duur van het slot alarm"
+      "nl": "Duur van het slot alarm",
+      "da": "Varighed af alarmsystemet",
+      "de": "Dauer des Schlossalarmes",
+      "es": "Duración de la alarma de la cerradura",
+      "fr": "Durée de l'alarme de verrouillage",
+      "it": "Durata dell'allarme della serratura",
+      "no": "Varighet på låsalarm",
+      "sv": "Varaktighet av låsalarm",
+      "pl": "Czas trwania alarmu blokady",
+      "ru": "Длительность тревоги блокировки",
+      "ko": "잠금 경고의 지속 시간"
     },
     "children": [
       {
@@ -11,7 +21,17 @@
         "type": "number",
         "label": {
           "en": "Disable after",
-          "nl": "Uitschakelen na"
+          "nl": "Uitschakelen na",
+          "da": "Deaktiver efter",
+          "de": "Deaktivieren nach",
+          "es": "Desactivar después",
+          "fr": "Désactiver après",
+          "it": "Disabilita dopo",
+          "no": "Deaktiver etter",
+          "sv": "Inaktivera efter",
+          "pl": "Wyłącz po",
+          "ru": "Выключить через",
+          "ko": "비활성화 후"
         },
         "value": 60,
         "attr": {
@@ -25,7 +45,17 @@
     "type": "group",
     "label": {
       "en": "Device Settings",
-      "nl": "Apparaat instellingen"
+      "nl": "Apparaat instellingen",
+      "da": "Enhedsindstillinger",
+      "de": "Geräteeinstellungen",
+      "es": "Configuraciones del dispositivo",
+      "fr": "Paramètres de l'appareil",
+      "it": "Impostazioni dispositivo",
+      "no": "Enhetsinnstillinger",
+      "sv": "Enhetsinställningar",
+      "pl": "Ustawienia urządzenia",
+      "ru": "Настройки устройства",
+      "ko": "디바이스 설정"
     },
     "children": [
       {
@@ -45,14 +75,34 @@
   {
     "type": "group",
     "label": {
-      "en": "Device information"
+      "en": "Device information",
+      "da": "Enhedsoplysninger",
+      "de": "Geräteinformationen",
+      "es": "Información sobre el dispositivo",
+      "fr": "Informations sur l'appareil",
+      "it": "Informazioni sul dispositivo",
+      "no": "Enhetsinformasjon",
+      "sv": "Enhetsinformation",
+      "pl": "Informacje o urządzeniu",
+      "ru": "Информация об устройстве",
+      "ko": "장치 정보"
     },
     "children": [
       {
         "id": "deviceSid",
         "type": "label",
         "label": {
-          "en": "Device sid"
+          "en": "Device sid",
+          "da": "Enhedsid",
+          "de": "Geräte-SID",
+          "es": "Sid del dispositivo",
+          "fr": "SID de l'appareil",
+          "it": "SID del dispositivo",
+          "no": "Enhetsside",
+          "sv": "Enhets-SID",
+          "pl": "SID urządzenia",
+          "ru": "SID устройства",
+          "ko": "장치 SID"
         },
         "value": "0123456789abcd"
       },
@@ -60,7 +110,17 @@
         "id": "deviceFromGatewaySid",
         "type": "label",
         "label": {
-          "en": "Gateway sid"
+          "en": "Gateway sid",
+          "da": "Gateway sid",
+          "de": "Gateway SID",
+          "es": "Sid de la puerta de enlace",
+          "fr": "SID de la passerelle",
+          "it": "SID del gateway",
+          "no": "Gateway sid",
+          "sv": "Gateway SID",
+          "pl": "SID bramy",
+          "ru": "SID шлюза",
+          "ko": "게이트웨이 SID"
         },
         "value": "0123456789ab"
       },
@@ -68,7 +128,17 @@
         "id": "deviceModelName",
         "type": "label",
         "label": {
-          "en": "Device model"
+          "en": "Device model",
+          "da": "Enhedsmodel",
+          "de": "Gerätemodell",
+          "es": "Modelo del dispositivo",
+          "fr": "Modèle de l'appareil",
+          "it": "Modello del dispositivo",
+          "no": "Enhetsmodell",
+          "sv": "Enhetsmodell",
+          "pl": "Model urządzenia",
+          "ru": "Модель устройства",
+          "ko": "장치 모델"
         },
         "value": "lumi.device"
       },
@@ -76,7 +146,17 @@
         "id": "deviceModelCodeName",
         "type": "label",
         "label": {
-          "en": "Device model code"
+          "en": "Device model code",
+          "da": "Enhedsmodelkode",
+          "de": "Gerätemodellcode",
+          "es": "Código del modelo del dispositivo",
+          "fr": "Code du modèle de l'appareil",
+          "it": "Codice del modello del dispositivo",
+          "no": "Enhetsmodells kode",
+          "sv": "Enhetsmodellkod",
+          "pl": "Kod modelu urządzenia",
+          "ru": "Код модели устройства",
+          "ko": "장치 모델 코드"
         },
         "value": "AABBCC01LM"
       }
@@ -85,14 +165,34 @@
   {
     "type": "group",
     "label": {
-      "en": "Lock users"
+      "en": "Lock users",
+      "da": "Låsebrugere",
+      "de": "Schlossbenutzer",
+      "es": "Usuarios de la cerradura",
+      "fr": "Utilisateurs de verrou",
+      "it": "Utenti della serratura",
+      "no": "Låsebrukere",
+      "sv": "Låsanvändare",
+      "pl": "Użytkownicy zamka",
+      "ru": "Пользователи замка",
+      "ko": "잠금 사용자"
     },
     "children": [
       {
         "id": "lock0UserName",
         "type": "text",
         "label": {
-          "en": "1 - User name"
+          "en": "1 - User name",
+          "da": "1 - Brugernavn",
+          "de": "1 - Benutzername",
+          "es": "1 - Nombre de usuario",
+          "fr": "1 - Nom d'utilisateur",
+          "it": "1 - Nome utente",
+          "no": "1 - Brukernavn",
+          "sv": "1 - Användarnamn",
+          "pl": "1 - Nazwa użytkownika",
+          "ru": "1 - Имя пользователя",
+          "ko": "1 - 사용자 이름"
         },
         "value": ""
       },
@@ -100,7 +200,17 @@
         "id": "user0FingerID",
         "type": "text",
         "label": {
-          "en": "Finger ID"
+          "en": "Finger ID",
+          "da": "Finger ID",
+          "de": "Finger-ID",
+          "es": "ID de dedo",
+          "fr": "ID d'empreinte",
+          "it": "ID del dito",
+          "no": "Finger-ID",
+          "sv": "Finger-ID",
+          "pl": "ID palca",
+          "ru": "ID пальца",
+          "ko": "지문 ID"
         },
         "value": ""
       },
@@ -108,7 +218,17 @@
         "id": "user0CodeID",
         "type": "text",
         "label": {
-          "en": "Code ID"
+          "en": "Code ID",
+          "da": "Kode ID",
+          "de": "Code-ID",
+          "es": "ID de código",
+          "fr": "ID de code",
+          "it": "ID del codice",
+          "no": "Kode-ID",
+          "sv": "Kod-ID",
+          "pl": "ID kodu",
+          "ru": "ID кода",
+          "ko": "코드 ID"
         },
         "value": ""
       },
@@ -116,7 +236,17 @@
         "id": "user0CardID",
         "type": "text",
         "label": {
-          "en": "Card ID"
+          "en": "Card ID",
+          "da": "Kort ID",
+          "de": "Karten-ID",
+          "es": "ID de tarjeta",
+          "fr": "ID de carte",
+          "it": "ID della carta",
+          "no": "Kort-ID",
+          "sv": "Kort-ID",
+          "pl": "ID karty",
+          "ru": "ID карты",
+          "ko": "카드 ID"
         },
         "value": ""
       },
@@ -124,7 +254,17 @@
         "id": "lock1UserName",
         "type": "text",
         "label": {
-          "en": "2 - User name"
+          "en": "2 - User name",
+          "da": "2 - Brugernavn",
+          "de": "2 - Benutzername",
+          "es": "2 - Nombre de usuario",
+          "fr": "2 - Nom d'utilisateur",
+          "it": "2 - Nome utente",
+          "no": "2 - Brukernavn",
+          "sv": "2 - Användarnamn",
+          "pl": "2 - Nazwa użytkownika",
+          "ru": "2 - Имя пользователя",
+          "ko": "2 - 사용자 이름"
         },
         "value": ""
       },
@@ -132,7 +272,17 @@
         "id": "user1FingerID",
         "type": "text",
         "label": {
-          "en": "Finger ID"
+          "en": "Finger ID",
+          "da": "Finger ID",
+          "de": "Finger-ID",
+          "es": "ID de dedo",
+          "fr": "ID d'empreinte",
+          "it": "ID del dito",
+          "no": "Finger-ID",
+          "sv": "Finger-ID",
+          "pl": "ID palca",
+          "ru": "ID пальца",
+          "ko": "지문 ID"
         },
         "value": ""
       },
@@ -140,7 +290,17 @@
         "id": "user1CodeID",
         "type": "text",
         "label": {
-          "en": "Code ID"
+          "en": "Code ID",
+          "da": "Kode ID",
+          "de": "Code-ID",
+          "es": "ID de código",
+          "fr": "ID de code",
+          "it": "ID del codice",
+          "no": "Kode-ID",
+          "sv": "Kod-ID",
+          "pl": "ID kodu",
+          "ru": "ID кода",
+          "ko": "코드 ID"
         },
         "value": ""
       },
@@ -148,7 +308,17 @@
         "id": "user1CardID",
         "type": "text",
         "label": {
-          "en": "Card ID"
+          "en": "Card ID",
+          "da": "Kort ID",
+          "de": "Karten-ID",
+          "es": "ID de tarjeta",
+          "fr": "ID de carte",
+          "it": "ID della carta",
+          "no": "Kort-ID",
+          "sv": "Kort-ID",
+          "pl": "ID karty",
+          "ru": "ID карты",
+          "ko": "카드 ID"
         },
         "value": ""
       },
@@ -156,7 +326,17 @@
         "id": "lock2UserName",
         "type": "text",
         "label": {
-          "en": "3 - User name"
+          "en": "3 - User name",
+          "da": "3 - Brugernavn",
+          "de": "3 - Benutzername",
+          "es": "3 - Nombre de usuario",
+          "fr": "3 - Nom d'utilisateur",
+          "it": "3 - Nome utente",
+          "no": "3 - Brukernavn",
+          "sv": "3 - Användarnamn",
+          "pl": "3 - Nazwa użytkownika",
+          "ru": "3 - Имя пользователя",
+          "ko": "3 - 사용자 이름"
         },
         "value": ""
       },
@@ -164,7 +344,17 @@
         "id": "user2FingerID",
         "type": "text",
         "label": {
-          "en": "Finger ID"
+          "en": "Finger ID",
+          "da": "Finger ID",
+          "de": "Finger-ID",
+          "es": "ID de dedo",
+          "fr": "ID d'empreinte",
+          "it": "ID del dito",
+          "no": "Finger-ID",
+          "sv": "Finger-ID",
+          "pl": "ID palca",
+          "ru": "ID пальца",
+          "ko": "지문 ID"
         },
         "value": ""
       },
@@ -172,7 +362,17 @@
         "id": "user2CodeID",
         "type": "text",
         "label": {
-          "en": "Code ID"
+          "en": "Code ID",
+          "da": "Kode ID",
+          "de": "Code-ID",
+          "es": "ID de código",
+          "fr": "ID de code",
+          "it": "ID del codice",
+          "no": "Kode-ID",
+          "sv": "Kod-ID",
+          "pl": "ID kodu",
+          "ru": "ID кода",
+          "ko": "코드 ID"
         },
         "value": ""
       },
@@ -180,7 +380,17 @@
         "id": "user2CardID",
         "type": "text",
         "label": {
-          "en": "Card ID"
+          "en": "Card ID",
+          "da": "Kort ID",
+          "de": "Karten-ID",
+          "es": "ID de tarjeta",
+          "fr": "ID de carte",
+          "it": "ID della carta",
+          "no": "Kort-ID",
+          "sv": "Kort-ID",
+          "pl": "ID karty",
+          "ru": "ID карты",
+          "ko": "카드 ID"
         },
         "value": ""
       },
@@ -188,7 +398,17 @@
         "id": "lock3UserName",
         "type": "text",
         "label": {
-          "en": "4 - User name"
+          "en": "4 - User name",
+          "da": "4 - Brugernavn",
+          "de": "4 - Benutzername",
+          "es": "4 - Nombre de usuario",
+          "fr": "4 - Nom d'utilisateur",
+          "it": "4 - Nome utente",
+          "no": "4 - Brukernavn",
+          "sv": "4 - Användarnamn",
+          "pl": "4 - Nazwa użytkownika",
+          "ru": "4 - Имя пользователя",
+          "ko": "4 - 사용자 이름"
         },
         "value": ""
       },
@@ -196,7 +416,17 @@
         "id": "user3FingerID",
         "type": "text",
         "label": {
-          "en": "Finger ID"
+          "en": "Finger ID",
+          "da": "Finger ID",
+          "de": "Finger-ID",
+          "es": "ID de dedo",
+          "fr": "ID d'empreinte",
+          "it": "ID del dito",
+          "no": "Finger-ID",
+          "sv": "Finger-ID",
+          "pl": "ID palca",
+          "ru": "ID пальца",
+          "ko": "지문 ID"
         },
         "value": ""
       },
@@ -204,7 +434,17 @@
         "id": "user3CodeID",
         "type": "text",
         "label": {
-          "en": "Code ID"
+          "en": "Code ID",
+          "da": "Kode ID",
+          "de": "Code-ID",
+          "es": "ID de código",
+          "fr": "ID de code",
+          "it": "ID del codice",
+          "no": "Kode-ID",
+          "sv": "Kod-ID",
+          "pl": "ID kodu",
+          "ru": "ID кода",
+          "ko": "코드 ID"
         },
         "value": ""
       },
@@ -212,7 +452,17 @@
         "id": "user3CardID",
         "type": "text",
         "label": {
-          "en": "Card ID"
+          "en": "Card ID",
+          "da": "Kort ID",
+          "de": "Karten-ID",
+          "es": "ID de tarjeta",
+          "fr": "ID de carte",
+          "it": "ID della carta",
+          "no": "Kort-ID",
+          "sv": "Kort-ID",
+          "pl": "ID karty",
+          "ru": "ID карты",
+          "ko": "카드 ID"
         },
         "value": ""
       },
@@ -220,7 +470,17 @@
         "id": "lock4UserName",
         "type": "text",
         "label": {
-          "en": "5 - User name"
+          "en": "5 - User name",
+          "da": "5 - Brugernavn",
+          "de": "5 - Benutzername",
+          "es": "5 - Nombre de usuario",
+          "fr": "5 - Nom d'utilisateur",
+          "it": "5 - Nome utente",
+          "no": "5 - Brukernavn",
+          "sv": "5 - Användarnamn",
+          "pl": "5 - Nazwa użytkownika",
+          "ru": "5 - Имя пользователя",
+          "ko": "5 - 사용자 이름"
         },
         "value": ""
       },
@@ -228,7 +488,17 @@
         "id": "user4FingerID",
         "type": "text",
         "label": {
-          "en": "Finger ID"
+          "en": "Finger ID",
+          "da": "Finger ID",
+          "de": "Finger-ID",
+          "es": "ID de dedo",
+          "fr": "ID d'empreinte",
+          "it": "ID del dito",
+          "no": "Finger-ID",
+          "sv": "Finger-ID",
+          "pl": "ID palca",
+          "ru": "ID пальца",
+          "ko": "지문 ID"
         },
         "value": ""
       },
@@ -236,7 +506,17 @@
         "id": "user4CodeID",
         "type": "text",
         "label": {
-          "en": "Code ID"
+          "en": "Code ID",
+          "da": "Kode ID",
+          "de": "Code-ID",
+          "es": "ID de código",
+          "fr": "ID de code",
+          "it": "ID del codice",
+          "no": "Kode-ID",
+          "sv": "Kod-ID",
+          "pl": "ID kodu",
+          "ru": "ID кода",
+          "ko": "코드 ID"
         },
         "value": ""
       },
@@ -244,7 +524,17 @@
         "id": "user4CardID",
         "type": "text",
         "label": {
-          "en": "Card ID"
+          "en": "Card ID",
+          "da": "Kort ID",
+          "de": "Karten-ID",
+          "es": "ID de tarjeta",
+          "fr": "ID de carte",
+          "it": "ID della carta",
+          "no": "Kort-ID",
+          "sv": "Kort-ID",
+          "pl": "ID karty",
+          "ru": "ID карты",
+          "ko": "카드 ID"
         },
         "value": ""
       },
@@ -252,7 +542,17 @@
         "id": "lock5UserName",
         "type": "text",
         "label": {
-          "en": "6 - User name"
+          "en": "6 - User name",
+          "da": "6 - Brugernavn",
+          "de": "6 - Benutzername",
+          "es": "6 - Nombre de usuario",
+          "fr": "6 - Nom d'utilisateur",
+          "it": "6 - Nome utente",
+          "no": "6 - Brukernavn",
+          "sv": "6 - Användarnamn",
+          "pl": "6 - Nazwa użytkownika",
+          "ru": "6 - Имя пользователя",
+          "ko": "6 - 사용자 이름"
         },
         "value": ""
       },
@@ -260,7 +560,17 @@
         "id": "user5FingerID",
         "type": "text",
         "label": {
-          "en": "Finger ID"
+          "en": "Finger ID",
+          "da": "Finger ID",
+          "de": "Finger-ID",
+          "es": "ID de dedo",
+          "fr": "ID d'empreinte",
+          "it": "ID del dito",
+          "no": "Finger-ID",
+          "sv": "Finger-ID",
+          "pl": "ID palca",
+          "ru": "ID пальца",
+          "ko": "지문 ID"
         },
         "value": ""
       },
@@ -268,7 +578,17 @@
         "id": "user5CodeID",
         "type": "text",
         "label": {
-          "en": "Code ID"
+          "en": "Code ID",
+          "da": "Kode ID",
+          "de": "Code-ID",
+          "es": "ID de código",
+          "fr": "ID de code",
+          "it": "ID del codice",
+          "no": "Kode-ID",
+          "sv": "Kod-ID",
+          "pl": "ID kodu",
+          "ru": "ID кода",
+          "ko": "코드 ID"
         },
         "value": ""
       },
@@ -276,7 +596,17 @@
         "id": "user5CardID",
         "type": "text",
         "label": {
-          "en": "Card ID"
+          "en": "Card ID",
+          "da": "Kort ID",
+          "de": "Karten-ID",
+          "es": "ID de tarjeta",
+          "fr": "ID de carte",
+          "it": "ID della carta",
+          "no": "Kort-ID",
+          "sv": "Kort-ID",
+          "pl": "ID karty",
+          "ru": "ID карты",
+          "ko": "카드 ID"
         },
         "value": ""
       },
@@ -284,7 +614,17 @@
         "id": "lock6UserName",
         "type": "text",
         "label": {
-          "en": "7 - User name"
+          "en": "7 - User name",
+          "da": "7 - Brugernavn",
+          "de": "7 - Benutzername",
+          "es": "7 - Nombre de usuario",
+          "fr": "7 - Nom d'utilisateur",
+          "it": "7 - Nome utente",
+          "no": "7 - Brukernavn",
+          "sv": "7 - Användarnamn",
+          "pl": "7 - Nazwa użytkownika",
+          "ru": "7 - Имя пользователя",
+          "ko": "7 - 사용자 이름"
         },
         "value": ""
       },
@@ -292,7 +632,17 @@
         "id": "user6FingerID",
         "type": "text",
         "label": {
-          "en": "Finger ID"
+          "en": "Finger ID",
+          "da": "Finger ID",
+          "de": "Finger-ID",
+          "es": "ID de dedo",
+          "fr": "ID d'empreinte",
+          "it": "ID del dito",
+          "no": "Finger-ID",
+          "sv": "Finger-ID",
+          "pl": "ID palca",
+          "ru": "ID пальца",
+          "ko": "지문 ID"
         },
         "value": ""
       },
@@ -300,7 +650,17 @@
         "id": "user6CodeID",
         "type": "text",
         "label": {
-          "en": "Code ID"
+          "en": "Code ID",
+          "da": "Kode ID",
+          "de": "Code-ID",
+          "es": "ID de código",
+          "fr": "ID de code",
+          "it": "ID del codice",
+          "no": "Kode-ID",
+          "sv": "Kod-ID",
+          "pl": "ID kodu",
+          "ru": "ID кода",
+          "ko": "코드 ID"
         },
         "value": ""
       },
@@ -308,7 +668,17 @@
         "id": "user6CardID",
         "type": "text",
         "label": {
-          "en": "Card ID"
+          "en": "Card ID",
+          "da": "Kort ID",
+          "de": "Karten-ID",
+          "es": "ID de tarjeta",
+          "fr": "ID de carte",
+          "it": "ID della carta",
+          "no": "Kort-ID",
+          "sv": "Kort-ID",
+          "pl": "ID karty",
+          "ru": "ID карты",
+          "ko": "카드 ID"
         },
         "value": ""
       },
@@ -316,7 +686,17 @@
         "id": "lock7UserName",
         "type": "text",
         "label": {
-          "en": "8 - User name"
+          "en": "8 - User name",
+          "da": "8 - Brugernavn",
+          "de": "8 - Benutzername",
+          "es": "8 - Nombre de usuario",
+          "fr": "8 - Nom d'utilisateur",
+          "it": "8 - Nome utente",
+          "no": "8 - Brukernavn",
+          "sv": "8 - Användarnamn",
+          "pl": "8 - Nazwa użytkownika",
+          "ru": "8 - Имя пользователя",
+          "ko": "8 - 사용자 이름"
         },
         "value": ""
       },
@@ -324,7 +704,17 @@
         "id": "user7FingerID",
         "type": "text",
         "label": {
-          "en": "Finger ID"
+          "en": "Finger ID",
+          "da": "Finger ID",
+          "de": "Finger-ID",
+          "es": "ID de dedo",
+          "fr": "ID d'empreinte",
+          "it": "ID del dito",
+          "no": "Finger-ID",
+          "sv": "Finger-ID",
+          "pl": "ID palca",
+          "ru": "ID пальца",
+          "ko": "지문 ID"
         },
         "value": ""
       },
@@ -332,7 +722,17 @@
         "id": "user7CodeID",
         "type": "text",
         "label": {
-          "en": "Code ID"
+          "en": "Code ID",
+          "da": "Kode ID",
+          "de": "Code-ID",
+          "es": "ID de código",
+          "fr": "ID de code",
+          "it": "ID del codice",
+          "no": "Kode-ID",
+          "sv": "Kod-ID",
+          "pl": "ID kodu",
+          "ru": "ID кода",
+          "ko": "코드 ID"
         },
         "value": ""
       },
@@ -340,7 +740,17 @@
         "id": "user7CardID",
         "type": "text",
         "label": {
-          "en": "Card ID"
+          "en": "Card ID",
+          "da": "Kort ID",
+          "de": "Karten-ID",
+          "es": "ID de tarjeta",
+          "fr": "ID de carte",
+          "it": "ID della carta",
+          "no": "Kort-ID",
+          "sv": "Kort-ID",
+          "pl": "ID karty",
+          "ru": "ID карты",
+          "ko": "카드 ID"
         },
         "value": ""
       },
@@ -348,7 +758,17 @@
         "id": "lock8UserName",
         "type": "text",
         "label": {
-          "en": "9 - User name"
+          "en": "9 - User name",
+          "da": "9 - Brugernavn",
+          "de": "9 - Benutzername",
+          "es": "9 - Nombre de usuario",
+          "fr": "9 - Nom d'utilisateur",
+          "it": "9 - Nome utente",
+          "no": "9 - Brukernavn",
+          "sv": "9 - Användarnamn",
+          "pl": "9 - Nazwa użytkownika",
+          "ru": "9 - Имя пользователя",
+          "ko": "9 - 사용자 이름"
         },
         "value": ""
       },
@@ -356,7 +776,17 @@
         "id": "user8FingerID",
         "type": "text",
         "label": {
-          "en": "Finger ID"
+          "en": "Finger ID",
+          "da": "Finger ID",
+          "de": "Finger-ID",
+          "es": "ID de dedo",
+          "fr": "ID d'empreinte",
+          "it": "ID del dito",
+          "no": "Finger-ID",
+          "sv": "Finger-ID",
+          "pl": "ID palca",
+          "ru": "ID пальца",
+          "ko": "지문 ID"
         },
         "value": ""
       },
@@ -364,7 +794,17 @@
         "id": "user8CodeID",
         "type": "text",
         "label": {
-          "en": "Code ID"
+          "en": "Code ID",
+          "da": "Kode ID",
+          "de": "Code-ID",
+          "es": "ID de código",
+          "fr": "ID de code",
+          "it": "ID del codice",
+          "no": "Kode-ID",
+          "sv": "Kod-ID",
+          "pl": "ID kodu",
+          "ru": "ID кода",
+          "ko": "코드 ID"
         },
         "value": ""
       },
@@ -372,7 +812,17 @@
         "id": "user8CardID",
         "type": "text",
         "label": {
-          "en": "Card ID"
+          "en": "Card ID",
+          "da": "Kort ID",
+          "de": "Karten-ID",
+          "es": "ID de tarjeta",
+          "fr": "ID de carte",
+          "it": "ID della carta",
+          "no": "Kort-ID",
+          "sv": "Kort-ID",
+          "pl": "ID karty",
+          "ru": "ID карты",
+          "ko": "카드 ID"
         },
         "value": ""
       },
@@ -380,7 +830,17 @@
         "id": "lock9UserName",
         "type": "text",
         "label": {
-          "en": "10 - User name"
+          "en": "10 - User name",
+          "da": "10 - Brugernavn",
+          "de": "10 - Benutzername",
+          "es": "10 - Nombre de usuario",
+          "fr": "10 - Nom d'utilisateur",
+          "it": "10 - Nome utente",
+          "no": "10 - Brukernavn",
+          "sv": "10 - Användarnamn",
+          "pl": "10 - Nazwa użytkownika",
+          "ru": "10 - Имя пользователя",
+          "ko": "10 - 사용자 이름"
         },
         "value": ""
       },
@@ -388,7 +848,17 @@
         "id": "user9FingerID",
         "type": "text",
         "label": {
-          "en": "Finger ID"
+          "en": "Finger ID",
+          "da": "Finger ID",
+          "de": "Finger-ID",
+          "es": "ID de dedo",
+          "fr": "ID d'empreinte",
+          "it": "ID del dito",
+          "no": "Finger-ID",
+          "sv": "Finger-ID",
+          "pl": "ID palca",
+          "ru": "ID пальца",
+          "ko": "지문 ID"
         },
         "value": ""
       },
@@ -396,7 +866,17 @@
         "id": "user9CodeID",
         "type": "text",
         "label": {
-          "en": "Code ID"
+          "en": "Code ID",
+          "da": "Kode ID",
+          "de": "Code-ID",
+          "es": "ID de código",
+          "fr": "ID de code",
+          "it": "ID del codice",
+          "no": "Kode-ID",
+          "sv": "Kod-ID",
+          "pl": "ID kodu",
+          "ru": "ID кода",
+          "ko": "코드 ID"
         },
         "value": ""
       },
@@ -404,7 +884,17 @@
         "id": "user9CardID",
         "type": "text",
         "label": {
-          "en": "Card ID"
+          "en": "Card ID",
+          "da": "Kort ID",
+          "de": "Karten-ID",
+          "es": "ID de tarjeta",
+          "fr": "ID de carte",
+          "it": "ID della carta",
+          "no": "Kort-ID",
+          "sv": "Kort-ID",
+          "pl": "ID karty",
+          "ru": "ID карты",
+          "ko": "카드 ID"
         },
         "value": ""
       }

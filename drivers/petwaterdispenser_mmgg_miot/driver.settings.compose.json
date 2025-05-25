@@ -22,7 +22,17 @@
         "value": true,
         "label": {
           "en": "LED",
-          "nl": "LED"
+          "nl": "LED",
+          "da": "LED",
+          "de": "LED",
+          "es": "LED",
+          "fr": "LED",
+          "it": "LED",
+          "no": "LED",
+          "sv": "LED",
+          "pl": "LED",
+          "ru": "Светодиод",
+          "ko": "LED"
         }
       }
     ]
@@ -87,7 +97,7 @@
         "type": "label",
         "label": {
           "en": "Cleaning time remaining",
-          "nl": "Opschoon tijd over",
+          "nl": "Opschoon tid over",
           "da": "Rengøringstid tilbage",
           "de": "Reinigungszeit verbleibend",
           "es": "Tiempo de limpieza restante",
@@ -125,7 +135,17 @@
         "type": "label",
         "label": {
           "en": "Error",
-          "nl": "Error"
+          "nl": "Error",
+          "da": "Fejl",
+          "de": "Fehler",
+          "es": "Error",
+          "fr": "Erreur",
+          "it": "Errore",
+          "no": "Feil",
+          "sv": "Fel",
+          "pl": "Błąd",
+          "ru": "Ошибка",
+          "ko": "오류"
         },
         "value": "No error"
       }

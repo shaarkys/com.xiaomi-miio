@@ -4,14 +4,14 @@
     "nl": "Smart Space/Fan Heater MIoT (WiFi)",
     "da": "Smart Space/Fan Heater MIoT (WiFi)",
     "de": "Smart Space/Fan Heater MIoT (WiFi)",
-    "es": "Smart Space/Fan Heater MIoT (WiFi)",
-    "fr": "Smart Space/Fan Heater MIoT (WiFi)",
-    "it": "Smart Space/Fan Heater MIoT (WiFi)",
-    "no": "Smart Space/Fan Heater MIoT (WiFi)",
-    "sv": "Smart Space/Fan Heater MIoT (WiFi)",
-    "pl": "Smart Space/Fan Heater MIoT (WiFi)",
-    "ru": "Smart Space/Fan Heater MIoT (WiFi)",
-    "ko": "Smart Space/Fan Heater MIoT (WiFi)"
+    "es": "Espacio inteligente / Calefactor de ventilador MIoT (WiFi)",
+    "fr": "Chauffage de ventilateur/espace intelligent MIoT (WiFi)",
+    "it": "Riscaldatore a ventola / Spazio Intelligente MIoT (WiFi)",
+    "no": "Smart Space/Viftevarmer MIoT (WiFi)",
+    "sv": "Smart Space/Värmefläkt MIoT (WiFi)",
+    "pl": "Inteligentna przestrzeń / Grzejnik wentylator MIoT (WiFi)",
+    "ru": "Умное пространство / Обогреватель-вентилятор MIoT (WiFi)",
+    "ko": "스마트 공간 / 팬 히터 MIoT (WiFi)"
   },
   "images": {
     "large": "drivers/heater_zhimi_heater_miot/assets/images/large.jpg",
