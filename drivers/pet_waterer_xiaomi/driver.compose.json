@@ -1,0 +1,53 @@
+{
+  "name": {
+    "en": "Xiaomi Smart Pet Fountain",
+    "nl": "Xiaomi Slimme Huisdierfontein",
+    "da": "Xiaomi Smart Kæledyrsfountain",
+    "de": "Xiaomi Smarter Haustierbrunnen",
+    "es": "Fuente Inteligente Xiaomi para Mascotas",
+    "fr": "Fontaine Intelligente Xiaomi pour Animaux",
+    "it": "Fontana Intelligente Xiaomi per Animali",
+    "no": "Xiaomi Smart Kjæledyrfontene",
+    "sv": "Xiaomi Smart Husdjursfontän",
+    "pl": "Xiaomi Inteligentna Fontanna dla Zwierząt",
+    "ru": "Умный фонтан Xiaomi для домашних животных",
+    "ko": "샤오미 스마트 펫 분수대"
+  },
+  "images": {
+    "large": "drivers/pet_waterer_xiaomi/assets/images/large.jpg",
+    "small": "drivers/pet_waterer_xiaomi/assets/images/small.jpg"
+  },
+  "class": "petfeeder",
+  "$extends": [
+    "defaults"
+  ],
+  "capabilities": [
+    "onoff",
+    "petwaterdispenser_mmgg_mode_3",
+    "alarm_tank_empty",
+    "alarm_pump_supply",
+    "measure_filter_life",
+    "measure_filter_days_left",
+    "alarm_water_shortage"
+  ],
+  "tokens": [
+    {
+      "name": "error",
+      "type": "string",
+      "title": {
+        "en": "Device error",
+        "nl": "Apparaatfout",
+        "da": "Enhedsfejl",
+        "de": "Gerätefehler",
+        "es": "Error del dispositivo",
+        "fr": "Erreur de l'appareil",
+        "it": "Errore dispositivo",
+        "no": "Enhetsfeil",
+        "sv": "Enhetsfel",
+        "pl": "Błąd urządzenia",
+        "ru": "Ошибка устройства",
+        "ko": "디바이스 오류"
+      }
+    }
+  ]
+}

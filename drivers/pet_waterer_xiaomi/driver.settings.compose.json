@@ -1,0 +1,127 @@
+[
+  {
+    "type": "group",
+    "label": {
+      "en": "User Settings",
+      "nl": "Gebruikersinstellingen",
+      "da": "Brugerindstillinger",
+      "de": "Benutzereinstellungen",
+      "es": "Configuración del usuario",
+      "fr": "Paramètres utilisateur",
+      "it": "Impostazioni utente",
+      "no": "Brukerinnstillinger",
+      "sv": "Användarinställningar",
+      "pl": "Ustawienia użytkownika",
+      "ru": "Настройки пользователя",
+      "ko": "사용자 설정"
+    },
+    "children": [
+      {
+        "id": "reset_filter",
+        "type": "button",
+        "label": {
+          "en": "Reset Filter Life",
+          "nl": "Reset Filter Levensduur",
+          "da": "Nulstil Filterlevetid",
+          "de": "Filterlebensdauer zurücksetzen",
+          "es": "Restablecer vida del filtro",
+          "fr": "Réinitialiser la durée du filtre",
+          "it": "Reimposta vita filtro",
+          "no": "Tilbakestill filterets levetid",
+          "sv": "Återställ filterlivslängd",
+          "pl": "Resetuj żywotność filtra",
+          "ru": "Сбросить срок службы фильтра",
+          "ko": "필터 수명 초기화"
+        }
+      }
+    ]
+  },
+  {
+    "type": "group",
+    "label": {
+      "en": "Device Data",
+      "nl": "Apparaatgegevens",
+      "da": "Enhedsdata",
+      "de": "Gerätedaten",
+      "es": "Datos del dispositivo",
+      "fr": "Données de l'appareil",
+      "it": "Dati del dispositivo",
+      "no": "Enhetsdata",
+      "sv": "Enhetsdata",
+      "pl": "Dane urządzenia",
+      "ru": "Данные устройства",
+      "ko": "디바이스 데이터"
+    },
+    "children": [
+      {
+        "id": "filter_life",
+        "type": "label",
+        "label": {
+          "en": "Filter life remaining (%)",
+          "nl": "Filter resterende levensduur (%)",
+          "da": "Filter tilbageværende levetid (%)",
+          "de": "Filter verbleibende Lebensdauer (%)",
+          "es": "Vida útil del filtro restante (%)",
+          "fr": "Vie du filtre restante (%)",
+          "it": "Vita filtro rimanente (%)",
+          "no": "Gjenværende filterlevetid (%)",
+          "sv": "Filter livslängd kvar (%)",
+          "pl": "Pozostała żywotność filtra (%)",
+          "ru": "Оставшийся ресурс фильтра (%)",
+          "ko": "필터 남은 수명 (%)"
+        },
+        "value": "100%"
+      },
+      {
+        "id": "filter_days_left",
+        "type": "label",
+        "label": {
+          "en": "Filter days left",
+          "nl": "Resterende filterdagen",
+          "da": "Filter dage tilbage",
+          "de": "Filter verbleibende Tage",
+          "es": "Días restantes de filtro",
+          "fr": "Jours de filtre restants",
+          "it": "Giorni filtro rimanenti",
+          "no": "Filterdager igjen",
+          "sv": "Filterdagar kvar",
+          "pl": "Pozostałe dni filtra",
+          "ru": "Осталось дней работы фильтра",
+          "ko": "필터 남은 일수"
+        },
+        "value": "30"
+      }
+    ]
+  },
+  {
+    "type": "group",
+    "label": {
+      "en": "Device Settings",
+      "nl": "Apparaatinstellingen",
+      "da": "Enhedsindstillinger",
+      "de": "Geräteeinstellungen",
+      "es": "Configuración del dispositivo",
+      "fr": "Paramètres de l'appareil",
+      "it": "Impostazioni dispositivo",
+      "no": "Enhetsinnstillinger",
+      "sv": "Enhetsinställningar",
+      "pl": "Ustawienia urządzenia",
+      "ru": "Настройки устройства",
+      "ko": "디바이스 설정"
+    },
+    "children": [
+      {
+        "id": "address",
+        "$extends": "address"
+      },
+      {
+        "id": "token",
+        "$extends": "token"
+      },
+      {
+        "id": "polling",
+        "$extends": "polling"
+      }
+    ]
+  }
+]

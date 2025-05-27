@@ -1,0 +1,73 @@
+{
+  "type": "enum",
+  "title": {
+    "en": "Pet Fountain Mode",
+    "nl": "Huisdier Fontein Modus",
+    "da": "Kæledyr Fountain Mode",
+    "de": "Haustierbrunnen-Modus",
+    "es": "Modo Fuente para Mascotas",
+    "fr": "Mode Fontaine à Animaux",
+    "it": "Modalità Fontana per Animali",
+    "no": "Kjæledyr Fontenemodus",
+    "sv": "Husdjur Fontänläge",
+    "pl": "Tryb Fontanny dla Zwierząt",
+    "ru": "Режим поилки для питомцев",
+    "ko": "애완동물 분수 모드"
+  },
+  "values": [
+    {
+      "id": "0",
+      "title": {
+        "en": "Auto",
+        "nl": "Auto",
+        "da": "Auto",
+        "de": "Auto",
+        "es": "Auto",
+        "fr": "Auto",
+        "it": "Auto",
+        "no": "Auto",
+        "sv": "Auto",
+        "pl": "Auto",
+        "ru": "Авто",
+        "ko": "자동"
+      }
+    },
+    {
+      "id": "1",
+      "title": {
+        "en": "Interval",
+        "nl": "Interval",
+        "da": "Interval",
+        "de": "Intervall",
+        "es": "Intervalo",
+        "fr": "Intervalle",
+        "it": "Intervallo",
+        "no": "Intervall",
+        "sv": "Intervall",
+        "pl": "Interwał",
+        "ru": "Интервал",
+        "ko": "간격"
+      }
+    },
+    {
+      "id": "2",
+      "title": {
+        "en": "Constant",
+        "nl": "Constant",
+        "da": "Konstant",
+        "de": "Konstant",
+        "es": "Constante",
+        "fr": "Constant",
+        "it": "Costante",
+        "no": "Konstant",
+        "sv": "Konstant",
+        "pl": "Ciągły",
+        "ru": "Постоянный",
+        "ko": "지속"
+      }
+    }
+  ],
+  "getable": true,
+  "setable": true,
+  "icon": "/assets/icons/waterdispenser-mode.svg"
+}
