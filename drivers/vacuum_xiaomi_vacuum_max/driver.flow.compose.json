@@ -29,7 +29,27 @@
         "pl": "Odkurzacz robot zgłosił błąd. Proszę sprawdzić urządzenie, aby uzyskać więcej szczegółów.",
         "ru": "Робот-пылесос сообщил об ошибке. Пожалуйста, проверьте устройство для получения подробной информации.",
         "ko": "로봇 청소기가 오류를 발생시켰습니다. 자세한 내용은 장치를 확인하십시오."
-      }
+      },
+      "tokens": [
+        {
+          "name": "error",
+          "type": "string",
+          "title": {
+            "en": "vacuum error raised",
+            "it": "errore segnalato dal robot aspirapolvere",
+            "nl": "robotstofzuiger foutmelding gegeven",
+            "da": "robotstøvsuger fejl",
+            "de": "Saugroboterfehler",
+            "es": "error del robot aspirador",
+            "fr": "erreur de l'aspirateur robot",
+            "no": "robotstøvsugerfeil",
+            "sv": "robotdammsugarefel",
+            "pl": "błąd odkurzacza robota",
+            "ru": "ошибка робота-пылесоса",
+            "ko": "로봇 청소기 오류"
+          }
+        }
+      ]
     }
   ],
   "conditions": [],
