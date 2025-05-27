@@ -1,127 +1,152 @@
 [
   {
-    "type": "group",
+    "id": "led",
+    "type": "checkbox",
     "label": {
-      "en": "User Settings",
-      "nl": "Gebruikersinstellingen",
-      "da": "Brugerindstillinger",
-      "de": "Benutzereinstellungen",
-      "es": "Configuración del usuario",
-      "fr": "Paramètres utilisateur",
-      "it": "Impostazioni utente",
-      "no": "Brukerinnstillinger",
-      "sv": "Användarinställningar",
-      "pl": "Ustawienia użytkownika",
-      "ru": "Настройки пользователя",
-      "ko": "사용자 설정"
+      "en": "LED",
+      "nl": "LED",
+      "da": "LED",
+      "de": "LED",
+      "es": "LED",
+      "fr": "LED",
+      "it": "LED",
+      "no": "LED",
+      "sv": "LED",
+      "pl": "LED",
+      "ru": "Светодиод",
+      "ko": "LED"
     },
-    "children": [
-      {
-        "id": "reset_filter",
-        "type": "button",
-        "label": {
-          "en": "Reset Filter Life",
-          "nl": "Reset Filter Levensduur",
-          "da": "Nulstil Filterlevetid",
-          "de": "Filterlebensdauer zurücksetzen",
-          "es": "Restablecer vida del filtro",
-          "fr": "Réinitialiser la durée du filtre",
-          "it": "Reimposta vita filtro",
-          "no": "Tilbakestill filterets levetid",
-          "sv": "Återställ filterlivslängd",
-          "pl": "Resetuj żywotność filtra",
-          "ru": "Сбросить срок службы фильтра",
-          "ko": "필터 수명 초기화"
-        }
-      }
-    ]
+    "value": true
   },
   {
-    "type": "group",
+    "id": "filter_life_remaining",
+    "type": "label",
     "label": {
-      "en": "Device Data",
-      "nl": "Apparaatgegevens",
-      "da": "Enhedsdata",
-      "de": "Gerätedaten",
-      "es": "Datos del dispositivo",
-      "fr": "Données de l'appareil",
-      "it": "Dati del dispositivo",
-      "no": "Enhetsdata",
-      "sv": "Enhetsdata",
-      "pl": "Dane urządzenia",
-      "ru": "Данные устройства",
-      "ko": "디바이스 데이터"
+      "en": "Filter remaining",
+      "nl": "Filter over",
+      "da": "Filter tilbage",
+      "de": "Filter verbleibend",
+      "es": "Filtro restante",
+      "fr": "Filtre restant",
+      "it": "Filtro rimanente",
+      "no": "Filter gjenstår",
+      "sv": "Filter kvar",
+      "pl": "Filtr pozostały",
+      "ru": "Фильтр остался",
+      "ko": "남은 필터"
     },
-    "children": [
-      {
-        "id": "filter_life",
-        "type": "label",
-        "label": {
-          "en": "Filter life remaining (%)",
-          "nl": "Filter resterende levensduur (%)",
-          "da": "Filter tilbageværende levetid (%)",
-          "de": "Filter verbleibende Lebensdauer (%)",
-          "es": "Vida útil del filtro restante (%)",
-          "fr": "Vie du filtre restante (%)",
-          "it": "Vita filtro rimanente (%)",
-          "no": "Gjenværende filterlevetid (%)",
-          "sv": "Filter livslängd kvar (%)",
-          "pl": "Pozostała żywotność filtra (%)",
-          "ru": "Оставшийся ресурс фильтра (%)",
-          "ko": "필터 남은 수명 (%)"
-        },
-        "value": "100%"
-      },
-      {
-        "id": "filter_days_left",
-        "type": "label",
-        "label": {
-          "en": "Filter days left",
-          "nl": "Resterende filterdagen",
-          "da": "Filter dage tilbage",
-          "de": "Filter verbleibende Tage",
-          "es": "Días restantes de filtro",
-          "fr": "Jours de filtre restants",
-          "it": "Giorni filtro rimanenti",
-          "no": "Filterdager igjen",
-          "sv": "Filterdagar kvar",
-          "pl": "Pozostałe dni filtra",
-          "ru": "Осталось дней работы фильтра",
-          "ko": "필터 남은 일수"
-        },
-        "value": "30"
-      }
-    ]
+    "value": "0%"
   },
   {
-    "type": "group",
+    "id": "cotton_life_remaining",
+    "type": "label",
     "label": {
-      "en": "Device Settings",
-      "nl": "Apparaatinstellingen",
-      "da": "Enhedsindstillinger",
-      "de": "Geräteeinstellungen",
-      "es": "Configuración del dispositivo",
-      "fr": "Paramètres de l'appareil",
-      "it": "Impostazioni dispositivo",
-      "no": "Enhetsinnstillinger",
-      "sv": "Enhetsinställningar",
-      "pl": "Ustawienia urządzenia",
-      "ru": "Настройки устройства",
-      "ko": "디바이스 설정"
+      "en": "Cotton remaining",
+      "nl": "Cotton over",
+      "da": "Bomuld tilbage",
+      "de": "Baumwolle verbleibend",
+      "es": "Algodón restante",
+      "fr": "Coton restant",
+      "it": "Cotone rimanente",
+      "no": "Bomull gjenstår",
+      "sv": "Bomull kvar",
+      "pl": "Bawełna pozostała",
+      "ru": "Осталось хлопка",
+      "ko": "남은 면"
     },
-    "children": [
-      {
-        "id": "address",
-        "$extends": "address"
-      },
-      {
-        "id": "token",
-        "$extends": "token"
-      },
-      {
-        "id": "polling",
-        "$extends": "polling"
-      }
-    ]
+    "value": "0%"
+  },
+  {
+    "id": "cleaning_time_remaining",
+    "type": "label",
+    "label": {
+      "en": "Cleaning time remaining",
+      "nl": "Opschoon tijd over",
+      "da": "Rengøringstid tilbage",
+      "de": "Reinigungszeit verbleibend",
+      "es": "Tiempo de limpieza restante",
+      "fr": "Temps de nettoyage restant",
+      "it": "Tempo di pulizia rimanente",
+      "no": "Rengjøringstid gjenstår",
+      "sv": "Rengöringstid kvar",
+      "pl": "Pozostały czas czyszczenia",
+      "ru": "Осталось времени на уборку",
+      "ko": "남은 청소 시간"
+    },
+    "value": "6"
+  },
+  {
+    "id": "error",
+    "type": "label",
+    "label": {
+      "en": "Error",
+      "nl": "Fout",
+      "da": "Fejl",
+      "de": "Fehler",
+      "es": "Error",
+      "fr": "Erreur",
+      "it": "Errore",
+      "no": "Feil",
+      "sv": "Fel",
+      "pl": "Błąd",
+      "ru": "Ошибка",
+      "ko": "오류"
+    },
+    "value": "No error"
+  },
+  {
+    "id": "address",
+    "type": "text",
+    "label": {
+      "en": "IP Address",
+      "nl": "IP-adres",
+      "da": "IP-adresse",
+      "de": "IP-Adresse",
+      "es": "Dirección IP",
+      "fr": "Adresse IP",
+      "it": "Indirizzo IP",
+      "no": "IP-adresse",
+      "sv": "IP-adress",
+      "pl": "Adres IP",
+      "ru": "IP-адрес",
+      "ko": "IP 주소"
+    }
+  },
+  {
+    "id": "token",
+    "type": "password",
+    "label": {
+      "en": "Token",
+      "nl": "Token",
+      "da": "Token",
+      "de": "Token",
+      "es": "Token",
+      "fr": "Jeton",
+      "it": "Token",
+      "no": "Token",
+      "sv": "Token",
+      "pl": "Token",
+      "ru": "Токен",
+      "ko": "토큰"
+    }
+  },
+  {
+    "id": "polling",
+    "type": "number",
+    "label": {
+      "en": "Polling interval (seconds)",
+      "nl": "Polling-interval (seconden)",
+      "da": "Polling-interval (sekunder)",
+      "de": "Abfrageintervall (Sekunden)",
+      "es": "Intervalo de sondeo (segundos)",
+      "fr": "Intervalle de sondage (secondes)",
+      "it": "Intervallo di polling (secondi)",
+      "no": "Pollingintervall (sekunder)",
+      "sv": "Pollingintervall (sekunder)",
+      "pl": "Interwał odpytywania (sekundy)",
+      "ru": "Интервал опроса (секунды)",
+      "ko": "폴링 간격 (초)"
+    },
+    "value": 60
   }
 ]

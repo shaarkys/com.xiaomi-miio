@@ -1,0 +1,26 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Filter Days Left",
+    "nl": "Filterdagen resterend",
+    "da": "Filtrets resterende dage",
+    "de": "Verbleibende Filtertage",
+    "es": "Días restantes del filtro",
+    "fr": "Jours de filtre restants",
+    "it": "Giorni filtro rimasti",
+    "no": "Filterdager igjen",
+    "sv": "Filterdagar kvar",
+    "pl": "Pozostało dni filtra",
+    "ru": "Осталось дней фильтра",
+    "ko": "필터 남은 일수"
+  },
+  "desc": {
+    "en": "Number of days the filter is expected to last"
+  },
+  "getable": true,
+  "setable": false,
+  "units": {
+    "en": "days"
+  },
+  "icon": "/assets/icons/filter_left.svg"
+}

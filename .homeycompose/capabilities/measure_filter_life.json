@@ -1,0 +1,26 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Filter Life (%)",
+    "nl": "Filter Levensduur (%)",
+    "da": "Filterlevetid (%)",
+    "de": "Filterlebensdauer (%)",
+    "es": "Vida útil del filtro (%)",
+    "fr": "Durée de vie du filtre (%)",
+    "it": "Durata del filtro (%)",
+    "no": "Filterlevetid (%)",
+    "sv": "Filterlivslängd (%)",
+    "pl": "Żywotność filtra (%)",
+    "ru": "Срок службы фильтра (%)",
+    "ko": "필터 수명 (%)"
+  },
+  "desc": {
+    "en": "Shows the remaining filter life in percent"
+  },
+  "getable": true,
+  "setable": false,
+  "units": {
+    "en": "%"
+  },
+  "icon": "/assets/icons/filter.svg"
+}

@@ -1,0 +1,23 @@
+{
+  "type": "boolean",
+  "title": {
+    "en": "Water Shortage Alarm",
+    "nl": "Watertekort Alarm",
+    "da": "Vandmangel Alarm",
+    "de": "Wassermangel Alarm",
+    "es": "Alarma de falta de agua",
+    "fr": "Alarme manque d'eau",
+    "it": "Allarme carenza acqua",
+    "no": "Vannmangel Alarm",
+    "sv": "Vattenbristlarm",
+    "pl": "Alarm braku wody",
+    "ru": "Сигнализация нехватки воды",
+    "ko": "물 부족 알림"
+  },
+  "desc": {
+    "en": "Indicates when there is a water shortage"
+  },
+  "getable": true,
+  "setable": false,
+  "icon": "/assets/icons/water-shortage.svg"
+}

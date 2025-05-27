@@ -221,6 +221,7 @@ class Util {
     'mmgg.pet_waterer.s1': 'Xiaowan Smart Pet Water Dispenser', 
     'mmgg.pet_waterer.s4': 'Xiaowan Smart Pet Water Dispenser',
     'mmgg.pet_waterer.wi11': 'Xiaomi Smart Pet Fountain',
+    'xiaomi.pet_waterer.iv02': 'Xiaomi Smart Pet Fountain 2',
 
     'mmgg.feeder.fi1': 'Xiaomi Smart Pet Food Feeder',
     'mmgg.feeder.inland': 'Xiaomi Smart Pet Food Feeder',
