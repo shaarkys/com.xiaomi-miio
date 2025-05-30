@@ -301,5 +301,8 @@
   },
   "3.4.22": {
     "en": "Added xiaomi.pet_waterer.iv02' / Xiaomi Smart Pet Fountain 2"
+  },
+  "3.4.23": {
+    "en": "Updates for the xiaomi.pet_waterer.iv02"
   }
 }
