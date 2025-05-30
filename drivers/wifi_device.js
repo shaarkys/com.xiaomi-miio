@@ -41,7 +41,11 @@ class MiWifiDeviceDevice extends Homey.Device {
             this.homey.clearInterval(this.refreshInterval);
             this.homey.clearTimeout(this.recreateTimeout);
             if (this.miio) {
-                this.miio.destroy();
+                try {
+                    this.miio?.destroy();
+                } catch (e) {
+                    /* ignore double-close */
+                }
             }
         } catch (error) {
             this.error(error);
@@ -54,19 +58,23 @@ class MiWifiDeviceDevice extends Homey.Device {
             this.homey.clearInterval(this.refreshInterval);
             this.homey.clearTimeout(this.recreateTimeout);
             if (this.miio) {
-                this.miio.destroy();
+                try {
+                    this.miio?.destroy();
+                } catch (e) {
+                    /* ignore double-close */
+                }
             }
         } catch (error) {
             this.error(error);
         }
     }
-
-    // UPDATE DEVICE SETTINGS, CAN BE OVERWRITTEN ON DEVICE LEVEL */
+    // UPDATE DEVICE SETTINGS, CAN BE OVERWRITTEN ON DEVICE LEVEL
     async onSettings({ oldSettings, newSettings, changedKeys }) {
         if (changedKeys.includes('address') || changedKeys.includes('token') || changedKeys.includes('polling')) {
             this.refreshDevice();
-            return Promise.resolve(true);
         }
+        /* always resolve so Homey closes the settings view */
+        return true;
     }
 
     // GENERIC CAPABILITY LISTENERS
@@ -235,7 +243,10 @@ class MiWifiDeviceDevice extends Homey.Device {
         try {
             if (this.getSetting(setting) !== undefined) {
                 if (this.getSetting(setting) !== value) {
-                    await this.setSettings({ setting: value });
+                    // Fix: Use dynamic key name instead of literal "setting"
+                    const settingsUpdate = {};
+                    settingsUpdate[setting] = value;
+                    await this.setSettings(settingsUpdate);
                 }
             }
         } catch (error) {
@@ -247,30 +258,38 @@ class MiWifiDeviceDevice extends Homey.Device {
     /* create device instance and start polling */
     async createDevice() {
         try {
-            if (this.miio) {
-                this.miio.destroy();
+            /* ⬅ stop any previous timers/loops */
+            this.homey.clearInterval(this.pollingInterval);
+            this.homey.clearTimeout(this.recreateTimeout);
+
+            /* ⬅ dispose of an old miio instance safely */
+            try {
+                this.miio?.destroy();
+            } catch (e) {
+                /* ignore */
             }
-            this.miio = await miio.device({ address: this.getSetting('address'), token: this.getSetting('token') });
-            if (!this.getAvailable()) {
-                await this.setAvailable();
-            }
+
+            this.miio = await miio.device({
+                address: this.getSetting('address'),
+                token: this.getSetting('token')
+            });
+
+            /* device came back → clear failure counter */
+            this.deviceFailures = 0;
+
+            if (!this.getAvailable()) await this.setAvailable();
+
             this.startCapabilityListeners();
             this.pollDevice();
         } catch (error) {
-            this.setUnavailable(this.homey.__('device.unreachable') + error.message).catch((error) => {
-                this.error(error);
-            });
-            this.deviceFailures++;
-            if (this.deviceFailures <= 9) {
-                this.recreateTimeout = this.homey.setTimeout(() => {
-                    this.createDevice();
-                }, 10000);
-            } else {
-                this.deviceFailures = 0;
-                this.recreateTimeout = this.homey.setTimeout(() => {
-                    this.createDevice();
-                }, 600000);
-            }
+            /* mark unavailable */
+            this.setUnavailable(this.homey.__('device.unreachable') + error.message).catch((err) => this.error(err));
+
+            /* exponential back-off: 10 s × 9 tries, then 10 min */
+            this.deviceFailures = (this.deviceFailures || 0) + 1;
+            const delay = this.deviceFailures <= 9 ? 10_000 : 600_000;
+
+            this.recreateTimeout = this.homey.setTimeout(() => this.createDevice(), delay);
             this.error(error.message);
         }
     }
@@ -281,7 +300,11 @@ class MiWifiDeviceDevice extends Homey.Device {
             this.homey.clearInterval(this.refreshInterval);
             this.refreshInterval = this.homey.setInterval(() => {
                 if (this.miio) {
-                    this.miio.destroy();
+                    try {
+                        this.miio?.destroy();
+                    } catch (e) {
+                        /* ignore double-close */
+                    }
                 }
                 this.homey.setTimeout(() => {
                     this.createDevice();
@@ -522,6 +545,9 @@ class MiWifiDeviceDevice extends Homey.Device {
     /* START CAPABILITY LISTENERS */
     async startCapabilityListeners() {
         try {
+            /* avoid piling up listeners after reconnects */
+            this.miio.removeAllListeners?.();
+
             // debugging
             // this.miio.on('stateChanged', (change) => {
             //   this.log(JSON.stringify(change));
