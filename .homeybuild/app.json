@@ -187,7 +187,7 @@
       "게이트웨이"
     ]
   },
-  "version": "3.4.24",
+  "version": "3.4.25",
   "compatibility": ">=12.2.0",
   "platforms": [
     "local"
@@ -10401,18 +10401,18 @@
               {
                 "id": "1",
                 "label": {
-                  "en": "Rapid",
-                  "it": "Rapida",
-                  "nl": "Snelle",
+                  "en": "Quick",
+                  "it": "Veloce",
+                  "nl": "Snel",
                   "da": "Hurtig",
                   "de": "Schnell",
-                  "es": "Rápida",
+                  "es": "Rápido",
                   "fr": "Rapide",
                   "no": "Rask",
                   "sv": "Snabb",
-                  "pl": "Szybka",
-                  "ru": "Быстрая",
-                  "ko": "빠른"
+                  "pl": "Szybki",
+                  "ru": "Быстрый",
+                  "ko": "빠름"
                 }
               },
               {
@@ -10435,18 +10435,18 @@
               {
                 "id": "3",
                 "label": {
-                  "en": "Accurate",
-                  "it": "Profonda",
-                  "nl": "Nauwkeurig",
-                  "da": "Præcis",
-                  "de": "Genau",
-                  "es": "Precisa",
-                  "fr": "Précise",
-                  "no": "Nøyaktig",
-                  "sv": "Noggrann",
-                  "pl": "Dokładny",
-                  "ru": "Точный",
-                  "ko": "정확한"
+                  "en": "Deep",
+                  "it": "Profondo",
+                  "nl": "Diep",
+                  "da": "Dyb",
+                  "de": "Tief",
+                  "es": "Profundo",
+                  "fr": "Profond",
+                  "no": "Dyp",
+                  "sv": "Djup",
+                  "pl": "Głęboki",
+                  "ru": "Глубокий",
+                  "ko": "딥"
                 }
               }
             ]
@@ -10534,7 +10534,7 @@
                   "sv": "Full hastighet",
                   "pl": "Pełna prędkość",
                   "ru": "Максимальная скорость",
-                  "ko": "최고 속도"
+                  "ko": "최고속"
                 }
               }
             ]
@@ -10569,9 +10569,9 @@
                   "fr": "Éteindre",
                   "no": "Av",
                   "sv": "Av",
-                  "pl": "Wyłącz",
+                  "pl": "Wyłączony",
                   "ru": "Выключить",
-                  "ko": "끄기"
+                  "ko": "끔"
                 }
               },
               {
@@ -10647,6 +10647,493 @@
             "placeholder": {
               "en": "all"
             }
+          }
+        ]
+      },
+      {
+        "id": "set_sweep_mop_type",
+        "title": {
+          "en": "Set vacuum mode",
+          "it": "Imposta modalità aspirazione",
+          "nl": "Stel zuigmodus in",
+          "da": "Indstil støvsugningsmodus",
+          "de": "Saugmodus einstellen",
+          "es": "Establecer modo aspiración",
+          "fr": "Définir le mode aspirateur",
+          "no": "Angi støvsugmodus",
+          "sv": "Ställ in dammsägarläge",
+          "pl": "Ustaw tryb odkurzania",
+          "ru": "Установить режим уборки",
+          "ko": "청소 모드 설정"
+        },
+        "titleFormatted": {
+          "en": "Set vacuum mode to [[mode]]",
+          "it": "Imposta modalità aspirazione su [[mode]]",
+          "nl": "Stel zuigmodus in op [[mode]]",
+          "da": "Indstil støvsugningsmodus til [[mode]]",
+          "de": "Saugmodus einstellen auf [[mode]]",
+          "es": "Establecer modo aspiración en [[mode]]",
+          "fr": "Définir le mode aspirateur sur [[mode]]",
+          "no": "Angi støvsugmodus til [[mode]]",
+          "sv": "Ställ in dammsägarläge på [[mode]]",
+          "pl": "Ustaw tryb odkurzania na [[mode]]",
+          "ru": "Установить режим уборки на [[mode]]",
+          "ko": "청소 모드를 [[mode]]로 설정"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=vacuum_xiaomi_vacuum_max"
+          },
+          {
+            "name": "mode",
+            "type": "dropdown",
+            "title": {
+              "en": "Vacuum mode",
+              "it": "Modalità aspirazione",
+              "nl": "Zuigmodus",
+              "da": "Støvsugningsmodus",
+              "de": "Saugmodus",
+              "es": "Modo aspirar",
+              "fr": "Mode aspiration",
+              "no": "Støvsugmodus",
+              "sv": "Dammsägarläge",
+              "pl": "Tryb odkurzania",
+              "ru": "Режим уборки",
+              "ko": "청소 모드"
+            },
+            "values": [
+              {
+                "id": "1",
+                "label": {
+                  "en": "Sweep only",
+                  "it": "Solo aspirazione",
+                  "nl": "Alleen stofzuigen",
+                  "da": "Kun støvsugning",
+                  "de": "Nur Saugen",
+                  "es": "Solo aspirar",
+                  "fr": "Aspirer seulement",
+                  "no": "Kun støvsuging",
+                  "sv": "Endast dammsugning",
+                  "pl": "Tylko odkurzanie",
+                  "ru": "Только уборка",
+                  "ko": "청소만"
+                }
+              },
+              {
+                "id": "2",
+                "label": {
+                  "en": "Mop only",
+                  "it": "Solo lavaggio",
+                  "nl": "Alleen dweilen",
+                  "da": "Kun gulvvask",
+                  "de": "Nur Wischen",
+                  "es": "Solo fregar",
+                  "fr": "Lavette seulement",
+                  "no": "Kun vask",
+                  "sv": "Endast moppning",
+                  "pl": "Tylko mopowanie",
+                  "ru": "Только мытье",
+                  "ko": "물걸레만"
+                }
+              },
+              {
+                "id": "3",
+                "label": {
+                  "en": "Sweep & mop",
+                  "it": "Aspirazione e lavaggio",
+                  "nl": "Stofzuigen en dweilen",
+                  "da": "Støvsugning og gulvvask",
+                  "de": "Saugen und Wischen",
+                  "es": "Aspirar y fregar",
+                  "fr": "Aspirer et laver",
+                  "no": "Støvsuging og vask",
+                  "sv": "Dammsugning och moppning",
+                  "pl": "Odkurzanie i mopowanie",
+                  "ru": "Уборка и мытье",
+                  "ko": "청소 및 물걸레"
+                }
+              },
+              {
+                "id": "4",
+                "label": {
+                  "en": "Sweep then mop",
+                  "it": "Prima aspirare poi lavare",
+                  "nl": "Eerst stofzuigen daarna dweilen",
+                  "da": "Først støvsug, derefter gulvvask",
+                  "de": "Zuerst saugen, dann wischen",
+                  "es": "Primero aspirar, luego fregar",
+                  "fr": "D'abord aspirer, puis laver",
+                  "no": "Først støvsug, deretter vask",
+                  "sv": "Först dammsugning, sedan moppning",
+                  "pl": "Najpierw odkurzanie, potem mopowanie",
+                  "ru": "Сначала уборка, затем мытье",
+                  "ko": "먼저 청소 후 물걸레"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "set_cleaning_mode",
+        "title": {
+          "en": "Set cleaning power",
+          "it": "Imposta potenza di pulizia",
+          "nl": "Stel zuigvermogen in",
+          "da": "Indstil rengøringseffekt",
+          "de": "Reinigungsstärke einstellen",
+          "es": "Establecer potencia de limpieza",
+          "fr": "Définir la puissance de nettoyage",
+          "no": "Angi rengjøringsstyrke",
+          "sv": "Ställ in rengöringsstyrka",
+          "pl": "Ustaw moc odkurzania",
+          "ru": "Установить мощность уборки",
+          "ko": "청소 세기 설정"
+        },
+        "titleFormatted": {
+          "en": "Set cleaning power to [[power]]",
+          "it": "Imposta potenza di pulizia su [[power]]",
+          "nl": "Stel zuigvermogen in op [[power]]",
+          "da": "Indstil rengøringseffekt til [[power]]",
+          "de": "Reinigungsstärke einstellen auf [[power]]",
+          "es": "Establecer potencia de limpieza en [[power]]",
+          "fr": "Définir la puissance de nettoyage sur [[power]]",
+          "no": "Angi rengjøringsstyrke til [[power]]",
+          "sv": "Ställ in rengöringsstyrka på [[power]]",
+          "pl": "Ustaw moc odkurzania na [[power]]",
+          "ru": "Установить мощность уборки на [[power]]",
+          "ko": "청소 세기를 [[power]]로 설정"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=vacuum_xiaomi_vacuum_max"
+          },
+          {
+            "name": "power",
+            "type": "dropdown",
+            "title": {
+              "en": "Cleaning power",
+              "it": "Potenza di pulizia",
+              "nl": "Zuigkracht",
+              "da": "Rengøringseffekt",
+              "de": "Reinigungsstärke",
+              "es": "Potencia de limpieza",
+              "fr": "Puissance de nettoyage",
+              "no": "Rengjøringsstyrke",
+              "sv": "Rengöringsstyrka",
+              "pl": "Moc odkurzania",
+              "ru": "Мощность уборки",
+              "ko": "청소 세기"
+            },
+            "values": [
+              {
+                "id": "1",
+                "label": {
+                  "en": "Silent",
+                  "it": "Silenzioso",
+                  "nl": "Stil",
+                  "da": "Stille",
+                  "de": "Leise",
+                  "es": "Silencioso",
+                  "fr": "Silencieux",
+                  "no": "Stille",
+                  "sv": "Tyst",
+                  "pl": "Cichy",
+                  "ru": "Тихо",
+                  "ko": "조용함"
+                }
+              },
+              {
+                "id": "2",
+                "label": {
+                  "en": "Basic",
+                  "it": "Normale",
+                  "nl": "Basis",
+                  "da": "Basis",
+                  "de": "Basis",
+                  "es": "Básico",
+                  "fr": "Basique",
+                  "no": "Grunnleggende",
+                  "sv": "Grundläggande",
+                  "pl": "Podstawowy",
+                  "ru": "Базовый",
+                  "ko": "기본"
+                }
+              },
+              {
+                "id": "3",
+                "label": {
+                  "en": "Strong",
+                  "it": "Forte",
+                  "nl": "Sterk",
+                  "da": "Stærk",
+                  "de": "Stark",
+                  "es": "Fuerte",
+                  "fr": "Forte",
+                  "no": "Sterk",
+                  "sv": "Stark",
+                  "pl": "Mocny",
+                  "ru": "Сильный",
+                  "ko": "강함"
+                }
+              },
+              {
+                "id": "4",
+                "label": {
+                  "en": "Full Speed",
+                  "it": "Massima potenza",
+                  "nl": "Volledige snelheid",
+                  "da": "Fuld hastighed",
+                  "de": "Vollgas",
+                  "es": "A toda velocidad",
+                  "fr": "Vitesse maximale",
+                  "no": "Full hastighet",
+                  "sv": "Full hastighet",
+                  "pl": "Pełna prędkość",
+                  "ru": "Максимальная скорость",
+                  "ko": "최고속"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "set_water_level",
+        "title": {
+          "en": "Set water output level",
+          "it": "Imposta livello acqua",
+          "nl": "Stel waterniveau in",
+          "da": "Indstil vandniveau",
+          "de": "Wasserstand einstellen",
+          "es": "Establecer nivel de agua",
+          "fr": "Définir le niveau d'eau",
+          "no": "Angi vannivå",
+          "sv": "Ställ in vattennivå",
+          "pl": "Ustaw poziom wody",
+          "ru": "Установить уровень воды",
+          "ko": "물 세기 설정"
+        },
+        "titleFormatted": {
+          "en": "Set water level to [[level]]",
+          "it": "Imposta livello acqua su [[level]]",
+          "nl": "Stel waterniveau in op [[level]]",
+          "da": "Indstil vandniveau til [[level]]",
+          "de": "Wasserstand einstellen auf [[level]]",
+          "es": "Establecer nivel de agua en [[level]]",
+          "fr": "Définir le niveau d'eau sur [[level]]",
+          "no": "Angi vannivå til [[level]]",
+          "sv": "Ställ in vattennivå på [[level]]",
+          "pl": "Ustaw poziom wody na [[level]]",
+          "ru": "Установить уровень воды на [[level]]",
+          "ko": "물 세기를 [[level]]로 설정"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=vacuum_xiaomi_vacuum_max"
+          },
+          {
+            "name": "level",
+            "type": "dropdown",
+            "title": {
+              "en": "Water level",
+              "it": "Livello acqua",
+              "nl": "Waterniveau",
+              "da": "Vandniveau",
+              "de": "Wasserstand",
+              "es": "Nivel de agua",
+              "fr": "Niveau d'eau",
+              "no": "Vannivå",
+              "sv": "Vattennivå",
+              "pl": "Poziom wody",
+              "ru": "Уровень воды",
+              "ko": "물 세기"
+            },
+            "values": [
+              {
+                "id": "0",
+                "label": {
+                  "en": "Off",
+                  "it": "Spento",
+                  "nl": "Uit",
+                  "da": "Fra",
+                  "de": "Aus",
+                  "es": "Apagado",
+                  "fr": "Désactivé",
+                  "no": "Av",
+                  "sv": "Av",
+                  "pl": "Wyłączony",
+                  "ru": "Выключено",
+                  "ko": "끔"
+                }
+              },
+              {
+                "id": "1",
+                "label": {
+                  "en": "Level 1",
+                  "it": "Livello 1",
+                  "nl": "Niveau 1",
+                  "da": "Niveau 1",
+                  "de": "Stufe 1",
+                  "es": "Nivel 1",
+                  "fr": "Niveau 1",
+                  "no": "Nivå 1",
+                  "sv": "Nivå 1",
+                  "pl": "Poziom 1",
+                  "ru": "Уровень 1",
+                  "ko": "레벨 1"
+                }
+              },
+              {
+                "id": "2",
+                "label": {
+                  "en": "Level 2",
+                  "it": "Livello 2",
+                  "nl": "Niveau 2",
+                  "da": "Niveau 2",
+                  "de": "Stufe 2",
+                  "es": "Nivel 2",
+                  "fr": "Niveau 2",
+                  "no": "Nivå 2",
+                  "sv": "Nivå 2",
+                  "pl": "Poziom 2",
+                  "ru": "Уровень 2",
+                  "ko": "레벨 2"
+                }
+              },
+              {
+                "id": "3",
+                "label": {
+                  "en": "Level 3",
+                  "it": "Livello 3",
+                  "nl": "Niveau 3",
+                  "da": "Niveau 3",
+                  "de": "Stufe 3",
+                  "es": "Nivel 3",
+                  "fr": "Niveau 3",
+                  "no": "Nivå 3",
+                  "sv": "Nivå 3",
+                  "pl": "Poziom 3",
+                  "ru": "Уровень 3",
+                  "ko": "레벨 3"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "set_path_mode",
+        "title": {
+          "en": "Set path mode",
+          "it": "Imposta modalità percorso",
+          "nl": "Stel padmodus in",
+          "da": "Indstil stiemodus",
+          "de": "Pfadmodus einstellen",
+          "es": "Establecer modo de recorrido",
+          "fr": "Définir le mode de chemin",
+          "no": "Angi sti-modus",
+          "sv": "Ställ in sökläge",
+          "pl": "Ustaw tryb trasy",
+          "ru": "Установить режим траектории",
+          "ko": "경로 모드 설정"
+        },
+        "titleFormatted": {
+          "en": "Set path mode to [[mode]]",
+          "it": "Imposta modalità percorso su [[mode]]",
+          "nl": "Stel padmodus in op [[mode]]",
+          "da": "Indstil stiemodus til [[mode]]",
+          "de": "Pfadmodus einstellen auf [[mode]]",
+          "es": "Establecer modo de recorrido en [[mode]]",
+          "fr": "Définir le mode de chemin sur [[mode]]",
+          "no": "Angi sti-modus til [[mode]]",
+          "sv": "Ställ in sökläge på [[mode]]",
+          "pl": "Ustaw tryb trasy na [[mode]]",
+          "ru": "Установить режим траектории на [[mode]]",
+          "ko": "경로 모드를 [[mode]]로 설정"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=vacuum_xiaomi_vacuum_max"
+          },
+          {
+            "name": "mode",
+            "type": "dropdown",
+            "title": {
+              "en": "Path mode",
+              "it": "Modalità percorso",
+              "nl": "Padmodus",
+              "da": "Stiemodus",
+              "de": "Pfadmodus",
+              "es": "Modo de recorrido",
+              "fr": "Mode de chemin",
+              "no": "Sti-modus",
+              "sv": "Sökläge",
+              "pl": "Tryb trasy",
+              "ru": "Режим траектории",
+              "ko": "경로 모드"
+            },
+            "values": [
+              {
+                "id": "1",
+                "label": {
+                  "en": "Quick",
+                  "it": "Veloce",
+                  "nl": "Snel",
+                  "da": "Hurtig",
+                  "de": "Schnell",
+                  "es": "Rápido",
+                  "fr": "Rapide",
+                  "no": "Rask",
+                  "sv": "Snabb",
+                  "pl": "Szybki",
+                  "ru": "Быстрый",
+                  "ko": "빠름"
+                }
+              },
+              {
+                "id": "2",
+                "label": {
+                  "en": "Standard",
+                  "it": "Standard",
+                  "nl": "Standaard",
+                  "da": "Standard",
+                  "de": "Standard",
+                  "es": "Estándar",
+                  "fr": "Standard",
+                  "no": "Standard",
+                  "sv": "Standard",
+                  "pl": "Standardowy",
+                  "ru": "Стандартный",
+                  "ko": "표준"
+                }
+              },
+              {
+                "id": "3",
+                "label": {
+                  "en": "Deep",
+                  "it": "Profondo",
+                  "nl": "Diep",
+                  "da": "Dyb",
+                  "de": "Tief",
+                  "es": "Profundo",
+                  "fr": "Profond",
+                  "no": "Dyp",
+                  "sv": "Djup",
+                  "pl": "Głęboki",
+                  "ru": "Глубокий",
+                  "ko": "딥"
+                }
+              }
+            ]
           }
         ]
       }

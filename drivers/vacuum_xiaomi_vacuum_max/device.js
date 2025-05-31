@@ -30,7 +30,7 @@ const properties = {
             { did: 'filter_life_level', siid: 14, piid: 1 }, // filter-life-level
             { did: 'total_clean_time', siid: 2, piid: 7 }, // cleaning time (seconds)
             { did: 'total_clean_count', siid: 2, piid: 8 }, // clean times
-            { did: 'total_clean_area', siid: 2, piid: 6 }, // cleaning area (m2)
+            { did: 'total_clean_area', siid: 2, piid: 6 }, // cleaning area (0.01 m²)
             { did: 'cleaning_mode', siid: 2, piid: 9 }, // Cleaning Mode (1-4)
             { did: 'water_level', siid: 2, piid: 10 }, // Water Output Level (0-3)
             { did: 'path_mode', siid: 2, piid: 74 }, // Path-mode (1-3)
@@ -115,7 +115,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             // GENERIC DEVICE INIT ACTIONS
             this.bootSequence();
 
-            // remember the last reported state so we can spot when a job is finished
+            // remember the last reported state so we can spot transitions
             this.lastVacState = 'unknown';
             // Track the session-internal progress (0.01 m² and seconds)
             this._prevArea01 = 0;
@@ -127,9 +127,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             this._isSessionActive = false;
             this._forceRefreshTotals = false;
 
-            // ADD/REMOVE DEVICES DEPENDANT CAPABILITIES
-
-            // Device-specific logic xiaomi.vacuum.d109gl only as generic logic is using slighly different calcalutions
+            // Device-specific logic xiaomi.vacuum.d109gl only
             if (['xiaomi.vacuum.d109gl'].includes(this.getStoreValue('model'))) {
                 this.log('Using custom vacuumTotals and custom vacuumConsumables method for xiaomi.vacuum.d109gl');
                 this.vacuumTotals = this.customVacuumTotals;
@@ -146,17 +144,11 @@ class XiaomiVacuumMiotDeviceMax extends Device {
 
             // DEVICE TOKENS
             this.main_brush_lifetime_token = await this.getOrCreateToken('main_brush_lifetime' + this.getData().id, `Main Brush Lifetime ${this.getName()} (%)`);
-
             this.side_brush_lifetime_token = await this.getOrCreateToken('side_brush_lifetime' + this.getData().id, `Side Brush Lifetime ${this.getName()} (%)`);
-
             this.filter_lifetime_token = await this.getOrCreateToken('filter_lifetime' + this.getData().id, `Filter Lifetime ${this.getName()} (%)`);
-
             this.sensor_dirty_lifetime_token = await this.getOrCreateToken('sensor_dirty_lifetime' + this.getData().id, `Sensor Dirty Lifetime ${this.getName()} (%)`);
-
             this.total_work_time_token = await this.getOrCreateToken('total_work_time' + this.getData().id, `Total Work Time ${this.getName()} (h)`);
-
             this.total_cleared_area_token = await this.getOrCreateToken('total_cleared_area' + this.getData().id, `Total Cleaned Area ${this.getName()} (m²)`);
-
             this.total_clean_count_token = await this.getOrCreateToken('total_clean_count' + this.getData().id, `Total Clean Count ${this.getName()}`);
 
             // FLOW TRIGGER CARDS
@@ -190,10 +182,11 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                 }
 
                 let room_list = selected_room.join(',');
-                // For a bug/issue of protocol, it's impossible to handle single room cleaning, so in case of single room I will duplicate it for bypass this issue
+                // For a bug/issue of protocol, it's impossible to handle single room cleaning,
+                // so in case of single room I will duplicate it for bypass this issue
                 if (selected_room.length == 1) room_list += ',' + room_list;
 
-                let properties = [
+                let propertiesToSet = [
                     {
                         siid: this.deviceProperties.set_properties.mopmode.siid,
                         piid: this.deviceProperties.set_properties.mopmode.piid,
@@ -207,14 +200,14 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                 ];
 
                 if (args.mode == 1 || args.mode == 3) {
-                    properties.push({
+                    propertiesToSet.push({
                         siid: this.deviceProperties.set_properties.cleaning_mode.siid,
                         piid: this.deviceProperties.set_properties.cleaning_mode.piid,
                         value: Number(args.mode_sweep)
                     });
                 }
                 if (args.mode == 2 || args.mode == 3) {
-                    properties.push({
+                    propertiesToSet.push({
                         siid: this.deviceProperties.set_properties.water_level.siid,
                         piid: this.deviceProperties.set_properties.water_level.piid,
                         value: Number(args.mode_mop)
@@ -234,8 +227,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                     ]
                 };
 
-                //let actions = { siid: 2, aiid: 16, in: [{ siid: 2, piid: 15, code: 0, value: room_list }] };
-                //debug
+                // debug
                 this.log(
                     '[ADV_ROOM_CLEAN] Cleaning rooms:',
                     room_list,
@@ -248,13 +240,13 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                         .join(', ')
                 );
 
-                if (args.device.miio.call) {
-                    let responseProperties = await args.device.miio.call('set_properties', properties, { retries: 1 });
-                    //debug
+                if (args.device.miio && typeof args.device.miio.call === 'function') {
+                    let responseProperties = await args.device.miio.call('set_properties', propertiesToSet, { retries: 1 });
+                    // debug
                     this.log('[ADV_ROOM_CLEAN] Properties response:', JSON.stringify(responseProperties));
 
                     let responseAction = await args.device.miio.call('action', actions, { retries: 3 });
-                    //debug
+                    // debug
                     this.log('[ADV_ROOM_CLEAN] Action response:', JSON.stringify(responseAction));
                 } else {
                     this.setUnavailable(this.homey.__('unreachable')).catch((error) => {
@@ -263,6 +255,71 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                     this.createDevice();
                     return Promise.reject('Device unreachable, please try again ...');
                 }
+            });
+
+            // Register action cards globally for all devices
+            // 1. Set vacuum mode
+            this.homey.flow.getActionCard('set_sweep_mop_type').registerRunListener(async ({ device, mode }) => {
+                const modeValue = Number(mode);
+                return device.miio.call(
+                    'set_properties',
+                    [
+                        {
+                            siid: device.deviceProperties.set_properties.mopmode.siid,
+                            piid: device.deviceProperties.set_properties.mopmode.piid,
+                            value: modeValue
+                        }
+                    ],
+                    { retries: 1 }
+                );
+            });
+
+            // 2. Set cleaning power
+            this.homey.flow.getActionCard('set_cleaning_mode').registerRunListener(async ({ device, power }) => {
+                const powerValue = Number(power);
+                return device.miio.call(
+                    'set_properties',
+                    [
+                        {
+                            siid: device.deviceProperties.set_properties.cleaning_mode.siid,
+                            piid: device.deviceProperties.set_properties.cleaning_mode.piid,
+                            value: powerValue
+                        }
+                    ],
+                    { retries: 1 }
+                );
+            });
+
+            // 3. Set water output level
+            this.homey.flow.getActionCard('set_water_level').registerRunListener(async ({ device, level }) => {
+                const levelValue = Number(level);
+                return device.miio.call(
+                    'set_properties',
+                    [
+                        {
+                            siid: device.deviceProperties.set_properties.water_level.siid,
+                            piid: device.deviceProperties.set_properties.water_level.piid,
+                            value: levelValue
+                        }
+                    ],
+                    { retries: 1 }
+                );
+            });
+
+            // 4. Set path mode
+            this.homey.flow.getActionCard('set_path_mode').registerRunListener(async ({ device, mode }) => {
+                const pathValue = Number(mode);
+                return device.miio.call(
+                    'set_properties',
+                    [
+                        {
+                            siid: device.deviceProperties.set_properties.path_mode.siid,
+                            piid: device.deviceProperties.set_properties.path_mode.piid,
+                            value: pathValue
+                        }
+                    ],
+                    { retries: 1 }
+                );
             });
 
             // LISTENERS FOR UPDATING CAPABILITIES
@@ -313,7 +370,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                 }
             });
 
-            /* vacuumcleaner xiaomi mop mode max*/
+            /* vacuumcleaner xiaomi mop mode max */
             this.registerCapabilityListener('vacuum_xiaomi_mop_mode_max', async (value) => {
                 try {
                     const numericValue = Number(value); // Homey gives string, device expects number
@@ -460,40 +517,6 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             }
             this._lastPropertyValues = resultValues;
 
-            //temporary debug !!!
-            /*
-            try {
-                this.log('Starting full property scan...');
-    
-                const results = [];
-                
-                // Iterate over a reasonable range of SIIDs and PIIDs
-                for (let siid = 1; siid <= 18; siid++) {
-                    for (let piid = 1; piid <= 90; piid++) {
-                        try {
-                            // Attempt to fetch property for the current SIID and PIID
-                            const response = await this.miio.call('get_properties', [{ siid, piid }], { retries: 1 });
-                            
-                            // Log successful responses and add them to results
-                            if (response && response.length > 0 && response[0].code === 0) {
-                                this.log(`Fetched property SIID ${siid}, PIID ${piid}:`, JSON.stringify(response[0]));
-                                results.push(response[0]);
-                            }
-                        } catch (error) {
-                            // Ignore errors for invalid SIID/PIID combinations
-                            this.log(`SIID ${siid}, PIID ${piid} not accessible.`);
-                        }
-                    }
-                }
-    
-                // Log all successfully fetched properties
-                this.log('Complete property scan result:', JSON.stringify(results, null, 2));
-    
-            } catch (error) {
-                this.error('Error during full property scan:', error);
-            } 
-            */
-            // Assign all properties first
             const device_status = this.getMiotProp(result, 'device_status');
             const mop_mode = this.getMiotProp(result, 'mode');
             const battery = this.getMiotProp(result, 'battery');
@@ -510,27 +533,6 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             const detergent_left_level = this.getMiotProp(result, 'detergent_left_level'); // not available on d109gl ??
             const dust_bag_life_level = this.getMiotProp(result, 'dust_bag_life_level'); // not available on d109gl ??
 
-            // Now log debug info for property values (with null checks)
-            /*
-            if (device_status) {
-                this.log('Device Status Value:', device_status.value);
-            } else {
-                this.log('Device Status property not found in response.');
-            }
-
-            if (battery) {
-                this.log('Battery Value:', battery.value);
-            } else {
-                this.log('Battery property not found in response.');
-            }
-
-            if (mop_mode) {
-                this.log('Mop Mode Value:', mop_mode.value);
-            } else {
-                this.log('Mop Mode property not found in response.');
-            }
-                */
-
             const consumables = [
                 {
                     main_brush_work_time: main_brush_life_level ? main_brush_life_level.value : 0,
@@ -539,7 +541,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                 }
             ];
 
-            const totals = {
+            const totalsReport = {
                 clean_time: total_clean_time ? total_clean_time.value : 0,
                 clean_count: total_clean_count ? total_clean_count.value : 0,
                 clean_area: total_clean_area ? total_clean_area.value : 0
@@ -585,49 +587,53 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             }
             // -----------------------------------------------------------------------
 
-            // Manage this.initialTokenTotal for the very first run of customVacuumTotals
-            if (this.initialTokenTotal === undefined) {
-                this.initialTokenTotal = false; // Will allow customVacuumTotals to initialize if needed
+            // ── SESSION HANDLING ──────────────────────────────────────────────────
+            // If we just transitioned INTO 'cleaning', record session start
+            if (stateKey === 'cleaning' && !this._isSessionActive) {
+                this._isSessionActive = true;
+                this._prevArea01 = total_clean_area ? total_clean_area.value : 0;
+                this._prevTimeSec = total_clean_time ? total_clean_time.value : 0;
+                this._sessionStartArea = this._prevArea01;
+                this._sessionStartTime = this._prevTimeSec;
+                this.log(`[SESSION] Cleaning started: startArea(0.01m²)=${this._sessionStartArea}, startTime(sec)=${this._sessionStartTime}`);
             }
 
-            /* job finished? (cleaning → docked / charging / stopped) */
+            // While cleaning, accumulate deltas each poll
+            if (stateKey === 'cleaning' && this._isSessionActive) {
+                let currentArea01 = total_clean_area ? total_clean_area.value : 0;
+                let currentTimeSec = total_clean_time ? total_clean_time.value : 0;
+                let deltaArea01 = currentArea01 - this._prevArea01;
+                let deltaTimeSec = currentTimeSec - this._prevTimeSec;
+
+                if (deltaArea01 > 0 || deltaTimeSec > 0) {
+                    let deltaAreaM2 = deltaArea01 / 100; // convert 0.01m² → m²
+                    let deltaHours = deltaTimeSec / 3600; // convert seconds → hours
+
+                    this.log(`[SESSION] Incremental delta: Δarea=${deltaAreaM2.toFixed(2)}m² (Δarea01=${deltaArea01}), Δtime=${deltaHours.toFixed(2)}h (Δsec=${deltaTimeSec})`);
+
+                    await this._addLiveDelta(deltaAreaM2, deltaHours);
+
+                    this._prevArea01 = currentArea01;
+                    this._prevTimeSec = currentTimeSec;
+                }
+            }
+
+            // If we just transitioned OUT OF 'cleaning', increment only the clean count
             if (this.lastVacState === 'cleaning' && ['docked', 'charging', 'stopped'].includes(stateKey)) {
                 try {
-                    // The robot's PII 6 & 7 now reflect the totals for the session that just ENDED.
-                    const sessionEndAreaValue = total_clean_area ? total_clean_area.value : 0;
-                    const sessionEndTimeValue = total_clean_time ? total_clean_time.value : 0;
-
-                    // Calculate the DELTA for the session, for some reason Xiaomi app is between ~30 sec more...
-                    const sessionDeltaArea01 = sessionEndAreaValue - this._sessionStartArea;
-                    const sessionDeltaTimeSec = sessionEndTimeValue - this._sessionStartTime + 30;
-
-                    this.log(`Session completed. Robot reported session end values: Area=${sessionEndAreaValue} (0.01m²), Time=${sessionEndTimeValue}s.`);
-                    this.log(`Calculated session delta: Area=${sessionDeltaArea01} (0.01m²), Time=${sessionDeltaTimeSec}s.`);
-
-                    // forceUpdateTotals will add these deltas to Homey's stored lifetime totals.
-                    await this.forceUpdateTotals(sessionDeltaArea01, sessionDeltaTimeSec);
-
+                    await this._accumulateJobTotals();
                     this._isSessionActive = false;
-                    // this._forceRefreshTotals = true; // This flag's original purpose might change.
-                    // It's not strictly needed to refresh PII 6/7 via customVacuumTotals anymore.
+                    this.log('[SESSION] Cleaning ended. Total clean count incremented.');
                 } catch (e) {
                     this.error('Session completion handling failed', e);
                 }
             }
+            // ────────────────────────────────────────────────────────────────────────
 
-            // Call customVacuumTotals (which is this.vacuumTotals for d109gl)
-            // For d109gl, this will now mainly handle initialization if settings are empty,
-            // or sync total_clean_count if robot's count is higher.
-            // It WON'T overwrite area/time totals that forceUpdateTotals manages.
-            const totalsForCustomMethod = {
-                clean_time: total_clean_time ? total_clean_time.value : 0,
-                clean_count: total_clean_count ? total_clean_count.value : 0,
-                clean_area: total_clean_area ? total_clean_area.value : 0
-            };
-            await this.vacuumTotals(totalsForCustomMethod); // This calls customVacuumTotals for d109gl
+            // Call customVacuumTotals (one-time init or count sync for d109gl)
+            await this.vacuumTotals(totalsReport);
 
-            // After the first time customVacuumTotals runs and potentially initializes settings,
-            // mark initialTokenTotal as true so it doesn't re-initialize unnecessarily.
+            // After the first run of customVacuumTotals, mark initialTokenTotal
             if (!this.initialTokenTotal && this.getSetting('total_work_time') !== undefined && this.getSetting('total_cleared_area') !== undefined && this.getSetting('total_clean_count') !== undefined) {
                 this.initialTokenTotal = true;
                 this.log(`[DIAG] initialTokenTotal flag is now true.`);
@@ -650,7 +656,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             if (result_rooms && result_rooms.length === 1 && result_rooms[0].value) {
                 let roomsArr = JSON.parse(result_rooms[0].value).rooms;
                 let rooms_list = JSON.stringify(roomsArr);
-                let rooms_names = roomsArr.map((r) => r.name).join(', '); // to make it shorter, eg. when checking on mobile
+                let rooms_names = roomsArr.map((r) => r.name).join(', ');
                 await this.setSettings({ rooms: rooms_list, rooms_display: rooms_names });
             } else {
                 await this.setSettings({ rooms: 'Not supported for this model' });
@@ -672,17 +678,6 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                 await this.updateCapabilityValue('vacuum_xiaomi_path_mode_max', path_mode.value.toString());
             }
 
-            /* detergent left (%) */
-            /*if (detergent_left_level) {
-                await this.updateCapabilityValue('vacuum_xiaomi_detergent_left_level', detergent_left_level.value);
-            }*/
-
-            /* dust-bag life (%) */
-            /*
-            if (dust_bag_life_level) {
-                await this.updateCapabilityValue('vacuum_xiaomi_dust_bag_left_level', dust_bag_life_level.value);
-            }*/
-
             /* settings device error → save + tile + flow */
             let err = 'Everything-is-ok';
             if (device_fault && this.deviceProperties.error_codes.hasOwnProperty(device_fault.value)) {
@@ -690,7 +685,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             }
             let safeError = typeof err === 'string' ? err : 'Unknown Error';
 
-            // If state is cleaning, force status to OK - Working (because the device keep raised the error also when solved and cleaning is restarted)
+            // If state is cleaning, force status to OK - Working
             if (stateKey === 'cleaning') {
                 if (safeError !== 'OK - Working') {
                     this.log(`Overriding error "${safeError}" with "OK - Working" because cleaning is active.`);
@@ -699,9 +694,8 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             }
 
             // In case of error, Trigger the flow with the error code
-            // this.log('Device Fault Value:', device_fault ? device_fault.value : 'undefined');
-            let currentError = this.getCapabilityValue('vacuum_xiaomi_status');
-            if (safeError !== 'OK' && safeError !== 'OK - Working' && safeError !== currentError) {
+            let currentErrorCap = this.getCapabilityValue('vacuum_xiaomi_status');
+            if (safeError !== 'OK' && safeError !== 'OK - Working' && safeError !== currentErrorCap) {
                 await this.homey.flow
                     .getDeviceTriggerCard('vacuum_on_error')
                     .trigger(this, { error: safeError })
@@ -731,8 +725,8 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             this.homey.clearInterval(this.pollingInterval);
 
             if (this.getAvailable()) {
-                this.setUnavailable(this.homey.__('device.unreachable') + error.message).catch((error) => {
-                    this.error(error);
+                this.setUnavailable(this.homey.__('device.unreachable') + error.message).catch((err) => {
+                    this.error(err);
                 });
             }
 
@@ -905,11 +899,11 @@ class XiaomiVacuumMiotDeviceMax extends Device {
     }
 
     /* Helper – always return a usable FlowToken instance
-   1. First try to create (fast path)
-   2. If it already exists → grab it
-   3. If Homey says “token_not_registered” when we tried to grab it first
-      → simply create it then.
-*/
+       1. First try to create (fast path)
+       2. If it already exists → grab it
+       3. If Homey says “token_not_registered” when we tried to grab it first
+          → simply create it then.
+    */
     async getOrCreateToken(id, title) {
         try {
             // 1️⃣  Fast-path: create, will succeed the very first time
@@ -930,17 +924,11 @@ class XiaomiVacuumMiotDeviceMax extends Device {
 
     /**
      * Called exactly once when a cleaning run ends.
-     * – Adds the adjustment delta (area & duration)
-     * – Increments the lifetime clean-count
-     * – Resets the live trackers for the next run
+     * – Since we already did incremental updates during cleaning,
+     *   we only need to bump the clean-count here.
      */
     async _accumulateJobTotals(extraAreaM2 = 0, extraHours = 0) {
-        // Add the extra area and time adjustments to match Xiaomi Home app
-        if (extraAreaM2 > 0 || extraHours > 0) {
-            await this._addLiveDelta(extraAreaM2, extraHours);
-        }
-
-        // Increment the clean count
+        // Increment the clean count only
         const prevCount = Number(this.getSetting('total_clean_count') || 0);
         const newCount = prevCount + 1;
 
@@ -952,6 +940,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
 
     /**
      * Add a delta to the lifetime totals (area & duration)
+     * This is called every poll while cleaning is active, so totals are live.
      */
     async _addLiveDelta(deltaAreaM2, deltaHours) {
         if (deltaAreaM2 <= 0 && deltaHours <= 0) return; // nothing to do
@@ -972,57 +961,13 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             total_work_time: +newTime.toFixed(2)
         });
 
-        await this.total_cleared_area_token.setValue(newArea);
-        await this.total_work_time_token.setValue(newTime);
-    }
-
-    // Add this method to the class
-    async forceUpdateTotals(sessionArea01, sessionTimeSec) {
-        try {
-            // Get current LIFETIME values from Homey settings
-            const currentLifetimeWorkTimeH = Number(this.getSetting('total_work_time') || 0);
-            const currentLifetimeAreaM2 = Number(this.getSetting('total_cleared_area') || 0);
-            const currentLifetimeCount = Number(this.getSetting('total_clean_count') || 0);
-
-            // Calculate session metrics in appropriate units for accumulation
-            const sessionTimeHours = sessionTimeSec / 3600; // Raw hours from session
-            const sessionAreaM2 = sessionArea01 / 100; // Raw m² from session
-
-            // Calculate new LIFETIME totals
-            const newLifetimeWorkTimeH = parseFloat((currentLifetimeWorkTimeH + sessionTimeHours).toFixed(1));
-            const newLifetimeAreaM2 = Math.floor(currentLifetimeAreaM2 + sessionAreaM2); // Use Math.floor as in original customVacuumTotals
-            const newLifetimeCount = currentLifetimeCount + 1;
-
-            this.log(`[DIAG] [FORCE_UPDATE_TOTALS] Updating lifetime totals after session:`);
-            this.log(`[DIAG] [FORCE_UPDATE_TOTALS] Session delta: Area=${sessionAreaM2.toFixed(2)}m², Time=${sessionTimeHours.toFixed(2)}h`);
-            this.log(`[DIAG] [FORCE_UPDATE_TOTALS] Work Time: OLD=${currentLifetimeWorkTimeH.toFixed(1)}h + DELTA=${sessionTimeHours.toFixed(2)}h = NEW=${newLifetimeWorkTimeH}h`);
-            this.log(`[DIAG] [FORCE_UPDATE_TOTALS] Cleared Area: OLD=${currentLifetimeAreaM2}m² + DELTA=${sessionAreaM2.toFixed(2)}m² = NEW=${newLifetimeAreaM2}m²`);
-            this.log(`[DIAG] [FORCE_UPDATE_TOTALS] Clean Count: OLD=${currentLifetimeCount} + 1 = NEW=${newLifetimeCount}`);
-
-            // Update Homey settings with new lifetime totals
-            await this.setSettings({
-                total_work_time: newLifetimeWorkTimeH,
-                total_cleared_area: newLifetimeAreaM2,
-                total_clean_count: newLifetimeCount
-            });
-
-            // Update Homey Flow tokens with new lifetime totals
-            await this.total_work_time_token.setValue(newLifetimeWorkTimeH);
-            await this.total_cleared_area_token.setValue(newLifetimeAreaM2);
-            await this.total_clean_count_token.setValue(newLifetimeCount);
-
-            this.log('[DIAG] [FORCE_UPDATE_TOTALS] Lifetime totals (settings & tokens) successfully updated.');
-            return true;
-        } catch (error) {
-            this.error('[ERROR] [FORCE_UPDATE_TOTALS] Failed to update lifetime totals:', error);
-            return false;
-        }
+        await this.total_cleared_area_token.setValue(+newArea.toFixed(1));
+        await this.total_work_time_token.setValue(+newTime.toFixed(2));
     }
 
     /**
-     * User changed advanced settings.
-     * We want the generic wifi_device.js handling **plus**
-     * updating our lifetime FlowTokens when the user manually edits them.
+     * When the user manually edits “total_work_time” / “total_cleared_area” / “total_clean_count”
+     * in Settings, we want to sync those new values to flow tokens immediately.
      */
     async onSettings({ oldSettings, newSettings, changedKeys }) {
         if (super.onSettings) {
