@@ -77,7 +77,14 @@ const Browser = module.exports.Browser = class Browser extends TimedDiscovery {
 				autoToken: device.autoToken
 			};
 	
-			const add = () => this[addService](service);
+			// Modified code with backward-compatible check
+			const add = () => {
+			// Skip services without proper identifiers to prevent "Services must have an identifier" error
+			if (!service || !service.id) {
+	  			return; // Silently skip invalid services
+			}
+			this[addService](service);
+};
 	
 			// Give us five seconds to try resolve some extras for new devices
 			setTimeout(add, 5000);
