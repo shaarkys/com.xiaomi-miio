@@ -307,5 +307,8 @@
   },
   "3.4.24": {
     "en": "Updates for the xiaomi.pet_waterer.iv02"
+  },
+  "3.4.25": {
+    "en": "MiiO library - discovery update / prevents crash"
   }
 }
