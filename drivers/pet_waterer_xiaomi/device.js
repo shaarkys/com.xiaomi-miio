@@ -42,8 +42,8 @@ class PetwaterdispenserXiaomiDevice extends Device {
     // Helper method to pretty print properties (similar to the reference device)
     prettyPrintProperties(result, propertyDefs) {
         try {
-            const formatted = result.map(item => {
-                const def = propertyDefs.find(p => p.siid === item.siid && p.piid === item.piid);
+            const formatted = result.map((item) => {
+                const def = propertyDefs.find((p) => p.siid === item.siid && p.piid === item.piid);
                 return {
                     did: def ? def.did : `unknown_${item.siid}_${item.piid}`,
                     siid: item.siid,
@@ -71,6 +71,12 @@ class PetwaterdispenserXiaomiDevice extends Device {
 
             // FLOW TRIGGER CARDS
             this.homey.flow.getDeviceTriggerCard('triggerModeChanged');
+
+            // Register flow action card for setting mode
+            this.homey.flow.getActionCard('petwaterdispenserMmggMode_Xiaomi').registerRunListener(async (args, state) => {
+                this.log(`[flow] Setting fountain mode to: ${args.mode} (${modes_iv02[args.mode]})`);
+                return await this.triggerCapabilityListener('petwaterdispenser_mmgg_mode_3', args.mode);
+            });
 
             // Capability listeners
             this.registerCapabilityListener('onoff', async (value) => {
