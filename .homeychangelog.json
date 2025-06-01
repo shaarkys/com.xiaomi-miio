@@ -310,5 +310,8 @@
   },
   "3.4.25": {
     "en": "MiiO library - discovery update / prevents crash"
+  },
+  "3.4.26": {
+    "en": "Xiaomi Robot Vacuum X20 - carpet avoidance for selective room cleaning, selective rooms cleaning respect order of room entered, adjustments for totals, attempt to add water empty alarm"
   }
 }
