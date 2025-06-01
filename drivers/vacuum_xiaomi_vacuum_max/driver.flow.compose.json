@@ -71,18 +71,18 @@
         "ko": "고급 청소"
       },
       "titleFormatted": {
-        "en": "Start [[mode]] with accuracy [[accuracy]]. Sweep [[mode_sweep]] and mop [[mode_mop]] on room [[room]]",
-        "it": "Attiva [[mode]] con accuratezza percorso [[accuracy]]. Aspirazione [[mode_sweep]] e lavaggio [[mode_mop]] nelle stanze [[room]]",
-        "nl": "Start [[mode]] met nauwkeurigheid [[accuracy]]. Stofzuigen [[mode_sweep]] en dweilen [[mode_mop]] in kamer [[room]]",
-        "da": "Start [[mode]] med nøjagtighed [[accuracy]]. Støvsug [[mode_sweep]] og moppe [[mode_mop]] i rum [[room]]",
-        "de": "Starte [[mode]] mit Genauigkeit [[accuracy]]. Saugen [[mode_sweep]] und wischen [[mode_mop]] im Raum [[room]]",
-        "es": "Iniciar [[mode]] con precisión [[accuracy]]. Barrer [[mode_sweep]] y fregar [[mode_mop]] en la habitación [[room]]",
-        "fr": "Démarrer [[mode]] avec précision [[accuracy]]. Balayer [[mode_sweep]] et frotter [[mode_mop]] dans la pièce [[room]]",
-        "no": "Start [[mode]] med nøyaktighet [[accuracy]]. Støvsuge [[mode_sweep]] og moppe [[mode_mop]] i rom [[room]]",
-        "sv": "Starta [[mode]] med noggrannhet [[accuracy]]. Dammsuga [[mode_sweep]] och moppa [[mode_mop]] i rum [[room]]",
-        "pl": "Rozpocznij [[mode]] z dokładnością [[accuracy]]. Odkurzanie [[mode_sweep]] i mycie [[mode_mop]] w pokoju [[room]]",
-        "ru": "Запустить [[mode]] с точностью [[accuracy]]. Пылесосить [[mode_sweep]] и мыть [[mode_mop]] в комнате [[room]]",
-        "ko": "[[mode]]를 [[accuracy]] 정확도로 시작합니다. [[mode_sweep]] 청소 및 [[mode_mop]] 방 [[room]]"
+        "en": "Start [[mode]] with accuracy [[accuracy]]. Sweep [[mode_sweep]] and mop [[mode_mop]] on room [[room]] (carpet-avoid: [[carpet_avoidance]])",
+        "it": "Attiva [[mode]] con accuratezza percorso [[accuracy]]. Aspirazione [[mode_sweep]] e lavaggio [[mode_mop]] in stanza [[room]] (evita tappeti: [[carpet_avoidance]])",
+        "nl": "Start [[mode]] met nauwkeurigheid [[accuracy]]. Stofzuigen [[mode_sweep]] en dweilen [[mode_mop]] in kamer [[room]] (tapijt vermijden: [[carpet_avoidance]])",
+        "da": "Start [[mode]] med nøjagtighed [[accuracy]]. Støvsug [[mode_sweep]] og moppe [[mode_mop]] i rum [[room]] (undgå tæpper: [[carpet_avoidance]])",
+        "de": "Starte [[mode]] mit Genauigkeit [[accuracy]]. Saugen [[mode_sweep]] und Wischen [[mode_mop]] im Raum [[room]] (Teppich-Vermeidung: [[carpet_avoidance]])",
+        "es": "Iniciar [[mode]] con precisión [[accuracy]]. Barrer [[mode_sweep]] y fregar [[mode_mop]] en la habitación [[room]] (evitar alfombras: [[carpet_avoidance]])",
+        "fr": "Démarrer [[mode]] avec précision [[accuracy]]. Balayer [[mode_sweep]] et frotter [[mode_mop]] dans la pièce [[room]] (éviter tapis: [[carpet_avoidance]])",
+        "no": "Start [[mode]] med nøyaktighet [[accuracy]]. Støvsuge [[mode_sweep]] og moppe [[mode_mop]] i rom [[room]] (unngå tepper: [[carpet_avoidance]])",
+        "sv": "Starta [[mode]] med noggrannhet [[accuracy]]. Dammsuga [[mode_sweep]] och moppa [[mode_mop]] i rum [[room]] (undvik mattor: [[carpet_avoidance]])",
+        "pl": "Rozpocznij [[mode]] z dokładnością [[accuracy]]. Odkurzanie [[mode_sweep]] i mycie [[mode_mop]] w pokoju [[room]] (unikaj dywanów: [[carpet_avoidance]])",
+        "ru": "Запустить [[mode]] с точностью [[accuracy]]. Пылесосить [[mode_sweep]] и мыть [[mode_mop]] в комнате [[room]] (избегать ковров: [[carpet_avoidance]])",
+        "ko": "[[mode]]를 [[accuracy]] 정확도로 시작합니다. [[mode_sweep]] 청소 및 [[mode_mop]] 방 [[room]] (카펫 회피: [[carpet_avoidance]])"
       },
       "args": [
         {
@@ -416,6 +416,94 @@
                 "pl": "Poziom 3",
                 "ru": "Уровень 3",
                 "ko": "레벨 3"
+              }
+            }
+          ]
+        },
+        {
+          "name": "carpet_avoidance",
+          "type": "dropdown",
+          "title": {
+            "en": "Carpet avoidance",
+            "it": "Evitamento tappeti",
+            "nl": "Tapijt vermijden",
+            "da": "Undgå tæpper",
+            "de": "Teppichvermeidung",
+            "es": "Evitar alfombras",
+            "fr": "Éviter les tapis",
+            "no": "Unngå tepper",
+            "sv": "Undvik mattor",
+            "pl": "Unikaj dywanów",
+            "ru": "Избегать ковров",
+            "ko": "카펫 회피"
+          },
+          "values": [
+            {
+              "id": "0",
+              "label": {
+                "en": "Self Adaptation",
+                "it": "Auto adattamento",
+                "nl": "Zelfaanpassing",
+                "da": "Selvtilpasning",
+                "de": "Selbstanpassung",
+                "es": "Auto adaptación",
+                "fr": "Auto-adaptation",
+                "no": "Selvtilpasning",
+                "sv": "Självanpassning",
+                "pl": "Samodopasowanie",
+                "ru": "Самоадаптация",
+                "ko": "자동 적응"
+              }
+            },
+            {
+              "id": "1",
+              "label": {
+                "en": "Avoid",
+                "it": "Evita",
+                "nl": "Vermijden",
+                "da": "Undgå",
+                "de": "Vermeiden",
+                "es": "Evitar",
+                "fr": "Éviter",
+                "no": "Unngå",
+                "sv": "Undvik",
+                "pl": "Unikaj",
+                "ru": "Избегать",
+                "ko": "회피"
+              }
+            },
+            {
+              "id": "2",
+              "label": {
+                "en": "Ignore",
+                "it": "Ignora",
+                "nl": "Negeren",
+                "da": "Ignorer",
+                "de": "Ignorieren",
+                "es": "Ignorar",
+                "fr": "Ignorer",
+                "no": "Ignorer",
+                "sv": "Ignorera",
+                "pl": "Ignoruj",
+                "ru": "Игнорировать",
+                "ko": "무시"
+              }
+            },
+            {
+              "id": "3",
+              "label": {
+                "en": "Span",
+                "it": "Span",
+                "nl": "Span",
+                "da": "Span",
+                "de": "Span",
+                "es": "Span",
+                "fr": "Span",
+                "no": "Span",
+                "sv": "Span",
+                "pl": "Span",
+                "ru": "Span",
+                "ko": "Span"
               }
             }
           ]
@@ -904,6 +992,127 @@
                 "pl": "Głęboki",
                 "ru": "Глубокий",
                 "ko": "딥"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "set_carpet_avoidance",
+      "title": {
+        "en": "Set carpet avoidance",
+        "nl": "Stel tapijtvermijding in",
+        "de": "Teppichvermeidung einstellen",
+        "da": "Indstil tæppeundgåelse",
+        "es": "Establecer evasión de alfombras",
+        "fr": "Définir l’évitement des tapis",
+        "it": "Imposta evitamento tappeti",
+        "no": "Sett teppeunngåelse",
+        "sv": "Ställ in mattundvikande",
+        "pl": "Ustaw unikanie dywanów",
+        "ru": "Установить избегание ковров",
+        "ko": "카펫 회피 설정"
+      },
+      "titleFormatted": {
+        "en": "Set carpet avoidance to [[mode]]",
+        "nl": "Stel tapijtvermijding in op [[mode]]",
+        "de": "Teppichvermeidung einstellen auf [[mode]]",
+        "da": "Indstil tæppeundgåelse til [[mode]]",
+        "es": "Establecer evasión de alfombras a [[mode]]",
+        "fr": "Définir l’évitement des tapis sur [[mode]]",
+        "it": "Imposta evitamento tappeti su [[mode]]",
+        "no": "Sett teppeunngåelse til [[mode]]",
+        "sv": "Ställ in mattundvikande till [[mode]]",
+        "pl": "Ustaw unikanie dywanów na [[mode]]",
+        "ru": "Установить избегание ковров на [[mode]]",
+        "ko": "[[mode]]로 카펫 회피 설정"
+      },
+      "args": [
+        {
+          "name": "mode",
+          "type": "dropdown",
+          "title": {
+            "en": "Carpet avoidance mode",
+            "nl": "Tapijtvermijdingsmodus",
+            "de": "Teppichvermeidungsmodus",
+            "da": "Tæppeundgåelsestilstand",
+            "es": "Modo de evasión de alfombras",
+            "fr": "Mode d’évitement des tapis",
+            "it": "Modalità evitamento tappeti",
+            "no": "Teppeunngåelsesmodus",
+            "sv": "Mattundvikandeläge",
+            "pl": "Tryb unikania dywanów",
+            "ru": "Режим избегания ковров",
+            "ko": "카펫 회피 모드"
+          },
+          "values": [
+            {
+              "id": "0",
+              "label": {
+                "en": "Self Adaptation",
+                "nl": "Zelfaanpassing",
+                "de": "Selbstanpassung",
+                "da": "Selvtilpasning",
+                "es": "Auto adaptación",
+                "fr": "Auto-adaptation",
+                "it": "Auto adattamento",
+                "no": "Selvtilpasning",
+                "sv": "Självanpassning",
+                "pl": "Samodopasowanie",
+                "ru": "Самоадаптация",
+                "ko": "자동 적응"
+              }
+            },
+            {
+              "id": "1",
+              "label": {
+                "en": "Avoid",
+                "nl": "Vermijden",
+                "de": "Vermeiden",
+                "da": "Undgå",
+                "es": "Evitar",
+                "fr": "Éviter",
+                "it": "Evita",
+                "no": "Unngå",
+                "sv": "Undvik",
+                "pl": "Unikaj",
+                "ru": "Избегать",
+                "ko": "회피"
+              }
+            },
+            {
+              "id": "2",
+              "label": {
+                "en": "Ignore",
+                "nl": "Negeren",
+                "de": "Ignorieren",
+                "da": "Ignorer",
+                "es": "Ignorar",
+                "fr": "Ignorer",
+                "it": "Ignora",
+                "no": "Ignorer",
+                "sv": "Ignorera",
+                "pl": "Ignoruj",
+                "ru": "Игнорировать",
+                "ko": "무시"
+              }
+            },
+            {
+              "id": "3",
+              "label": {
+                "en": "Span",
+                "nl": "Span",
+                "de": "Span",
+                "da": "Span",
+                "es": "Span",
+                "fr": "Span",
+                "it": "Span",
+                "no": "Span",
+                "sv": "Span",
+                "pl": "Span",
+                "ru": "Span",
+                "ko": "Span"
               }
             }
           ]

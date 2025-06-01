@@ -1,0 +1,89 @@
+{
+  "type": "enum",
+  "title": {
+    "en": "Carpet avoidance",
+    "nl": "Tapijt vermijden",
+    "de": "Teppichvermeidung",
+    "da": "Undgå tæpper",
+    "es": "Evitar alfombras",
+    "fr": "Éviter les tapis",
+    "it": "Evitamento tappeti",
+    "no": "Unngå tepper",
+    "sv": "Undvik mattor",
+    "pl": "Unikanie dywanów",
+    "ru": "Избегание ковров",
+    "ko": "카펫 회피"
+  },
+  "values": [
+    {
+      "id": "0",
+      "title": {
+        "en": "Self Adaptation",
+        "nl": "Zelfaanpassing",
+        "de": "Selbstanpassung",
+        "da": "Selvtilpasning",
+        "es": "Auto adaptación",
+        "fr": "Auto-adaptation",
+        "it": "Auto adattamento",
+        "no": "Selvtilpasning",
+        "sv": "Självanpassning",
+        "pl": "Samodopasowanie",
+        "ru": "Самоадаптация",
+        "ko": "자동 적응"
+      }
+    },
+    {
+      "id": "1",
+      "title": {
+        "en": "Avoid",
+        "nl": "Vermijden",
+        "de": "Vermeiden",
+        "da": "Undgå",
+        "es": "Evitar",
+        "fr": "Éviter",
+        "it": "Evita",
+        "no": "Unngå",
+        "sv": "Undvik",
+        "pl": "Unikaj",
+        "ru": "Избегать",
+        "ko": "회피"
+      }
+    },
+    {
+      "id": "2",
+      "title": {
+        "en": "Ignore",
+        "nl": "Negeren",
+        "de": "Ignorieren",
+        "da": "Ignorer",
+        "es": "Ignorar",
+        "fr": "Ignorer",
+        "it": "Ignora",
+        "no": "Ignorer",
+        "sv": "Ignorera",
+        "pl": "Ignoruj",
+        "ru": "Игнорировать",
+        "ko": "무시"
+      }
+    },
+    {
+      "id": "3",
+      "title": {
+        "en": "Span",
+        "nl": "Span",
+        "de": "Span",
+        "da": "Span",
+        "es": "Span",
+        "fr": "Span",
+        "it": "Span",
+        "no": "Span",
+        "sv": "Span",
+        "pl": "Span",
+        "ru": "Span",
+        "ko": "Span"
+      }
+    }
+  ],
+  "getable": true,
+  "setable": true
+}

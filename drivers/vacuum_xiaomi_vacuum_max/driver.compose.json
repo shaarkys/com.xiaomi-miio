@@ -28,12 +28,14 @@
     "vacuum_xiaomi_cleaning_mode_max",
     "vacuum_xiaomi_water_level_max",
     "vacuum_xiaomi_path_mode_max",
+    "vacuum_xiaomi_carpet_mode_max",
     "vacuum_xiaomi_status",
     "measure_battery",
     "alarm_battery",
     "alarm_main_brush_work_time",
     "alarm_side_brush_work_time",
-    "alarm_filter_work_time"
+    "alarm_filter_work_time",
+    "alarm_water_shortage"
   ],
   "energy": {
     "batteries": [
