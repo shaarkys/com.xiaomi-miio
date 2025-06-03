@@ -70,6 +70,7 @@ const properties = {
             12: 'Pick-up-error',
             100008: 'OK / Busy',
             210030: 'Water tank empty',
+            210004: 'Stuck-error',
             210002: 'Wheel-error',
             210013: 'Dustbin-error',
             210050: 'No-water-error',
