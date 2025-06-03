@@ -313,5 +313,8 @@
   },
   "3.4.26": {
     "en": "Xiaomi Robot Vacuum X20 - carpet avoidance for selective room cleaning, selective rooms cleaning respect order of room entered, adjustments for totals, attempt to add water empty alarm"
+  },
+  "3.4.27": {
+    "en": "Added new error code for Xiaomi Robot Vacuum X20"
   }
 }
