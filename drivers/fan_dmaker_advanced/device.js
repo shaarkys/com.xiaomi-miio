@@ -245,6 +245,16 @@ class AdvancedDmakerFanMiotDevice extends Device {
             // FLOW TRIGGER CARDS
             this.homey.flow.getDeviceTriggerCard('triggerModeChanged');
 
+            // Register flow action for rotating left by one step
+            this.homey.flow.getActionCard('rotateLeftStep').registerRunListener(async (args, state) => {
+                return this.rotateFanHead('left');
+            });
+
+            // Register flow action for rotating right by one step
+            this.homey.flow.getActionCard('rotateRightStep').registerRunListener(async (args, state) => {
+                return this.rotateFanHead('right');
+            });
+
             // LISTENERS FOR UPDATING CAPABILITIES
             this.registerCapabilityListener('onoff', async (value) => {
                 try {
@@ -448,6 +458,65 @@ class AdvancedDmakerFanMiotDevice extends Device {
             }, 60000);
 
             this.error(error);
+        }
+    }
+
+    /**
+     * Rotate the fan head by one device-defined step (typically 5–7.5 degrees) left or right.
+     * @param {"left"|"right"} direction
+     */
+    async rotateFanHead(direction) {
+        this.log(`[Rotate] Requesting fan to rotate ${direction}`);
+
+        // Check for model
+        const model = this.getStoreValue('model');
+        if (model === 'xiaomi.fan.p45') {
+            // Use MIOT Action call for Smart Tower Fan 2
+            let aiid;
+            if (direction === 'left') aiid = 4;
+            else if (direction === 'right') aiid = 5;
+            else throw new Error('Invalid direction for rotateFanHead');
+            try {
+                return await this.miio.call('action', {
+                    siid: 2,
+                    aiid: aiid,
+                    in: []
+                });
+            } catch (err) {
+                this.error(`[Rotate] Failed to rotate fan (miot action):`, err);
+                throw err;
+            }
+        } else {
+            // Fallback for other models using legacy "set_move" property if exists
+            const moveMap = this.deviceProperties.set_properties.set_move;
+            if (!moveMap) {
+                this.error('[Rotate] set_move property mapping not found for this model');
+                throw new Error('Device does not support manual rotation');
+            }
+            let value;
+            if (direction === 'left') value = 1;
+            else if (direction === 'right') value = 2;
+            else {
+                this.error('[Rotate] Invalid direction:', direction);
+                throw new Error('Invalid direction');
+            }
+            try {
+                return await this.miio.call(
+                    'set_properties',
+                    [
+                        {
+                            did: 'set_move',
+                            siid: moveMap.siid,
+                            piid: moveMap.piid,
+                            value: value
+                        }
+                    ],
+                    { retries: 1 }
+                );
+            } catch (err) {
+                this.error('[Rotate] Failed to rotate fan:', err);
+                throw err;
+            }
         }
     }
 }

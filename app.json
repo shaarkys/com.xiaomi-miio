@@ -8514,6 +8514,54 @@
       },
       {
         "title": {
+          "en": "Rotate fan to the left",
+          "de": "Lüfter nach links drehen"
+        },
+        "titleFormatted": {
+          "en": "Rotate fan to the left",
+          "de": "Lüfter nach links drehen"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "placeholder": {
+              "en": "Select Device"
+            },
+            "filter": "driver_id=fan_dmaker_advanced"
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "id": "rotateLeftStep"
+      },
+      {
+        "title": {
+          "en": "Rotate fan to the right",
+          "de": "Lüfter nach rechts drehen"
+        },
+        "titleFormatted": {
+          "en": "Rotate fan to the right",
+          "de": "Lüfter nach rechts drehen"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "placeholder": {
+              "en": "Select Device"
+            },
+            "filter": "driver_id=fan_dmaker_advanced"
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "id": "rotateRightStep"
+      },
+      {
+        "title": {
           "en": "Change Oscillating Angle",
           "nl": "Wijzig oscillatie hoek",
           "da": "Skift oscillerende vinkel",

@@ -1,0 +1,13 @@
+{
+  "title": { "en": "Rotate fan to the left", "de": "Lüfter nach links drehen" },
+  "titleFormatted": { "en": "Rotate fan to the left", "de": "Lüfter nach links drehen" },
+  "args": [
+    {
+      "name": "device",
+      "type": "device",
+      "placeholder": { "en": "Select Device" },
+      "filter": "driver_id=fan_dmaker_advanced"
+    }
+  ],
+  "platforms": ["local"]
+}
