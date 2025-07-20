@@ -316,5 +316,8 @@
   },
   "3.4.27": {
     "en": "Added new error code for Xiaomi Robot Vacuum X20"
+  },
+  "3.4.28": {
+    "en": "Added action cards for Xiaomi Smart Tower Fan 2 - rotate left/right"
   }
 }
