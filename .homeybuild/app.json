@@ -187,7 +187,7 @@
       "게이트웨이"
     ]
   },
-  "version": "3.4.28",
+  "version": "3.4.30",
   "compatibility": ">=12.2.0",
   "platforms": [
     "local"

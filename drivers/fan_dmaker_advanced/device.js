@@ -495,8 +495,8 @@ class AdvancedDmakerFanMiotDevice extends Device {
                 throw new Error('Device does not support manual rotation');
             }
             let value;
-            if (direction === 'left') value = 1;
-            else if (direction === 'right') value = 2;
+            if (direction === 'right') value = 1; // Rotate right (JSON points to left)
+            else if (direction === 'left') value = 2; // Rotate left (JSON points to right)
             else {
                 this.error('[Rotate] Invalid direction:', direction);
                 throw new Error('Invalid direction');
