@@ -319,5 +319,11 @@
   },
   "3.4.28": {
     "en": "Added action cards for Xiaomi Smart Tower Fan 2 - rotate left/right"
+  },
+  "3.4.29": {
+    "en": "Fix for Mi Smart Standing Fan 2 Pro - rotate left/right"
+  },
+  "3.4.30": {
+    "en": "Fix for Mi Smart Standing Fan 2 Pro - rotate left/right"
   }
 }
