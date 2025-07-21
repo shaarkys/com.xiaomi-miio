@@ -116,7 +116,8 @@ const properties = {
             mode: { siid: 2, piid: 3 },
             light: { siid: 4, piid: 1 },
             buzzer: { siid: 5, piid: 1 },
-            child_lock: { siid: 7, piid: 1 }
+            child_lock: { siid: 7, piid: 1 },
+            set_move: { siid: 6, piid: 1 } 
         }
     },
     properties_p39: {
