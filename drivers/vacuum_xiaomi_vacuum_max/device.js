@@ -7,10 +7,10 @@ const Util = require('../../lib/util.js');
 /* supported devices */
 // https://home.miot-spec.com/spec/xiaomi.vacuum.d109gl // Xiaomi Robot Vacuum X20 Max
 // https://home.miot-spec.com/spec/xiaomi.vacuum.d102gl // Xiaomi Robot Vacuum X20 Pro
-// https://home.miot-spec.com/spec/xiaomi.vacuum.c102gl // Xiaomi Robot Vacuum X20 (aka X20+ in some regions)
+// https://home.miot-spec.com/spec/xiaomi.vacuum.c102gl // Xiaomi Robot Vacuum X20 / X20+
 
 /** ------------------------------------------------------------------
- *  Shared constants (hoisted so we don’t reference `properties` early)
+ *  Shared constants (hoisted)
  *  ------------------------------------------------------------------ */
 const ERROR_CODES = {
     0: 'OK',
@@ -43,7 +43,7 @@ const STATUS_MAPPING = {
     spot_cleaning: [],
 
     // Robot is on the dock and NOT charging, or the station is busy
-    docked: [9, 11, 14],
+    docked: [9, 11, 14, 68], // ← include 68 seen in your logs
 
     // Robot is charging or driving home to charge
     charging: [2, 6, 13, 21],
@@ -55,61 +55,57 @@ const STATUS_MAPPING = {
     stopped_error: [15]
 };
 
-/** Which property set each model uses */
+/** Model → property-set */
 const mapping = {
     'xiaomi.vacuum.d109gl': 'properties_d109gl', // X20 Max
-    'xiaomi.vacuum.d102gl': 'properties_d109gl', // X20 Pro (keep original/working mapping)
+    'xiaomi.vacuum.d102gl': 'properties_d109gl', // X20 Pro (unchanged/working)
     'xiaomi.vacuum.c102gl': 'properties_c102gl' // X20 / X20+ (room action aiid 3, input piid 4)
 };
 
-/** All property sets */
+/** Property sets */
 const properties = {
-    /* Original working spec (d109gl / d102gl) */
+    /* Baseline (d109gl / d102gl) */
     properties_d109gl: {
-        get_rooms: [
-            { did: 'rooms', siid: 2, piid: 16 } // get list of rooms property (must be requested alone)
-        ],
+        get_rooms: [{ did: 'rooms', siid: 2, piid: 16 }],
         get_properties: [
-            { did: 'device_status', siid: 2, piid: 2 }, // status
-            { did: 'device_fault', siid: 2, piid: 3 }, // fault
-            { did: 'mode', siid: 2, piid: 4 }, // sweep-mop-type
-            { did: 'battery', siid: 3, piid: 1 }, // battery-level
-            { did: 'main_brush_life_level', siid: 12, piid: 1 }, // brush-life-level (main)
-            { did: 'side_brush_life_level', siid: 13, piid: 1 }, // brush-life-level (side)
-            { did: 'filter_life_level', siid: 14, piid: 1 }, // filter-life-level
-            { did: 'total_clean_time', siid: 2, piid: 7 }, // cleaning time (seconds)
-            { did: 'total_clean_count', siid: 2, piid: 8 }, // clean times
-            { did: 'total_clean_area', siid: 2, piid: 6 }, // cleaning area (0.01 m²)
-            { did: 'cleaning_mode', siid: 2, piid: 9 }, // Cleaning Mode (1-4)
-            { did: 'water_level', siid: 2, piid: 10 }, // Water Output Level (0-3)
-            { did: 'path_mode', siid: 2, piid: 74 }, // Path-mode (1-3)
-            { did: 'detergent_left_level', siid: 18, piid: 1 }, // 0-100 %
-            { did: 'detergent_self_delivery', siid: 18, piid: 2 }, // bool
-            { did: 'detergent_self_delivery_lvl', siid: 18, piid: 3 }, // 0–3
-            { did: 'dust_bag_life_level', siid: 19, piid: 1 }, // 0-100 %
-            { did: 'dust_bag_left_time', siid: 19, piid: 2 }, // hours
-            { did: 'detergent_depletion_reminder', siid: 2, piid: 71 }, // “detergent nearly empty” flag
-            { did: 'carpet_avoidance', siid: 2, piid: 73 } // Carpet Avoidance (Self adaptive / Avoid / Ignore / Span)
+            { did: 'device_status', siid: 2, piid: 2 },
+            { did: 'device_fault', siid: 2, piid: 3 },
+            { did: 'mode', siid: 2, piid: 4 },
+            { did: 'battery', siid: 3, piid: 1 },
+            { did: 'main_brush_life_level', siid: 12, piid: 1 },
+            { did: 'side_brush_life_level', siid: 13, piid: 1 },
+            { did: 'filter_life_level', siid: 14, piid: 1 },
+            { did: 'total_clean_time', siid: 2, piid: 7 },
+            { did: 'total_clean_count', siid: 2, piid: 8 },
+            { did: 'total_clean_area', siid: 2, piid: 6 },
+            { did: 'cleaning_mode', siid: 2, piid: 9 },
+            { did: 'water_level', siid: 2, piid: 10 },
+            { did: 'path_mode', siid: 2, piid: 74 },
+            { did: 'detergent_left_level', siid: 18, piid: 1 },
+            { did: 'detergent_self_delivery', siid: 18, piid: 2 },
+            { did: 'detergent_self_delivery_lvl', siid: 18, piid: 3 },
+            { did: 'dust_bag_life_level', siid: 19, piid: 1 },
+            { did: 'dust_bag_left_time', siid: 19, piid: 2 },
+            { did: 'detergent_depletion_reminder', siid: 2, piid: 71 },
+            { did: 'carpet_avoidance', siid: 2, piid: 73 }
         ],
         set_properties: {
-            start_clean: { siid: 2, aiid: 1, did: 'call-2-1', in: [] }, // start-sweep
-            stop_clean: { siid: 2, aiid: 2, did: 'call-2-2', in: [] }, // stop-sweeping
-            find: { siid: 6, aiid: 1, did: 'call-6-1', in: [] }, // identify
-            home: { siid: 3, aiid: 1, did: 'call-3-1', in: [] }, // start-charge
-            mopmode: { siid: 2, piid: 4 }, // sweep-mop-type
-            cleaning_mode: { siid: 2, piid: 9 }, // Cleaning Mode
-            water_level: { siid: 2, piid: 10 }, // Water Level
-            path_mode: { siid: 2, piid: 74 }, // Path-mode
-            // Room cleaning action (used in advanced_room_cleaning flow action)
-            room_clean_action: { siid: 2, aiid: 16, piid: 15 },
-            carpet_avoidance: { siid: 2, piid: 73 } // Carpet Avoidance
+            start_clean: { siid: 2, aiid: 1, did: 'call-2-1', in: [] },
+            stop_clean: { siid: 2, aiid: 2, did: 'call-2-2', in: [] },
+            find: { siid: 6, aiid: 1, did: 'call-6-1', in: [] },
+            home: { siid: 3, aiid: 1, did: 'call-3-1', in: [] },
+            mopmode: { siid: 2, piid: 4 },
+            cleaning_mode: { siid: 2, piid: 9 },
+            water_level: { siid: 2, piid: 10 },
+            path_mode: { siid: 2, piid: 74 },
+            room_clean_action: { siid: 2, aiid: 16, piid: 15 }, // baseline
+            carpet_avoidance: { siid: 2, piid: 73 }
         },
         error_codes: ERROR_CODES,
         status_mapping: STATUS_MAPPING
     },
 
-    /* X20 / X20+ (c102gl) — identical to above EXCEPT room clean action:
-     Uses aiid 3 and input property piid 4 for room IDs. */
+    /* X20 / X20+ (c102gl) — identical except room clean action (aiid 3, piid 4). */
     properties_c102gl: {
         get_rooms: [{ did: 'rooms', siid: 2, piid: 16 }],
         get_properties: [
@@ -193,16 +189,16 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             this._isSessionActive = false;
             this._forceRefreshTotals = false;
 
-            // Device-specific logic xiaomi.vacuum.d109gl only
-            if (['xiaomi.vacuum.d109gl'].includes(this.getStoreValue('model'))) {
-                this.log('Using custom vacuumTotals and custom vacuumConsumables method for xiaomi.vacuum.d109gl');
-                this.vacuumTotals = this.customVacuumTotals;
-                this.vacuumConsumables = this.customVacuumConsumables;
-            }
-
             // DEVICE VARIABLES
             const model = this.getStoreValue('model');
             this.deviceProperties = properties[mapping[model]] || properties.properties_d109gl;
+
+            // Use our safe totals handler for d109gl and c102gl to avoid invalid_setting_type
+            if (['xiaomi.vacuum.d109gl', 'xiaomi.vacuum.c102gl'].includes(model)) {
+                this.log(`Using custom vacuumTotals/consumables for ${model}`);
+                this.vacuumTotals = this.customVacuumTotals;
+                this.vacuumConsumables = this.customVacuumConsumables;
+            }
 
             // RESET CONSUMABLE ALARMS
             this.updateCapabilityValue('alarm_main_brush_work_time', false);
@@ -234,26 +230,21 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                 if (args.room == 'all') {
                     selected_room = list_room.map((el) => el.id);
                 } else {
-                    // → Iterate over user’s comma-separated names in exactly that order:
                     selected_room = [];
                     for (const nameRaw of args.room.split(',')) {
                         const name = nameRaw.toLowerCase().trim();
                         const match = list_room.find((el) => el.name.toLowerCase() === name);
-                        if (match) {
-                            selected_room.push(match.id);
-                        }
+                        if (match) selected_room.push(match.id);
                     }
                 }
 
                 if (selected_room.length === 0) {
                     this.error(`No valid room selected for advanced cleaning. Requested: "${args.room}", Available: "${list_room.map((r) => r.name).join(', ')}"`);
-                    return Promise.reject(`No valid room selected. Requested: "${args.room}". Available: ${list_room.map((r) => r.name).join(', ')}. Check room names in device settings.`);
+                    return Promise.reject(`No valid room selected. Requested: "${args.room}". Available: ${list_room.map((r) => r.name).join(', ')}.`);
                 }
 
                 let room_list = selected_room.join(',');
-                // For a bug/issue of protocol, it's impossible to handle single room cleaning,
-                // so in case of single room I will duplicate it for bypass this issue
-                if (selected_room.length == 1) room_list += ',' + room_list;
+                if (selected_room.length == 1) room_list += ',' + room_list; // single-room workaround
 
                 let propertiesToSet = [
                     {
@@ -283,7 +274,6 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                     });
                 }
 
-                // args.carpet_avoidance is either "0" or "1" (Enable/Disable)
                 if (typeof args.carpet_avoidance !== 'undefined') {
                     propertiesToSet.push({
                         siid: this.deviceProperties.set_properties.carpet_avoidance.siid,
@@ -323,119 +313,49 @@ class XiaomiVacuumMiotDeviceMax extends Device {
 
                 if (args.device.miio && typeof args.device.miio.call === 'function') {
                     let responseProperties = await args.device.miio.call('set_properties', propertiesToSet, { retries: 1 });
-                    // debug
                     this.log('[ADV_ROOM_CLEAN] Properties response:', JSON.stringify(responseProperties));
-
                     let responseAction = await args.device.miio.call('action', actions, { retries: 3 });
-                    // debug
                     this.log('[ADV_ROOM_CLEAN] Action response:', JSON.stringify(responseAction));
                 } else {
-                    this.setUnavailable(this.homey.__('unreachable')).catch((error) => {
-                        this.error(error);
-                    });
+                    this.setUnavailable(this.homey.__('unreachable')).catch((error) => this.error(error));
                     this.createDevice();
                     return Promise.reject('Device unreachable, please try again ...');
                 }
             });
 
-            // Register action cards globally for all devices
-            // 1. Set vacuum mode
+            // Register action cards globally
             this.homey.flow.getActionCard('set_sweep_mop_type').registerRunListener(async ({ device, mode }) => {
                 const modeValue = Number(mode);
-                return device.miio.call(
-                    'set_properties',
-                    [
-                        {
-                            siid: device.deviceProperties.set_properties.mopmode.siid,
-                            piid: device.deviceProperties.set_properties.mopmode.piid,
-                            value: modeValue
-                        }
-                    ],
-                    { retries: 1 }
-                );
+                return device.miio.call('set_properties', [{ siid: device.deviceProperties.set_properties.mopmode.siid, piid: device.deviceProperties.set_properties.mopmode.piid, value: modeValue }], { retries: 1 });
             });
 
-            // 2. Set cleaning power
             this.homey.flow.getActionCard('set_cleaning_mode').registerRunListener(async ({ device, power }) => {
                 const powerValue = Number(power);
-                return device.miio.call(
-                    'set_properties',
-                    [
-                        {
-                            siid: device.deviceProperties.set_properties.cleaning_mode.siid,
-                            piid: device.deviceProperties.set_properties.cleaning_mode.piid,
-                            value: powerValue
-                        }
-                    ],
-                    { retries: 1 }
-                );
+                return device.miio.call('set_properties', [{ siid: device.deviceProperties.set_properties.cleaning_mode.siid, piid: device.deviceProperties.set_properties.cleaning_mode.piid, value: powerValue }], { retries: 1 });
             });
 
-            // 3. Set water output level
             this.homey.flow.getActionCard('set_water_level').registerRunListener(async ({ device, level }) => {
                 const levelValue = Number(level);
-                return device.miio.call(
-                    'set_properties',
-                    [
-                        {
-                            siid: device.deviceProperties.set_properties.water_level.siid,
-                            piid: device.deviceProperties.set_properties.water_level.piid,
-                            value: levelValue
-                        }
-                    ],
-                    { retries: 1 }
-                );
+                return device.miio.call('set_properties', [{ siid: device.deviceProperties.set_properties.water_level.siid, piid: device.deviceProperties.set_properties.water_level.piid, value: levelValue }], { retries: 1 });
             });
 
-            // 4. Set path mode
             this.homey.flow.getActionCard('set_path_mode').registerRunListener(async ({ device, mode }) => {
                 const pathValue = Number(mode);
-                return device.miio.call(
-                    'set_properties',
-                    [
-                        {
-                            siid: device.deviceProperties.set_properties.path_mode.siid,
-                            piid: device.deviceProperties.set_properties.path_mode.piid,
-                            value: pathValue
-                        }
-                    ],
-                    { retries: 1 }
-                );
+                return device.miio.call('set_properties', [{ siid: device.deviceProperties.set_properties.path_mode.siid, piid: device.deviceProperties.set_properties.path_mode.piid, value: pathValue }], { retries: 1 });
             });
 
-            // 6. REGISTER “SET CARPET AVOIDANCE”
             this.homey.flow.getActionCard('set_carpet_avoidance').registerRunListener(async ({ device, mode }) => {
                 const numericValue = Number(mode);
-                return device.miio.call(
-                    'set_properties',
-                    [
-                        {
-                            siid: device.deviceProperties.set_properties.carpet_avoidance.siid,
-                            piid: device.deviceProperties.set_properties.carpet_avoidance.piid,
-                            value: numericValue
-                        }
-                    ],
-                    { retries: 1 }
-                );
+                return device.miio.call('set_properties', [{ siid: device.deviceProperties.set_properties.carpet_avoidance.siid, piid: device.deviceProperties.set_properties.carpet_avoidance.piid, value: numericValue }], { retries: 1 });
             });
 
-            // 5. Set carpet avoidance mode (vacuum_xiaomi_path_carpet_mode_max)
+            // Capability listeners
             this.registerCapabilityListener('vacuum_xiaomi_carpet_mode_max', async (value) => {
                 try {
                     const numericValue = Number(value);
                     this.log(`Setting carpet_avoidance to: ${numericValue}`);
                     if (this.miio) {
-                        return await this.miio.call(
-                            'set_properties',
-                            [
-                                {
-                                    siid: this.deviceProperties.set_properties.carpet_avoidance.siid,
-                                    piid: this.deviceProperties.set_properties.carpet_avoidance.piid,
-                                    value: numericValue
-                                }
-                            ],
-                            { retries: 1 }
-                        );
+                        return await this.miio.call('set_properties', [{ siid: this.deviceProperties.set_properties.carpet_avoidance.siid, piid: this.deviceProperties.set_properties.carpet_avoidance.piid, value: numericValue }], { retries: 1 });
                     } else {
                         this.setUnavailable(this.homey.__('unreachable')).catch((err) => this.error(err));
                         this.createDevice();
@@ -447,19 +367,13 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                 }
             });
 
-            // LISTENERS FOR UPDATING CAPABILITIES
             this.registerCapabilityListener('onoff', async (value) => {
                 try {
                     if (this.miio) {
-                        if (value) {
-                            return await this.miio.call('action', this.deviceProperties.set_properties.start_clean, { retries: 1 });
-                        } else {
-                            return await this.miio.call('action', this.deviceProperties.set_properties.stop_clean, { retries: 1 });
-                        }
+                        if (value) return await this.miio.call('action', this.deviceProperties.set_properties.start_clean, { retries: 1 });
+                        return await this.miio.call('action', this.deviceProperties.set_properties.stop_clean, { retries: 1 });
                     } else {
-                        this.setUnavailable(this.homey.__('unreachable')).catch((error) => {
-                            this.error(error);
-                        });
+                        this.setUnavailable(this.homey.__('unreachable')).catch((error) => this.error(error));
                         this.createDevice();
                         return Promise.reject('Device unreachable, please try again ...');
                     }
@@ -483,9 +397,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                                 return await this.triggerCapabilityListener('onoff', false);
                         }
                     } else {
-                        this.setUnavailable(this.homey.__('unreachable')).catch((error) => {
-                            this.error(error);
-                        });
+                        this.setUnavailable(this.homey.__('unreachable')).catch((error) => this.error(error));
                         this.createDevice();
                         return Promise.reject('Device unreachable, please try again ...');
                     }
@@ -495,23 +407,12 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                 }
             });
 
-            /* vacuumcleaner xiaomi mop mode max */
             this.registerCapabilityListener('vacuum_xiaomi_mop_mode_max', async (value) => {
                 try {
-                    const numericValue = Number(value); // Homey gives string, device expects number
+                    const numericValue = Number(value);
                     this.log(`Setting Sweep & Mop Mode to: ${numericValue}`);
                     if (this.miio) {
-                        return await this.miio.call(
-                            'set_properties',
-                            [
-                                {
-                                    siid: this.deviceProperties.set_properties.mopmode.siid,
-                                    piid: this.deviceProperties.set_properties.mopmode.piid,
-                                    value: numericValue
-                                }
-                            ],
-                            { retries: 1 }
-                        );
+                        return await this.miio.call('set_properties', [{ siid: this.deviceProperties.set_properties.mopmode.siid, piid: this.deviceProperties.set_properties.mopmode.piid, value: numericValue }], { retries: 1 });
                     } else {
                         this.setUnavailable(this.homey.__('unreachable')).catch((error) => this.error(error));
                         this.createDevice();
@@ -523,23 +424,12 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                 }
             });
 
-            // Cleaning Mode
             this.registerCapabilityListener('vacuum_xiaomi_cleaning_mode_max', async (value) => {
                 try {
                     const numericValue = Number(value);
                     this.log(`Setting Cleaning Power to: ${numericValue}`);
                     if (this.miio) {
-                        return await this.miio.call(
-                            'set_properties',
-                            [
-                                {
-                                    siid: this.deviceProperties.set_properties.cleaning_mode.siid,
-                                    piid: this.deviceProperties.set_properties.cleaning_mode.piid,
-                                    value: numericValue
-                                }
-                            ],
-                            { retries: 1 }
-                        );
+                        return await this.miio.call('set_properties', [{ siid: this.deviceProperties.set_properties.cleaning_mode.siid, piid: this.deviceProperties.set_properties.cleaning_mode.piid, value: numericValue }], { retries: 1 });
                     } else {
                         this.setUnavailable(this.homey.__('unreachable')).catch((error) => this.error(error));
                         this.createDevice();
@@ -551,23 +441,12 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                 }
             });
 
-            // Water Level
             this.registerCapabilityListener('vacuum_xiaomi_water_level_max', async (value) => {
                 try {
                     const numericValue = Number(value);
                     this.log(`Setting Water Output to: ${numericValue}`);
                     if (this.miio) {
-                        return await this.miio.call(
-                            'set_properties',
-                            [
-                                {
-                                    siid: this.deviceProperties.set_properties.water_level.siid,
-                                    piid: this.deviceProperties.set_properties.water_level.piid,
-                                    value: numericValue
-                                }
-                            ],
-                            { retries: 1 }
-                        );
+                        return await this.miio.call('set_properties', [{ siid: this.deviceProperties.set_properties.water_level.siid, piid: this.deviceProperties.set_properties.water_level.piid, value: numericValue }], { retries: 1 });
                     } else {
                         this.setUnavailable(this.homey.__('unreachable')).catch((error) => this.error(error));
                         this.createDevice();
@@ -579,23 +458,12 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                 }
             });
 
-            // Path Mode (vacuum_xiaomi_path_mode_max)
             this.registerCapabilityListener('vacuum_xiaomi_path_mode_max', async (value) => {
                 try {
                     const numericValue = Number(value);
                     this.log(`Setting Path Mode to: ${numericValue}`);
                     if (this.miio) {
-                        return await this.miio.call(
-                            'set_properties',
-                            [
-                                {
-                                    siid: this.deviceProperties.set_properties.path_mode.siid,
-                                    piid: this.deviceProperties.set_properties.path_mode.piid,
-                                    value: numericValue
-                                }
-                            ],
-                            { retries: 1 }
-                        );
+                        return await this.miio.call('set_properties', [{ siid: this.deviceProperties.set_properties.path_mode.siid, piid: this.deviceProperties.set_properties.path_mode.piid, value: numericValue }], { retries: 1 });
                     } else {
                         this.setUnavailable(this.homey.__('unreachable')).catch((error) => this.error(error));
                         this.createDevice();
@@ -616,30 +484,17 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             const result = await this.miio.call('get_properties', this.deviceProperties.get_properties, { retries: 1 });
             const result_rooms = await this.miio.call('get_properties', this.deviceProperties.get_rooms, { retries: 1 });
 
-            if (!this.getAvailable()) {
-                await this.setAvailable();
-            }
+            if (!this.getAvailable()) await this.setAvailable();
 
-            // Store previous values to compare
+            // diff logging
             const prevProps = this._lastPropertyValues || {};
-
             const resultValues = {};
             for (const def of this.deviceProperties.get_properties) {
                 const found = result.find((obj) => obj.siid === def.siid && obj.piid === def.piid);
                 resultValues[def.did] = found ? found.value : null;
             }
-
-            // Compare all props, only log if any value changed
-            let valueChanged = false;
-            for (const key of Object.keys(resultValues)) {
-                if (prevProps[key] !== resultValues[key]) {
-                    valueChanged = true;
-                    break;
-                }
-            }
-            if (valueChanged) {
-                this.log('Raw property data: ' + this.prettyPrintProperties(result, this.deviceProperties.get_properties));
-            }
+            let valueChanged = Object.keys(resultValues).some((k) => prevProps[k] !== resultValues[k]);
+            if (valueChanged) this.log('Raw property data: ' + this.prettyPrintProperties(result, this.deviceProperties.get_properties));
             this._lastPropertyValues = resultValues;
 
             const device_status = this.getMiotProp(result, 'device_status');
@@ -656,8 +511,6 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             const water_level = this.getMiotProp(result, 'water_level');
             const path_mode = this.getMiotProp(result, 'path_mode');
             const carpet_avoidance = this.getMiotProp(result, 'carpet_avoidance');
-            const detergent_left_level = this.getMiotProp(result, 'detergent_left_level'); // may be missing on some variants
-            const dust_bag_life_level = this.getMiotProp(result, 'dust_bag_life_level'); // may be missing on some variants
 
             const consumables = [
                 {
@@ -675,14 +528,13 @@ class XiaomiVacuumMiotDeviceMax extends Device {
 
             /* onoff & vacuumcleaner_state */
             let matched = false;
-            let stateKey = null; // textual state we mapped to
+            let stateKey = null;
 
             if (device_status) {
                 for (const key in this.deviceProperties.status_mapping) {
                     if (this.deviceProperties.status_mapping[key].includes(device_status.value)) {
                         matched = true;
-                        stateKey = key; // remember for after-job check
-
+                        stateKey = key;
                         if (this.getCapabilityValue('measure_battery') === 100 && (key === 'stopped' || key === 'charging')) {
                             this.vacuumCleanerState('docked');
                         } else {
@@ -691,30 +543,24 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                         break;
                     }
                 }
-                if (!matched) {
-                    this.log('Not a valid vacuumcleaner_state (driver level)', device_status.value);
-                }
+                if (!matched) this.log('Not a valid vacuumcleaner_state (driver level)', device_status.value);
             } else {
                 this.log('device_status not found, cannot set vacuumcleaner_state!');
             }
 
-            // --- DEBUG --------------------------------------------------------------
-            // Only log state if it actually changed since last time
+            // state change log (only when changed)
             const lastLogState = this._lastStatusLogState || {};
             const currLogState = {
                 device_status: device_status ? device_status.value : 'n/a',
                 stateKey: stateKey,
                 lastVacState: this.lastVacState
             };
-
             if (currLogState.device_status !== lastLogState.device_status || currLogState.stateKey !== lastLogState.stateKey || currLogState.lastVacState !== lastLogState.lastVacState) {
                 this.log(`status code = ${currLogState.device_status}`, `→ key = ${currLogState.stateKey}`, `| lastVacState = ${currLogState.lastVacState}`);
                 this._lastStatusLogState = currLogState;
             }
-            // -----------------------------------------------------------------------
 
-            // ── SESSION HANDLING ──────────────────────────────────────────────────
-            // If we just transitioned INTO 'cleaning', record session start
+            // SESSION handling (unchanged)
             if (stateKey === 'cleaning' && !this._isSessionActive) {
                 this._isSessionActive = true;
                 this._prevArea01 = total_clean_area ? total_clean_area.value : 0;
@@ -724,7 +570,6 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                 this.log(`[SESSION] Cleaning started: startArea(0.01m²)=${this._sessionStartArea}, startTime(sec)=${this._sessionStartTime}`);
             }
 
-            // While cleaning, accumulate deltas each poll
             if (stateKey === 'cleaning' && this._isSessionActive) {
                 let currentArea01 = total_clean_area ? total_clean_area.value : 0;
                 let currentTimeSec = total_clean_time ? total_clean_time.value : 0;
@@ -732,8 +577,8 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                 let deltaTimeSec = currentTimeSec - this._prevTimeSec;
 
                 if (deltaArea01 > 0 || deltaTimeSec > 0) {
-                    let deltaAreaM2 = deltaArea01 / 100; // convert 0.01m² → m²
-                    let deltaHours = deltaTimeSec / 3600; // convert seconds → hours
+                    let deltaAreaM2 = deltaArea01 / 100;
+                    let deltaHours = deltaTimeSec / 3600;
 
                     this.log(`[SESSION] Incremental delta: Δarea=${deltaAreaM2.toFixed(2)}m² (Δarea01=${deltaArea01}), Δtime=${deltaHours.toFixed(2)}h (Δsec=${deltaTimeSec})`);
 
@@ -744,7 +589,6 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                 }
             }
 
-            // If we just transitioned OUT OF 'cleaning', increment only the clean count
             if (this.lastVacState === 'cleaning' && ['docked', 'charging', 'stopped'].includes(stateKey)) {
                 try {
                     await this._accumulateJobTotals();
@@ -754,102 +598,94 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                     this.error('Session completion handling failed', e);
                 }
             }
-            // ────────────────────────────────────────────────────────────────────────
 
-            // Call customVacuumTotals (one-time init or count sync for d109gl)
-            await this.vacuumTotals(totalsReport);
+            // Totals (guard against invalid_setting_type)
+            try {
+                await this.vacuumTotals(totalsReport);
+            } catch (e) {
+                this.error('[Totals] Skipping due to error:', e && e.message ? e.message : e);
+            }
 
-            // After the first run of customVacuumTotals, mark initialTokenTotal
             if (!this.initialTokenTotal && this.getSetting('total_work_time') !== undefined && this.getSetting('total_cleared_area') !== undefined && this.getSetting('total_clean_count') !== undefined) {
                 this.initialTokenTotal = true;
                 this.log(`[DIAG] initialTokenTotal flag is now true.`);
             }
 
             /* measure_battery & alarm_battery */
-            if (battery) {
+            if (battery && battery.value != null) {
                 await this.updateCapabilityValue('measure_battery', battery.value);
                 await this.updateCapabilityValue('alarm_battery', battery.value <= 20 ? true : false);
-            } else {
-                this.log('battery not found, skipping battery update.');
             }
 
-            /* vacuum_xiaomi_mop_mode */
-            if (mop_mode) {
-                await this.updateCapabilityValue('vacuum_xiaomi_mop_mode_max', mop_mode.value.toString());
+            /* Sweep/Mop mode (guard value) */
+            if (mop_mode && mop_mode.value != null) {
+                await this.updateCapabilityValue('vacuum_xiaomi_mop_mode_max', String(mop_mode.value));
             }
 
-            /* rooms_list */
+            /* rooms_list (tolerant JSON) */
             if (result_rooms && result_rooms.length === 1 && result_rooms[0].value) {
-                let roomsArr = JSON.parse(result_rooms[0].value).rooms;
-                let rooms_list = JSON.stringify(roomsArr);
-                let rooms_names = roomsArr.map((r) => r.name).join(', ');
-                await this.setSettings({ rooms: rooms_list, rooms_display: rooms_names });
+                try {
+                    const parsed = JSON.parse(result_rooms[0].value);
+                    const roomsArr = Array.isArray(parsed.rooms) ? parsed.rooms : [];
+                    const rooms_list = JSON.stringify(roomsArr);
+                    const rooms_names = roomsArr.map((r) => r.name).join(', ');
+                    await this.setSettings({ rooms: rooms_list, rooms_display: rooms_names });
+                } catch (e) {
+                    this.log('[Rooms] Failed to parse rooms JSON:', e && e.message ? e.message : e);
+                    await this.setSettings({ rooms: 'Not supported for this model' });
+                }
             } else {
                 await this.setSettings({ rooms: 'Not supported for this model' });
             }
 
-            /* consumable settings */
+            /* consumables */
             this.vacuumConsumables(consumables);
 
-            /* xiaomi_cleaning_mode */
-            if (cleaning_mode) {
-                await this.updateCapabilityValue('vacuum_xiaomi_cleaning_mode_max', cleaning_mode.value.toString());
+            /* Cleaning power (guard value) */
+            if (cleaning_mode && cleaning_mode.value != null) {
+                await this.updateCapabilityValue('vacuum_xiaomi_cleaning_mode_max', String(cleaning_mode.value));
             }
-            /* xiaomi_water_level */
-            if (water_level) {
-                await this.updateCapabilityValue('vacuum_xiaomi_water_level_max', water_level.value.toString());
+            /* Water level (guard value) */
+            if (water_level && water_level.value != null) {
+                await this.updateCapabilityValue('vacuum_xiaomi_water_level_max', String(water_level.value));
             }
-            /* path_mode */
-            if (path_mode) {
-                await this.updateCapabilityValue('vacuum_xiaomi_path_mode_max', path_mode.value.toString());
+            /* Path mode (guard value) */
+            if (path_mode && path_mode.value != null) {
+                await this.updateCapabilityValue('vacuum_xiaomi_path_mode_max', String(path_mode.value));
             }
-
-            /* ----- vacuum_xiaomi_path_carpet_mode_max ----- */
-            if (carpet_avoidance) {
-                // The MIoT call returns 0–3. Convert to string for Homey capability
-                await this.updateCapabilityValue('vacuum_xiaomi_carpet_mode_max', carpet_avoidance.value.toString());
+            /* Carpet avoidance (guard value) */
+            if (carpet_avoidance && carpet_avoidance.value != null) {
+                await this.updateCapabilityValue('vacuum_xiaomi_carpet_mode_max', String(carpet_avoidance.value));
             }
 
-            // Read “detergent_depletion_reminder”
+            // Detergent near-empty flag
             const detergent_depletion_reminder = this.getMiotProp(result, 'detergent_depletion_reminder');
-            if (detergent_depletion_reminder) {
-                const isEmpty = !!detergent_depletion_reminder.value; // assume 1 = needs refill, 0 = OK
+            if (detergent_depletion_reminder && detergent_depletion_reminder.value != null) {
+                const isEmpty = !!detergent_depletion_reminder.value;
                 await this.updateCapabilityValue('alarm_water_shortage', isEmpty);
             }
 
-            /* settings device error → save + tile + flow */
+            /* error/status tiles + flows */
             let err = 'Everything-is-ok';
             if (device_fault && this.deviceProperties.error_codes.hasOwnProperty(device_fault.value)) {
                 err = this.deviceProperties.error_codes[device_fault.value];
             }
             let safeError = typeof err === 'string' ? err : 'Unknown Error';
 
-            // If state is cleaning, force status to OK - Working
-            if (stateKey === 'cleaning') {
-                if (safeError !== 'OK - Working') {
-                    this.log(`Overriding error "${safeError}" with "OK - Working" because cleaning is active.`);
-                }
-                safeError = 'OK - Working';
-            }
+            if (stateKey === 'cleaning') safeError = 'OK - Working';
 
-            // In case of error, Trigger the flow with the error code
             let currentErrorCap = this.getCapabilityValue('vacuum_xiaomi_status');
             if (safeError !== 'OK' && safeError !== 'OK - Working' && safeError !== currentErrorCap) {
                 await this.homey.flow
                     .getDeviceTriggerCard('vacuum_on_error')
                     .trigger(this, { error: safeError })
-                    .catch((error) => {
-                        this.error(error);
-                    });
+                    .catch((error) => this.error(error));
             }
 
-            /* 1️⃣  capability tile */
             await this.updateCapabilityValue('vacuum_xiaomi_status', safeError);
 
-            /* 2️⃣  advanced-setting + optional flow trigger */
             if (this.getSetting('error') !== err) {
                 await this.setSettings({ error: err });
-
                 if (device_fault && err !== 'Everything-is-ok') {
                     await this.homey.flow
                         .getDeviceTriggerCard('statusVacuum')
@@ -864,59 +700,52 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             this.homey.clearInterval(this.pollingInterval);
 
             if (this.getAvailable()) {
-                this.setUnavailable(this.homey.__('device.unreachable') + error.message).catch((err) => {
-                    this.error(err);
-                });
+                this.setUnavailable(this.homey.__('device.unreachable') + error.message).catch((err) => this.error(err));
             }
 
-            this.homey.setTimeout(() => {
-                this.createDevice();
-            }, 60000);
-
+            this.homey.setTimeout(() => this.createDevice(), 60000);
             this.error(error.message);
         }
     }
 
-    /* Custom vacuumTotals for xiaomi.vacuum.d109gl */
-    /**
-     * X20 Max: lifetime counters arrive already aggregated on the robot.
-     * We just mirror them into settings and tokens (numbers only).
-     */
+    /* Custom totals (safe for d109gl and c102gl) */
     async customVacuumTotals(totals) {
         try {
+            // Initialize once from robot values if undefined
             if (this.getSetting('total_work_time') === undefined) {
-                const initialWorkTimeSec = totals.clean_time;
-                const initialWorkTimeH = +(initialWorkTimeSec / 3600).toFixed(3);
+                const initialWorkTimeH = +((totals.clean_time || 0) / 3600).toFixed(3);
                 await this.setSettings({ total_work_time: initialWorkTimeH });
                 await this.total_work_time_token.setValue(initialWorkTimeH);
-                this.log(`[DIAG] Initialized total_work_time to ${initialWorkTimeH}h from robot report.`);
+                this.log(`[DIAG] Initialized total_work_time to ${initialWorkTimeH}h.`);
             }
 
             if (this.getSetting('total_cleared_area') === undefined) {
-                const initialClearedArea01 = totals.clean_area;
-                const initialClearedAreaM2 = +(initialClearedArea01 / 100).toFixed(3);
+                const initialClearedAreaM2 = +((totals.clean_area || 0) / 100).toFixed(3);
                 await this.setSettings({ total_cleared_area: initialClearedAreaM2 });
                 await this.total_cleared_area_token.setValue(initialClearedAreaM2);
-                this.log(`[DIAG] Initialized total_cleared_area to ${initialClearedAreaM2}m² from robot report.`);
+                this.log(`[DIAG] Initialized total_cleared_area to ${initialClearedAreaM2}m².`);
             }
 
             if (this.getSetting('total_clean_count') === undefined) {
-                const robotReportedCleanCount = totals.clean_count;
-                await this.setSettings({ total_clean_count: robotReportedCleanCount });
-                await this.total_clean_count_token.setValue(robotReportedCleanCount);
-                this.log(`[DIAG] Initialized total_clean_count to ${robotReportedCleanCount} from robot report.`);
+                const robotCount = totals.clean_count || 0;
+                await this.setSettings({ total_clean_count: robotCount });
+                await this.total_clean_count_token.setValue(robotCount);
+                this.log(`[DIAG] Initialized total_clean_count to ${robotCount}.`);
             } else {
-                const robotReportedCleanCount = totals.clean_count;
-                const currentHomeyCount = Number(this.getSetting('total_clean_count'));
-                if (robotReportedCleanCount > currentHomeyCount) {
-                    this.log(`[DIAG] Robot count (${robotReportedCleanCount}) is higher than Homey count (${currentHomeyCount}). Syncing count.`);
-                    await this.setSettings({ total_clean_count: robotReportedCleanCount });
-                    await this.total_clean_count_token.setValue(robotReportedCleanCount);
+                // If robot count jumps ahead (e.g. app reinstall), sync upward
+                const robotCount = totals.clean_count || 0;
+                const current = Number(this.getSetting('total_clean_count'));
+                if (robotCount > current) {
+                    await this.setSettings({ total_clean_count: robotCount });
+                    await this.total_clean_count_token.setValue(robotCount);
+                    this.log(`[DIAG] Synced total_clean_count ${current} → ${robotCount}.`);
                 }
             }
+
             this.initialTokenTotal = true;
         } catch (err) {
             this.error('[ERROR] [CUSTOM_TOTALS] Failed:', err);
+            // Don’t throw — never break polling due to totals
         }
     }
 
@@ -926,10 +755,8 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             let side_brush_remaining_value = 0;
             let filter_remaining_value = 0;
 
-            // debug purposes only
             const prevConsumables = this._lastConsumablesJSON || '';
             const currConsumables = JSON.stringify(consumables);
-
             if (currConsumables !== prevConsumables) {
                 this.log('Consumables input:', currConsumables);
                 this._lastConsumablesJSON = currConsumables;
@@ -938,9 +765,8 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             if (Array.isArray(consumables) && consumables.length > 0) {
                 const data = consumables[0];
 
-                /* main_brush_work_time */
-                if (data.hasOwnProperty('main_brush_work_time')) {
-                    main_brush_remaining_value = data.main_brush_work_time;
+                if (Object.prototype.hasOwnProperty.call(data, 'main_brush_work_time')) {
+                    main_brush_remaining_value = Number(data.main_brush_work_time) || 0;
                     const main_brush_remaining = main_brush_remaining_value + '%';
 
                     if (this.getSetting('main_brush_work_time') !== main_brush_remaining) {
@@ -954,18 +780,15 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                         await this.homey.flow
                             .getDeviceTriggerCard('alertVacuum')
                             .trigger(this, { consumable: 'Main Brush', value: main_brush_remaining })
-                            .catch((error) => this.error('Error triggering alert for main brush:', error));
+                            .catch((error) => this.error(error));
                     } else if (main_brush_remaining_value > this.getSetting('alarm_threshold') && this.getCapabilityValue('alarm_main_brush_work_time')) {
                         this.log('Clearing alarm for main brush...');
                         this.updateCapabilityValue('alarm_main_brush_work_time', false);
                     }
-                } else {
-                    this.log('main_brush_work_time not found in consumables.');
                 }
 
-                /* side_brush_work_time */
-                if (data.hasOwnProperty('side_brush_work_time')) {
-                    side_brush_remaining_value = data.side_brush_work_time;
+                if (Object.prototype.hasOwnProperty.call(data, 'side_brush_work_time')) {
+                    side_brush_remaining_value = Number(data.side_brush_work_time) || 0;
                     const side_brush_remaining = side_brush_remaining_value + '%';
 
                     if (this.getSetting('side_brush_work_time') !== side_brush_remaining) {
@@ -979,18 +802,15 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                         await this.homey.flow
                             .getDeviceTriggerCard('alertVacuum')
                             .trigger(this, { consumable: 'Side Brush', value: side_brush_remaining })
-                            .catch((error) => this.error('Error triggering alert for side brush:', error));
+                            .catch((error) => this.error(error));
                     } else if (side_brush_remaining_value > this.getSetting('alarm_threshold') && this.getCapabilityValue('alarm_side_brush_work_time')) {
                         this.log('Clearing alarm for side brush...');
                         this.updateCapabilityValue('alarm_side_brush_work_time', false);
                     }
-                } else {
-                    this.log('side_brush_work_time not found in consumables.');
                 }
 
-                /* filter_work_time */
-                if (data.hasOwnProperty('filter_work_time')) {
-                    filter_remaining_value = data.filter_work_time;
+                if (Object.prototype.hasOwnProperty.call(data, 'filter_work_time')) {
+                    filter_remaining_value = Number(data.filter_work_time) || 0;
                     const filter_remaining = filter_remaining_value + '%';
 
                     if (this.getSetting('filter_work_time') !== filter_remaining) {
@@ -1004,17 +824,14 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                         await this.homey.flow
                             .getDeviceTriggerCard('alertVacuum')
                             .trigger(this, { consumable: 'Filter', value: filter_remaining })
-                            .catch((error) => this.error('Error triggering alert for filter:', error));
+                            .catch((error) => this.error(error));
                     } else if (filter_remaining_value > this.getSetting('alarm_threshold') && this.getCapabilityValue('alarm_filter_work_time')) {
                         this.log('Clearing alarm for filter...');
                         this.updateCapabilityValue('alarm_filter_work_time', false);
                     }
-                } else {
-                    this.log('filter_work_time not found in consumables.');
                 }
 
-                /* initial update tokens */
-                if (!this.initialTokenConsumable || this.initialTokenConsumable === undefined) {
+                if (!this.initialTokenConsumable) {
                     if (this.main_brush_lifetime_token) await this.main_brush_lifetime_token.setValue(main_brush_remaining_value);
                     if (this.side_brush_lifetime_token) await this.side_brush_lifetime_token.setValue(side_brush_remaining_value);
                     if (this.filter_lifetime_token) await this.filter_lifetime_token.setValue(filter_remaining_value);
@@ -1031,42 +848,24 @@ class XiaomiVacuumMiotDeviceMax extends Device {
     /* Helper – always return a usable FlowToken instance */
     async getOrCreateToken(id, title) {
         try {
-            // 1. Create if missing
             return await this.homey.flow.createToken(id, { type: 'number', title });
         } catch (err) {
-            // already exists
-            if (err && err.statusCode === 409) {
-                return await this.homey.flow.getToken(id);
-            }
-            // crash race: token_not_registered
-            if (err && err.message === 'token_not_registered') {
-                return await this.homey.flow.createToken(id, { type: 'number', title });
-            }
+            if (err && err.statusCode === 409) return await this.homey.flow.getToken(id);
+            if (err && err.message === 'token_not_registered') return await this.homey.flow.createToken(id, { type: 'number', title });
             throw err;
         }
     }
 
-    /**
-     * Called exactly once when a cleaning run ends.
-     * – Since we already did incremental updates during cleaning,
-     *   we only need to bump the clean-count here.
-     */
-    async _accumulateJobTotals(extraAreaM2 = 0, extraHours = 0) {
+    async _accumulateJobTotals() {
         const prevCount = Number(this.getSetting('total_clean_count') || 0);
         const newCount = prevCount + 1;
-
         await this.setSettings({ total_clean_count: newCount });
         await this.total_clean_count_token.setValue(newCount);
-
         this.log(`[DIAG] [FINAL] Clean count incremented: ${prevCount} → ${newCount}`);
     }
 
-    /**
-     * Add a delta to the lifetime totals (area & duration)
-     * This is called every poll while cleaning is active, so totals are live.
-     */
     async _addLiveDelta(deltaAreaM2, deltaHours) {
-        if (deltaAreaM2 <= 0 && deltaHours <= 0) return; // nothing to do
+        if (deltaAreaM2 <= 0 && deltaHours <= 0) return;
 
         const prevArea = Number(this.getSetting('total_cleared_area') || 0);
         const prevTime = Number(this.getSetting('total_work_time') || 0);
@@ -1074,9 +873,8 @@ class XiaomiVacuumMiotDeviceMax extends Device {
         const newArea = prevArea + deltaAreaM2;
         const newTime = prevTime + deltaHours;
 
-        // Logging
-        this.log('[DIAG] [LIVE] Cleaned area update:', `Read (delta): ${deltaAreaM2.toFixed(2)} m², Previous: ${prevArea.toFixed(2)} m², New: ${newArea.toFixed(2)} m²`);
-        this.log('[DIAG] [LIVE] Cleaning time update:', `Read (delta): ${deltaHours.toFixed(4)} h, Previous: ${prevTime.toFixed(4)} h, New: ${newTime.toFixed(4)} h`);
+        this.log('[DIAG] [LIVE] Cleaned area update:', `Δ=${deltaAreaM2.toFixed(2)} m², Prev=${prevArea.toFixed(2)} m², New=${newArea.toFixed(2)} m²`);
+        this.log('[DIAG] [LIVE] Cleaning time update:', `Δ=${deltaHours.toFixed(4)} h, Prev=${prevTime.toFixed(4)} h, New=${newTime.toFixed(4)} h`);
 
         await this.setSettings({
             total_cleared_area: +newArea.toFixed(2),
@@ -1087,14 +885,9 @@ class XiaomiVacuumMiotDeviceMax extends Device {
         await this.total_work_time_token.setValue(+newTime);
     }
 
-    /**
-     * When the user manually edits “total_work_time” / “total_cleared_area” / “total_clean_count”
-     * in Settings, we want to sync those new values to flow tokens immediately.
-     */
     async onSettings({ oldSettings, newSettings, changedKeys }) {
-        if (super.onSettings) {
-            await super.onSettings({ oldSettings, newSettings, changedKeys });
-        }
+        if (super.onSettings) await super.onSettings({ oldSettings, newSettings, changedKeys });
+
         const lifetimeKeys = ['total_work_time', 'total_cleared_area', 'total_clean_count'];
         const changedLifetime = changedKeys.filter((k) => lifetimeKeys.includes(k));
         if (changedLifetime.length === 0) return true;
