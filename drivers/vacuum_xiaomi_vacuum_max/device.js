@@ -95,6 +95,49 @@ const properties = {
             // A real fault state that needs user attention
             stopped_error: [15]
         }
+    },
+
+    /* X20 (c102gl) — same as above, except for room-clean action mapping:
+     X20+/X20 uses aiid 3 and input property piid 4 for room IDs. */
+    properties_c102gl: {
+        get_rooms: [{ did: 'rooms', siid: 2, piid: 16 }],
+        get_properties: [
+            { did: 'device_status', siid: 2, piid: 2 },
+            { did: 'device_fault', siid: 2, piid: 3 },
+            { did: 'mode', siid: 2, piid: 4 },
+            { did: 'battery', siid: 3, piid: 1 },
+            { did: 'main_brush_life_level', siid: 12, piid: 1 },
+            { did: 'side_brush_life_level', siid: 13, piid: 1 },
+            { did: 'filter_life_level', siid: 14, piid: 1 },
+            { did: 'total_clean_time', siid: 2, piid: 7 },
+            { did: 'total_clean_count', siid: 2, piid: 8 },
+            { did: 'total_clean_area', siid: 2, piid: 6 },
+            { did: 'cleaning_mode', siid: 2, piid: 9 },
+            { did: 'water_level', siid: 2, piid: 10 },
+            { did: 'path_mode', siid: 2, piid: 74 },
+            { did: 'detergent_left_level', siid: 18, piid: 1 },
+            { did: 'detergent_self_delivery', siid: 18, piid: 2 },
+            { did: 'detergent_self_delivery_lvl', siid: 18, piid: 3 },
+            { did: 'dust_bag_life_level', siid: 19, piid: 1 },
+            { did: 'dust_bag_left_time', siid: 19, piid: 2 },
+            { did: 'detergent_depletion_reminder', siid: 2, piid: 71 },
+            { did: 'carpet_avoidance', siid: 2, piid: 73 }
+        ],
+        set_properties: {
+            start_clean: { siid: 2, aiid: 1, did: 'call-2-1', in: [] },
+            stop_clean: { siid: 2, aiid: 2, did: 'call-2-2', in: [] },
+            find: { siid: 6, aiid: 1, did: 'call-6-1', in: [] },
+            home: { siid: 3, aiid: 1, did: 'call-3-1', in: [] },
+            mopmode: { siid: 2, piid: 4 },
+            cleaning_mode: { siid: 2, piid: 9 },
+            water_level: { siid: 2, piid: 10 },
+            path_mode: { siid: 2, piid: 74 },
+            // ❗ X20+/X20 specific: aiid 3, and input 'piid: 4' carries the room list
+            room_clean_action: { siid: 2, aiid: 3, piid: 4 },
+            carpet_avoidance: { siid: 2, piid: 73 }
+        },
+        error_codes: properties.properties_d109gl.error_codes,
+        status_mapping: properties.properties_d109gl.status_mapping
     }
 };
 
@@ -121,11 +164,11 @@ class XiaomiVacuumMiotDeviceMax extends Device {
 
             // Add missing capabilities during upgrades
             if (!this.hasCapability('alarm_water_shortage')) {
-                await this.addCapability('alarm_water_shortage', 'boolean');
+                await this.addCapability('alarm_water_shortage');
             }
 
             if (!this.hasCapability('vacuum_xiaomi_carpet_mode_max')) {
-                await this.addCapability('vacuum_xiaomi_carpet_mode_max', 'boolean');
+                await this.addCapability('vacuum_xiaomi_carpet_mode_max');
             }
 
             // remember the last reported state so we can spot transitions
@@ -349,7 +392,6 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                 );
             });
 
-            
             // 6. REGISTER “SET CARPET AVOIDANCE”
             this.homey.flow.getActionCard('set_carpet_avoidance').registerRunListener(async ({ device, mode }) => {
                 const numericValue = Number(mode);
@@ -393,7 +435,6 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                     return Promise.reject(error);
                 }
             });
-
 
             // LISTENERS FOR UPDATING CAPABILITIES
             this.registerCapabilityListener('onoff', async (value) => {
