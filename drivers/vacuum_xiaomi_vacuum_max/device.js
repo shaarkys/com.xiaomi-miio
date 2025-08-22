@@ -7,18 +7,67 @@ const Util = require('../../lib/util.js');
 /* supported devices */
 // https://home.miot-spec.com/spec/xiaomi.vacuum.d109gl // Xiaomi Robot Vacuum X20 Max
 // https://home.miot-spec.com/spec/xiaomi.vacuum.d102gl // Xiaomi Robot Vacuum X20 Pro
-// https://home.miot-spec.com/spec/xiaomi.vacuum.c102gl // Xiaomi Robot Vacuum X20
+// https://home.miot-spec.com/spec/xiaomi.vacuum.c102gl // Xiaomi Robot Vacuum X20 (aka X20+ in some regions)
 
-const mapping = {
-    'xiaomi.vacuum.d109gl': 'properties_d109gl',
-    'xiaomi.vacuum.d102gl': 'properties_d109gl',
-    'xiaomi.vacuum.c102gl': 'properties_d109gl'
+/** ------------------------------------------------------------------
+ *  Shared constants (hoisted so we don’t reference `properties` early)
+ *  ------------------------------------------------------------------ */
+const ERROR_CODES = {
+    0: 'OK',
+    1: 'Left-wheel-error',
+    2: 'Right-wheel-error',
+    3: 'Cliff-error',
+    4: 'Low-battery-error',
+    5: 'Bump-error',
+    6: 'Main-brush-error',
+    7: 'Side-brush-error',
+    8: 'Fan-motor-error',
+    9: 'Dustbin-error',
+    10: 'Charging-error',
+    11: 'No-water-error',
+    12: 'Pick-up-error',
+    100008: 'OK / Busy',
+    210030: 'Water tank empty',
+    210004: 'Stuck-error',
+    210002: 'Wheel-error',
+    210013: 'Dustbin-error',
+    210050: 'No-water-error',
+    320002: 'Cliff-error'
 };
 
+const STATUS_MAPPING = {
+    // Robot is actively moving or its station is working
+    cleaning: [4, 7, 8, 10, 12, 16, 17, 19],
+
+    // Not used on the X20 Max (kept for compatibility)
+    spot_cleaning: [],
+
+    // Robot is on the dock and NOT charging, or the station is busy
+    docked: [9, 11, 14],
+
+    // Robot is charging or driving home to charge
+    charging: [2, 6, 13, 21],
+
+    // Robot is paused, waiting, or user-interrupted
+    stopped: [1, 3, 5, 18, 20],
+
+    // A real fault state that needs user attention
+    stopped_error: [15]
+};
+
+/** Which property set each model uses */
+const mapping = {
+    'xiaomi.vacuum.d109gl': 'properties_d109gl', // X20 Max
+    'xiaomi.vacuum.d102gl': 'properties_d109gl', // X20 Pro (keep original/working mapping)
+    'xiaomi.vacuum.c102gl': 'properties_c102gl' // X20 / X20+ (room action aiid 3, input piid 4)
+};
+
+/** All property sets */
 const properties = {
+    /* Original working spec (d109gl / d102gl) */
     properties_d109gl: {
         get_rooms: [
-            { did: 'rooms', siid: 2, piid: 16 } // get list of rooms property (separated from the others because if included with others the api don't respond)
+            { did: 'rooms', siid: 2, piid: 16 } // get list of rooms property (must be requested alone)
         ],
         get_properties: [
             { did: 'device_status', siid: 2, piid: 2 }, // status
@@ -34,11 +83,11 @@ const properties = {
             { did: 'cleaning_mode', siid: 2, piid: 9 }, // Cleaning Mode (1-4)
             { did: 'water_level', siid: 2, piid: 10 }, // Water Output Level (0-3)
             { did: 'path_mode', siid: 2, piid: 74 }, // Path-mode (1-3)
-            { did: 'detergent_left_level', siid: 18, piid: 1 }, // 0-100 % - not available on d109gl ??
+            { did: 'detergent_left_level', siid: 18, piid: 1 }, // 0-100 %
             { did: 'detergent_self_delivery', siid: 18, piid: 2 }, // bool
             { did: 'detergent_self_delivery_lvl', siid: 18, piid: 3 }, // 0–3
-            { did: 'dust_bag_life_level', siid: 19, piid: 1 }, // 0-100 % - not available on d109gl ??
-            { did: 'dust_bag_left_time', siid: 19, piid: 2 }, // h - not available on d109gl ??
+            { did: 'dust_bag_life_level', siid: 19, piid: 1 }, // 0-100 %
+            { did: 'dust_bag_left_time', siid: 19, piid: 2 }, // hours
             { did: 'detergent_depletion_reminder', siid: 2, piid: 71 }, // “detergent nearly empty” flag
             { did: 'carpet_avoidance', siid: 2, piid: 73 } // Carpet Avoidance (Self adaptive / Avoid / Ignore / Span)
         ],
@@ -51,54 +100,16 @@ const properties = {
             cleaning_mode: { siid: 2, piid: 9 }, // Cleaning Mode
             water_level: { siid: 2, piid: 10 }, // Water Level
             path_mode: { siid: 2, piid: 74 }, // Path-mode
-            room_clean_action: { siid: 2, aiid: 16, piid: 15 }, // Room cleaning action (used in advanced_room_cleaning flow action)
-            carpet_avoidance: { siid: 2, piid: 73 } // Carpet Avoidance (Self adaptive / Avoid / Ignore / Span)
+            // Room cleaning action (used in advanced_room_cleaning flow action)
+            room_clean_action: { siid: 2, aiid: 16, piid: 15 },
+            carpet_avoidance: { siid: 2, piid: 73 } // Carpet Avoidance
         },
-        error_codes: {
-            0: 'OK',
-            1: 'Left-wheel-error',
-            2: 'Right-wheel-error',
-            3: 'Cliff-error',
-            4: 'Low-battery-error',
-            5: 'Bump-error',
-            6: 'Main-brush-error',
-            7: 'Side-brush-error',
-            8: 'Fan-motor-error',
-            9: 'Dustbin-error',
-            10: 'Charging-error',
-            11: 'No-water-error',
-            12: 'Pick-up-error',
-            100008: 'OK / Busy',
-            210030: 'Water tank empty',
-            210004: 'Stuck-error',
-            210002: 'Wheel-error',
-            210013: 'Dustbin-error',
-            210050: 'No-water-error',
-            320002: 'Cliff-error'
-        },
-        status_mapping: {
-            // Robot is actively moving or its station is working
-            cleaning: [4, 7, 8, 10, 12, 16, 17, 19],
-
-            // Not used on the X20 Max (kept for compatibility)
-            spot_cleaning: [],
-
-            // Robot is on the dock and NOT charging, or the station is busy
-            docked: [9, 11, 14],
-
-            // Robot is charging or driving home to charge
-            charging: [2, 6, 13, 21],
-
-            // Robot is paused, waiting, or user-interrupted
-            stopped: [1, 3, 5, 18, 20],
-
-            // A real fault state that needs user attention
-            stopped_error: [15]
-        }
+        error_codes: ERROR_CODES,
+        status_mapping: STATUS_MAPPING
     },
 
-    /* X20 (c102gl) — same as above, except for room-clean action mapping:
-     X20+/X20 uses aiid 3 and input property piid 4 for room IDs. */
+    /* X20 / X20+ (c102gl) — identical to above EXCEPT room clean action:
+     Uses aiid 3 and input property piid 4 for room IDs. */
     properties_c102gl: {
         get_rooms: [{ did: 'rooms', siid: 2, piid: 16 }],
         get_properties: [
@@ -132,12 +143,12 @@ const properties = {
             cleaning_mode: { siid: 2, piid: 9 },
             water_level: { siid: 2, piid: 10 },
             path_mode: { siid: 2, piid: 74 },
-            // ❗ X20+/X20 specific: aiid 3, and input 'piid: 4' carries the room list
+            // X20+/X20 specific
             room_clean_action: { siid: 2, aiid: 3, piid: 4 },
             carpet_avoidance: { siid: 2, piid: 73 }
         },
-        error_codes: properties.properties_d109gl.error_codes,
-        status_mapping: properties.properties_d109gl.status_mapping
+        error_codes: ERROR_CODES,
+        status_mapping: STATUS_MAPPING
     }
 };
 
@@ -166,7 +177,6 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             if (!this.hasCapability('alarm_water_shortage')) {
                 await this.addCapability('alarm_water_shortage');
             }
-
             if (!this.hasCapability('vacuum_xiaomi_carpet_mode_max')) {
                 await this.addCapability('vacuum_xiaomi_carpet_mode_max');
             }
@@ -191,7 +201,8 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             }
 
             // DEVICE VARIABLES
-            this.deviceProperties = properties[mapping[this.getStoreValue('model')]] !== undefined ? properties[mapping[this.getStoreValue('model')]] : properties[mapping['xiaomi.vacuum.*']];
+            const model = this.getStoreValue('model');
+            this.deviceProperties = properties[mapping[model]] || properties.properties_d109gl;
 
             // RESET CONSUMABLE ALARMS
             this.updateCapabilityValue('alarm_main_brush_work_time', false);
@@ -645,8 +656,8 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             const water_level = this.getMiotProp(result, 'water_level');
             const path_mode = this.getMiotProp(result, 'path_mode');
             const carpet_avoidance = this.getMiotProp(result, 'carpet_avoidance');
-            const detergent_left_level = this.getMiotProp(result, 'detergent_left_level'); // not available on d109gl ??
-            const dust_bag_life_level = this.getMiotProp(result, 'dust_bag_life_level'); // not available on d109gl ??
+            const detergent_left_level = this.getMiotProp(result, 'detergent_left_level'); // may be missing on some variants
+            const dust_bag_life_level = this.getMiotProp(result, 'dust_bag_life_level'); // may be missing on some variants
 
             const consumables = [
                 {
@@ -801,13 +812,10 @@ class XiaomiVacuumMiotDeviceMax extends Device {
 
             // Read “detergent_depletion_reminder”
             const detergent_depletion_reminder = this.getMiotProp(result, 'detergent_depletion_reminder');
-            // If this flag exists and is “1”, it means “detergent nearly empty.”
-            // We’ll update a boolean capability “alarm_water_shortage” accordingly.
             if (detergent_depletion_reminder) {
                 const isEmpty = !!detergent_depletion_reminder.value; // assume 1 = needs refill, 0 = OK
                 await this.updateCapabilityValue('alarm_water_shortage', isEmpty);
             }
-            // ────────────────────────────────────────────────────────────────────────
 
             /* settings device error → save + tile + flow */
             let err = 'Everything-is-ok';
@@ -875,15 +883,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
      * We just mirror them into settings and tokens (numbers only).
      */
     async customVacuumTotals(totals) {
-        // 'totals' object contains robot's current report for PII 6, 7, 8
         try {
-            //this.log(`[DIAG] Received totals from robot: clean_time=${totals.clean_time}, clean_area=${totals.clean_area}, clean_count=${totals.clean_count}`);
-
-            const robotReportedCleanCount = totals.clean_count;
-
-            // Initialize settings if they are undefined (e.g., first ever poll)
-            // These initial values will be based on what the robot reports at that moment.
-            // forceUpdateTotals will handle accumulation from the first cleaning session onwards.
             if (this.getSetting('total_work_time') === undefined) {
                 const initialWorkTimeSec = totals.clean_time;
                 const initialWorkTimeH = +(initialWorkTimeSec / 3600).toFixed(3);
@@ -901,12 +901,12 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             }
 
             if (this.getSetting('total_clean_count') === undefined) {
+                const robotReportedCleanCount = totals.clean_count;
                 await this.setSettings({ total_clean_count: robotReportedCleanCount });
                 await this.total_clean_count_token.setValue(robotReportedCleanCount);
                 this.log(`[DIAG] Initialized total_clean_count to ${robotReportedCleanCount} from robot report.`);
             } else {
-                // Optional: Sync count if robot's count is higher (e.g. if Homey's count got reset somehow)
-                // forceUpdateTotals is the primary incrementer during normal operation.
+                const robotReportedCleanCount = totals.clean_count;
                 const currentHomeyCount = Number(this.getSetting('total_clean_count'));
                 if (robotReportedCleanCount > currentHomeyCount) {
                     this.log(`[DIAG] Robot count (${robotReportedCleanCount}) is higher than Homey count (${currentHomeyCount}). Syncing count.`);
@@ -914,7 +914,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                     await this.total_clean_count_token.setValue(robotReportedCleanCount);
                 }
             }
-            this.initialTokenTotal = true; // Mark that initial value consideration has occurred.
+            this.initialTokenTotal = true;
         } catch (err) {
             this.error('[ERROR] [CUSTOM_TOTALS] Failed:', err);
         }
@@ -927,7 +927,6 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             let filter_remaining_value = 0;
 
             // debug purposes only
-            // Compare with previous consumables, only log if changed
             const prevConsumables = this._lastConsumablesJSON || '';
             const currConsumables = JSON.stringify(consumables);
 
@@ -1029,27 +1028,21 @@ class XiaomiVacuumMiotDeviceMax extends Device {
         }
     }
 
-    /* Helper – always return a usable FlowToken instance
-       1. First try to create (fast path)
-       2. If it already exists → grab it
-       3. If Homey says “token_not_registered” when we tried to grab it first
-          → simply create it then.
-    */
+    /* Helper – always return a usable FlowToken instance */
     async getOrCreateToken(id, title) {
         try {
-            // 1️⃣  Fast-path: create, will succeed the very first time
+            // 1. Create if missing
             return await this.homey.flow.createToken(id, { type: 'number', title });
         } catch (err) {
-            // 2️⃣  It’s already there → fetch it
+            // already exists
             if (err && err.statusCode === 409) {
                 return await this.homey.flow.getToken(id);
             }
-            // 3️⃣  “token_not_registered” means getToken() was called before createToken()
-            //     during a previous crash → fall back to create again
+            // crash race: token_not_registered
             if (err && err.message === 'token_not_registered') {
                 return await this.homey.flow.createToken(id, { type: 'number', title });
             }
-            throw err; // anything else is still an error
+            throw err;
         }
     }
 
@@ -1059,7 +1052,6 @@ class XiaomiVacuumMiotDeviceMax extends Device {
      *   we only need to bump the clean-count here.
      */
     async _accumulateJobTotals(extraAreaM2 = 0, extraHours = 0) {
-        // Increment the clean count only
         const prevCount = Number(this.getSetting('total_clean_count') || 0);
         const newCount = prevCount + 1;
 
@@ -1076,7 +1068,6 @@ class XiaomiVacuumMiotDeviceMax extends Device {
     async _addLiveDelta(deltaAreaM2, deltaHours) {
         if (deltaAreaM2 <= 0 && deltaHours <= 0) return; // nothing to do
 
-        // Previous values before update
         const prevArea = Number(this.getSetting('total_cleared_area') || 0);
         const prevTime = Number(this.getSetting('total_work_time') || 0);
 
