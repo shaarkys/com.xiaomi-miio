@@ -111,6 +111,9 @@ const properties = {
         }
     },
     properties_c102: {
+        // MIoT spec highlights for X20+ (xiaomi.vacuum.c102gl):
+        // SIID 2 (vacuum): PIID 1 status, 2 fault, 3 mode, 4 room-ids
+        // AIID 3 start-room-sweep with param PIID 4 (room-ids)
         get_properties: [
             { did: 'device_status', siid: 2, piid: 1 }, // vacuumcleaner_state
             { did: 'device_fault', siid: 2, piid: 2 }, // settings.error
@@ -123,12 +126,23 @@ const properties = {
             { did: 'total_clean_count', siid: 12, piid: 3 }, // settings.clean_count
             { did: 'total_clean_area', siid: 12, piid: 4 } // settings.total_cleared_area
         ],
+        // New: fetch rooms (string; vendor JSON on supported fw)
+        get_rooms: [
+            { did: 'rooms', siid: 2, piid: 4 } // Room IDs (string/json)
+        ],
         set_properties: {
             start_clean: { siid: 2, aiid: 1, did: 'call-2-1', in: [] },
             stop_clean: { siid: 2, aiid: 2, did: 'call-2-2', in: [] },
             find: { siid: 7, aiid: 2, did: 'call-7-2', in: [] },
             home: { siid: 3, aiid: 1, did: 'call-3-1', in: [] },
-            mopmode: { siid: 2, piid: 6 }
+            mopmode: { siid: 2, piid: 6 },
+
+            // Optional pre-room params (guarded at runtime)
+            cleaning_mode: { siid: 4, piid: 4 }, // 0 Quiet,1 Standard,2 Medium,3 Strong
+            water_level: { siid: 4, piid: 5 }, // 1 Low,2 Medium,3 High
+
+            // Room cleaning action for c102gl
+            room_clean_action: { siid: 2, aiid: 3, piid: 4 }
         },
         error_codes: {
             0: 'Everything-is-ok',
@@ -206,6 +220,117 @@ class XiaomiVacuumMiotDevice extends Device {
             this.homey.flow.getDeviceTriggerCard('statusVacuum');
             // not implemented
             //this.homey.flow.getDeviceTriggerCard('triggerVacuumRoomSegments');
+
+            // NEW: register advanced room cleaning ONLY if the action card exists in the app (no compose file here)
+            try {
+                const roomCard = this.homey.flow.getActionCard('advanced_room_cleaning');
+                if (roomCard && typeof roomCard.registerRunListener === 'function') {
+                    roomCard.registerRunListener(async (args) => {
+                        try {
+                            // read rooms list from settings (populated during polling)
+                            let list_room = [];
+                            try {
+                                list_room = JSON.parse(args.device.getSetting('rooms'));
+                            } catch (e) {
+                                this.error('Rooms list in settings is invalid or missing.', e);
+                                return Promise.reject('Room list is not available. Please sync device first.');
+                            }
+
+                            // build selected ids, preserving order
+                            let selected_room = [];
+                            if (args.room === 'all') {
+                                selected_room = list_room.map((el) => el.id);
+                            } else {
+                                for (const nameRaw of String(args.room).split(',')) {
+                                    const name = nameRaw.toLowerCase().trim();
+                                    const match = list_room.find((el) => el.name.toLowerCase() === name);
+                                    if (match) selected_room.push(match.id);
+                                }
+                            }
+
+                            if (selected_room.length === 0) {
+                                const known = list_room.map((r) => r.name).join(', ');
+                                this.error(`No valid room selected for advanced cleaning. Requested: "${args.room}", Available: "${known}"`);
+                                return Promise.reject(`No valid room selected. Requested: "${args.room}". Available: ${known}.`);
+                            }
+
+                            // Firmware quirk: duplicate single-room to 2 entries
+                            let room_list = selected_room.join(',');
+                            if (selected_room.length === 1) room_list += ',' + room_list;
+
+                            // Pre-room properties (guarded by presence)
+                            const props = [];
+                            if (this.deviceProperties.set_properties.mopmode) {
+                                props.push({
+                                    siid: this.deviceProperties.set_properties.mopmode.siid,
+                                    piid: this.deviceProperties.set_properties.mopmode.piid,
+                                    value: Number(args.mode)
+                                });
+                            }
+                            if (this.deviceProperties.set_properties.cleaning_mode && (args.mode == 1 || args.mode == 3)) {
+                                props.push({
+                                    siid: this.deviceProperties.set_properties.cleaning_mode.siid,
+                                    piid: this.deviceProperties.set_properties.cleaning_mode.piid,
+                                    value: Number(args.mode_sweep)
+                                });
+                            }
+                            if (this.deviceProperties.set_properties.water_level && (args.mode == 2 || args.mode == 3)) {
+                                props.push({
+                                    siid: this.deviceProperties.set_properties.water_level.siid,
+                                    piid: this.deviceProperties.set_properties.water_level.piid,
+                                    value: Number(args.mode_mop)
+                                });
+                            }
+                            if (this.deviceProperties.set_properties.path_mode && typeof args.accuracy !== 'undefined') {
+                                props.push({
+                                    siid: this.deviceProperties.set_properties.path_mode.siid,
+                                    piid: this.deviceProperties.set_properties.path_mode.piid,
+                                    value: Number(args.accuracy)
+                                });
+                            }
+                            if (this.deviceProperties.set_properties.carpet_avoidance && typeof args.carpet_avoidance !== 'undefined') {
+                                props.push({
+                                    siid: this.deviceProperties.set_properties.carpet_avoidance.siid,
+                                    piid: this.deviceProperties.set_properties.carpet_avoidance.piid,
+                                    value: Number(args.carpet_avoidance)
+                                });
+                            }
+
+                            if (this.miio) {
+                                if (props.length) await this.miio.call('set_properties', props, { retries: 1 });
+
+                                const actionDef = this.deviceProperties.set_properties.room_clean_action;
+                                if (!actionDef) {
+                                    this.error('Room cleaning action not supported by this model.');
+                                    return Promise.reject('Room cleaning is not supported by this model.');
+                                }
+
+                                return await this.miio.call(
+                                    'action',
+                                    {
+                                        siid: actionDef.siid,
+                                        aiid: actionDef.aiid,
+                                        did: `call-${actionDef.siid}-${actionDef.aiid}`,
+                                        in: [{ piid: actionDef.piid, value: room_list }]
+                                    },
+                                    { retries: 1 }
+                                );
+                            } else {
+                                this.setUnavailable(this.homey.__('unreachable')).catch((error) => this.error(error));
+                                this.createDevice();
+                                return Promise.reject('Device unreachable, please try again ...');
+                            }
+                        } catch (err) {
+                            this.error(err);
+                            return Promise.reject(err);
+                        }
+                    });
+                } else {
+                    this.log('Action card "advanced_room_cleaning" not found in app; skipping registration.');
+                }
+            } catch (e) {
+                this.log('Advanced room cleaning action card not available; continuing without it.');
+            }
 
             // LISTENERS FOR UPDATING CAPABILITIES
             this.registerCapabilityListener('onoff', async (value) => {
@@ -287,7 +412,7 @@ class XiaomiVacuumMiotDevice extends Device {
                     if (this.getStoreValue('model') === 'xiaomi.vacuum.c102gl') {
                         // Example: device sees 0 => Mop & Sweep, 1 => Mop, 2 => Sweep
                         // but our JSON is 0 => Sweep, 1 => Sweep & Mop, 2 => Mop
-                        // We'll invert them as needed. 
+                        // We'll invert them as needed.
                         const mapOutboundMopMode = (homeyValue) => {
                             switch (homeyValue) {
                                 case 0: // Homey 0 => "Sweep"
@@ -344,46 +469,6 @@ class XiaomiVacuumMiotDevice extends Device {
 
             // debug purposes only
             //this.log('Raw property data:', result);
-
-            //temporary debug !!!
-            //const resultmop = await this.miio.call('get_properties', [{ siid: 2, piid: 6 }], { retries: 1 });
-            //this.log('Supported mop mode values:', resultmop);
-            //this.log('Device Properties:', this.deviceProperties);
-            //this.log('Status Mapping:', this.deviceProperties.status_mapping);
-            //this.log('Device Status Value:', device_status.value);
-
-            //temporary debug !!!
-            /*
-            try {
-                this.log('Starting full property scan...');
-    
-                const results = [];
-                
-                // Iterate over a reasonable range of SIIDs and PIIDs
-                for (let siid = 1; siid <= 18; siid++) {
-                    for (let piid = 1; piid <= 50; piid++) {
-                        try {
-                            // Attempt to fetch property for the current SIID and PIID
-                            const response = await this.miio.call('get_properties', [{ siid, piid }], { retries: 1 });
-                            
-                            // Log successful responses and add them to results
-                            if (response && response.length > 0 && response[0].code === 0) {
-                                this.log(`Fetched property SIID ${siid}, PIID ${piid}:`, JSON.stringify(response[0]));
-                                results.push(response[0]);
-                            }
-                        } catch (error) {
-                            // Ignore errors for invalid SIID/PIID combinations
-                            this.log(`SIID ${siid}, PIID ${piid} not accessible.`);
-                        }
-                    }
-                }
-    
-                // Log all successfully fetched properties
-                this.log('Complete property scan result:', JSON.stringify(results, null, 2));
-    
-            } catch (error) {
-                this.error('Error during full property scan:', error);
-            } */
 
             /* data */
             const device_status = result.find((obj) => obj.did === 'device_status');
@@ -467,7 +552,41 @@ class XiaomiVacuumMiotDevice extends Device {
 
             // Now set the capability with finalMopModeValue
             await this.updateCapabilityValue('vacuum_xiaomi_mop_mode', finalMopModeValue.toString());
-            
+
+            /* ──────────────────────────────
+               NEW: Rooms list retrieval (if model exposes SIID 2 / PIID 4)
+            ────────────────────────────── */
+            if (this.deviceProperties.get_rooms && this.deviceProperties.get_rooms.length) {
+                try {
+                    const result_rooms = await this.miio.call('get_properties', this.deviceProperties.get_rooms, { retries: 1 });
+                    if (Array.isArray(result_rooms) && result_rooms[0] && result_rooms[0].value) {
+                        // Expect a JSON string with "rooms": [{ id, name }, ...]
+                        let roomsArr = [];
+                        try {
+                            const parsed = JSON.parse(result_rooms[0].value);
+                            roomsArr = Array.isArray(parsed.rooms) ? parsed.rooms : [];
+                        } catch (e) {
+                            // Some firmwares may return plain text instead of JSON. Skip parse.
+                            this.log('Rooms property returned non-JSON payload, skipping parse.');
+                        }
+
+                        if (roomsArr.length) {
+                            const rooms_list = JSON.stringify(roomsArr);
+                            const rooms_names = roomsArr.map((r) => r.name).join(', ');
+                            await this.setSettings({ rooms: rooms_list, rooms_display: rooms_names });
+                        } else {
+                            await this.setSettings({ rooms: 'Not supported for this model', rooms_display: 'Not supported for this model' });
+                        }
+                    } else {
+                        await this.setSettings({ rooms: 'Not supported for this model', rooms_display: 'Not supported for this model' });
+                    }
+                } catch (e) {
+                    // If the robot rejects the request, keep previous settings and move on.
+                    this.log('Fetching rooms failed or not supported on this device/firmware.');
+                }
+            }
+            /* ────────────────────────────── */
+
             /* consumable settings */
             this.vacuumConsumables(consumables);
 
@@ -476,7 +595,6 @@ class XiaomiVacuumMiotDevice extends Device {
 
             /* settings device error */
             const error = this.deviceProperties.error_codes[device_fault.value];
-            // If the lookup failed, error is undefined. Provide a fallback string:
             let safeError = typeof error === 'string' ? error : 'Unknown Error';
             if (this.getSetting('error') !== error) {
                 await this.setSettings({ error: error });
