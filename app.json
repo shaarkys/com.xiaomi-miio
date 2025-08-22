@@ -187,7 +187,7 @@
       "게이트웨이"
     ]
   },
-  "version": "3.4.33",
+  "version": "3.4.34",
   "compatibility": ">=12.2.0",
   "platforms": [
     "local"
@@ -23311,55 +23311,36 @@
             }
           ]
         },
-        [
-          {
-            "type": "group",
-            "label": {
-              "en": "Telemetry & Probe"
-            },
-            "children": [
-              {
-                "id": "desiccant_alarm_threshold",
-                "type": "number",
-                "label": {
-                  "en": "Desiccant low alarm threshold (%)"
-                },
-                "min": 0,
-                "max": 100,
-                "step": 1,
-                "value": 20
-              },
-              {
-                "id": "iv2001_extended_probe",
-                "type": "checkbox",
-                "label": {
-                  "en": "Enable extended MIoT probe (iv2001 only)"
-                },
-                "hint": {
-                  "en": "When enabled, the driver will read additional candidate siid/piid pairs to confirm properties at runtime and log successful hits. Use for diagnostics; not required for normal operation."
-                },
-                "value": false
-              }
-            ]
+        {
+          "type": "group",
+          "label": {
+            "en": "Telemetry & Probe"
           },
-          {
-            "type": "group",
-            "label": {
-              "en": "Connection"
+          "children": [
+            {
+              "id": "desiccant_alarm_threshold",
+              "type": "number",
+              "label": {
+                "en": "Desiccant low alarm threshold (%)"
+              },
+              "min": 0,
+              "max": 100,
+              "step": 1,
+              "value": 20
             },
-            "children": [
-              {
-                "id": "address"
+            {
+              "id": "iv2001_extended_probe",
+              "type": "checkbox",
+              "label": {
+                "en": "Enable extended MIoT probe (iv2001 only)"
               },
-              {
-                "id": "token"
+              "hint": {
+                "en": "When enabled, the driver will read additional candidate siid/piid pairs to confirm properties at runtime and log successful hits. Use for diagnostics; not required for normal operation."
               },
-              {
-                "id": "polling"
-              }
-            ]
-          }
-        ]
+              "value": false
+            }
+          ]
+        }
       ]
     },
     {
