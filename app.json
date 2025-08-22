@@ -27836,25 +27836,6 @@
                 "ko": "총 청소 횟수"
               },
               "value": "0"
-            },
-            {
-              "id": "rooms_display",
-              "type": "label",
-              "label": {
-                "en": "Room list",
-                "nl": "Kamers",
-                "da": "Rumliste",
-                "de": "Raumliste",
-                "es": "Lista de habitaciones",
-                "fr": "Liste des pièces",
-                "it": "Elenco stanze",
-                "no": "Romliste",
-                "sv": "Rumslista",
-                "pl": "Lista pomieszczeń",
-                "ru": "Список комнат",
-                "ko": "방 목록"
-              },
-              "value": "Not supported for this model"
             }
           ]
         },
