@@ -125,56 +125,34 @@
       }
     ]
   },
-  [
-    {
-      "type": "group",
-      "label": {
-        "en": "Telemetry & Probe"
-      },
-      "children": [
-        {
-          "id": "desiccant_alarm_threshold",
-          "type": "number",
-          "label": {
-            "en": "Desiccant low alarm threshold (%)"
-          },
-          "min": 0,
-          "max": 100,
-          "step": 1,
-          "value": 20
-        },
-        {
-          "id": "iv2001_extended_probe",
-          "type": "checkbox",
-          "label": {
-            "en": "Enable extended MIoT probe (iv2001 only)"
-          },
-          "hint": {
-            "en": "When enabled, the driver will read additional candidate siid/piid pairs to confirm properties at runtime and log successful hits. Use for diagnostics; not required for normal operation."
-          },
-          "value": false
-        }
-      ]
+  {
+    "type": "group",
+    "label": {
+      "en": "Telemetry & Probe"
     },
-    {
-      "type": "group",
-      "label": {
-        "en": "Connection"
+    "children": [
+      {
+        "id": "desiccant_alarm_threshold",
+        "type": "number",
+        "label": {
+          "en": "Desiccant low alarm threshold (%)"
+        },
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "value": 20
       },
-      "children": [
-        {
-          "id": "address",
-          "$extends": "address"
+      {
+        "id": "iv2001_extended_probe",
+        "type": "checkbox",
+        "label": {
+          "en": "Enable extended MIoT probe (iv2001 only)"
         },
-        {
-          "id": "token",
-          "$extends": "token"
+        "hint": {
+          "en": "When enabled, the driver will read additional candidate siid/piid pairs to confirm properties at runtime and log successful hits. Use for diagnostics; not required for normal operation."
         },
-        {
-          "id": "polling",
-          "$extends": "polling"
-        }
-      ]
-    }
-  ]
+        "value": false
+      }
+    ]
+  }
 ]

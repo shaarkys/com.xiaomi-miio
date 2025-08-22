@@ -901,6 +901,102 @@
         ]
       },
       {
+        "title": {
+          "en": "Desiccant low"
+        },
+        "hint": {
+          "en": "Triggers when desiccant level falls below the threshold."
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=petfeeder_mmgg_miot"
+          }
+        ],
+        "tokens": [
+          {
+            "name": "level_percent",
+            "type": "number",
+            "title": {
+              "en": "Level (%)"
+            }
+          }
+        ],
+        "id": "desiccant_low"
+      },
+      {
+        "title": {
+          "en": "Eaten food changed"
+        },
+        "hint": {
+          "en": "Triggers when eaten food telemetry changes."
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=petfeeder_mmgg_miot"
+          }
+        ],
+        "tokens": [
+          {
+            "name": "today_g",
+            "type": "number",
+            "title": {
+              "en": "Today (g)"
+            }
+          },
+          {
+            "name": "total_g",
+            "type": "number",
+            "title": {
+              "en": "Total (g)"
+            }
+          },
+          {
+            "name": "delta_g",
+            "type": "number",
+            "title": {
+              "en": "Delta (g)"
+            }
+          }
+        ],
+        "id": "eaten_food_changed"
+      },
+      {
+        "title": {
+          "en": "Feeder status changed"
+        },
+        "hint": {
+          "en": "Triggers when the feeder status (mode) changes."
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=petfeeder_mmgg_miot"
+          }
+        ],
+        "tokens": [
+          {
+            "name": "new_status",
+            "type": "string",
+            "title": {
+              "en": "New status"
+            }
+          },
+          {
+            "name": "previous_status",
+            "type": "string",
+            "title": {
+              "en": "Previous status"
+            }
+          }
+        ],
+        "id": "feeder_status_changed"
+      },
+      {
         "id": "flip180_cube",
         "title": {
           "en": "Flip 180°",
@@ -23019,18 +23115,7 @@
         "lan"
       ],
       "name": {
-        "en": "Smart Pet Feeder MIoT (WiFi)",
-        "nl": "Smart Pet Feeder MIoT (WiFi)",
-        "da": "Smart Pet Feeder MIoT (WiFi)",
-        "de": "Smart Pet Feeder MIoT (WiFi)",
-        "es": "Smart Pet Feeder MIoT (WiFi)",
-        "fr": "Smart Pet Feeder MIoT (WiFi)",
-        "it": "Smart Pet Feeder MIoT (WiFi)",
-        "no": "Smart Pet Feeder MIoT (WiFi)",
-        "sv": "Smart Pet Feeder MIoT (WiFi)",
-        "pl": "Smart Pet Feeder MIoT (WiFi)",
-        "ru": "Smart Pet Feeder MIoT (WiFi)",
-        "ko": "Smart Pet Feeder MIoT (WiFi)"
+        "en": "Smart Pet Feeder MIoT (WiFi)"
       },
       "images": {
         "xlarge": "drivers/petfeeder_mmgg_miot/assets/images/xlarge.jpg",
@@ -23039,7 +23124,15 @@
       },
       "class": "petfeeder",
       "capabilities": [
-        "petfeeder_foodlevel"
+        "petfeeder_foodlevel",
+        "petfeeder_eaten_food_today",
+        "petfeeder_eaten_food_total",
+        "petfeeder_food_out_status",
+        "petfeeder_heap_status",
+        "petfeeder_status_mode",
+        "measure_desiccant",
+        "measure_desiccant_time",
+        "alarm_desiccant_low"
       ],
       "id": "petfeeder_mmgg_miot",
       "settings": [
@@ -23217,7 +23310,56 @@
               }
             }
           ]
-        }
+        },
+        [
+          {
+            "type": "group",
+            "label": {
+              "en": "Telemetry & Probe"
+            },
+            "children": [
+              {
+                "id": "desiccant_alarm_threshold",
+                "type": "number",
+                "label": {
+                  "en": "Desiccant low alarm threshold (%)"
+                },
+                "min": 0,
+                "max": 100,
+                "step": 1,
+                "value": 20
+              },
+              {
+                "id": "iv2001_extended_probe",
+                "type": "checkbox",
+                "label": {
+                  "en": "Enable extended MIoT probe (iv2001 only)"
+                },
+                "hint": {
+                  "en": "When enabled, the driver will read additional candidate siid/piid pairs to confirm properties at runtime and log successful hits. Use for diagnostics; not required for normal operation."
+                },
+                "value": false
+              }
+            ]
+          },
+          {
+            "type": "group",
+            "label": {
+              "en": "Connection"
+            },
+            "children": [
+              {
+                "id": "address"
+              },
+              {
+                "id": "token"
+              },
+              {
+                "id": "polling"
+              }
+            ]
+          }
+        ]
       ]
     },
     {
@@ -29354,6 +29496,15 @@
       ],
       "icon": "/assets/icons/airpurifier-mode.svg"
     },
+    "alarm_desiccant_low": {
+      "type": "boolean",
+      "title": {
+        "en": "Desiccant Low"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor"
+    },
     "alarm_filter_work_time": {
       "title": {
         "en": "Filter Alert",
@@ -30573,6 +30724,35 @@
       ],
       "icon": "/assets/icons/humidifier-mode.svg"
     },
+    "measure_desiccant": {
+      "type": "number",
+      "title": {
+        "en": "Desiccant Left"
+      },
+      "getable": true,
+      "setable": false,
+      "units": {
+        "en": "%"
+      },
+      "decimals": 0,
+      "min": 0,
+      "max": 100,
+      "uiComponent": "sensor"
+    },
+    "measure_desiccant_time": {
+      "type": "number",
+      "title": {
+        "en": "Desiccant Time Left"
+      },
+      "getable": true,
+      "setable": false,
+      "units": {
+        "en": "days"
+      },
+      "decimals": 0,
+      "min": 0,
+      "uiComponent": "sensor"
+    },
     "measure_filter_days_left": {
       "type": "number",
       "title": {
@@ -30766,6 +30946,63 @@
       },
       "insights": true
     },
+    "petfeeder_eaten_food_today": {
+      "type": "number",
+      "title": {
+        "en": "Eaten Food Today"
+      },
+      "desc": {
+        "en": "Food eaten since midnight"
+      },
+      "getable": true,
+      "setable": false,
+      "units": {
+        "en": "g"
+      },
+      "decimals": 0,
+      "min": 0,
+      "uiComponent": "sensor"
+    },
+    "petfeeder_eaten_food_total": {
+      "type": "number",
+      "title": {
+        "en": "Eaten Food Total"
+      },
+      "desc": {
+        "en": "Cumulative eaten food reported by device"
+      },
+      "getable": true,
+      "setable": false,
+      "units": {
+        "en": "g"
+      },
+      "decimals": 0,
+      "min": 0,
+      "uiComponent": "sensor"
+    },
+    "petfeeder_food_out_status": {
+      "type": "enum",
+      "title": {
+        "en": "Food Out Status"
+      },
+      "getable": true,
+      "setable": false,
+      "values": [
+        {
+          "id": "ok",
+          "title": {
+            "en": "OK"
+          }
+        },
+        {
+          "id": "food_out",
+          "title": {
+            "en": "Food Out"
+          }
+        }
+      ],
+      "uiComponent": "picker"
+    },
     "petfeeder_foodlevel": {
       "type": "enum",
       "title": {
@@ -30836,8 +31073,72 @@
         }
       ],
       "getable": true,
-      "setable": true,
+      "setable": false,
       "icon": "/assets/icons/petfeeder_foodlevel.svg"
+    },
+    "petfeeder_heap_status": {
+      "type": "enum",
+      "title": {
+        "en": "Heap Status"
+      },
+      "getable": true,
+      "setable": false,
+      "values": [
+        {
+          "id": "ok",
+          "title": {
+            "en": "OK"
+          }
+        },
+        {
+          "id": "heap_detected",
+          "title": {
+            "en": "Heap Detected"
+          }
+        }
+      ],
+      "uiComponent": "picker"
+    },
+    "petfeeder_status_mode": {
+      "type": "enum",
+      "title": {
+        "en": "Feeder Status"
+      },
+      "getable": true,
+      "setable": false,
+      "values": [
+        {
+          "id": "unknown",
+          "title": {
+            "en": "Unknown"
+          }
+        },
+        {
+          "id": "idle",
+          "title": {
+            "en": "Idle"
+          }
+        },
+        {
+          "id": "feeding",
+          "title": {
+            "en": "Feeding"
+          }
+        },
+        {
+          "id": "paused",
+          "title": {
+            "en": "Paused"
+          }
+        },
+        {
+          "id": "fault",
+          "title": {
+            "en": "Fault"
+          }
+        }
+      ],
+      "uiComponent": "picker"
     },
     "petwaterdispenser_mmgg_mode": {
       "type": "enum",
