@@ -2,37 +2,61 @@
 
 /**
  * Pet Feeder MIoT (Wi-Fi)
- * Model: xiaomi.feeder.iv2001
+ * Target model: xiaomi.feeder.iv2001 (CN)
  *
- * Key points:
- *  • Backward compatible; no existing capability is removed.
- *  • Adds its own guarded polling loop so values are visible even if the base poll is not invoking us.
- *  • Defensive MIoT handling (-4001, undefined) with one-time warnings.
- *  • Optional “extended probe” to discover correct siid/piid at runtime.
- *  • Rich diagnostic logging with clear tags.
+ * Features:
+ *  • Eaten food (today/total)
+ *  • Food-out and Heap statuses
+ *  • Status (mode) text
+ *  • Desiccant level (%) + time (days) + low alarm
+ *
+ * Engineering notes:
+ *  • No dependency on base boot sequence (we do not call bootSequence()).
+ *  • Guarded, self-contained polling loop with clear diagnostic logs.
+ *  • Defensive MIoT handling (code -4001 / undefined) — never throws.
+ *  • Extended probe (optional) to discover working siid/piid at runtime.
+ *  • Backwards compatible; adds capabilities if missing.
  */
 
 const Homey = require('homey');
-const DeviceBase = require('../wifi_device.js'); // your base device (connection, token/IP settings, etc.)
+const DeviceBase = require('../wifi_device.js'); // your base Wi-Fi device class
 
 // ───────────────────────────────────────────────────────────────────────────────
-// Defaults & candidates (as requested)
+// Model mapping (restored) — preset selector with wildcard for mmgg.feeder.*
 // ───────────────────────────────────────────────────────────────────────────────
 
-const IV2001_DEFAULTS = {
-    eaten_food_today: { siid: 2, piid: 22 },
-    eaten_food_total: { siid: 2, piid: 23 },
-    food_out_status: { siid: 2, piid: 24 },
-    heap_status: { siid: 2, piid: 25 },
-    status_mode: { siid: 2, piid: 26 },
-    desiccant_level: { siid: 7, piid: 1 },
-    desiccant_time: { siid: 7, piid: 2 }
+const MODEL_TO_PRESET = {
+    'mmgg.feeder.fi1': 'default',
+    'mmgg.feeder.inland': 'default',
+    'mmgg.feeder.spec': 'default',
+    'xiaomi.feeder.pi2001': 'pi2001',
+    'xiaomi.feeder.iv2001': 'iv2001'
 };
+
+function resolvePresetId(model) {
+    if (MODEL_TO_PRESET[model]) return MODEL_TO_PRESET[model];
+    if (typeof model === 'string' && model.startsWith('mmgg.feeder.')) return 'default';
+    return 'iv2001'; // safe default for our implementation
+}
+
+// ───────────────────────────────────────────────────────────────────────────────
+// MIoT defaults & probe candidates
+// ───────────────────────────────────────────────────────────────────────────────
 
 const BASE_GET_PROPS = [
     { did: 'error', siid: 2, piid: 1 },
     { did: 'foodlevel', siid: 2, piid: 6 }
 ];
+
+const IV2001_DEFAULTS = {
+    eaten_food_today: { siid: 2, piid: 22 }, // [Unverified]
+    eaten_food_total: { siid: 2, piid: 23 }, // [Unverified]
+    food_out_status: { siid: 2, piid: 24 }, // [Unverified]
+    heap_status: { siid: 2, piid: 25 }, // [Unverified]
+    status_mode: { siid: 2, piid: 26 }, // [Unverified]
+    desiccant_level: { siid: 7, piid: 1 }, // [Unverified]
+    desiccant_time: { siid: 7, piid: 2 } // [Unverified]
+};
 
 const PROBE_CANDIDATES = {
     eaten_food_today: [
@@ -84,6 +108,7 @@ const PROBE_CANDIDATES = {
     ]
 };
 
+// Human-readable mode mapping (conservative)
 const MODE_MAP = new Map([
     [0, 'unknown'],
     [1, 'idle'],
@@ -92,27 +117,44 @@ const MODE_MAP = new Map([
     [4, 'fault']
 ]);
 
-function n(v) {
-    const x = Number(v);
-    return Number.isFinite(x) ? x : undefined;
+// ───────────────────────────────────────────────────────────────────────────────
+// Small helpers
+// ───────────────────────────────────────────────────────────────────────────────
+
+function toNumber(v) {
+    const n = Number(v);
+    return Number.isFinite(n) ? n : undefined;
 }
+
 function daysFromHoursMaybe(v) {
-    const x = n(v);
-    if (x === undefined) return undefined;
-    return x > 1000 ? Math.round(x / 24) : Math.round(x);
+    const n = toNumber(v);
+    if (n === undefined) return undefined;
+    return n > 1000 ? Math.round(n / 24) : Math.round(n);
 }
 
 // ───────────────────────────────────────────────────────────────────────────────
-// Device
+// Device class
 // ───────────────────────────────────────────────────────────────────────────────
 
 class PetFeederMiotDevice extends DeviceBase {
+    // Local warn that never throws (SDK doesn’t expose this.warn())
+    _warn(...args) {
+        try {
+            this.log('[WARN]', ...args);
+        } catch (_) {}
+    }
+
     async onInit() {
         try {
             this.log('[IV2001] onInit');
 
-            // Ensure required capabilities exist (upgrade-safe)
-            await this._ensureCaps();
+            // Resolve model→preset (kept for completeness; we operate fine on any feeder)
+            const model = this.getStoreValue('model') || this.getData()?.model || 'xiaomi.feeder.iv2001';
+            this._presetId = resolvePresetId(model);
+            this.log('[IV2001] resolved preset =', this._presetId);
+
+            // Ensure capabilities exist (upgrade-safe)
+            await this._ensureCapabilities();
 
             // Settings defaults
             const s = this.getSettings() || {};
@@ -120,7 +162,7 @@ class PetFeederMiotDevice extends DeviceBase {
             if (typeof s.desiccant_alarm_threshold !== 'number') patch.desiccant_alarm_threshold = 20;
             if (typeof s.iv2001_extended_probe !== 'boolean') patch.iv2001_extended_probe = false;
             if (Object.keys(patch).length) {
-                await this.setSettings(patch).catch((e) => this.warn('[SETTINGS] default patch failed:', e?.message));
+                await this.setSettings(patch).catch((e) => this._warn('[SETTINGS] default patch failed:', e?.message));
             }
 
             // Flow triggers
@@ -130,56 +172,40 @@ class PetFeederMiotDevice extends DeviceBase {
                 desiccantLow: this.homey.flow.getDeviceTriggerCard('desiccant_low')
             };
 
-            // Driver local state
+            // State
             this._state = {
+                once: new Set(),
                 lastMode: 'unknown',
                 lastTotalG: undefined,
                 lastTodayG: undefined,
                 desiccantAlarm: false,
-                once: new Set(),
-                todayBaseline: { ymd: this._ymd(), totalAtMidnight: undefined }
+                todayBaseline: { ymd: this._ymdNow(), totalAtMidnight: undefined }
             };
 
-            // Guard listener (read-only)
+            // Read-only guard (prevents “Missing Capability Listener” warnings)
             if (this.hasCapability('petfeeder_foodlevel')) {
                 this.registerCapabilityListener('petfeeder_foodlevel', async () => {
                     throw new Error('petfeeder_foodlevel is read-only');
                 });
             }
 
-            // Optional serve button capability (if your compose exposes it)
-            if (this.hasCapability('petfeeder_serve_food')) {
-                this.registerCapabilityListener('petfeeder_serve_food', async () => this._serveFood());
-            }
-
-            // Kick the base connection process; if your base schedules polls, fine;
-            // we also set our own guarded poller to make sure values appear.
-            if (typeof this.bootSequence === 'function') {
-                try {
-                    this.bootSequence();
-                } catch (e) {
-                    this.warn('[INIT] bootSequence failed:', e?.message);
-                }
-            }
-
-            // Start our guarded polling loop
+            // We DO NOT call bootSequence() to avoid base-level expectations (getRandomTimeout, etc.)
+            // Start our own guarded poller.
             const pollSeconds = Math.max(5, Number(this.getSettings().polling) || 15);
             this._pollMs = pollSeconds * 1000;
-            if (this._myPoll) this.homey.clearInterval(this._myPoll);
-            this._myPoll = this.homey.setInterval(() => this._pollOnce(), this._pollMs);
-
-            // First immediate poll
+            if (this._pollTimer) this.homey.clearInterval(this._pollTimer);
+            this._pollTimer = this.homey.setInterval(() => this._pollOnce(), this._pollMs);
             this.homey.setTimeout(() => this._pollOnce(), 1000);
 
-            this.log('[IV2001] init complete, preset = iv2001');
-        } catch (e) {
-            this.error('[IV2001] onInit error:', e?.message || e);
+            this.log('[IV2001] init complete, preset =', this._presetId);
+        } catch (err) {
+            this.error('[IV2001] onInit error:', err?.message || err);
         }
     }
 
     async onUninit() {
         try {
-            if (this._myPoll) this.homey.clearInterval(this._myPoll);
+            if (this._pollTimer) this.homey.clearInterval(this._pollTimer);
         } catch (_) {}
         if (super.onUninit) return super.onUninit();
     }
@@ -189,27 +215,17 @@ class PetFeederMiotDevice extends DeviceBase {
     // ───────────────────────────────────────────────────────────────────────────
 
     async _pollOnce() {
-        // Skip if base is already in the middle of a poll to avoid duplicating calls.
-        if (this._pollingInProgress) return;
-        this._pollingInProgress = true;
+        if (this._polling) return;
+        this._polling = true;
 
         try {
-            // Ensure connection exists; if base has createDevice(), let it manage connection.
             if (!this.miio) {
-                if (typeof this.createDevice === 'function') {
-                    this.warn('[IV2001] miio not ready, requesting (re)createDevice()');
-                    try {
-                        this.createDevice();
-                    } catch (e) {
-                        this.warn('[IV2001] createDevice error:', e?.message);
-                    }
-                } else {
-                    this.warn('[IV2001] miio not ready and no createDevice() on base.');
-                }
+                // Connection not ready yet; do not try to "fix" here. Base will init miio.
+                this._onceWarn('[IV2001] miio not ready; skipping this poll');
                 return;
             }
 
-            // Build default request
+            // Build default read set
             const req = [
                 ...BASE_GET_PROPS,
                 { did: 'eaten_food_today', siid: IV2001_DEFAULTS.eaten_food_today.siid, piid: IV2001_DEFAULTS.eaten_food_today.piid },
@@ -222,33 +238,32 @@ class PetFeederMiotDevice extends DeviceBase {
             ];
 
             this.log(`[IV2001] poll start (req=${req.length}, interval=${this._pollMs}ms)`);
-
             const res = await this._safeGetProps(req);
-            const mapped = this._mapResults(req, res);
+            const got = this._indexResults(req, res);
 
-            // Optional probe
+            // Optional probe to fill missing values only
             if (this.getSettings().iv2001_extended_probe === true) {
-                const additions = await this._probe(mapped);
-                Object.assign(mapped, additions);
+                const probeAdd = await this._probeMissing(got);
+                Object.assign(got, probeAdd);
             }
 
-            // Update capabilities
-            await this._updateFaultAndFoodLevel(mapped);
-            await this._updateEatenFood(mapped);
-            await this._updateFoodOutAndHeap(mapped);
-            await this._updateStatusMode(mapped);
-            await this._updateDesiccant(mapped);
+            // Publish values
+            await this._updateFaultAndFoodLevel(got);
+            await this._updateEatenFood(got);
+            await this._updateFoodOutAndHeap(got);
+            await this._updateStatusMode(got);
+            await this._updateDesiccant(got);
 
             this.log('[IV2001] poll done');
         } catch (e) {
-            this.warn('[IV2001] poll error:', e?.message);
+            this._warn('[IV2001] poll error:', e?.message);
         } finally {
-            this._pollingInProgress = false;
+            this._polling = false;
         }
     }
 
     // ───────────────────────────────────────────────────────────────────────────
-    // Updaters
+    // Update blocks
     // ───────────────────────────────────────────────────────────────────────────
 
     async _updateFaultAndFoodLevel(g) {
@@ -258,14 +273,14 @@ class PetFeederMiotDevice extends DeviceBase {
         if (e && e.code === 0) {
             this.log('[FAULT] device code =', e.value);
         } else if (e && e.code === -4001) {
-            this._onceWarn('[FAULT] property unsupported (-4001)');
+            this._onceWarn('[FAULT] unsupported (-4001)');
         }
 
         if (this.hasCapability('petfeeder_foodlevel')) {
             if (f && f.code === 0 && typeof f.value !== 'undefined') {
-                await this._cap('petfeeder_foodlevel', f.value);
+                await this._setCap('petfeeder_foodlevel', f.value);
             } else if (f && f.code === -4001) {
-                this._onceWarn('[FOODLEVEL] property unsupported (-4001)');
+                this._onceWarn('[FOODLEVEL] unsupported (-4001)');
             }
         }
     }
@@ -276,75 +291,75 @@ class PetFeederMiotDevice extends DeviceBase {
 
         let todayG, totalG;
 
-        if (total && total.code === 0) totalG = n(total.value);
+        if (total && total.code === 0) totalG = toNumber(total.value);
         else if (total && total.code === -4001) this._onceWarn('[EATEN] total unsupported (-4001)');
 
-        if (today && today.code === 0) todayG = n(today.value);
+        if (today && today.code === 0) todayG = toNumber(today.value);
         else if (today && today.code === -4001) this._onceWarn('[EATEN] today unsupported (-4001)');
 
-        // Fallback today from total
+        // Derive "today" from total delta when needed
         if (todayG === undefined && typeof totalG === 'number') {
-            const ymd = this._ymd();
+            const ymd = this._ymdNow();
             if (this._state.todayBaseline.ymd !== ymd) {
                 this._state.todayBaseline.ymd = ymd;
                 this._state.todayBaseline.totalAtMidnight = totalG;
-                this.log('[EATEN] new day baseline totalAtMidnight =', totalG);
+                this.log('[EATEN] baseline set totalAtMidnight =', totalG);
             }
             if (typeof this._state.todayBaseline.totalAtMidnight === 'number') {
                 todayG = Math.max(0, Math.round(totalG - this._state.todayBaseline.totalAtMidnight));
             }
         }
 
-        // Publish + flow
-        if (typeof totalG === 'number' && this.hasCapability('petfeeder_eaten_food_total')) {
+        if (this.hasCapability('petfeeder_eaten_food_total') && typeof totalG === 'number') {
             const prevT = this._state.lastTotalG;
-            await this._cap('petfeeder_eaten_food_total', totalG);
+            await this._setCap('petfeeder_eaten_food_total', totalG);
             this._state.lastTotalG = totalG;
             if (typeof prevT === 'number' && prevT !== totalG) {
                 const delta = totalG - prevT;
-                await this._maybeEmitEaten(todayG, totalG, delta);
+                await this._triggerEatenChanged(todayG, totalG, delta);
             }
         }
 
-        if (typeof todayG === 'number' && this.hasCapability('petfeeder_eaten_food_today')) {
+        if (this.hasCapability('petfeeder_eaten_food_today') && typeof todayG === 'number') {
             const prev = this._state.lastTodayG;
-            await this._cap('petfeeder_eaten_food_today', todayG);
+            await this._setCap('petfeeder_eaten_food_today', todayG);
             this._state.lastTodayG = todayG;
             if (typeof prev === 'number' && prev !== todayG && typeof this._state.lastTotalG !== 'number') {
-                await this._maybeEmitEaten(todayG, this._state.lastTotalG, todayG - prev);
+                await this._triggerEatenChanged(todayG, this._state.lastTotalG, todayG - prev);
             }
         }
     }
 
     async _updateFoodOutAndHeap(g) {
-        const toEnum = (raw, which) => {
-            const v = n(raw);
+        const mapFlag = (raw, which) => {
+            const v = toNumber(raw);
             if (v === 0) return 'ok';
             if (v === 1) return which === 'food' ? 'food_out' : 'heap_detected';
-            this.warn(`[${which === 'food' ? 'FOODOUT' : 'HEAP'}] unexpected value:`, raw);
+            this._warn(`[${which === 'food' ? 'FOODOUT' : 'HEAP'}] unexpected value:`, raw);
             return 'ok';
         };
 
-        const fo = g.food_out_status;
+        const out = g.food_out_status;
         if (this.hasCapability('petfeeder_food_out_status')) {
-            if (fo && fo.code === 0) await this._cap('petfeeder_food_out_status', toEnum(fo.value, 'food'));
-            else if (fo && fo.code === -4001) this._onceWarn('[FOODOUT] unsupported (-4001)');
+            if (out && out.code === 0) await this._setCap('petfeeder_food_out_status', mapFlag(out.value, 'food'));
+            else if (out && out.code === -4001) this._onceWarn('[FOODOUT] unsupported (-4001)');
         }
 
-        const hp = g.heap_status;
+        const heap = g.heap_status;
         if (this.hasCapability('petfeeder_heap_status')) {
-            if (hp && hp.code === 0) await this._cap('petfeeder_heap_status', toEnum(hp.value, 'heap'));
-            else if (hp && hp.code === -4001) this._onceWarn('[HEAP] unsupported (-4001)');
+            if (heap && heap.code === 0) await this._setCap('petfeeder_heap_status', mapFlag(heap.value, 'heap'));
+            else if (heap && heap.code === -4001) this._onceWarn('[HEAP] unsupported (-4001)');
         }
     }
 
     async _updateStatusMode(g) {
         const m = g.status_mode;
         if (!this.hasCapability('petfeeder_status_mode')) return;
+
         if (m && m.code === 0) {
-            const text = MODE_MAP.get(n(m.value)) || 'unknown';
+            const text = MODE_MAP.get(toNumber(m.value)) || 'unknown';
             const prev = this._state.lastMode;
-            await this._cap('petfeeder_status_mode', text);
+            await this._setCap('petfeeder_status_mode', text);
             if (text !== prev) {
                 await this._flow.feederStatusChanged?.trigger(this, { new_status: text, previous_status: prev || 'unknown' }, {});
                 this.log('[MODE] change:', prev, '→', text);
@@ -357,27 +372,27 @@ class PetFeederMiotDevice extends DeviceBase {
 
     async _updateDesiccant(g) {
         const lvl = g.desiccant_level;
-        const t = g.desiccant_time;
+        const tim = g.desiccant_time;
 
         let pct, days;
-        if (lvl && lvl.code === 0) pct = Math.max(0, Math.min(100, Math.round(n(lvl.value))));
+        if (lvl && lvl.code === 0) pct = Math.max(0, Math.min(100, Math.round(toNumber(lvl.value))));
         else if (lvl && lvl.code === -4001) this._onceWarn('[DESICCANT] level unsupported (-4001)');
 
-        if (t && t.code === 0) days = daysFromHoursMaybe(t.value);
-        else if (t && t.code === -4001) this._onceWarn('[DESICCANT] time unsupported (-4001)');
+        if (tim && tim.code === 0) days = daysFromHoursMaybe(tim.value);
+        else if (tim && tim.code === -4001) this._onceWarn('[DESICCANT] time unsupported (-4001)');
 
         if (typeof pct === 'number' && this.hasCapability('measure_desiccant')) {
-            await this._cap('measure_desiccant', pct);
+            await this._setCap('measure_desiccant', pct);
         }
         if (typeof days === 'number' && this.hasCapability('measure_desiccant_time')) {
-            await this._cap('measure_desiccant_time', days);
+            await this._setCap('measure_desiccant_time', days);
         }
 
         if (this.hasCapability('alarm_desiccant_low') && typeof pct === 'number') {
             const thr = Number(this.getSettings().desiccant_alarm_threshold) || 20;
             const alarm = pct < thr;
             if (alarm !== this._state.desiccantAlarm) {
-                await this._cap('alarm_desiccant_low', alarm);
+                await this._setCap('alarm_desiccant_low', alarm);
                 this._state.desiccantAlarm = alarm;
                 if (alarm) {
                     await this._flow.desiccantLow?.trigger(this, { level_percent: pct }, {});
@@ -390,32 +405,31 @@ class PetFeederMiotDevice extends DeviceBase {
     }
 
     // ───────────────────────────────────────────────────────────────────────────
-    // Probe
+    // Probe (fills only missing values)
     // ───────────────────────────────────────────────────────────────────────────
 
-    async _probe(current) {
-        const wanted = [
-            ['eaten_food_today', PROBE_CANDIDATES.eaten_food_today],
-            ['eaten_food_total', PROBE_CANDIDATES.eaten_food_total],
-            ['food_out_status', PROBE_CANDIDATES.food_out_status],
-            ['heap_status', PROBE_CANDIDATES.heap_status],
-            ['status_mode', PROBE_CANDIDATES.status_mode],
-            ['desiccant_level', PROBE_CANDIDATES.desiccant_level],
-            ['desiccant_time', PROBE_CANDIDATES.desiccant_time]
-        ];
-
+    async _probeMissing(current) {
         const req = [];
-        for (const [label, list] of wanted) {
+        const add = (label, arr) => {
             const have = current[label];
-            const need = !have || have.code !== 0 || typeof have.value === 'undefined';
-            if (!need) continue;
-            for (const cand of list) {
+            const missing = !have || have.code !== 0 || typeof have.value === 'undefined';
+            if (!missing) return;
+            for (const cand of arr) {
                 req.push({ did: `probe_${label}_${cand.siid}_${cand.piid}`, siid: cand.siid, piid: cand.piid });
             }
-        }
+        };
+
+        add('eaten_food_today', PROBE_CANDIDATES.eaten_food_today);
+        add('eaten_food_total', PROBE_CANDIDATES.eaten_food_total);
+        add('food_out_status', PROBE_CANDIDATES.food_out_status);
+        add('heap_status', PROBE_CANDIDATES.heap_status);
+        add('status_mode', PROBE_CANDIDATES.status_mode);
+        add('desiccant_level', PROBE_CANDIDATES.desiccant_level);
+        add('desiccant_time', PROBE_CANDIDATES.desiccant_time);
+
         if (!req.length) return {};
 
-        this.log('[PROBE] starting sweep, candidates:', req.length);
+        this.log('[PROBE] sweep start, candidates =', req.length);
         const res = await this._safeGetProps(req);
 
         const out = {};
@@ -426,6 +440,7 @@ class PetFeederMiotDevice extends DeviceBase {
             const m = /^probe_([^_]+)_(\d+)_(\d+)$/.exec(q.did);
             if (!m) continue;
             const label = m[1];
+
             if (!out[label]) {
                 out[label] = { code: 0, value: r.value, siid: q.siid, piid: q.piid };
                 this.log(`[PROBE] hit ${label}: siid=${q.siid} piid=${q.piid} value=${JSON.stringify(r.value)}`);
@@ -436,41 +451,32 @@ class PetFeederMiotDevice extends DeviceBase {
     }
 
     // ───────────────────────────────────────────────────────────────────────────
-    // MIoT & helpers
+    // MIoT helpers & capability setters
     // ───────────────────────────────────────────────────────────────────────────
 
-    async _serveFood() {
+    async _safeGetProps(requestArray) {
         try {
-            await this.miio.call('action', [{ siid: 2, aiid: 1, in: [] }], { retries: 1 });
-            this.log('[ACTION] serve_food called');
-        } catch (e) {
-            this.warn('[ACTION] serve_food error:', e?.message);
-        }
-    }
-
-    async _safeGetProps(req) {
-        try {
-            if (!Array.isArray(req) || !req.length) return [];
-            const res = await this.miio.call('get_properties', req, { retries: 1 });
+            if (!Array.isArray(requestArray) || requestArray.length === 0) return [];
+            const res = await this.miio.call('get_properties', requestArray, { retries: 1 });
             return Array.isArray(res) ? res : [];
         } catch (e) {
-            this.warn('[MIOT] get_properties error:', e?.message);
+            this._warn('[MIOT] get_properties error:', e?.message);
             return [];
         }
     }
 
-    _mapResults(req, res) {
+    _indexResults(reqList, respList) {
         const out = {};
-        for (let i = 0; i < req.length; i++) {
-            const q = req[i];
-            const r = res[i] || {};
-            const key = q.did || `${q.siid}/${q.piid}`;
-            out[key] = { code: typeof r.code === 'number' ? r.code : -1, value: r.value, siid: q.siid, piid: q.piid };
+        for (let i = 0; i < reqList.length; i++) {
+            const req = reqList[i];
+            const res = respList[i] || {};
+            const key = req.did || `${req.siid}/${req.piid}`;
+            out[key] = { code: typeof res.code === 'number' ? res.code : -1, value: res.value, siid: req.siid, piid: req.piid };
         }
         return out;
     }
 
-    async _cap(cap, value) {
+    async _setCap(cap, value) {
         try {
             if (!this.hasCapability(cap)) return;
             const cur = this.getCapabilityValue(cap);
@@ -479,46 +485,49 @@ class PetFeederMiotDevice extends DeviceBase {
                 this.log('[CAP]', cap, '=', value);
             }
         } catch (e) {
-            this.warn('[CAP] set error', cap, e?.message);
+            this._warn('[CAP] set error', cap, e?.message);
         }
     }
 
-    async _maybeEmitEaten(todayG, totalG, deltaG) {
+    async _triggerEatenChanged(todayG, totalG, deltaG) {
         try {
-            const tokens = {
-                today_g: typeof todayG === 'number' ? todayG : 0,
-                total_g: typeof totalG === 'number' ? totalG : 0,
-                delta_g: typeof deltaG === 'number' ? deltaG : 0
-            };
-            await this._flow.eatenFoodChanged?.trigger(this, tokens, {});
-            this.log('[EATEN] trigger:', tokens);
+            await this._flow.eatenFoodChanged?.trigger(
+                this,
+                {
+                    today_g: typeof todayG === 'number' ? todayG : 0,
+                    total_g: typeof totalG === 'number' ? totalG : 0,
+                    delta_g: typeof deltaG === 'number' ? deltaG : 0
+                },
+                {}
+            );
+            this.log('[EATEN] trigger:', { today_g: todayG, total_g: totalG, delta_g: deltaG });
         } catch (e) {
-            this.warn('[EATEN] trigger error:', e?.message);
+            this._warn('[EATEN] trigger error:', e?.message);
         }
-    }
-
-    _ymd() {
-        const d = new Date();
-        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     }
 
     _onceWarn(msg) {
         if (!this._state.once.has(msg)) {
             this._state.once.add(msg);
-            this.warn(msg);
+            this._warn(msg);
         }
     }
 
-    async _ensureCaps() {
-        const want = ['petfeeder_foodlevel', 'petfeeder_eaten_food_today', 'petfeeder_eaten_food_total', 'petfeeder_food_out_status', 'petfeeder_heap_status', 'petfeeder_status_mode', 'measure_desiccant', 'measure_desiccant_time', 'alarm_desiccant_low'];
-        for (const c of want) {
+    _ymdNow() {
+        const d = new Date();
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    async _ensureCapabilities() {
+        const required = ['petfeeder_foodlevel', 'petfeeder_eaten_food_today', 'petfeeder_eaten_food_total', 'petfeeder_food_out_status', 'petfeeder_heap_status', 'petfeeder_status_mode', 'measure_desiccant', 'measure_desiccant_time', 'alarm_desiccant_low'];
+        for (const id of required) {
             try {
-                if (!this.hasCapability(c)) {
-                    await this.addCapability(c);
-                    this.log('[INIT] added capability:', c);
+                if (!this.hasCapability(id)) {
+                    await this.addCapability(id);
+                    this.log('[INIT] added capability:', id);
                 }
             } catch (e) {
-                this.warn('[INIT] addCapability failed', c, e?.message);
+                this._warn('[INIT] addCapability failed', id, e?.message);
             }
         }
     }
