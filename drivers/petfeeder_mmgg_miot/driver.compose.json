@@ -1,28 +1,21 @@
 {
-  "name": {
-    "en": "Smart Pet Feeder MIoT (WiFi)",
-    "nl": "Smart Pet Feeder MIoT (WiFi)",
-    "da": "Smart Pet Feeder MIoT (WiFi)",
-    "de": "Smart Pet Feeder MIoT (WiFi)",
-    "es": "Smart Pet Feeder MIoT (WiFi)",
-    "fr": "Smart Pet Feeder MIoT (WiFi)",
-    "it": "Smart Pet Feeder MIoT (WiFi)",
-    "no": "Smart Pet Feeder MIoT (WiFi)",
-    "sv": "Smart Pet Feeder MIoT (WiFi)",
-    "pl": "Smart Pet Feeder MIoT (WiFi)",
-    "ru": "Smart Pet Feeder MIoT (WiFi)",
-    "ko": "Smart Pet Feeder MIoT (WiFi)"
-  },
+  "name": { "en": "Smart Pet Feeder MIoT (WiFi)" },
   "images": {
     "xlarge": "drivers/petfeeder_mmgg_miot/assets/images/xlarge.jpg",
-    "large": "drivers/petfeeder_mmgg_miot/assets/images/large.jpg",
-    "small": "drivers/petfeeder_mmgg_miot/assets/images/small.jpg"
+    "large":  "drivers/petfeeder_mmgg_miot/assets/images/large.jpg",
+    "small":  "drivers/petfeeder_mmgg_miot/assets/images/small.jpg"
   },
   "class": "petfeeder",
-  "$extends": [
-    "defaults"
-  ],
+  "$extends": ["defaults"],
   "capabilities": [
-    "petfeeder_foodlevel"
+    "petfeeder_foodlevel",
+    "petfeeder_eaten_food_today",
+    "petfeeder_eaten_food_total",
+    "petfeeder_food_out_status",
+    "petfeeder_heap_status",
+    "petfeeder_status_mode",
+    "measure_desiccant",
+    "measure_desiccant_time",
+    "alarm_desiccant_low"
   ]
 }

@@ -1,0 +1,11 @@
+{
+  "type": "enum",
+  "title": { "en": "Food Out Status" },
+  "getable": true,
+  "setable": false,
+  "values": [
+    { "id": "ok", "title": { "en": "OK" } },
+    { "id": "food_out", "title": { "en": "Food Out" } }
+  ],
+  "uiComponent": "picker"
+}

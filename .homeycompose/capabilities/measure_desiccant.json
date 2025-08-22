@@ -1,0 +1,11 @@
+{
+  "type": "number",
+  "title": { "en": "Desiccant Left" },
+  "getable": true,
+  "setable": false,
+  "units": { "en": "%" },
+  "decimals": 0,
+  "min": 0,
+  "max": 100,
+  "uiComponent": "sensor"
+}

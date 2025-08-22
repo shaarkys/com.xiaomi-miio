@@ -1,0 +1,11 @@
+{
+  "type": "enum",
+  "title": { "en": "Heap Status" },
+  "getable": true,
+  "setable": false,
+  "values": [
+    { "id": "ok", "title": { "en": "OK" } },
+    { "id": "heap_detected", "title": { "en": "Heap Detected" } }
+  ],
+  "uiComponent": "picker"
+}

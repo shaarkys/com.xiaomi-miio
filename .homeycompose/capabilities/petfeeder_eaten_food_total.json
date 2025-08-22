@@ -1,0 +1,11 @@
+{
+  "type": "number",
+  "title": { "en": "Eaten Food Total" },
+  "desc": { "en": "Cumulative eaten food reported by device" },
+  "getable": true,
+  "setable": false,
+  "units": { "en": "g" },
+  "decimals": 0,
+  "min": 0,
+  "uiComponent": "sensor"
+}

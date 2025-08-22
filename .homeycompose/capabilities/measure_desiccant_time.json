@@ -1,0 +1,10 @@
+{
+  "type": "number",
+  "title": { "en": "Desiccant Time Left" },
+  "getable": true,
+  "setable": false,
+  "units": { "en": "days" },
+  "decimals": 0,
+  "min": 0,
+  "uiComponent": "sensor"
+}

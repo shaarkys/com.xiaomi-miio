@@ -1,0 +1,16 @@
+{
+  "title": { "en": "Eaten food changed" },
+  "hint":  { "en": "Triggers when eaten food telemetry changes." },
+  "args": [
+    {
+      "name": "device",
+      "type": "device",
+      "filter": "driver_id=petfeeder_mmgg_miot"
+    }
+  ],
+  "tokens": [
+    { "name": "today_g", "type": "number", "title": { "en": "Today (g)" } },
+    { "name": "total_g", "type": "number", "title": { "en": "Total (g)" } },
+    { "name": "delta_g", "type": "number", "title": { "en": "Delta (g)" } }
+  ]
+}

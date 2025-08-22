@@ -1,0 +1,14 @@
+{
+  "type": "enum",
+  "title": { "en": "Feeder Status" },
+  "getable": true,
+  "setable": false,
+  "values": [
+    { "id": "unknown", "title": { "en": "Unknown" } },
+    { "id": "idle", "title": { "en": "Idle" } },
+    { "id": "feeding", "title": { "en": "Feeding" } },
+    { "id": "paused", "title": { "en": "Paused" } },
+    { "id": "fault", "title": { "en": "Fault" } }
+  ],
+  "uiComponent": "picker"
+}

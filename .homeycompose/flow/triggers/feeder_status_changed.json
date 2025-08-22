@@ -1,0 +1,15 @@
+{
+  "title": { "en": "Feeder status changed" },
+  "hint":  { "en": "Triggers when the feeder status (mode) changes." },
+  "args": [
+    {
+      "name": "device",
+      "type": "device",
+      "filter": "driver_id=petfeeder_mmgg_miot"
+    }
+  ],
+  "tokens": [
+    { "name": "new_status",      "type": "string", "title": { "en": "New status" } },
+    { "name": "previous_status", "type": "string", "title": { "en": "Previous status" } }
+  ]
+}

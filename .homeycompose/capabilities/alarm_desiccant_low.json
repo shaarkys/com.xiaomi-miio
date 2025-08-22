@@ -1,0 +1,7 @@
+{
+  "type": "boolean",
+  "title": { "en": "Desiccant Low" },
+  "getable": true,
+  "setable": false,
+  "uiComponent": "sensor"
+}

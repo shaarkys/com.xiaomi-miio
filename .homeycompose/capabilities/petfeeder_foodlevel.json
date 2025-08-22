@@ -68,6 +68,6 @@
     }
   ],
   "getable": true,
-  "setable": true,
+  "setable": false,
   "icon": "/assets/icons/petfeeder_foodlevel.svg"
 }

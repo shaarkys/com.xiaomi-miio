@@ -1,0 +1,14 @@
+{
+  "title": { "en": "Desiccant low" },
+  "hint":  { "en": "Triggers when desiccant level falls below the threshold." },
+  "args": [
+    {
+      "name": "device",
+      "type": "device",
+      "filter": "driver_id=petfeeder_mmgg_miot"
+    }
+  ],
+  "tokens": [
+    { "name": "level_percent", "type": "number", "title": { "en": "Level (%)" } }
+  ]
+}
