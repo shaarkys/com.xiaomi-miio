@@ -519,6 +519,37 @@ class PetFeederMiotDevice extends DeviceBase {
         const add = await this._probeMissing({});
         const hits = Object.entries(add).map(([label, r]) => `${label}@${r.siid}/${r.piid}=${JSON.stringify(r.value)}`);
         this.log('[PROBE] summary:', hits.join(', ') || 'no hits');
+
+        // One-time bounded discovery (siid 2..9, piid 1..12)
+        try {
+            const found = await this._discoveryScan([2,3,4,5,6,7,8,9], 1, 12);
+            if (found.length) {
+                this.log('[DISCOVERY] hits:', found.slice(0, 50).join(', ') + (found.length > 50 ? ` …(+${found.length - 50})` : ''));
+            } else {
+                this.log('[DISCOVERY] no readable props in scan range');
+            }
+        } catch (e) {
+            this._warn('[DISCOVERY] error:', e?.message);
+        }
+    }
+
+    async _discoveryScan(siidList, piidStart, piidEnd) {
+        const req = [];
+        for (const s of siidList) {
+            for (let p = piidStart; p <= piidEnd; p++) {
+                req.push({ did: `disc_${s}_${p}`, siid: s, piid: p });
+            }
+        }
+        const res = await this._safeGetProps(req);
+        const hits = [];
+        for (let i = 0; i < res.length; i++) {
+            const r = res[i] || {};
+            const q = req[i];
+            if (r.code === 0 && typeof r.value !== 'undefined') {
+                hits.push(`${q.siid}/${q.piid}=${JSON.stringify(r.value)}`);
+            }
+        }
+        return hits;
     }
 
     async _safeGetProps(requestArray) {
@@ -531,7 +562,7 @@ class PetFeederMiotDevice extends DeviceBase {
             for (let i = 0; i < requestArray.length; i += CHUNK_SIZE) {
                 const batch = requestArray.slice(i, i + CHUNK_SIZE);
                 try {
-                    const res = await this.miio.call('get_properties', batch, { retries: 1 });
+                    const res = await this._callMiio('get_properties', batch, { retries: 1 }, 5000);
                     if (Array.isArray(res)) {
                         results.push(...res);
                         const missing = batch.length - res.length;
@@ -549,6 +580,16 @@ class PetFeederMiotDevice extends DeviceBase {
             this._warn('[MIOT] get_properties error:', e?.message);
             return [];
         }
+    }
+
+    async _callMiio(method, params, options, timeoutMs = 5000) {
+        const op = (async () => {
+            return await this.miio.call(method, params, options || {});
+        })();
+        const timeout = new Promise((_, reject) => {
+            this.homey.setTimeout(() => reject(new Error('timeout')), timeoutMs);
+        });
+        return Promise.race([op, timeout]);
     }
 
     _indexResults(reqList, respList) {
