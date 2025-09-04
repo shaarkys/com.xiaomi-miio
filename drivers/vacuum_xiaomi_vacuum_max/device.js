@@ -581,8 +581,30 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             // rooms
             if (result_rooms && result_rooms.length === 1 && result_rooms[0].value) {
                 try {
-                    this.log('[ROOMS] raw:', typeof result_rooms[0].value === 'string' ? result_rooms[0].value : JSON.stringify(result_rooms[0].value));
-                    const parsed = typeof result_rooms[0].value === 'string' ? JSON.parse(result_rooms[0].value) : result_rooms[0].value;
+                    const rawVal = result_rooms[0].value;
+                    this.log('[ROOMS] raw:', typeof rawVal === 'string' ? rawVal : JSON.stringify(rawVal));
+
+                    let parsed = null;
+                    if (typeof rawVal === 'string') {
+                        try {
+                            parsed = JSON.parse(rawVal);
+                        } catch (_) {
+                            try {
+                                parsed = JSON.parse(rawVal.replace(/\\"/g, '"'));
+                            } catch (_) {
+                                try {
+                                    if (rawVal.startsWith('"') && rawVal.endsWith('"')) parsed = JSON.parse(JSON.parse(rawVal));
+                                } catch (_) {}
+                            }
+                        }
+                    } else if (rawVal && typeof rawVal === 'object') {
+                        parsed = rawVal;
+                    }
+
+                    if (!parsed) {
+                        this.log('[ROOMS] Unable to parse rooms payload');
+                        return;
+                    }
 
                     let roomsArr = [];
                     if (parsed && Array.isArray(parsed.rooms)) {
