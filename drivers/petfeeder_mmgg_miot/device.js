@@ -191,7 +191,8 @@ class PetFeederMiotDevice extends DeviceBase {
             }
 
             // Establish MIoT connection ourselves (we do not use bootSequence/pollDevice)
-            await this._initMiio();
+            // Do not await here to avoid blocking init on long probes/timeouts
+            this._initMiio();
 
             // Start our own guarded poller.
             const pollSeconds = Math.max(5, Number(this.getSettings().polling) || 15);
@@ -499,16 +500,13 @@ class PetFeederMiotDevice extends DeviceBase {
             if (!this.getAvailable()) {
                 await this.setAvailable().catch(() => {});
             }
+            this.log('[IV2001] miio ready');
 
-            // One-time extended probe dump on connect if enabled
+            // One-time extended probe dump on connect if enabled (run in background)
             if (this.getSettings().iv2001_extended_probe === true) {
-                try {
-                    const add = await this._probeMissing({});
-                    const hits = Object.entries(add).map(([label, r]) => `${label}@${r.siid}/${r.piid}=${JSON.stringify(r.value)}`);
-                    this.log('[PROBE] summary:', hits.join(', ') || 'no hits');
-                } catch (e) {
-                    this._warn('[PROBE] summary error:', e?.message);
-                }
+                this.homey.setTimeout(() => {
+                    this._runInitialProbe().catch((e) => this._warn('[PROBE] summary error:', e?.message));
+                }, 0);
             }
         } catch (error) {
             this._warn('[IV2001] miio init failed:', error?.message);
@@ -517,11 +515,36 @@ class PetFeederMiotDevice extends DeviceBase {
         }
     }
 
+    async _runInitialProbe() {
+        const add = await this._probeMissing({});
+        const hits = Object.entries(add).map(([label, r]) => `${label}@${r.siid}/${r.piid}=${JSON.stringify(r.value)}`);
+        this.log('[PROBE] summary:', hits.join(', ') || 'no hits');
+    }
+
     async _safeGetProps(requestArray) {
         try {
             if (!Array.isArray(requestArray) || requestArray.length === 0) return [];
-            const res = await this.miio.call('get_properties', requestArray, { retries: 1 });
-            return Array.isArray(res) ? res : [];
+
+            // Use small batches to avoid timeouts or rate limits
+            const CHUNK_SIZE = 14;
+            const results = [];
+            for (let i = 0; i < requestArray.length; i += CHUNK_SIZE) {
+                const batch = requestArray.slice(i, i + CHUNK_SIZE);
+                try {
+                    const res = await this.miio.call('get_properties', batch, { retries: 1 });
+                    if (Array.isArray(res)) {
+                        results.push(...res);
+                        const missing = batch.length - res.length;
+                        for (let k = 0; k < missing; k++) results.push({});
+                    } else {
+                        for (let k = 0; k < batch.length; k++) results.push({});
+                    }
+                } catch (e) {
+                    this._warn('[MIOT] get_properties error (chunk):', e?.message);
+                    for (let k = 0; k < batch.length; k++) results.push({});
+                }
+            }
+            return results;
         } catch (e) {
             this._warn('[MIOT] get_properties error:', e?.message);
             return [];

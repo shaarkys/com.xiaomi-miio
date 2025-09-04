@@ -447,6 +447,10 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                     this._runOneTimeMiotScan().catch((e) => this.error('[MIOT_SCAN] failed', e));
                 }, 25000);
             }*/
+
+            // Initialize one-time room logging/discovery flags
+            this._roomsLogOnce = false;
+            this._roomsDiscovered = false;
         } catch (error) {
             this.error(error);
         }
@@ -456,22 +460,36 @@ class XiaomiVacuumMiotDeviceMax extends Device {
     async retrieveDeviceData() {
         try {
             const result = await this.miio.call('get_properties', this.deviceProperties.get_properties, { retries: 1 });
-            // Try multiple MIoT candidates for rooms/segments
-            let result_rooms = await this.miio.call('get_properties', this.deviceProperties.get_rooms, { retries: 1 });
-            if (!result_rooms || !result_rooms.length || !result_rooms[0].value) {
-                const candidates = [
-                    [{ did: 'rooms', siid: 4, piid: 20 }],
-                    [{ did: 'rooms', siid: 6, piid: 15 }], // user-facing strings sometimes here
-                    [{ did: 'rooms', siid: 7, piid: 3 }]
-                ];
-                for (const c of candidates) {
-                    try {
-                        const r = await this.miio.call('get_properties', c, { retries: 1 });
-                        if (r && r[0] && r[0].value) {
-                            result_rooms = r;
-                            break;
+
+            // Fetch rooms only when needed and only until discovered
+            let result_rooms = null;
+            if (this.deviceProperties.supports.rooms && !this._roomsDiscovered) {
+                const currentRooms = this.getSetting('rooms');
+                try {
+                    const parsedRooms = JSON.parse(currentRooms || '[]');
+                    if (Array.isArray(parsedRooms) && parsedRooms.length > 0) {
+                        this._roomsDiscovered = true;
+                    }
+                } catch (_) {}
+
+                if (!this._roomsDiscovered) {
+                    result_rooms = await this.miio.call('get_properties', this.deviceProperties.get_rooms, { retries: 1 });
+                    if (!result_rooms || !result_rooms.length || !result_rooms[0].value) {
+                        const candidates = [
+                            [{ did: 'rooms', siid: 4, piid: 20 }],
+                            [{ did: 'rooms', siid: 6, piid: 15 }], // user-facing strings sometimes here
+                            [{ did: 'rooms', siid: 7, piid: 3 }]
+                        ];
+                        for (const c of candidates) {
+                            try {
+                                const r = await this.miio.call('get_properties', c, { retries: 1 });
+                                if (r && r[0] && r[0].value) {
+                                    result_rooms = r;
+                                    break;
+                                }
+                            } catch (_) {}
                         }
-                    } catch (_) {}
+                    }
                 }
             }
 
@@ -584,7 +602,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             if (result_rooms && result_rooms.length === 1 && result_rooms[0].value) {
                 try {
                     const rawVal = result_rooms[0].value;
-                    this.log('[ROOMS] raw:', typeof rawVal === 'string' ? rawVal : JSON.stringify(rawVal));
+                    if (!this._roomsLogOnce) this.log('[ROOMS] raw:', typeof rawVal === 'string' ? rawVal : JSON.stringify(rawVal));
 
                     let parsed = null;
                     if (typeof rawVal === 'string') {
@@ -604,7 +622,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                     }
 
                     if (!parsed) {
-                        this.log('[ROOMS] Unable to parse rooms payload');
+                        if (!this._roomsLogOnce) this.log('[ROOMS] Unable to parse rooms payload');
                         return;
                     }
 
@@ -622,11 +640,14 @@ class XiaomiVacuumMiotDeviceMax extends Device {
 
                     if (roomsArr.length) {
                         await this.setSettings({ rooms: JSON.stringify(roomsArr), rooms_display: roomsArr.map((r) => r.name || ('Room ' + r.id)).join(', ') });
+                        this._roomsDiscovered = true;
                     } else {
-                        this.log('[ROOMS] No parsable rooms in payload');
+                        if (!this._roomsLogOnce) this.log('[ROOMS] No parsable rooms in payload');
                     }
+                    this._roomsLogOnce = true;
                 } catch (e) {
-                    this.error('[ROOMS] Failed to parse:', e && e.message ? e.message : e);
+                    if (!this._roomsLogOnce) this.error('[ROOMS] Failed to parse:', e && e.message ? e.message : e);
+                    this._roomsLogOnce = true;
                 }
             }
 

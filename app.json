@@ -187,7 +187,7 @@
       "게이트웨이"
     ]
   },
-  "version": "3.4.38",
+  "version": "3.4.39",
   "compatibility": ">=12.2.0",
   "platforms": [
     "local"
@@ -27413,6 +27413,77 @@
       },
       "id": "vacuum_xiaomi_vacuum_max",
       "settings": [
+        {
+          "type": "group",
+          "label": {
+            "en": "Rooms",
+            "nl": "Kamers",
+            "da": "Rum",
+            "de": "Räume",
+            "es": "Habitaciones",
+            "fr": "Pièces",
+            "it": "Stanze",
+            "no": "Rom",
+            "sv": "Rum",
+            "pl": "Pokoje",
+            "ru": "Комнаты",
+            "ko": "방"
+          },
+          "children": [
+            {
+              "id": "rooms",
+              "type": "text",
+              "label": {
+                "en": "Rooms JSON (e.g. [{\"id\":1,\"name\":\"Kitchen\"}])",
+                "nl": "Kamers JSON",
+                "da": "Rum JSON",
+                "de": "Räume JSON",
+                "es": "Habitaciones JSON",
+                "fr": "Pièces JSON",
+                "it": "Stanze JSON",
+                "no": "Rom JSON",
+                "sv": "Rum JSON",
+                "pl": "Pokoje JSON",
+                "ru": "Комнаты JSON",
+                "ko": "방 JSON"
+              },
+              "hint": {
+                "en": "Manual list if auto-fetch fails. Each item requires an id and name.",
+                "nl": "Handmatige lijst als automatisch ophalen mislukt.",
+                "da": "Manuel liste hvis auto-hent fejler.",
+                "de": "Manuelle Liste, wenn Auto-Abruf fehlschlägt.",
+                "es": "Lista manual si la obtención automática falla.",
+                "fr": "Liste manuelle si l'auto-récupération échoue.",
+                "it": "Elenco manuale se l'acquisizione automatica fallisce.",
+                "no": "Manuell liste hvis auto-henting feiler.",
+                "sv": "Manuell lista om auto-hämtning misslyckas.",
+                "pl": "Lista ręczna, jeśli auto-pobieranie zawiedzie.",
+                "ru": "Список вручную, если авто-выгрузка не работает.",
+                "ko": "자동 가져오기가 실패할 경우 수동 목록."
+              },
+              "value": "[]"
+            },
+            {
+              "id": "rooms_display",
+              "type": "label",
+              "label": {
+                "en": "Detected rooms",
+                "nl": "Gedetecteerde kamers",
+                "da": "Registrerede rum",
+                "de": "Erkannte Räume",
+                "es": "Habitaciones detectadas",
+                "fr": "Pièces détectées",
+                "it": "Stanze rilevate",
+                "no": "Oppdagede rom",
+                "sv": "Upptäckta rum",
+                "pl": "Wykryte pokoje",
+                "ru": "Обнаруженные комнаты",
+                "ko": "감지된 방"
+              },
+              "value": "No rooms fetched yet"
+            }
+          ]
+        },
         {
           "type": "group",
           "label": {
