@@ -44,6 +44,16 @@ const STATUS_MAPPING = {
     stopped_error: [15]
 };
 
+// c102gl status values (observed on MIoT driver variant)
+const STATUS_MAPPING_C102 = {
+    cleaning: [1, 5, 7, 8, 9, 10, 12],
+    spot_cleaning: [],
+    docked: [0, 11, 13, 14, 19],
+    charging: [6],
+    stopped: [2, 3, 21, 22, 23],
+    stopped_error: [4]
+};
+
 /** Model → property-set */
 const mapping = {
     'xiaomi.vacuum.d109gl': 'properties_d109gl',
@@ -114,10 +124,14 @@ const properties = {
             { did: 'device_status', siid: 2, piid: 2 },
             { did: 'device_fault', siid: 2, piid: 3 },
             { did: 'battery', siid: 3, piid: 1 },
-            { did: 'total_clean_time', siid: 2, piid: 7 },
-            { did: 'total_clean_count', siid: 2, piid: 8 },
-            { did: 'total_clean_area', siid: 2, piid: 6 }
-            // (intentionally no consumables/cleaning-mode/water/path/detergent on c102gl)
+            // totals (observed working on c102gl)
+            { did: 'total_clean_time', siid: 12, piid: 2 },
+            { did: 'total_clean_count', siid: 12, piid: 3 },
+            { did: 'total_clean_area', siid: 12, piid: 4 },
+            // consumables (percent values)
+            { did: 'main_brush_life_level', siid: 9, piid: 2 },
+            { did: 'side_brush_life_level', siid: 10, piid: 2 },
+            { did: 'filter_life_level', siid: 11, piid: 1 }
         ],
         set_properties: {
             start_clean: { siid: 2, aiid: 1, did: 'call-2-1', in: [] },
@@ -135,11 +149,11 @@ const properties = {
             water_level: false,
             path_mode: false,
             carpet_avoidance: false,
-            consumables: false,
+            consumables: true,
             detergent: false
         },
         error_codes: ERROR_CODES,
-        status_mapping: STATUS_MAPPING
+        status_mapping: STATUS_MAPPING_C102
     }
 };
 
@@ -424,6 +438,14 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             // Use safe totals handler for all models (no-op for unsupported fields)
             this.vacuumTotals = this.customVacuumTotals;
             this.vacuumConsumables = this.deviceProperties.supports.consumables ? this.customVacuumConsumables : async () => {}; // noop on c102gl
+
+            // One-time SIID/PIID discovery scan for c102gl to aid debugging/model support
+            if (model === 'xiaomi.vacuum.c102gl' && !this._siidPiidScanned) {
+                this._siidPiidScanned = true;
+                this.homey.setTimeout(() => {
+                    this._runOneTimeMiotScan().catch((e) => this.error('[MIOT_SCAN] failed', e));
+                }, 25000);
+            }
         } catch (error) {
             this.error(error);
         }
@@ -457,9 +479,9 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             const consumables = this.deviceProperties.supports.consumables
                 ? [
                       {
-                          main_brush_work_time: (this.getMiotProp(result, 'main_brush_life_level') || {}).value ?? 0,
-                          side_brush_work_time: (this.getMiotProp(result, 'side_brush_life_level') || {}).value ?? 0,
-                          filter_work_time: (this.getMiotProp(result, 'filter_life_level') || {}).value ?? 0
+                          main_brush_work_time: Math.max(0, Math.min(100, Number((this.getMiotProp(result, 'main_brush_life_level') || {}).value ?? 0))),
+                          side_brush_work_time: Math.max(0, Math.min(100, Number((this.getMiotProp(result, 'side_brush_life_level') || {}).value ?? 0))),
+                          filter_work_time: Math.max(0, Math.min(100, Number((this.getMiotProp(result, 'filter_life_level') || {}).value ?? 0)))
                       }
                   ]
                 : [];
@@ -542,14 +564,29 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             // rooms
             if (result_rooms && result_rooms.length === 1 && result_rooms[0].value) {
                 try {
-                    const parsed = JSON.parse(result_rooms[0].value);
-                    const roomsArr = Array.isArray(parsed.rooms) ? parsed.rooms : [];
-                    await this.setSettings({ rooms: JSON.stringify(roomsArr), rooms_display: roomsArr.map((r) => r.name).join(', ') });
-                } catch {
-                    await this.setSettings({ rooms: 'Not supported for this model' });
+                    this.log('[ROOMS] raw:', typeof result_rooms[0].value === 'string' ? result_rooms[0].value : JSON.stringify(result_rooms[0].value));
+                    const parsed = typeof result_rooms[0].value === 'string' ? JSON.parse(result_rooms[0].value) : result_rooms[0].value;
+
+                    let roomsArr = [];
+                    if (parsed && Array.isArray(parsed.rooms)) {
+                        roomsArr = parsed.rooms;
+                    } else if (parsed && Array.isArray(parsed.sections)) {
+                        roomsArr = parsed.sections;
+                    } else if (Array.isArray(parsed)) {
+                        roomsArr = parsed.filter((x) => x && typeof x === 'object' && 'id' in x);
+                    } else if (parsed && Array.isArray(parsed.selects)) {
+                        const ids = Array.from(new Set(parsed.selects.flat().filter((n) => typeof n === 'number')));
+                        roomsArr = ids.map((id) => ({ id, name: 'Room ' + id }));
+                    }
+
+                    if (roomsArr.length) {
+                        await this.setSettings({ rooms: JSON.stringify(roomsArr), rooms_display: roomsArr.map((r) => r.name || ('Room ' + r.id)).join(', ') });
+                    } else {
+                        this.log('[ROOMS] No parsable rooms in payload');
+                    }
+                } catch (e) {
+                    this.error('[ROOMS] Failed to parse:', e && e.message ? e.message : e);
                 }
-            } else {
-                await this.setSettings({ rooms: 'Not supported for this model' });
             }
 
             // consumables only if supported (prevents invalid_flow_card_id logs)
@@ -761,6 +798,29 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                 return `${name}: ${item.value} (code:${item.code})`;
             })
             .join(', ');
+    }
+
+    async _runOneTimeMiotScan() {
+        try {
+            if (!this.miio || typeof this.miio.call !== 'function') return;
+            const results = [];
+            // conservative range to avoid heavy traffic; adjust if needed
+            for (let siid = 1; siid <= 18; siid++) {
+                for (let piid = 1; piid <= 30; piid++) {
+                    try {
+                        const res = await this.miio.call('get_properties', [{ siid, piid }], { retries: 1 });
+                        if (Array.isArray(res) && res[0] && res[0].code === 0) {
+                            results.push({ siid, piid, value: res[0].value });
+                        }
+                    } catch (_) {
+                        // ignore invalid combos
+                    }
+                }
+            }
+            this.log('[MIOT_SCAN]', results.length ? JSON.stringify(results) : 'no readable properties in range');
+        } catch (e) {
+            this.error('[MIOT_SCAN] error', e);
+        }
     }
 }
 
