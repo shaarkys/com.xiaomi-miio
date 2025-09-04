@@ -20,6 +20,7 @@
 
 const Homey = require('homey');
 const DeviceBase = require('../wifi_device.js'); // your base Wi-Fi device class
+const miio = require('miio');
 
 // ───────────────────────────────────────────────────────────────────────────────
 // Model mapping (restored) — preset selector with wildcard for mmgg.feeder.*
@@ -189,7 +190,9 @@ class PetFeederMiotDevice extends DeviceBase {
                 });
             }
 
-            // We DO NOT call bootSequence() to avoid base-level expectations (getRandomTimeout, etc.)
+            // Establish MIoT connection ourselves (we do not use bootSequence/pollDevice)
+            await this._initMiio();
+
             // Start our own guarded poller.
             const pollSeconds = Math.max(5, Number(this.getSettings().polling) || 15);
             this._pollMs = pollSeconds * 1000;
@@ -208,6 +211,21 @@ class PetFeederMiotDevice extends DeviceBase {
             if (this._pollTimer) this.homey.clearInterval(this._pollTimer);
         } catch (_) {}
         if (super.onUninit) return super.onUninit();
+    }
+
+    async onSettings({ oldSettings, newSettings, changedKeys }) {
+        try {
+            if (changedKeys.includes('address') || changedKeys.includes('token') || changedKeys.includes('polling')) {
+                if (this._pollTimer) this.homey.clearInterval(this._pollTimer);
+                await this._initMiio();
+                const pollSeconds = Math.max(5, Number(newSettings.polling) || Number(this.getSettings().polling) || 15);
+                this._pollMs = pollSeconds * 1000;
+                this._pollTimer = this.homey.setInterval(() => this._pollOnce(), this._pollMs);
+            }
+        } catch (e) {
+            this._warn('[IV2001] onSettings error:', e?.message);
+        }
+        return true;
     }
 
     // ───────────────────────────────────────────────────────────────────────────
@@ -240,6 +258,15 @@ class PetFeederMiotDevice extends DeviceBase {
             this.log(`[IV2001] poll start (req=${req.length}, interval=${this._pollMs}ms)`);
             const res = await this._safeGetProps(req);
             const got = this._indexResults(req, res);
+
+            // Short one-time debug of available default props
+            if (!this._state.once.has('debug_dump_defaults')) {
+                this._state.once.add('debug_dump_defaults');
+                const summary = Object.entries(got)
+                    .filter(([, r]) => r && r.code === 0)
+                    .map(([k, r]) => `${k}@${r.siid}/${r.piid}=${JSON.stringify(r.value)}`);
+                this.log('[DEBUG] available defaults:', summary.join(', ') || 'none');
+            }
 
             // Optional probe to fill missing values only
             if (this.getSettings().iv2001_extended_probe === true) {
@@ -453,6 +480,42 @@ class PetFeederMiotDevice extends DeviceBase {
     // ───────────────────────────────────────────────────────────────────────────
     // MIoT helpers & capability setters
     // ───────────────────────────────────────────────────────────────────────────
+
+    async _initMiio() {
+        try {
+            // Dispose any previous instance
+            try {
+                this.miio?.destroy();
+            } catch (_) {}
+
+            const address = this.getSetting('address');
+            const token = this.getSetting('token');
+            if (!address || !token) {
+                this._onceWarn('[IV2001] missing address/token settings');
+                return;
+            }
+
+            this.miio = await miio.device({ address, token });
+            if (!this.getAvailable()) {
+                await this.setAvailable().catch(() => {});
+            }
+
+            // One-time extended probe dump on connect if enabled
+            if (this.getSettings().iv2001_extended_probe === true) {
+                try {
+                    const add = await this._probeMissing({});
+                    const hits = Object.entries(add).map(([label, r]) => `${label}@${r.siid}/${r.piid}=${JSON.stringify(r.value)}`);
+                    this.log('[PROBE] summary:', hits.join(', ') || 'no hits');
+                } catch (e) {
+                    this._warn('[PROBE] summary error:', e?.message);
+                }
+            }
+        } catch (error) {
+            this._warn('[IV2001] miio init failed:', error?.message);
+            // Retry later
+            this.homey.setTimeout(() => this._initMiio(), 10000);
+        }
+    }
 
     async _safeGetProps(requestArray) {
         try {

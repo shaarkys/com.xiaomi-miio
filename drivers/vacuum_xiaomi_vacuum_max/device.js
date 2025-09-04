@@ -440,15 +440,17 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             this.vacuumConsumables = this.deviceProperties.supports.consumables ? this.customVacuumConsumables : async () => {}; // noop on c102gl
 
             // One-time SIID/PIID discovery scan for c102gl to aid debugging/model support
+            /*
             if (model === 'xiaomi.vacuum.c102gl' && !this._siidPiidScanned) {
                 this._siidPiidScanned = true;
                 this.homey.setTimeout(() => {
                     this._runOneTimeMiotScan().catch((e) => this.error('[MIOT_SCAN] failed', e));
                 }, 25000);
-            }
+            }*/
         } catch (error) {
             this.error(error);
         }
+            
     }
 
     async retrieveDeviceData() {
