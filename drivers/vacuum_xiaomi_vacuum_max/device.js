@@ -121,8 +121,8 @@ const properties = {
     properties_c102gl: {
         get_rooms: [{ did: 'rooms', siid: 2, piid: 16 }],
         get_properties: [
-            { did: 'device_status', siid: 2, piid: 2 },
-            { did: 'device_fault', siid: 2, piid: 3 },
+            { did: 'device_status', siid: 2, piid: 1 },
+            { did: 'device_fault', siid: 2, piid: 2 },
             { did: 'battery', siid: 3, piid: 1 },
             // totals (observed working on c102gl)
             { did: 'total_clean_time', siid: 12, piid: 2 },
@@ -454,7 +454,24 @@ class XiaomiVacuumMiotDeviceMax extends Device {
     async retrieveDeviceData() {
         try {
             const result = await this.miio.call('get_properties', this.deviceProperties.get_properties, { retries: 1 });
-            const result_rooms = await this.miio.call('get_properties', this.deviceProperties.get_rooms, { retries: 1 });
+            // Try multiple MIoT candidates for rooms/segments
+            let result_rooms = await this.miio.call('get_properties', this.deviceProperties.get_rooms, { retries: 1 });
+            if (!result_rooms || !result_rooms.length || !result_rooms[0].value) {
+                const candidates = [
+                    [{ did: 'rooms', siid: 4, piid: 20 }],
+                    [{ did: 'rooms', siid: 6, piid: 15 }], // user-facing strings sometimes here
+                    [{ did: 'rooms', siid: 7, piid: 3 }]
+                ];
+                for (const c of candidates) {
+                    try {
+                        const r = await this.miio.call('get_properties', c, { retries: 1 });
+                        if (r && r[0] && r[0].value) {
+                            result_rooms = r;
+                            break;
+                        }
+                    } catch (_) {}
+                }
+            }
 
             if (!this.getAvailable()) await this.setAvailable();
 
