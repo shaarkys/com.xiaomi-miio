@@ -72,6 +72,18 @@ const PROBE_CANDIDATES = {
     heap_status: Array.from({ length: 11 }, (_, i) => ({ siid: 2, piid: 20 + i })),
     status_mode: [{ siid: 2, piid: 4 }, { siid: 2, piid: 5 }, { siid: 2, piid: 9 }, { siid: 2, piid: 10 }, ...Array.from({ length: 11 }, (_, i) => ({ siid: 2, piid: 20 + i }))],
     desiccant_level: [
+        { siid: 5, piid: 1 },
+        { siid: 5, piid: 2 },
+        { siid: 5, piid: 3 },
+        { siid: 5, piid: 4 },
+        { siid: 5, piid: 5 },
+        { siid: 5, piid: 6 },
+        { siid: 5, piid: 7 },
+        { siid: 5, piid: 8 },
+        { siid: 5, piid: 9 },
+        { siid: 5, piid: 10 },
+        { siid: 5, piid: 11 },
+        { siid: 5, piid: 12 },
         { siid: 6, piid: 1 },
         { siid: 6, piid: 2 },
         { siid: 6, piid: 3 },
@@ -90,6 +102,18 @@ const PROBE_CANDIDATES = {
         { siid: 9, piid: 4 }
     ],
     desiccant_time: [
+        { siid: 5, piid: 1 },
+        { siid: 5, piid: 2 },
+        { siid: 5, piid: 3 },
+        { siid: 5, piid: 4 },
+        { siid: 5, piid: 5 },
+        { siid: 5, piid: 6 },
+        { siid: 5, piid: 7 },
+        { siid: 5, piid: 8 },
+        { siid: 5, piid: 9 },
+        { siid: 5, piid: 10 },
+        { siid: 5, piid: 11 },
+        { siid: 5, piid: 12 },
         { siid: 6, piid: 1 },
         { siid: 6, piid: 2 },
         { siid: 6, piid: 3 },
@@ -306,7 +330,8 @@ class PetFeederMiotDevice extends DeviceBase {
 
         if (this.hasCapability('petfeeder_foodlevel')) {
             if (f && f.code === 0 && typeof f.value !== 'undefined') {
-                await this._setCap('petfeeder_foodlevel', f.value);
+                const enumValue = String(f.value);
+                await this._setCap('petfeeder_foodlevel', enumValue);
             } else if (f && f.code === -4001) {
                 this._onceWarn('[FOODLEVEL] unsupported (-4001)');
             }
@@ -608,7 +633,16 @@ class PetFeederMiotDevice extends DeviceBase {
             if (!this.hasCapability(cap)) return;
             const cur = this.getCapabilityValue(cap);
             if (cur !== value) {
-                await this.setCapabilityValue(cap, value);
+                try {
+                    await this.setCapabilityValue(cap, value);
+                } catch (e) {
+                    const expectsString = /expected string|InvalidTypeError/i.test(String(e?.message || ''));
+                    if (expectsString && typeof value !== 'string') {
+                        await this.setCapabilityValue(cap, String(value));
+                    } else {
+                        throw e;
+                    }
+                }
                 this.log('[CAP]', cap, '=', value);
             }
         } catch (e) {

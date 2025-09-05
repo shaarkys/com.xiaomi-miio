@@ -219,13 +219,29 @@ class XiaomiVacuumMiotDeviceMax extends Device {
 
             // Advanced room cleaning (works for all, just skips unsupported set_properties)
             this.homey.flow.getActionCard('advanced_room_cleaning').registerRunListener(async (args) => {
-                let list_room;
+                const rawRooms = args.device.getSetting('rooms');
+                let list_room = [];
                 try {
-                    list_room = JSON.parse(args.device.getSetting('rooms'));
+                    if (Array.isArray(rawRooms)) {
+                        list_room = rawRooms;
+                    } else if (typeof rawRooms === 'string') {
+                        try {
+                            list_room = JSON.parse(rawRooms);
+                        } catch (_) {
+                            try {
+                                list_room = JSON.parse(rawRooms.replace(/\\"/g, '"'));
+                            } catch (_) {
+                                if (rawRooms.startsWith('"') && rawRooms.endsWith('"')) {
+                                    list_room = JSON.parse(JSON.parse(rawRooms));
+                                }
+                            }
+                        }
+                    }
                 } catch (e) {
                     this.error('Rooms list in settings is invalid/missing.', e);
                     return Promise.reject('Room list is not available. Please sync device first.');
                 }
+                if (!Array.isArray(list_room)) list_room = [];
 
                 let selected_ids;
                 if (args.room === 'all') {
