@@ -204,7 +204,9 @@ class PetFeederMiotDevice extends DeviceBase {
                 lastTotalG: undefined,
                 lastTodayG: undefined,
                 desiccantAlarm: false,
-                todayBaseline: { ymd: this._ymdNow(), totalAtMidnight: undefined }
+                todayBaseline: { ymd: this._ymdNow(), totalAtMidnight: undefined },
+                discoveryDone: false,
+                lastDiscoveryAt: 0
             };
 
             // Read-only guard (prevents “Missing Capability Listener” warnings)
@@ -298,6 +300,9 @@ class PetFeederMiotDevice extends DeviceBase {
                 const probeAdd = await this._probeMissing(got);
                 Object.assign(got, probeAdd);
             }
+
+            // One-time automatic discovery + inject likely desiccant props
+            await this._injectDiscoveryIfNeeded(got);
 
             // Publish values
             await this._updateFaultAndFoodLevel(got);
@@ -575,6 +580,85 @@ class PetFeederMiotDevice extends DeviceBase {
             }
         }
         return hits;
+    }
+
+    async _injectDiscoveryIfNeeded(got) {
+        try {
+            const now = Date.now();
+            const cooldownMs = 6 * 60 * 60 * 1000; // 6h safety
+            if (this._state.discoveryDone && now - this._state.lastDiscoveryAt < cooldownMs) return;
+
+            // Run once on first successful poll
+            const hits = await this._discoveryScan([2, 3, 4, 5, 6, 7, 8, 9], 1, 12);
+            if (hits && hits.length) {
+                // Compact [SCAN] line like vacuum driver
+                const preview = hits.slice(0, 60).join(', ');
+                this.log('[SCAN]', preview + (hits.length > 60 ? ` …(+${hits.length - 60})` : ''));
+
+                // Build quick map for heuristics
+                const m = new Map();
+                for (const h of hits) {
+                    const idx = h.indexOf('=');
+                    if (idx === -1) continue;
+                    const key = h.slice(0, idx); // "siid/piid"
+                    let raw = h.slice(idx + 1);
+                    try { raw = JSON.parse(raw); } catch (_) {}
+                    m.set(key, raw);
+                }
+
+                // Heuristics: prefer 5/11 as percent 0..100, fallback to any 0..100 numeric under siid 5
+                const pickNumber = (v) => {
+                    const n = Number(v);
+                    return Number.isFinite(n) ? n : undefined;
+                };
+
+                const cand511 = pickNumber(m.get('5/11'));
+                const cand57 = pickNumber(m.get('5/7'));
+                const cand55 = pickNumber(m.get('5/5'));
+
+                let lvlNum = undefined, lvlKey = undefined;
+                if (typeof cand511 === 'number' && cand511 >= 0 && cand511 <= 100) {
+                    lvlNum = Math.round(cand511);
+                    lvlKey = '5/11';
+                } else {
+                    for (let p = 1; p <= 12; p++) {
+                        const val = pickNumber(m.get(`5/${p}`));
+                        if (typeof val === 'number' && val >= 0 && val <= 100) {
+                            lvlNum = Math.round(val);
+                            lvlKey = `5/${p}`;
+                            break;
+                        }
+                    }
+                }
+
+                let daysNum = undefined, daysKey = undefined;
+                const dayCandidates = [cand57, cand55];
+                const dayKeys = ['5/7', '5/5'];
+                for (let i = 0; i < dayCandidates.length; i++) {
+                    const v = dayCandidates[i];
+                    if (typeof v === 'number' && v >= 0 && v <= 3650) { // 10y upper bound
+                        daysNum = Math.round(v);
+                        daysKey = dayKeys[i];
+                        break;
+                    }
+                }
+
+                // Inject into current readout so capability update logic can publish
+                if (!got.desiccant_level && typeof lvlNum === 'number') {
+                    got.desiccant_level = { code: 0, value: lvlNum, siid: Number(lvlKey.split('/')[0]), piid: Number(lvlKey.split('/')[1]) };
+                    this.log('[DISCOVERY inject] desiccant_level from', lvlKey, '=', lvlNum);
+                }
+                if (!got.desiccant_time && typeof daysNum === 'number') {
+                    got.desiccant_time = { code: 0, value: daysNum, siid: Number(daysKey.split('/')[0]), piid: Number(daysKey.split('/')[1]) };
+                    this.log('[DISCOVERY inject] desiccant_time from', daysKey, '=', daysNum);
+                }
+
+                this._state.discoveryDone = true;
+                this._state.lastDiscoveryAt = now;
+            }
+        } catch (e) {
+            this._warn('[SCAN] error:', e?.message);
+        }
     }
 
     async _safeGetProps(requestArray) {
