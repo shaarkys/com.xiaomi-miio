@@ -364,5 +364,8 @@
   },
   "3.4.43": {
     "en": "Xiaomi Feeder 2 improvements"
+  },
+  "3.4.44": {
+    "en": "Xiaomi X20 / X20+ (c102gl), petfeeder_mmgg_miot and humidifier_deerma_humidifier_miot specific fixes"
   }
 }
