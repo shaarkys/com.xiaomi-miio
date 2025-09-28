@@ -50,28 +50,48 @@ const BASE_GET_PROPS = [
 ];
 
 const IV2001_DEFAULTS = {
-    eaten_food_today: { siid: 2, piid: 22 }, // [Unverified]
-    eaten_food_total: { siid: 2, piid: 23 }, // [Unverified]
-    food_out_status: { siid: 2, piid: 24 }, // [Unverified]
-    heap_status: { siid: 2, piid: 25 }, // [Unverified]
-    status_mode: { siid: 2, piid: 26 }, // [Unverified]
-    desiccant_level: { siid: 7, piid: 1 }, // [Unverified]
-    desiccant_time: { siid: 7, piid: 2 } // [Unverified]
+    eaten_food_today: { siid: 2, piid: 18 }, // spec v2: today grams
+    eaten_food_total: { siid: 2, piid: 20 }, // spec v2: total grams
+    food_out_status: { siid: 2, piid: 11 }, // spec v2: food-out fault flag
+    heap_status: { siid: 2, piid: 15 }, // spec v2: heap/accumulation flag
+    status_mode: { siid: 2, piid: 32 }, // spec v2: idle/busy state
+    desiccant_level: { siid: 6, piid: 1 }, // spec v2: percent remaining
+    desiccant_time: { siid: 6, piid: 2 } // spec v2: days remaining
 };
 
 const PROBE_CANDIDATES = {
     eaten_food_today: [
+        { siid: 2, piid: 18 },
+        { siid: 2, piid: 20 },
         { siid: 2, piid: 22 },
         { siid: 2, piid: 23 }
     ],
     eaten_food_total: [
+        { siid: 2, piid: 20 },
         { siid: 2, piid: 23 },
+        { siid: 2, piid: 18 },
         { siid: 2, piid: 22 }
     ],
-    food_out_status: Array.from({ length: 11 }, (_, i) => ({ siid: 2, piid: 20 + i })), // 2/20..2/30
-    heap_status: Array.from({ length: 11 }, (_, i) => ({ siid: 2, piid: 20 + i })),
-    status_mode: [{ siid: 2, piid: 4 }, { siid: 2, piid: 5 }, { siid: 2, piid: 9 }, { siid: 2, piid: 10 }, ...Array.from({ length: 11 }, (_, i) => ({ siid: 2, piid: 20 + i }))],
+    food_out_status: [
+        { siid: 2, piid: 11 },
+        { siid: 2, piid: 10 },
+        { siid: 2, piid: 24 },
+        { siid: 2, piid: 25 }
+    ],
+    heap_status: [
+        { siid: 2, piid: 15 },
+        { siid: 2, piid: 10 },
+        { siid: 2, piid: 24 }
+    ],
+    status_mode: [
+        { siid: 2, piid: 32 },
+        { siid: 2, piid: 26 },
+        { siid: 2, piid: 28 },
+        { siid: 2, piid: 16 }
+    ],
     desiccant_level: [
+        { siid: 6, piid: 1 },
+        { siid: 6, piid: 2 },
         { siid: 5, piid: 1 },
         { siid: 5, piid: 2 },
         { siid: 5, piid: 3 },
@@ -84,10 +104,6 @@ const PROBE_CANDIDATES = {
         { siid: 5, piid: 10 },
         { siid: 5, piid: 11 },
         { siid: 5, piid: 12 },
-        { siid: 6, piid: 1 },
-        { siid: 6, piid: 2 },
-        { siid: 6, piid: 3 },
-        { siid: 6, piid: 4 },
         { siid: 7, piid: 1 },
         { siid: 7, piid: 2 },
         { siid: 7, piid: 3 },
@@ -102,6 +118,8 @@ const PROBE_CANDIDATES = {
         { siid: 9, piid: 4 }
     ],
     desiccant_time: [
+        { siid: 6, piid: 2 },
+        { siid: 6, piid: 1 },
         { siid: 5, piid: 1 },
         { siid: 5, piid: 2 },
         { siid: 5, piid: 3 },
@@ -114,10 +132,6 @@ const PROBE_CANDIDATES = {
         { siid: 5, piid: 10 },
         { siid: 5, piid: 11 },
         { siid: 5, piid: 12 },
-        { siid: 6, piid: 1 },
-        { siid: 6, piid: 2 },
-        { siid: 6, piid: 3 },
-        { siid: 6, piid: 4 },
         { siid: 7, piid: 1 },
         { siid: 7, piid: 2 },
         { siid: 7, piid: 3 },
@@ -133,13 +147,16 @@ const PROBE_CANDIDATES = {
     ]
 };
 
+const MANUAL_FEED_PORTION_GRAMS = 5; // grams per portion according to MIoT spec
+const MANUAL_FEED_MAX_PORTIONS = 30;
+
+
 // Human-readable mode mapping (conservative)
 const MODE_MAP = new Map([
-    [0, 'unknown'],
-    [1, 'idle'],
-    [2, 'feeding'],
-    [3, 'paused'],
-    [4, 'fault']
+    [0, 'idle'],
+    [1, 'feeding'],
+    [2, 'paused'],
+    [3, 'fault']
 ]);
 
 // ───────────────────────────────────────────────────────────────────────────────
@@ -552,7 +569,7 @@ class PetFeederMiotDevice extends DeviceBase {
 
         // One-time bounded discovery (siid 2..9, piid 1..12)
         try {
-            const found = await this._discoveryScan([2,3,4,5,6,7,8,9], 1, 12);
+            const found = await this._discoveryScan([2, 3, 4, 5, 6, 7, 8, 9], 1, 32);
             if (found.length) {
                 this.log('[DISCOVERY] hits:', found.slice(0, 50).join(', ') + (found.length > 50 ? ` …(+${found.length - 50})` : ''));
             } else {
@@ -589,7 +606,7 @@ class PetFeederMiotDevice extends DeviceBase {
             if (this._state.discoveryDone && now - this._state.lastDiscoveryAt < cooldownMs) return;
 
             // Run once on first successful poll
-            const hits = await this._discoveryScan([2, 3, 4, 5, 6, 7, 8, 9], 1, 12);
+            const hits = await this._discoveryScan([2, 3, 4, 5, 6, 7, 8, 9], 1, 32);
             if (hits && hits.length) {
                 // Compact [SCAN] line like vacuum driver
                 const preview = hits.slice(0, 60).join(', ');
@@ -612,34 +629,64 @@ class PetFeederMiotDevice extends DeviceBase {
                     return Number.isFinite(n) ? n : undefined;
                 };
 
+                const cand61 = pickNumber(m.get('6/1'));
+                const cand62 = pickNumber(m.get('6/2'));
                 const cand511 = pickNumber(m.get('5/11'));
                 const cand57 = pickNumber(m.get('5/7'));
                 const cand55 = pickNumber(m.get('5/5'));
 
                 let lvlNum = undefined, lvlKey = undefined;
-                if (typeof cand511 === 'number' && cand511 >= 0 && cand511 <= 100) {
-                    lvlNum = Math.round(cand511);
-                    lvlKey = '5/11';
-                } else {
-                    for (let p = 1; p <= 12; p++) {
-                        const val = pickNumber(m.get(`5/${p}`));
+                const levelPrimaries = [
+                    ['6/1', cand61],
+                    ['5/11', cand511]
+                ];
+                for (const [key, val] of levelPrimaries) {
+                    if (typeof val === 'number' && val >= 0 && val <= 100) {
+                        lvlNum = Math.round(val);
+                        lvlKey = key;
+                        break;
+                    }
+                }
+                if (typeof lvlNum !== 'number') {
+                    const fallbackKeys = [
+                        '5/1','5/2','5/3','5/4','5/5','5/6','5/7','5/8','5/9','5/10','5/12',
+                        '7/1','7/2','7/3','7/4','8/1','8/2','8/3','8/4','9/1','9/2','9/3','9/4'
+                    ];
+                    for (const key of fallbackKeys) {
+                        const val = pickNumber(m.get(key));
                         if (typeof val === 'number' && val >= 0 && val <= 100) {
                             lvlNum = Math.round(val);
-                            lvlKey = `5/${p}`;
+                            lvlKey = key;
                             break;
                         }
                     }
                 }
 
                 let daysNum = undefined, daysKey = undefined;
-                const dayCandidates = [cand57, cand55];
-                const dayKeys = ['5/7', '5/5'];
-                for (let i = 0; i < dayCandidates.length; i++) {
-                    const v = dayCandidates[i];
-                    if (typeof v === 'number' && v >= 0 && v <= 3650) { // 10y upper bound
-                        daysNum = Math.round(v);
-                        daysKey = dayKeys[i];
+                const dayPrimaries = [
+                    ['6/2', cand62],
+                    ['5/7', cand57],
+                    ['5/5', cand55]
+                ];
+                for (const [key, val] of dayPrimaries) {
+                    if (typeof val === 'number' && val >= 0 && val <= 3650) { // 10y upper bound
+                        daysNum = Math.round(val);
+                        daysKey = key;
                         break;
+                    }
+                }
+                if (typeof daysNum !== 'number') {
+                    const dayFallbacks = [
+                        '5/1','5/2','5/3','5/4','5/6','5/8','5/9','5/10','5/11','5/12',
+                        '7/1','7/2','7/3','7/4','8/1','8/2','8/3','8/4','9/1','9/2','9/3','9/4'
+                    ];
+                    for (const key of dayFallbacks) {
+                        const val = pickNumber(m.get(key));
+                        if (typeof val === 'number' && val >= 0 && val <= 3650) {
+                            daysNum = Math.round(val);
+                            daysKey = key;
+                            break;
+                        }
                     }
                 }
 
@@ -688,6 +735,31 @@ class PetFeederMiotDevice extends DeviceBase {
         } catch (e) {
             this._warn('[MIOT] get_properties error:', e?.message);
             return [];
+        }
+    }
+
+    async servePortions(portionCount) {
+        try {
+            if (!this.miio) {
+                throw new Error('miio not ready');
+            }
+            const raw = Number(portionCount);
+            const count = Number.isFinite(raw) ? Math.max(1, Math.min(MANUAL_FEED_MAX_PORTIONS, Math.round(raw))) : 1;
+            const grams = count * MANUAL_FEED_PORTION_GRAMS;
+            const payload = {
+                siid: 2,
+                aiid: 1,
+                in: [
+                    { siid: 2, piid: 8, value: grams }
+                ]
+            };
+            const result = await this._callMiio('action', payload, { retries: 1 }, 8000);
+            this.log('[FEED] manual feed', { portions: count, grams });
+            return result;
+        } catch (err) {
+            const message = err?.message || err;
+            this._warn('[FEED] manual feed error:', message);
+            throw err;
         }
     }
 

@@ -72,7 +72,7 @@
         "ru": "Выберите пылесос",
         "ko": "진공청소기 선택"
       },
-      "filter": "driver_id=vacuum_mi_rockrobo_vacuum_advanced|vacuum_dreame_vacuum|vacuum_viomi_vacuum_v7|vacuum_mija_vacuum_miot|vacuum_roidmi_vacuum_miot"
+      "filter": "driver_id=vacuum_mi_rockrobo_vacuum_advanced|vacuum_dreame_vacuum|vacuum_viomi_vacuum_v7|vacuum_mija_vacuum_miot|vacuum_roidmi_vacuum_miot|vacuum_xiaomi_vacuum_max"
     }
   ],
   "platforms": [

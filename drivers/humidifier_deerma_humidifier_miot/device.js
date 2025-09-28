@@ -166,24 +166,54 @@ class HumidifierDeermaMiotDevice extends Device {
       const led = result.find(obj => obj.did === 'led_light');
 
       /* capabilities */
-      await this.updateCapabilityValue("onoff", onoff.value);
-      await this.updateCapabilityValue("alarm_tank_empty", alarm_tank_empty.value);
-      await this.updateCapabilityValue("target_humidity", target_humidity.value / 100);
-      await this.updateCapabilityValue("measure_humidity", measure_humidity.value);
-      await this.updateCapabilityValue("measure_temperature", measure_temperature.value);    
-
-      /* settings */
-      await this.updateSettingValue("led", led.value);
-      await this.updateSettingValue("buzzer", buzzer.value);
-
-      /* mode capability */
-      const mode = result.find(obj => obj.did === 'mode');
-      if (this.getCapabilityValue('humidifier_deerma_jsq_mode') !== mode.value.toString()) {
-        const previous_mode = this.getCapabilityValue('humidifier_deerma_jsq_mode');
-        await this.setCapabilityValue('humidifier_deerma_jsq_mode', mode.value.toString());
-        await this.homey.flow.getDeviceTriggerCard('triggerModeChanged').trigger(this, {"new_mode": modes[mode.value], "previous_mode": modes[+previous_mode] }).catch(error => { this.error(error) });
+      if (onoff && onoff.value !== undefined) {
+        await this.updateCapabilityValue("onoff", onoff.value);
       }
 
+      if (alarm_tank_empty && alarm_tank_empty.value !== undefined) {
+        await this.updateCapabilityValue("alarm_tank_empty", alarm_tank_empty.value);
+      }
+
+      if (target_humidity && typeof target_humidity.value === "number") {
+        await this.updateCapabilityValue("target_humidity", target_humidity.value / 100);
+      }
+
+      if (measure_humidity && measure_humidity.value !== undefined) {
+        await this.updateCapabilityValue("measure_humidity", measure_humidity.value);
+      }
+
+      if (measure_temperature && measure_temperature.value !== undefined) {
+        await this.updateCapabilityValue("measure_temperature", measure_temperature.value);
+      }
+
+      /* settings */
+      if (led && led.value !== undefined) {
+        await this.updateSettingValue("led", led.value);
+      }
+
+      if (buzzer && buzzer.value !== undefined) {
+        await this.updateSettingValue("buzzer", buzzer.value);
+      }
+
+      /* mode capability */
+      const mode = result.find(obj => obj.did === "mode");
+      if (mode && mode.value !== undefined && mode.value !== null) {
+        const newMode = mode.value.toString();
+        const previousMode = this.getCapabilityValue("humidifier_deerma_jsq_mode");
+
+        if (previousMode !== newMode) {
+          await this.setCapabilityValue("humidifier_deerma_jsq_mode", newMode);
+
+          const newModeLabel = modes[mode.value] ?? newMode;
+          const previousModeLabel = (previousMode !== undefined && previousMode !== null)
+            ? (modes[Number(previousMode)] ?? previousMode)
+            : undefined;
+
+          await this.homey.flow.getDeviceTriggerCard("triggerModeChanged")
+            .trigger(this, { "new_mode": newModeLabel, "previous_mode": previousModeLabel })
+            .catch(error => { this.error(error); });
+        }
+      }
     } catch (error) {
       this.homey.clearInterval(this.pollingInterval);
 

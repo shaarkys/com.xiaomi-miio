@@ -110,13 +110,16 @@ const properties = {
             consumables: true,
             detergent: true
         },
+        scale: {
+            area_divisor: 100,
+            time_divisor: 3600
+        },
         error_codes: ERROR_CODES,
         status_mapping: STATUS_MAPPING
     },
 
     /* X20 / X20+ (c102gl)
-     ✅ Only the *room action* differs (aiid 3, input piid 4)
-     ❌ Consumables/cleaning power/water/path/carpet/“detergent*” are removed to avoid bad values & invalid flows
+     * Uses c102-specific MIOT mappings for room actions and exposes extended controls.
   */
     properties_c102gl: {
         get_rooms: [{ did: 'rooms', siid: 2, piid: 16 }],
@@ -124,6 +127,11 @@ const properties = {
             { did: 'device_status', siid: 2, piid: 1 },
             { did: 'device_fault', siid: 2, piid: 2 },
             { did: 'battery', siid: 3, piid: 1 },
+            { did: 'mode', siid: 2, piid: 4 },
+            { did: 'cleaning_mode', siid: 7, piid: 5 },
+            { did: 'water_level', siid: 7, piid: 6 },
+            { did: 'path_mode', siid: 7, piid: 38 },
+            { did: 'carpet_avoidance', siid: 7, piid: 44 },
             // totals (observed working on c102gl)
             { did: 'total_clean_time', siid: 12, piid: 2 },
             { did: 'total_clean_count', siid: 12, piid: 3 },
@@ -138,19 +146,28 @@ const properties = {
             stop_clean: { siid: 2, aiid: 2, did: 'call-2-2', in: [] },
             find: { siid: 6, aiid: 1, did: 'call-6-1', in: [] },
             home: { siid: 3, aiid: 1, did: 'call-3-1', in: [] },
-            // X20+/X20 specific
+            mopmode: { siid: 2, piid: 4 },
+            cleaning_mode: { siid: 7, piid: 5 },
+            water_level: { siid: 7, piid: 6 },
+            path_mode: { siid: 7, piid: 38 },
+            carpet_avoidance: { siid: 7, piid: 44 },
+            carpet_avoidance_toggle: { siid: 7, piid: 47 },
+            // X20+/X20 specific room action (string payload)
             room_clean_action: { siid: 2, aiid: 3, piid: 4 }
-            // (no mopmode/cleaning_mode/water_level/path_mode/carpet_avoidance here)
         },
         supports: {
             rooms: true,
-            mopmode: false,
-            cleaning_mode: false,
-            water_level: false,
-            path_mode: false,
-            carpet_avoidance: false,
+            mopmode: true,
+            cleaning_mode: true,
+            water_level: true,
+            path_mode: true,
+            carpet_avoidance: true,
             consumables: true,
             detergent: false
+        },
+        scale: {
+            area_divisor: 1,
+            time_divisor: 60
         },
         error_codes: ERROR_CODES,
         status_mapping: STATUS_MAPPING_C102
@@ -180,14 +197,23 @@ class XiaomiVacuumMiotDeviceMax extends Device {
 
             // remember last state
             this.lastVacState = 'unknown';
-            this._prevArea01 = 0;
-            this._prevTimeSec = 0;
-            this._sessionStartArea = 0;
-            this._sessionStartTime = 0;
+            this._prevAreaRaw = 0;
+            this._prevTimeRaw = 0;
+            this._sessionStartAreaRaw = 0;
+            this._sessionStartTimeRaw = 0;
             this._isSessionActive = false;
 
             const model = this.getStoreValue('model');
             this.deviceProperties = properties[mapping[model]] || properties.properties_d109gl;
+            this._model = model;
+            this._areaDivisor = (this.deviceProperties.scale && this.deviceProperties.scale.area_divisor) || 100;
+            this._timeDivisor = (this.deviceProperties.scale && this.deviceProperties.scale.time_divisor) || 3600;
+            this._carpetModeState = this.getStoreValue('carpetModeState') || '0';
+            if (!this.getStoreValue('carpetModeState')) {
+                try {
+                    await this.setStoreValue('carpetModeState', this._carpetModeState);
+                } catch (_) {}
+            }
 
             // Only add optional caps if model actually supports them
             if (this.deviceProperties.supports.carpet_avoidance && !this.hasCapability('vacuum_xiaomi_carpet_mode_max')) {
@@ -195,6 +221,10 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             }
             if (!this.hasCapability('alarm_water_shortage') && this.deviceProperties.supports.detergent) {
                 await this.addCapability('alarm_water_shortage');
+            }
+
+            if (this.deviceProperties.supports.carpet_avoidance) {
+                await this.updateCapabilityValue('vacuum_xiaomi_carpet_mode_max', this._carpetModeState);
             }
 
             // RESET consumable alarms (only for models that support them)
@@ -248,9 +278,15 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                     selected_ids = list_room.map((el) => el.id);
                 } else {
                     selected_ids = [];
-                    for (const nameRaw of args.room.split(',')) {
-                        const name = nameRaw.toLowerCase().trim();
-                        const match = list_room.find((el) => el.name.toLowerCase() === name);
+                    for (const rawToken of String(args.room || '').split(',')) {
+                        const token = rawToken.trim();
+                        if (!token) continue;
+                        if (/^\d+$/.test(token)) {
+                            selected_ids.push(Number(token));
+                            continue;
+                        }
+                        const name = token.toLowerCase();
+                        const match = list_room.find((el) => (el.name || '').toLowerCase() === name);
                         if (match) selected_ids.push(match.id);
                     }
                 }
@@ -264,40 +300,52 @@ class XiaomiVacuumMiotDeviceMax extends Device {
 
                 // Only push properties that the model supports
                 const props = [];
+                const selectedMode = String(args.mode);
                 if (this.deviceProperties.supports.mopmode) {
-                    props.push({
-                        siid: this.deviceProperties.set_properties.mopmode.siid,
-                        piid: this.deviceProperties.set_properties.mopmode.piid,
-                        value: Number(args.mode)
-                    });
+                    const mopOutbound = this.mapMopModeOutbound(selectedMode);
+                    if (mopOutbound != null) {
+                        props.push({
+                            siid: this.deviceProperties.set_properties.mopmode.siid,
+                            piid: this.deviceProperties.set_properties.mopmode.piid,
+                            value: mopOutbound
+                        });
+                    }
                 }
                 if (this.deviceProperties.supports.path_mode) {
-                    props.push({
-                        siid: this.deviceProperties.set_properties.path_mode.siid,
-                        piid: this.deviceProperties.set_properties.path_mode.piid,
-                        value: Number(args.accuracy)
-                    });
+                    const pathOutbound = this.mapPathModeOutbound(String(args.accuracy));
+                    if (pathOutbound != null) {
+                        props.push({
+                            siid: this.deviceProperties.set_properties.path_mode.siid,
+                            piid: this.deviceProperties.set_properties.path_mode.piid,
+                            value: pathOutbound
+                        });
+                    }
                 }
-                if (this.deviceProperties.supports.cleaning_mode && (args.mode == 1 || args.mode == 3)) {
-                    props.push({
-                        siid: this.deviceProperties.set_properties.cleaning_mode.siid,
-                        piid: this.deviceProperties.set_properties.cleaning_mode.piid,
-                        value: Number(args.mode_sweep)
-                    });
+                if (this.deviceProperties.supports.cleaning_mode && (selectedMode === '1' || selectedMode === '3')) {
+                    const sweepOutbound = this.mapCleaningModeOutbound(String(args.mode_sweep));
+                    if (sweepOutbound != null) {
+                        props.push({
+                            siid: this.deviceProperties.set_properties.cleaning_mode.siid,
+                            piid: this.deviceProperties.set_properties.cleaning_mode.piid,
+                            value: sweepOutbound
+                        });
+                    }
                 }
-                if (this.deviceProperties.supports.water_level && (args.mode == 2 || args.mode == 3)) {
-                    props.push({
-                        siid: this.deviceProperties.set_properties.water_level.siid,
-                        piid: this.deviceProperties.set_properties.water_level.piid,
-                        value: Number(args.mode_mop)
-                    });
+                if (this.deviceProperties.supports.water_level && (selectedMode === '2' || selectedMode === '3')) {
+                    const mopLevelOutbound = this.mapWaterLevelOutbound(String(args.mode_mop));
+                    if (mopLevelOutbound != null) {
+                        props.push({
+                            siid: this.deviceProperties.set_properties.water_level.siid,
+                            piid: this.deviceProperties.set_properties.water_level.piid,
+                            value: mopLevelOutbound
+                        });
+                    }
                 }
                 if (this.deviceProperties.supports.carpet_avoidance && typeof args.carpet_avoidance !== 'undefined') {
-                    props.push({
-                        siid: this.deviceProperties.set_properties.carpet_avoidance.siid,
-                        piid: this.deviceProperties.set_properties.carpet_avoidance.piid,
-                        value: Number(args.carpet_avoidance)
-                    });
+                    const carpetPayload = this.buildCarpetModeSetPayload(String(args.carpet_avoidance));
+                    if (carpetPayload.length) {
+                        props.push(...carpetPayload);
+                    }
                 }
 
                 const action = {
@@ -330,9 +378,16 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             if (this.deviceProperties.supports.carpet_avoidance) {
                 this.registerCapabilityListener('vacuum_xiaomi_carpet_mode_max', async (value) => {
                     try {
-                        const numericValue = Number(value);
+                        const { payload, state } = this.buildCarpetModeSetPayload(String(value));
+                        if (!payload.length) return null;
                         if (this.miio) {
-                            return await this.miio.call('set_properties', [{ siid: this.deviceProperties.set_properties.carpet_avoidance.siid, piid: this.deviceProperties.set_properties.carpet_avoidance.piid, value: numericValue }], { retries: 1 });
+                            const result = await this.miio.call('set_properties', payload, { retries: 1 });
+                            this._carpetModeState = state;
+                            try {
+                                await this.setStoreValue('carpetModeState', state);
+                            } catch (_) {}
+                            await this.updateCapabilityValue('vacuum_xiaomi_carpet_mode_max', state);
+                            return result;
                         }
                         this.setUnavailable(this.homey.__('unreachable')).catch((err) => this.error(err));
                         this.createDevice();
@@ -386,9 +441,10 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             if (this.deviceProperties.supports.mopmode) {
                 this.registerCapabilityListener('vacuum_xiaomi_mop_mode_max', async (value) => {
                     try {
-                        const numericValue = Number(value);
+                        const mappedValue = this.mapMopModeOutbound(String(value));
+                        if (mappedValue == null) return null;
                         if (this.miio) {
-                            return await this.miio.call('set_properties', [{ siid: this.deviceProperties.set_properties.mopmode.siid, piid: this.deviceProperties.set_properties.mopmode.piid, value: numericValue }], { retries: 1 });
+                            return await this.miio.call('set_properties', [{ siid: this.deviceProperties.set_properties.mopmode.siid, piid: this.deviceProperties.set_properties.mopmode.piid, value: mappedValue }], { retries: 1 });
                         }
                         this.setUnavailable(this.homey.__('unreachable')).catch((error) => this.error(error));
                         this.createDevice();
@@ -403,9 +459,10 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             if (this.deviceProperties.supports.cleaning_mode) {
                 this.registerCapabilityListener('vacuum_xiaomi_cleaning_mode_max', async (value) => {
                     try {
-                        const numericValue = Number(value);
+                        const mappedValue = this.mapCleaningModeOutbound(String(value));
+                        if (mappedValue == null) return null;
                         if (this.miio) {
-                            return await this.miio.call('set_properties', [{ siid: this.deviceProperties.set_properties.cleaning_mode.siid, piid: this.deviceProperties.set_properties.cleaning_mode.piid, value: numericValue }], { retries: 1 });
+                            return await this.miio.call('set_properties', [{ siid: this.deviceProperties.set_properties.cleaning_mode.siid, piid: this.deviceProperties.set_properties.cleaning_mode.piid, value: mappedValue }], { retries: 1 });
                         }
                         this.setUnavailable(this.homey.__('unreachable')).catch((error) => this.error(error));
                         this.createDevice();
@@ -420,9 +477,10 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             if (this.deviceProperties.supports.water_level) {
                 this.registerCapabilityListener('vacuum_xiaomi_water_level_max', async (value) => {
                     try {
-                        const numericValue = Number(value);
+                        const mappedValue = this.mapWaterLevelOutbound(String(value));
+                        if (mappedValue == null) return null;
                         if (this.miio) {
-                            return await this.miio.call('set_properties', [{ siid: this.deviceProperties.set_properties.water_level.siid, piid: this.deviceProperties.set_properties.water_level.piid, value: numericValue }], { retries: 1 });
+                            return await this.miio.call('set_properties', [{ siid: this.deviceProperties.set_properties.water_level.siid, piid: this.deviceProperties.set_properties.water_level.piid, value: mappedValue }], { retries: 1 });
                         }
                         this.setUnavailable(this.homey.__('unreachable')).catch((error) => this.error(error));
                         this.createDevice();
@@ -437,9 +495,10 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             if (this.deviceProperties.supports.path_mode) {
                 this.registerCapabilityListener('vacuum_xiaomi_path_mode_max', async (value) => {
                     try {
-                        const numericValue = Number(value);
+                        const mappedValue = this.mapPathModeOutbound(String(value));
+                        if (mappedValue == null) return null;
                         if (this.miio) {
-                            return await this.miio.call('set_properties', [{ siid: this.deviceProperties.set_properties.path_mode.siid, piid: this.deviceProperties.set_properties.path_mode.piid, value: numericValue }], { retries: 1 });
+                            return await this.miio.call('set_properties', [{ siid: this.deviceProperties.set_properties.path_mode.siid, piid: this.deviceProperties.set_properties.path_mode.piid, value: mappedValue }], { retries: 1 });
                         }
                         this.setUnavailable(this.homey.__('unreachable')).catch((error) => this.error(error));
                         this.createDevice();
@@ -528,6 +587,11 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             const total_clean_count = this.getMiotProp(result, 'total_clean_count');
             const total_clean_area = this.getMiotProp(result, 'total_clean_area');
             const device_fault = this.getMiotProp(result, 'device_fault');
+            const mop_mode = this.getMiotProp(result, 'mode');
+            const cleaning_mode_prop = this.getMiotProp(result, 'cleaning_mode');
+            const water_level_prop = this.getMiotProp(result, 'water_level');
+            const path_mode_prop = this.getMiotProp(result, 'path_mode');
+            const carpet_mode_prop = this.getMiotProp(result, 'carpet_avoidance');
 
             const consumables = this.deviceProperties.supports.consumables
                 ? [
@@ -570,25 +634,24 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             // session handling
             if (stateKey === 'cleaning' && !this._isSessionActive) {
                 this._isSessionActive = true;
-                this._prevArea01 = total_clean_area ? total_clean_area.value : 0;
-                this._prevTimeSec = total_clean_time ? total_clean_time.value : 0;
-                this._sessionStartArea = this._prevArea01;
-                this._sessionStartTime = this._prevTimeSec;
-                this.log(`[SESSION] Cleaning started: startArea(0.01m²)=${this._sessionStartArea}, startTime(sec)=${this._sessionStartTime}`);
+                this._prevAreaRaw = total_clean_area ? total_clean_area.value : 0;
+                this._prevTimeRaw = total_clean_time ? total_clean_time.value : 0;
+                this._sessionStartAreaRaw = this._prevAreaRaw;
+                this._sessionStartTimeRaw = this._prevTimeRaw;
+                const startAreaM2 = this._sessionStartAreaRaw / this._areaDivisor;
+                const startTimeHours = this._sessionStartTimeRaw / this._timeDivisor;
+                this.log(`[SESSION] Cleaning started: startArea(m²)=${startAreaM2.toFixed(2)}, startTime(h)=${startTimeHours.toFixed(2)}`);
             }
             if (stateKey === 'cleaning' && this._isSessionActive) {
-                let currentArea01 = total_clean_area ? total_clean_area.value : 0;
-                let currentTimeSec = total_clean_time ? total_clean_time.value : 0;
-                let deltaArea01 = currentArea01 - this._prevArea01;
-                let deltaTimeSec = currentTimeSec - this._prevTimeSec;
+                const currentAreaRaw = total_clean_area ? total_clean_area.value : 0;
+                const currentTimeRaw = total_clean_time ? total_clean_time.value : 0;
+                const deltaAreaRaw = currentAreaRaw - this._prevAreaRaw;
+                const deltaTimeRaw = currentTimeRaw - this._prevTimeRaw;
 
-                if (deltaArea01 > 0 || deltaTimeSec > 0) {
-                    let deltaAreaM2 = deltaArea01 / 100;
-                    let deltaHours = deltaTimeSec / 3600;
-                    this.log(`[SESSION] Δarea=${deltaAreaM2.toFixed(2)}m², Δtime=${deltaHours.toFixed(2)}h`);
-                    await this._addLiveDelta(deltaAreaM2, deltaHours);
-                    this._prevArea01 = currentArea01;
-                    this._prevTimeSec = currentTimeSec;
+                if (deltaAreaRaw > 0 || deltaTimeRaw > 0) {
+                    await this._addLiveDelta(deltaAreaRaw, deltaTimeRaw);
+                    this._prevAreaRaw = currentAreaRaw;
+                    this._prevTimeRaw = currentTimeRaw;
                 }
             }
             if (this.lastVacState === 'cleaning' && ['docked', 'charging', 'stopped'].includes(stateKey)) {
@@ -598,6 +661,39 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                     this.log('[SESSION] Cleaning ended. Count incremented.');
                 } catch (e) {
                     this.error('Session completion handling failed', e);
+                }
+            }
+
+            if (this.deviceProperties.supports.mopmode && mop_mode && mop_mode.value != null && this.hasCapability('vacuum_xiaomi_mop_mode_max')) {
+                const mappedMop = this.mapMopModeInbound(mop_mode.value);
+                if (mappedMop != null) await this.updateCapabilityValue('vacuum_xiaomi_mop_mode_max', mappedMop);
+            }
+
+            if (this.deviceProperties.supports.cleaning_mode && cleaning_mode_prop && cleaning_mode_prop.value != null && this.hasCapability('vacuum_xiaomi_cleaning_mode_max')) {
+                const mappedCleaning = this.mapCleaningModeInbound(cleaning_mode_prop.value);
+                if (mappedCleaning != null) await this.updateCapabilityValue('vacuum_xiaomi_cleaning_mode_max', mappedCleaning);
+            }
+
+            if (this.deviceProperties.supports.water_level && water_level_prop && water_level_prop.value != null && this.hasCapability('vacuum_xiaomi_water_level_max')) {
+                const mappedWater = this.mapWaterLevelInbound(water_level_prop.value);
+                if (mappedWater != null) await this.updateCapabilityValue('vacuum_xiaomi_water_level_max', mappedWater);
+            }
+
+            if (this.deviceProperties.supports.path_mode && path_mode_prop && path_mode_prop.value != null && this.hasCapability('vacuum_xiaomi_path_mode_max')) {
+                const mappedPath = this.mapPathModeInbound(path_mode_prop.value);
+                if (mappedPath != null) await this.updateCapabilityValue('vacuum_xiaomi_path_mode_max', mappedPath);
+            }
+
+            if (this.deviceProperties.supports.carpet_avoidance && this.hasCapability('vacuum_xiaomi_carpet_mode_max')) {
+                const mappedCarpet = this.mapCarpetModeInbound(carpet_mode_prop ? carpet_mode_prop.value : null);
+                if (mappedCarpet != null && mappedCarpet !== this._carpetModeState) {
+                    this._carpetModeState = mappedCarpet;
+                    try {
+                        await this.setStoreValue('carpetModeState', mappedCarpet);
+                    } catch (_) {}
+                    await this.updateCapabilityValue('vacuum_xiaomi_carpet_mode_max', mappedCarpet);
+                } else if (mappedCarpet == null) {
+                    await this.updateCapabilityValue('vacuum_xiaomi_carpet_mode_max', this._carpetModeState);
                 }
             }
 
@@ -715,13 +811,15 @@ class XiaomiVacuumMiotDeviceMax extends Device {
     /* Safe totals for all models */
     async customVacuumTotals(totals) {
         try {
+            const timeDiv = this._timeDivisor || 3600;
+            const areaDiv = this._areaDivisor || 100;
             if (this.getSetting('total_work_time') === undefined) {
-                const h = +((totals.clean_time || 0) / 3600).toFixed(3);
+                const h = +((totals.clean_time || 0) / timeDiv).toFixed(3);
                 await this.setSettings({ total_work_time: h });
                 await this.total_work_time_token.setValue(h);
             }
             if (this.getSetting('total_cleared_area') === undefined) {
-                const m2 = +((totals.clean_area || 0) / 100).toFixed(3);
+                const m2 = +((totals.clean_area || 0) / areaDiv).toFixed(3);
                 await this.setSettings({ total_cleared_area: m2 });
                 await this.total_cleared_area_token.setValue(m2);
             }
@@ -833,8 +931,12 @@ class XiaomiVacuumMiotDeviceMax extends Device {
         this.log(`[DIAG] [FINAL] Clean count incremented: ${prev} → ${next}`);
     }
 
-    async _addLiveDelta(deltaAreaM2, deltaHours) {
-        if (deltaAreaM2 <= 0 && deltaHours <= 0) return;
+    async _addLiveDelta(deltaAreaRaw, deltaTimeRaw) {
+        if (deltaAreaRaw <= 0 && deltaTimeRaw <= 0) return;
+        const areaDiv = this._areaDivisor || 100;
+        const timeDiv = this._timeDivisor || 3600;
+        const deltaAreaM2 = deltaAreaRaw / areaDiv;
+        const deltaHours = deltaTimeRaw / timeDiv;
         const prevArea = Number(this.getSetting('total_cleared_area') || 0);
         const prevTime = Number(this.getSetting('total_work_time') || 0);
         const newArea = +(prevArea + deltaAreaM2).toFixed(2);
@@ -842,6 +944,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
         await this.setSettings({ total_cleared_area: newArea, total_work_time: newTime });
         await this.total_cleared_area_token.setValue(newArea);
         await this.total_work_time_token.setValue(newTime);
+        this.log(`[SESSION] deltaArea=${deltaAreaM2.toFixed(2)}m², deltaTime=${deltaHours.toFixed(2)}h`);
     }
 
     async onSettings({ oldSettings, newSettings, changedKeys }) {
@@ -878,6 +981,154 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             .join(', ');
     }
 
+
+    getModelIdentifier() {
+        return this._model || (this.getStoreValue ? this.getStoreValue('model') : undefined);
+    }
+
+    mapMopModeInbound(raw) {
+        if (raw == null) return null;
+        if (this.getModelIdentifier() === 'xiaomi.vacuum.c102gl') {
+            const mapping = ['1', '2', '3', '4'];
+            const idx = Number(raw);
+            return Number.isNaN(idx) ? '1' : (mapping[idx] !== undefined ? mapping[idx] : '1');
+        }
+        return String(raw);
+    }
+
+    mapMopModeOutbound(value) {
+        if (value == null) return null;
+        if (this.getModelIdentifier() === 'xiaomi.vacuum.c102gl') {
+            const mapping = { '1': 0, '2': 1, '3': 2, '4': 3 };
+            const mapped = mapping[String(value)];
+            return mapped !== undefined ? mapped : 0;
+        }
+        const numericValue = Number(value);
+        return Number.isNaN(numericValue) ? null : numericValue;
+    }
+
+    mapCleaningModeInbound(raw) {
+        if (raw == null) return null;
+        if (this.getModelIdentifier() === 'xiaomi.vacuum.c102gl') {
+            const mapping = ['1', '2', '3', '4'];
+            const idx = Number(raw);
+            return Number.isNaN(idx) ? '1' : (mapping[idx] !== undefined ? mapping[idx] : '1');
+        }
+        return String(raw);
+    }
+
+    mapCleaningModeOutbound(value) {
+        if (value == null) return null;
+        if (this.getModelIdentifier() === 'xiaomi.vacuum.c102gl') {
+            const mapping = { '1': 0, '2': 1, '3': 2, '4': 3 };
+            const mapped = mapping[String(value)];
+            return mapped !== undefined ? mapped : 0;
+        }
+        const numericValue = Number(value);
+        return Number.isNaN(numericValue) ? null : numericValue;
+    }
+
+    mapWaterLevelInbound(raw) {
+        if (raw == null) return null;
+        if (this.getModelIdentifier() === 'xiaomi.vacuum.c102gl') {
+            const mapping = ['1', '2', '3'];
+            const idx = Number(raw);
+            return Number.isNaN(idx) ? '1' : (mapping[idx] !== undefined ? mapping[idx] : '1');
+        }
+        return String(raw);
+    }
+
+    mapWaterLevelOutbound(value) {
+        if (value == null) return null;
+        if (this.getModelIdentifier() === 'xiaomi.vacuum.c102gl') {
+            const mapping = { '1': 0, '2': 1, '3': 2 };
+            const mapped = mapping[String(value)];
+            return mapped !== undefined ? mapped : 0;
+        }
+        const numericValue = Number(value);
+        return Number.isNaN(numericValue) ? null : numericValue;
+    }
+
+    mapPathModeInbound(raw) {
+        if (raw == null) return null;
+        if (this.getModelIdentifier() === 'xiaomi.vacuum.c102gl') {
+            const idx = Number(raw);
+            if (Number.isNaN(idx)) return '1';
+            const bounded = Math.max(0, Math.min(2, idx));
+            return String(bounded + 1);
+        }
+        return String(raw);
+    }
+
+    mapPathModeOutbound(value) {
+        if (value == null) return null;
+        if (this.getModelIdentifier() === 'xiaomi.vacuum.c102gl') {
+            const mapping = { '1': 0, '2': 1, '3': 2 };
+            const mapped = mapping[String(value)];
+            return mapped !== undefined ? mapped : 1;
+        }
+        const numericValue = Number(value);
+        return Number.isNaN(numericValue) ? null : numericValue;
+    }
+
+    mapCarpetModeInbound(raw) {
+        if (this.getModelIdentifier() === 'xiaomi.vacuum.c102gl') {
+            if (raw == null) return null;
+            const mode = Number(raw);
+            if (mode === 0) return '2';
+            if (mode === 1) return '0';
+            return null;
+        }
+        if (raw == null) return null;
+        return String(raw);
+    }
+
+    buildCarpetModeSetPayload(value) {
+        const model = this.getModelIdentifier();
+        const desired = String(value);
+        if (model === 'xiaomi.vacuum.c102gl') {
+            const primary = this.deviceProperties.set_properties.carpet_avoidance;
+            if (!primary) return { payload: [], state: this._carpetModeState };
+            const toggle = this.deviceProperties.set_properties.carpet_avoidance_toggle;
+            const payload = [];
+            const pushToggle = (val) => {
+                if (toggle) payload.push({ siid: toggle.siid, piid: toggle.piid, value: val });
+            };
+            switch (desired) {
+                case '0':
+                    payload.push({ siid: primary.siid, piid: primary.piid, value: 1 });
+                    pushToggle(0);
+                    return { payload, state: '0' };
+                case '1':
+                    payload.push({ siid: primary.siid, piid: primary.piid, value: 1 });
+                    pushToggle(1);
+                    return { payload, state: '1' };
+                case '2':
+                    payload.push({ siid: primary.siid, piid: primary.piid, value: 0 });
+                    pushToggle(0);
+                    return { payload, state: '2' };
+                case '3':
+                    payload.push({ siid: primary.siid, piid: primary.piid, value: 1 });
+                    pushToggle(0);
+                    return { payload, state: '3' };
+                default:
+                    return { payload: [], state: this._carpetModeState };
+            }
+        }
+        const primary = this.deviceProperties.set_properties.carpet_avoidance;
+        if (!primary) {
+            return { payload: [], state: desired };
+        }
+        const numericValue = Number(desired);
+        if (Number.isNaN(numericValue)) {
+            return { payload: [], state: this._carpetModeState };
+        }
+        return {
+            payload: [{ siid: primary.siid, piid: primary.piid, value: numericValue }],
+            state: desired
+        };
+    }
+
     async _runOneTimeMiotScan() {
         try {
             if (!this.miio || typeof this.miio.call !== 'function') return;
@@ -903,3 +1154,4 @@ class XiaomiVacuumMiotDeviceMax extends Device {
 }
 
 module.exports = XiaomiVacuumMiotDeviceMax;
+
