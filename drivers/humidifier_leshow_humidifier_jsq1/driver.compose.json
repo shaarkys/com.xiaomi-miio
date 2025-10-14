@@ -26,7 +26,8 @@
     "target_humidity",
     "humidifier_leshow_jsq1_mode",
     "measure_humidity",
-    "measure_waterlevel"
+    "measure_filter_life",
+    "humidifier_water_level_state"
   ],
   "capabilitiesOptions": {
     "target_humidity": {

@@ -70,7 +70,7 @@
         "ru": "Выберите устройство",
         "ko": "디바이스 선택"
       },
-      "filter": "driver_id=mi-airpurifier|airpurifier_zhimi_advanced|airpurifier_zhimi_advanced_miot|airpurifier_zhimi_airpurifier_ma2|airpurifier_dmaker_airfresh_t2017|airfresh_zhimi_airfresh|humidifier_zhimi_humidifier|humidifier_zhimi_humidifier_miot|humidifier_deerma_humidifier_jsq|humidifier_deerma_humidifier_miot|dmaker_fan_1c|fan_zhimi_advanced|zhimi_fan_za5|airfryer_careli_miot|petwaterdispenser_mmgg_miot|pet_waterer_xiaomi|petfeeder_mmgg_miot|humidifier_xiaomi_humidifier|dehumidifier_dmaker_derh_miot"
+      "filter": "driver_id=mi-airpurifier|airpurifier_zhimi_advanced|airpurifier_zhimi_advanced_miot|airpurifier_zhimi_airpurifier_ma2|airpurifier_dmaker_airfresh_t2017|airfresh_zhimi_airfresh|humidifier_zhimi_humidifier|humidifier_zhimi_humidifier_miot|humidifier_deerma_humidifier_jsq|humidifier_deerma_humidifier_miot|dmaker_fan_1c|fan_zhimi_advanced|zhimi_fan_za5|airfryer_careli_miot|petwaterdispenser_mmgg_miot|pet_waterer_xiaomi|petfeeder_mmgg_miot|humidifier_xiaomi_humidifier|dehumidifier_dmaker_derh_miot|humidifier_leshow_humidifier_jsq1"
     }
   ],
   "platforms": [

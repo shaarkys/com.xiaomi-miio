@@ -1,0 +1,26 @@
+{
+  "type": "enum",
+  "title": {
+    "en": "Water level state"
+  },
+  "desc": {
+    "en": "Indicates whether there is enough water in the tank"
+  },
+  "getable": true,
+  "setable": false,
+  "values": [
+    {
+      "id": "sufficient",
+      "title": {
+        "en": "Sufficient"
+      }
+    },
+    {
+      "id": "empty",
+      "title": {
+        "en": "Empty"
+      }
+    }
+  ],
+  "icon": "/assets/icons/water-level.svg"
+}

@@ -17,6 +17,13 @@ const MODE_LABELS = {
   2: 'Strong',
 };
 
+const WATER_STATE_BY_FAULT = {
+  0: 'sufficient',
+  5: 'empty',
+};
+
+const DEFAULT_WATER_STATE = 'sufficient';
+
 const properties = {
   leshow_jsq1: {
     get_properties: [
@@ -25,7 +32,7 @@ const properties = {
       { did: 'mode', siid: 2, piid: 3 }, // Mode
       { did: 'target_humidity', siid: 2, piid: 6 }, // Target humidity
       { did: 'relative_humidity', siid: 3, piid: 1 }, // Measured humidity
-      { did: 'filter_life_level', siid: 8, piid: 1 }, // Filter life level (mapped to water level capability for now)
+      { did: 'filter_life_level', siid: 8, piid: 1 }, // Filter life level
       { did: 'screen_brightness', siid: 8, piid: 6 }, // LED / display brightness
     ],
     set_properties: {
@@ -42,7 +49,7 @@ const properties = {
       { did: 'mode', siid: 2, piid: 3 }, // Mode
       { did: 'target_humidity', siid: 2, piid: 5 }, // Target humidity
       { did: 'relative_humidity', siid: 3, piid: 1 }, // Measured humidity
-      { did: 'filter_life_level', siid: 4, piid: 1 }, // Filter life level (mapped to water level capability for now)
+      { did: 'filter_life_level', siid: 4, piid: 1 }, // Filter life level
       { did: 'screen_brightness', siid: 6, piid: 2 }, // LED / display brightness
     ],
     set_properties: {
@@ -64,6 +71,21 @@ class MiHumidifierLeshowJSQ1Device extends Device {
       this.bootSequence();
 
       this.homey.flow.getDeviceTriggerCard('triggerModeChanged');
+
+      if (this.hasCapability('measure_waterlevel')) {
+        await this.removeCapability('measure_waterlevel').catch((error) => {
+          this.error(`Failed to remove capability measure_waterlevel: ${error.message ?? error}`);
+        });
+      }
+
+      const optionalCapabilities = ['measure_filter_life', 'humidifier_water_level_state'];
+      for (const capability of optionalCapabilities) {
+        if (!this.hasCapability(capability)) {
+          await this.addCapability(capability).catch((error) => {
+            this.error(`Failed to add capability ${capability}: ${error.message ?? error}`);
+          });
+        }
+      }
 
       this.registerCapabilityListener('onoff', (value) => this.handleSetProperty('power', value));
       this.registerCapabilityListener('target_humidity', (value) => this.handleTargetHumidity(value));
@@ -184,10 +206,23 @@ class MiHumidifierLeshowJSQ1Device extends Device {
         await this.updateCapabilityValue('measure_humidity', humidityEntry.value);
       }
 
-      const waterEntry = indexed.filter_life_level;
-      if (this.hasUsableValue(waterEntry) && typeof waterEntry.value === 'number') {
-        const clamped = Math.max(0, Math.min(100, waterEntry.value));
-        await this.updateCapabilityValue('measure_waterlevel', clamped);
+      const filterEntry = indexed.filter_life_level;
+      if (this.hasUsableValue(filterEntry) && typeof filterEntry.value === 'number' && this.hasCapability('measure_filter_life')) {
+        const clamped = Math.max(0, Math.min(100, Number(filterEntry.value)));
+        await this.updateCapabilityValue('measure_filter_life', clamped);
+      }
+
+      const faultEntry = indexed.fault;
+      if (
+        this.hasUsableValue(faultEntry) &&
+        typeof faultEntry.value === 'number' &&
+        this.hasCapability('humidifier_water_level_state')
+      ) {
+        const faultCode = Number(faultEntry.value);
+        const waterState = Object.prototype.hasOwnProperty.call(WATER_STATE_BY_FAULT, faultCode)
+          ? WATER_STATE_BY_FAULT[faultCode]
+          : DEFAULT_WATER_STATE;
+        await this.updateCapabilityValue('humidifier_water_level_state', waterState);
       }
 
       const ledEntry = indexed.screen_brightness;
@@ -199,6 +234,7 @@ class MiHumidifierLeshowJSQ1Device extends Device {
       if (this.hasUsableValue(modeEntry) && typeof modeEntry.value === 'number') {
         await this.handleModeEvent(modeEntry.value);
       }
+
     } catch (error) {
       this.homey.clearInterval(this.pollingInterval);
 
@@ -253,6 +289,7 @@ class MiHumidifierLeshowJSQ1Device extends Device {
       this.error(error);
     }
   }
+
 }
 
 module.exports = MiHumidifierLeshowJSQ1Device;
