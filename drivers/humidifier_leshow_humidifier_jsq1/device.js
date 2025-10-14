@@ -4,145 +4,255 @@ const Homey = require('homey');
 const Device = require('../wifi_device.js');
 const Util = require('../../lib/util.js');
 
-const params = [
-  { siid: 2, piid: 1 }, //status - bool
-  { siid: 2, piid: 2 }, //fault - uint8
-  { siid: 2, piid: 3 }, //mode - uint8
-  { siid: 2, piid: 6 }, //target humidity - uint8
-  { siid: 3, piid: 1 }, //humidity - uint8
-  { siid: 8, piid: 1 }, //water level - uint8
-  { siid: 8, piid: 6 }, //screen brightness - uint8
-];
+const MODEL_MAPPING = {
+  'leshow.humidifier.jsq1': 'leshow_jsq1',
+  'xiaomi.humidifier.3lite': 'xiaomi_3lite',
+};
 
-const modes = {
-  0: "Constant",
-  1: "High",
-  2: "Sleep"
+const FALLBACK_MODEL_KEY = 'leshow_jsq1';
+
+const MODE_LABELS = {
+  0: 'Constant Humidity',
+  1: 'Sleep',
+  2: 'Strong',
+};
+
+const properties = {
+  leshow_jsq1: {
+    get_properties: [
+      { did: 'power', siid: 2, piid: 1 }, // Switch Status
+      { did: 'fault', siid: 2, piid: 2 }, // Device Fault
+      { did: 'mode', siid: 2, piid: 3 }, // Mode
+      { did: 'target_humidity', siid: 2, piid: 6 }, // Target humidity
+      { did: 'relative_humidity', siid: 3, piid: 1 }, // Measured humidity
+      { did: 'filter_life_level', siid: 8, piid: 1 }, // Filter life level (mapped to water level capability for now)
+      { did: 'screen_brightness', siid: 8, piid: 6 }, // LED / display brightness
+    ],
+    set_properties: {
+      power: { siid: 2, piid: 1 },
+      mode: { siid: 2, piid: 3 },
+      target_humidity: { siid: 2, piid: 6 },
+      screen_brightness: { siid: 8, piid: 6 },
+    },
+  },
+  xiaomi_3lite: {
+    get_properties: [
+      { did: 'power', siid: 2, piid: 1 }, // Switch Status
+      { did: 'fault', siid: 2, piid: 2 }, // Device Fault
+      { did: 'mode', siid: 2, piid: 3 }, // Mode
+      { did: 'target_humidity', siid: 2, piid: 5 }, // Target humidity
+      { did: 'relative_humidity', siid: 3, piid: 1 }, // Measured humidity
+      { did: 'filter_life_level', siid: 4, piid: 1 }, // Filter life level (mapped to water level capability for now)
+      { did: 'screen_brightness', siid: 6, piid: 2 }, // LED / display brightness
+    ],
+    set_properties: {
+      power: { siid: 2, piid: 1 },
+      mode: { siid: 2, piid: 3 },
+      target_humidity: { siid: 2, piid: 5 },
+      screen_brightness: { siid: 6, piid: 2 },
+    },
+  },
 };
 
 class MiHumidifierLeshowJSQ1Device extends Device {
-
   async onInit() {
     try {
-      if (!this.util) this.util = new Util({homey: this.homey});
-      
-      // GENERIC DEVICE INIT ACTIONS
+      if (!this.util) this.util = new Util({ homey: this.homey });
+
+      this.deviceProperties = this.resolveDeviceProperties();
+
       this.bootSequence();
-      
-      // FLOW TRIGGER CARDS
+
       this.homey.flow.getDeviceTriggerCard('triggerModeChanged');
 
-      // LISTENERS FOR UPDATING CAPABILITIES
-      this.registerCapabilityListener('onoff', async ( value ) => {
-        try {
-          if (this.miio) {
-            return await this.miio.call("set_properties", [{ siid: 2, piid: 1, value }], { retries: 1 });
-          } else {
-            this.setUnavailable(this.homey.__('unreachable')).catch(error => { this.error(error) });
-            this.createDevice();
-            return Promise.reject('Device unreachable, please try again ...');
-          }
-        } catch (error) {
-          this.error(error);
-          return Promise.reject(error);
-        }
-      });
-
-      this.registerCapabilityListener('target_humidity', async ( value ) => {
-        try {
-          if (this.miio) {
-            const humidity = value * 100;
-            return await this.miio.call("set_properties", [{ siid: 2, piid: 6, humidity }], { retries: 1 });
-          } else {
-            this.setUnavailable(this.homey.__('unreachable')).catch(error => { this.error(error) });
-            this.createDevice();
-            return Promise.reject('Device unreachable, please try again ...');
-          }
-        } catch (error) {
-          this.error(error);
-          return Promise.reject(error);
-        }
-      });
-
-      this.registerCapabilityListener('humidifier_leshow_jsq1_mode', async ( value ) => {
-        try {
-          if (this.miio) {
-            return await this.miio.call("set_properties", [{ siid: 2, piid: 3, value: +value }], { retries: 1 });
-          } else {
-            this.setUnavailable(this.homey.__('unreachable')).catch(error => { this.error(error) });
-            this.createDevice();
-            return Promise.reject('Device unreachable, please try again ...');
-          }
-        } catch (error) {
-          this.error(error);
-          return Promise.reject(error);
-        }
-      });
-
+      this.registerCapabilityListener('onoff', (value) => this.handleSetProperty('power', value));
+      this.registerCapabilityListener('target_humidity', (value) => this.handleTargetHumidity(value));
+      this.registerCapabilityListener('humidifier_leshow_jsq1_mode', (value) =>
+        this.handleSetProperty('mode', Number(value))
+      );
     } catch (error) {
       this.error(error);
     }
   }
 
-  async onSettings({ oldSettings, newSettings, changedKeys }) {
-    if (changedKeys.includes("address") || changedKeys.includes("token") || changedKeys.includes("polling")) {
+  getModelIdentifier() {
+    if (typeof this.getStoreValue === 'function') {
+      const storedModel = this.getStoreValue('model');
+      if (storedModel) return storedModel;
+    }
+    if (typeof this.getData === 'function') {
+      const data = this.getData();
+      if (data && data.model) return data.model;
+    }
+    return 'unknown';
+  }
+
+  resolveDeviceProperties() {
+    const modelKey = MODEL_MAPPING[this.getModelIdentifier()] || FALLBACK_MODEL_KEY;
+    const definition = properties[modelKey] || properties[FALLBACK_MODEL_KEY];
+    if (!definition) {
+      throw new Error(`No property definition found for model key ${modelKey}`);
+    }
+    return definition;
+  }
+
+  async handleSetProperty(propertyKey, value) {
+    try {
+      const definition = this.deviceProperties?.set_properties?.[propertyKey];
+      if (!definition) {
+        return Promise.reject(new Error(`Property ${propertyKey} not supported by current model`));
+      }
+      if (!this.miio) {
+        this.setUnavailable(this.homey.__('unreachable')).catch((err) => this.error(err));
+        this.createDevice();
+        return Promise.reject('Device unreachable, please try again ...');
+      }
+      return await this.miio.call(
+        'set_properties',
+        [{ siid: definition.siid, piid: definition.piid, value }],
+        { retries: 1 }
+      );
+    } catch (error) {
+      this.error(error);
+      return Promise.reject(error);
+    }
+  }
+
+  async handleTargetHumidity(value) {
+    try {
+      const definition = this.deviceProperties?.set_properties?.target_humidity;
+      if (!definition) {
+        return Promise.reject(new Error('Target humidity not supported by current model'));
+      }
+      if (!this.miio) {
+        this.setUnavailable(this.homey.__('unreachable')).catch((err) => this.error(err));
+        this.createDevice();
+        return Promise.reject('Device unreachable, please try again ...');
+      }
+      const humidity = Math.round(Number(value) * 100);
+      return await this.miio.call(
+        'set_properties',
+        [{ siid: definition.siid, piid: definition.piid, value: humidity }],
+        { retries: 1 }
+      );
+    } catch (error) {
+      this.error(error);
+      return Promise.reject(error);
+    }
+  }
+
+  async onSettings({ newSettings, changedKeys }) {
+    if (changedKeys.includes('address') || changedKeys.includes('token') || changedKeys.includes('polling')) {
       this.refreshDevice();
     }
 
-    if (changedKeys.includes("led")) {
-      const led = await this.miio.call("set_properties", [{ siid: 8, piid: 6, value: newSettings.led ? 1 : 0 }], { retries: 1 });
+    if (changedKeys.includes('led')) {
+      const definition = this.deviceProperties?.set_properties?.screen_brightness;
+      if (definition && this.miio) {
+        await this.miio.call(
+          'set_properties',
+          [{ siid: definition.siid, piid: definition.piid, value: newSettings.led ? 1 : 0 }],
+          { retries: 1 }
+        );
+      }
     }
 
-    return Promise.resolve(true);
+    return true;
   }
 
   async retrieveDeviceData() {
     try {
-      const result = await this.miio.call("get_properties", params, { retries: 1 });
-      if (!this.getAvailable()) { await this.setAvailable(); }
+      const result = await this.miio.call('get_properties', this.deviceProperties.get_properties, { retries: 1 });
+      if (!this.getAvailable()) {
+        await this.setAvailable();
+      }
 
-      const deviceStatusResult = result.filter((r) => r.siid == 2 && r.piid == 1)[0];
-      const deviceModeResult = result.filter((r) => r.siid == 2 && r.piid == 3)[0];
-      const target_humidity = result.filter((r) => r.siid == 2 && r.piid == 6)[0];
-      const deviceHumidityResult = result.filter((r) => r.siid == 3 && r.piid == 1)[0];
-      const measure_waterlevel = result.filter((r) => r.siid == 8 && r.piid == 1)[0];
-      const deviceLedResult = result.filter((r) => r.siid == 8 && r.piid == 6)[0];
+      const indexed = this.indexResults(result);
 
-      await this.updateCapabilityValue("onoff", deviceStatusResult.value);
-      await this.updateCapabilityValue("measure_humidity", deviceHumidityResult.value / 100);
-      await this.updateCapabilityValue("target_humidity", target_humidity.value);
-      await this.updateCapabilityValue("measure_waterlevel", measure_waterlevel.value);
-      
-      await this.updateSettingValue("led", !!deviceLedResult.value);
+      const powerEntry = indexed.power;
+      if (this.hasUsableValue(powerEntry)) {
+        await this.updateCapabilityValue('onoff', !!powerEntry.value);
+      }
 
-      /* mode trigger card */
-      this.handleModeEvent(deviceModeResult.value);
+      const targetEntry = indexed.target_humidity;
+      if (this.hasUsableValue(targetEntry) && typeof targetEntry.value === 'number') {
+        await this.updateCapabilityValue('target_humidity', targetEntry.value / 100);
+      }
 
+      const humidityEntry = indexed.relative_humidity;
+      if (this.hasUsableValue(humidityEntry) && typeof humidityEntry.value === 'number') {
+        await this.updateCapabilityValue('measure_humidity', humidityEntry.value);
+      }
+
+      const waterEntry = indexed.filter_life_level;
+      if (this.hasUsableValue(waterEntry) && typeof waterEntry.value === 'number') {
+        const clamped = Math.max(0, Math.min(100, waterEntry.value));
+        await this.updateCapabilityValue('measure_waterlevel', clamped);
+      }
+
+      const ledEntry = indexed.screen_brightness;
+      if (this.hasUsableValue(ledEntry)) {
+        await this.updateSettingValue('led', Boolean(ledEntry.value));
+      }
+
+      const modeEntry = indexed.mode;
+      if (this.hasUsableValue(modeEntry) && typeof modeEntry.value === 'number') {
+        await this.handleModeEvent(modeEntry.value);
+      }
     } catch (error) {
       this.homey.clearInterval(this.pollingInterval);
 
       if (this.getAvailable()) {
-        this.setUnavailable(this.homey.__('device.unreachable') + error.message).catch(error => { this.error(error) });
+        this.setUnavailable(this.homey.__('device.unreachable') + error.message).catch((err) => {
+          this.error(err);
+        });
       }
 
-      this.homey.setTimeout(() => { this.createDevice(); }, 60000);
+      this.homey.setTimeout(() => {
+        this.createDevice();
+      }, 60000);
 
       this.error(error.message);
     }
   }
 
+  indexResults(result) {
+    const map = {};
+    if (!Array.isArray(result)) return map;
+    for (const entry of result) {
+      if (!entry) continue;
+      const key = entry.did || `${entry.siid}/${entry.piid}`;
+      map[key] = entry;
+    }
+    return map;
+  }
+
+  hasUsableValue(entry) {
+    if (!entry) return false;
+    if (typeof entry.code === 'number' && entry.code !== 0) return false;
+    return entry.value !== undefined && entry.value !== null && entry.value !== 'undefined' && entry.value !== 'null';
+  }
+
   async handleModeEvent(mode) {
     try {
-      if (this.getCapabilityValue('humidifier_leshow_jsq1_mode') !== mode.toString()) {
-        const previous_mode = this.getCapabilityValue('humidifier_leshow_jsq1_mode');
-        await this.setCapabilityValue('humidifier_leshow_jsq1_mode', mode.toString());
-        await this.homey.flow.getDeviceTriggerCard('triggerModeChanged').trigger(this, {"new_mode": modes[mode], "previous_mode": modes[+previous_mode] }).catch(error => { this.error(error) });
+      const modeValue = mode.toString();
+      if (this.getCapabilityValue('humidifier_leshow_jsq1_mode') !== modeValue) {
+        const previous = this.getCapabilityValue('humidifier_leshow_jsq1_mode');
+        await this.setCapabilityValue('humidifier_leshow_jsq1_mode', modeValue);
+        const newLabel = MODE_LABELS[mode] || modeValue;
+        const previousLabel =
+          previous !== undefined && previous !== null ? MODE_LABELS[Number(previous)] || previous : undefined;
+        await this.homey.flow
+          .getDeviceTriggerCard('triggerModeChanged')
+          .trigger(this, { new_mode: newLabel, previous_mode: previousLabel })
+          .catch((error) => {
+            this.error(error);
+          });
       }
     } catch (error) {
       this.error(error);
     }
   }
-
 }
 
 module.exports = MiHumidifierLeshowJSQ1Device;
