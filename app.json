@@ -23315,7 +23315,7 @@
         {
           "type": "group",
           "label": {
-            "en": "Telemetry & Probe"
+            "en": "Telemetry"
           },
           "children": [
             {
@@ -23328,17 +23328,6 @@
               "max": 100,
               "step": 1,
               "value": 20
-            },
-            {
-              "id": "iv2001_extended_probe",
-              "type": "checkbox",
-              "label": {
-                "en": "Enable extended MIoT probe (iv2001 only)"
-              },
-              "hint": {
-                "en": "When enabled, the driver will read additional candidate siid/piid pairs to confirm properties at runtime and log successful hits. Use for diagnostics; not required for normal operation."
-              },
-              "value": false
             }
           ]
         }

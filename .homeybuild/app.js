@@ -346,9 +346,17 @@ class XiaomiMiioApp extends Homey.App {
     this.homey.flow.getActionCard('petfeederServeFood')
       .registerRunListener(async (args) => {
         try {
-          return await args.device.miio.call("action", args.device.deviceProperties.set_properties.serve_food, { retries: 1 });
+          const portions = Math.max(1, Math.min(30, Math.round(Number(args.portions) || 0)));
+          if (typeof args.device?.servePortions === 'function') {
+            return await args.device.servePortions(portions);
+          }
+          const legacyAction = args.device?.deviceProperties?.set_properties?.serve_food;
+          if (legacyAction) {
+            return await args.device.miio.call('action', legacyAction, { retries: 1 });
+          }
+          throw new Error('Manual feeding not supported by this device');
         } catch (error) {
-          return Promise.reject(error.message);
+          return Promise.reject(error.message || error);
         }
       });
 
