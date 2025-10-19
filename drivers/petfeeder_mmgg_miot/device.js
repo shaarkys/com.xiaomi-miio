@@ -54,11 +54,24 @@ const IV2001_DEFAULTS = {
     food_out_status: { siid: 2, piid: 11 }, // spec v2: food-out fault flag
     heap_status: { siid: 2, piid: 15 }, // spec v2: heap/accumulation flag
     status_mode: { siid: 2, piid: 32 }, // spec v2: idle/busy state
-    desiccant_level: { siid: 5, piid: 15 }, // observed percent remaining
-    desiccant_time: { siid: 5, piid: 17 } // observed remaining time (hours)
+    target_feeding_measure: { siid: 2, piid: 7 }, // grams configured in device app
+    desiccant_level: { siid: 6, piid: 1 }, // correct MIoT mapping (percent remaining)
+    desiccant_time: { siid: 6, piid: 2 } // correct MIoT mapping (hours remaining)
 };
 
-const MANUAL_FEED_PORTION_GRAMS = 5; // grams per portion according to MIoT spec
+const IV2001_SETTING_PROPS = {
+    child_lock: { siid: 3, piid: 1, type: 'bool' }, // physical-controls-locked
+    auto_screen_off: { siid: 3, piid: 3, type: 'uint8_bool' }, // mode 0/1 (auto screen-off)
+    display_schedule_progress: { siid: 5, piid: 4, type: 'bool' }, // plan-process-display
+    low_food_intake_threshold: { siid: 5, piid: 5, type: 'number', range: [10, 90] }, // grams (10-90)
+    low_food_consumption_notify: { siid: 5, piid: 6, type: 'bool' }, // food-intake-state
+    empty_food_bowl_duration: { siid: 5, piid: 10, type: 'number', range: [6, 24] }, // add-meal-cycle hours
+    dispensing_error_correction: { siid: 5, piid: 12, type: 'uint8_bool' }, // compensate-switch 0/1
+    bowl_spillage_prevention: { siid: 5, piid: 14, type: 'uint8_bool' } // prevent-accumulation 0/1
+};
+
+const MANUAL_FEED_PORTION_GRAMS = 5; // fallback grams per portion when target measure missing
+const DESICCANT_FULL_DAYS = 30; // according to device UI (full pack lifetime)
 const MANUAL_FEED_MAX_PORTIONS = 30;
 
 
@@ -85,6 +98,26 @@ function normalizePercent(v) {
     const n = toNumber(v);
     if (!Number.isFinite(n)) return undefined;
     return Math.max(0, Math.min(100, Math.round(n)));
+}
+
+function clampNumber(value, min, max) {
+    if (!Number.isFinite(value)) return undefined;
+    if (Number.isFinite(min)) value = Math.max(min, value);
+    if (Number.isFinite(max)) value = Math.min(max, value);
+    return value;
+}
+
+function fromMiotBool(v) {
+    if (typeof v === 'boolean') return v;
+    if (typeof v === 'number') return v !== 0;
+    if (typeof v === 'string') return v === 'on' || v === 'true' || v === '1';
+    return undefined;
+}
+
+function toMiotBoolInput(v, format) {
+    const truthy = v === true || v === 'true' || v === 'on' || Number(v) === 1;
+    if (format === 'bool') return truthy;
+    return truthy ? 1 : 0;
 }
 
 function normalizeDesiccantDays(v) {
@@ -147,6 +180,8 @@ class PetFeederMiotDevice extends DeviceBase {
                 lastMode: 'unknown',
                 lastTotalG: undefined,
                 lastTodayG: undefined,
+                targetFeedingMeasure: MANUAL_FEED_PORTION_GRAMS,
+                suppressSettingApply: false,
                 desiccantAlarm: this.getCapabilityValue('alarm_desiccant_low') === true,
                 todayBaseline: { ymd: this._ymdNow(), totalAtMidnight: undefined },
                 lastDesiccantBranchLogAt: 0,
@@ -191,6 +226,20 @@ class PetFeederMiotDevice extends DeviceBase {
                 this._pollMs = pollSeconds * 1000;
                 this._pollTimer = this.homey.setInterval(() => this._pollOnce(), this._pollMs);
             }
+
+            for (const key of changedKeys) {
+                if (!Object.prototype.hasOwnProperty.call(IV2001_SETTING_PROPS, key)) continue;
+                if (this._state?.suppressSettingApply) continue;
+                try {
+                    await this._applySettingToDevice(key, newSettings[key]);
+                } catch (err) {
+                    const message = err?.message || err;
+                    this._warn('[IV2001] setting apply failed', key, message);
+                    if (oldSettings[key] !== undefined) {
+                        await this.updateSettingValue(key, oldSettings[key]);
+                    }
+                }
+            }
         } catch (e) {
             this._warn('[IV2001] onSettings error:', e?.message);
         }
@@ -213,6 +262,12 @@ class PetFeederMiotDevice extends DeviceBase {
             }
 
             // Build default read set
+            const settingsReq = Object.entries(IV2001_SETTING_PROPS).map(([key, def]) => ({
+                did: `setting_${key}`,
+                siid: def.siid,
+                piid: def.piid
+            }));
+
             const req = [
                 ...BASE_GET_PROPS,
                 { did: 'eaten_food_today', siid: IV2001_DEFAULTS.eaten_food_today.siid, piid: IV2001_DEFAULTS.eaten_food_today.piid },
@@ -220,8 +275,10 @@ class PetFeederMiotDevice extends DeviceBase {
                 { did: 'food_out_status', siid: IV2001_DEFAULTS.food_out_status.siid, piid: IV2001_DEFAULTS.food_out_status.piid },
                 { did: 'heap_status', siid: IV2001_DEFAULTS.heap_status.siid, piid: IV2001_DEFAULTS.heap_status.piid },
                 { did: 'status_mode', siid: IV2001_DEFAULTS.status_mode.siid, piid: IV2001_DEFAULTS.status_mode.piid },
+                { did: 'target_feeding_measure', siid: IV2001_DEFAULTS.target_feeding_measure.siid, piid: IV2001_DEFAULTS.target_feeding_measure.piid },
                 { did: 'desiccant_level', siid: IV2001_DEFAULTS.desiccant_level.siid, piid: IV2001_DEFAULTS.desiccant_level.piid },
-                { did: 'desiccant_time', siid: IV2001_DEFAULTS.desiccant_time.siid, piid: IV2001_DEFAULTS.desiccant_time.piid }
+                { did: 'desiccant_time', siid: IV2001_DEFAULTS.desiccant_time.siid, piid: IV2001_DEFAULTS.desiccant_time.piid },
+                ...settingsReq
             ];
 
             const res = await this._safeGetProps(req);
@@ -241,7 +298,9 @@ class PetFeederMiotDevice extends DeviceBase {
             await this._updateEatenFood(got);
             await this._updateFoodOutAndHeap(got);
             await this._updateStatusMode(got);
+            await this._updateTargetFeedingMeasure(got);
             await this._updateDesiccant(got);
+            await this._syncSettingsFromMiot(got);
 
         } catch (e) {
             this._warn('[IV2001] poll error:', e?.message);
@@ -378,6 +437,41 @@ class PetFeederMiotDevice extends DeviceBase {
         }
     }
 
+    async _updateTargetFeedingMeasure(g) {
+        const t = g.target_feeding_measure;
+        if (!t || t.code !== 0) return;
+        const value = toNumber(t.value);
+        if (!Number.isFinite(value) || value <= 0) return;
+        const normalized = Math.max(1, Math.round(value));
+        if (this._state.targetFeedingMeasure !== normalized) {
+            this._state.targetFeedingMeasure = normalized;
+            this.log('[TARGET] feeding measure set to', normalized, 'g');
+        }
+    }
+
+    async _syncSettingsFromMiot(g) {
+        const patch = {};
+        for (const [key, def] of Object.entries(IV2001_SETTING_PROPS)) {
+            const entry = g[`setting_${key}`];
+            if (!entry || entry.code !== 0) continue;
+            const normalized = this._normalizeSettingFromDevice(def, entry.value);
+            if (normalized === undefined) continue;
+            const current = this.getSetting(key);
+            if (current === undefined || current !== normalized) {
+                patch[key] = normalized;
+            }
+        }
+        if (Object.keys(patch).length === 0) return;
+        try {
+            this._state.suppressSettingApply = true;
+            await this.setSettings(patch);
+        } catch (e) {
+            this._warn('[SETTINGS] sync failed', e?.message);
+        } finally {
+            this._state.suppressSettingApply = false;
+        }
+    }
+
     async _updateDesiccant(g) {
         const lvl = g.desiccant_level;
         const tim = g.desiccant_time;
@@ -395,6 +489,13 @@ class PetFeederMiotDevice extends DeviceBase {
                 this._logDesiccantConversion(normalized.branch, tim.value, normalized.days);
             }
         } else if (tim && tim.code === -4001) this._onceWarn('[DESICCANT] time unsupported (-4001)');
+
+        if (typeof pct !== 'number' && typeof days === 'number') {
+            const estimated = clampNumber((days / DESICCANT_FULL_DAYS) * 100, 0, 100);
+            if (Number.isFinite(estimated)) {
+                pct = Math.round(estimated);
+            }
+        }
 
         if (typeof pct === 'number' && this.hasCapability('measure_desiccant')) {
             await this._setCap('measure_desiccant', pct);
@@ -490,7 +591,8 @@ class PetFeederMiotDevice extends DeviceBase {
             }
             const raw = Number(portionCount);
             const count = Number.isFinite(raw) ? Math.max(1, Math.min(MANUAL_FEED_MAX_PORTIONS, Math.round(raw))) : 1;
-            const grams = count * MANUAL_FEED_PORTION_GRAMS;
+            const gramsPerPortion = Number.isFinite(this._state.targetFeedingMeasure) && this._state.targetFeedingMeasure > 0 ? this._state.targetFeedingMeasure : MANUAL_FEED_PORTION_GRAMS;
+            const grams = count * gramsPerPortion;
             // MIoT spec and field reports expect grams on siid:2 / piid:8 for the manual feed action.
             const payload = {
                 siid: 2,
@@ -500,7 +602,7 @@ class PetFeederMiotDevice extends DeviceBase {
                 ]
             };
             const result = await this._callMiio('action', payload, { retries: 1 }, 8000);
-            this.log('[FEED] manual feed', { portions: count, grams });
+            this.log('[FEED] manual feed', { portions: count, grams, grams_per_portion: gramsPerPortion });
             return result;
         } catch (err) {
             const message = err?.message || err;
@@ -605,6 +707,69 @@ class PetFeederMiotDevice extends DeviceBase {
             } catch (e) {
                 this._warn('[INIT] addCapability failed', id, e?.message);
             }
+        }
+    }
+
+    _normalizeSettingFromDevice(def, rawValue) {
+        if (!def) return undefined;
+        if (def.type === 'bool' || def.type === 'uint8_bool') {
+            return fromMiotBool(rawValue);
+        }
+        if (def.type === 'number') {
+            const num = toNumber(rawValue);
+            if (!Number.isFinite(num)) return undefined;
+            const [min, max] = def.range || [];
+            const clamped = clampNumber(num, min, max);
+            if (!Number.isFinite(clamped)) return undefined;
+            return Math.round(clamped);
+        }
+        return undefined;
+    }
+
+    _serializeSettingForDevice(def, value) {
+        if (!def) return undefined;
+        if (def.type === 'bool') {
+            return toMiotBoolInput(value, 'bool');
+        }
+        if (def.type === 'uint8_bool') {
+            return toMiotBoolInput(value, 'uint8');
+        }
+        if (def.type === 'number') {
+            const num = toNumber(value);
+            if (!Number.isFinite(num)) return undefined;
+            const [min, max] = def.range || [];
+            const clamped = clampNumber(num, min, max);
+            if (!Number.isFinite(clamped)) return undefined;
+            return Math.round(clamped);
+        }
+        return undefined;
+    }
+
+    async _applySettingToDevice(key, value) {
+        const def = IV2001_SETTING_PROPS[key];
+        if (!def) return;
+        if (!this.miio) throw new Error('miio not ready');
+
+        const payload = this._serializeSettingForDevice(def, value);
+        if (payload === undefined) throw new Error('invalid setting value');
+
+        try {
+            await this.miio.call(
+                'set_properties',
+                [
+                    {
+                        siid: def.siid,
+                        piid: def.piid,
+                        value: payload
+                    }
+                ],
+                { retries: 1 }
+            );
+            this.log('[SETTINGS] apply', key, '->', payload);
+        } catch (error) {
+            const message = error?.message || error;
+            this._warn('[SETTINGS] apply failed', key, message);
+            throw error;
         }
     }
 }

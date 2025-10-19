@@ -128,6 +128,84 @@
   {
     "type": "group",
     "label": {
+      "en": "Feeder preferences"
+    },
+    "children": [
+      {
+        "id": "child_lock",
+        "type": "checkbox",
+        "value": false,
+        "label": {
+          "en": "Child lock"
+        }
+      },
+      {
+        "id": "auto_screen_off",
+        "type": "checkbox",
+        "value": true,
+        "label": {
+          "en": "Auto screen off"
+        }
+      },
+      {
+        "id": "display_schedule_progress",
+        "type": "checkbox",
+        "value": true,
+        "label": {
+          "en": "Display schedule progress"
+        }
+      },
+      {
+        "id": "low_food_intake_threshold",
+        "type": "number",
+        "label": {
+          "en": "Low food intake threshold (g)"
+        },
+        "min": 10,
+        "max": 90,
+        "step": 1,
+        "value": 30
+      },
+      {
+        "id": "low_food_consumption_notify",
+        "type": "checkbox",
+        "value": true,
+        "label": {
+          "en": "Low food consumption notification"
+        }
+      },
+      {
+        "id": "empty_food_bowl_duration",
+        "type": "number",
+        "label": {
+          "en": "Empty food bowl duration (h)"
+        },
+        "min": 6,
+        "max": 24,
+        "step": 1,
+        "value": 12
+      },
+      {
+        "id": "dispensing_error_correction",
+        "type": "checkbox",
+        "value": true,
+        "label": {
+          "en": "Dispensing error correction"
+        }
+      },
+      {
+        "id": "bowl_spillage_prevention",
+        "type": "checkbox",
+        "value": true,
+        "label": {
+          "en": "Food bowl spillage prevention"
+        }
+      }
+    ]
+  },
+  {
+    "type": "group",
+    "label": {
       "en": "Telemetry"
     },
     "children": [
