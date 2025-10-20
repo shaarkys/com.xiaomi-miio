@@ -3793,7 +3793,7 @@
               "ru": "Выбрать устройство",
               "ko": "장치 선택"
             },
-            "filter": "driver_id=airpurifier_zhimi_advanced_miot|fan_dmaker_advanced|heater_zhimi_heater_miot|humidifier_xiaomi_humidifier|petfeeder_mmgg_miot|petwaterdispenser_mmgg_miot|humidifier_deerma_humidifier_miot|humidifier_zhimi_humidifier_miot"
+            "filter": "driver_id=airpurifier_zhimi_advanced_miot|fan_dmaker_advanced|heater_zhimi_heater_miot|humidifier_xiaomi_humidifier|petwaterdispenser_mmgg_miot|humidifier_deerma_humidifier_miot|humidifier_zhimi_humidifier_miot"
           }
         ],
         "platforms": [
@@ -4137,7 +4137,7 @@
               "ru": "Выберите устройство",
               "ko": "기기 선택"
             },
-            "filter": "driver_id=airpurifier_zhimi_advanced_miot|fan_dmaker_advanced|heater_zhimi_heater_miot|humidifier_xiaomi_humidifier|petfeeder_mmgg_miot|petwaterdispenser_mmgg_miot|humidifier_deerma_humidifier_miot|humidifier_zhimi_humidifier_miot"
+            "filter": "driver_id=airpurifier_zhimi_advanced_miot|fan_dmaker_advanced|heater_zhimi_heater_miot|humidifier_xiaomi_humidifier|petwaterdispenser_mmgg_miot|humidifier_deerma_humidifier_miot|humidifier_zhimi_humidifier_miot"
           }
         ],
         "platforms": [
@@ -8075,6 +8075,46 @@
           "local"
         ],
         "id": "modeZhimiAirfresh"
+      },
+      {
+        "title": {
+          "en": "Set display schedule progress"
+        },
+        "titleFormatted": {
+          "en": "Display progress [[enabled]]"
+        },
+        "args": [
+          {
+            "name": "enabled",
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "true",
+                "label": {
+                  "en": "On"
+                }
+              },
+              {
+                "id": "false",
+                "label": {
+                  "en": "Off"
+                }
+              }
+            ]
+          },
+          {
+            "name": "device",
+            "type": "device",
+            "placeholder": {
+              "en": "Select device"
+            },
+            "filter": "driver_id=petfeeder_mmgg_miot"
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "id": "petfeederDisplaySchedule"
       },
       {
         "title": {
@@ -23140,181 +23180,6 @@
         {
           "type": "group",
           "label": {
-            "en": "User Settings",
-            "nl": "Gebruikersinstellingem",
-            "da": "Brugerindstillinger",
-            "de": "Benutzereinstellungen",
-            "es": "Configuración del usuario",
-            "fr": "Paramètres utilisateur",
-            "it": "Impostazioni utente",
-            "no": "Brukerinnstillinger",
-            "sv": "Användarinställningar",
-            "pl": "Ustawienia użytkownika",
-            "ru": "Настройки пользователя",
-            "ko": "사용자 설정"
-          },
-          "children": [
-            {
-              "id": "led",
-              "type": "checkbox",
-              "value": true,
-              "label": {
-                "en": "LED",
-                "nl": "LED",
-                "da": "LED",
-                "de": "LED",
-                "es": "LED",
-                "fr": "LED",
-                "it": "LED",
-                "no": "LED",
-                "sv": "LED",
-                "pl": "LED",
-                "ru": "Светодиод",
-                "ko": "LED"
-              }
-            },
-            {
-              "id": "buzzer",
-              "type": "checkbox",
-              "value": true,
-              "label": {
-                "en": "Buzzer",
-                "nl": "Buzzer",
-                "da": "Summer",
-                "de": "Summer",
-                "es": "Zumbador",
-                "fr": "Buzzer",
-                "it": "Cicalino",
-                "no": "Summing",
-                "sv": "Summer",
-                "pl": "Buzzer",
-                "ru": "Зуммер",
-                "ko": "부저"
-              }
-            }
-          ]
-        },
-        {
-          "type": "group",
-          "label": {
-            "en": "Device data",
-            "nl": "Apparaat data",
-            "da": "Enhedsdata",
-            "de": "Gerätedaten",
-            "es": "Datos del dispositivo",
-            "fr": "Données de l'appareil",
-            "it": "Dati del dispositivo",
-            "no": "Enhetsdata",
-            "sv": "Enhetsdata",
-            "pl": "Dane urządzenia",
-            "ru": "Данные устройства",
-            "ko": "장치 데이터"
-          },
-          "children": [
-            {
-              "id": "error",
-              "type": "label",
-              "label": {
-                "en": "Error",
-                "nl": "Error",
-                "da": "Fejl",
-                "de": "Fehler",
-                "es": "Error",
-                "fr": "Erreur",
-                "it": "Errore",
-                "no": "Feil",
-                "sv": "Fel",
-                "pl": "Błąd",
-                "ru": "Ошибка",
-                "ko": "오류"
-              },
-              "value": "No error"
-            }
-          ]
-        },
-        {
-          "type": "group",
-          "label": {
-            "en": "Device Settings",
-            "nl": "Apparaat instellingen",
-            "da": "Enhedsindstillinger",
-            "de": "Geräteeinstellungen",
-            "es": "Configuración del dispositivo",
-            "fr": "Paramètres de l'appareil",
-            "it": "Impostazioni del dispositivo",
-            "no": "Enhetsinnstillinger",
-            "sv": "Enhetsinställningar",
-            "pl": "Ustawienia urządzenia",
-            "ru": "Настройки устройства",
-            "ko": "장치 설정"
-          },
-          "children": [
-            {
-              "id": "address",
-              "type": "text",
-              "value": "0.0.0.0",
-              "label": {
-                "en": "IP Address",
-                "nl": "IP adres",
-                "da": "IP-adresse",
-                "de": "IP-Adresse",
-                "es": "Dirección IP",
-                "fr": "Adresse IP",
-                "it": "Indirizzo IP",
-                "no": "IP-adresse",
-                "sv": "IP-adress",
-                "pl": "Adres IP",
-                "ru": "IP-адрес",
-                "ko": "IP 주소"
-              }
-            },
-            {
-              "id": "token",
-              "type": "text",
-              "value": "",
-              "label": {
-                "en": "Mi Device Token",
-                "nl": "Mi Apparaat Token",
-                "da": "Mi Enheds Token",
-                "de": "Mi Gerätetoken",
-                "es": "Token del Dispositivo Mi",
-                "fr": "Jeton de l'Appareil Mi",
-                "it": "Token Dispositivo Mi",
-                "no": "Mi Enhet Token",
-                "sv": "Mi Enhetstoken",
-                "pl": "Token Urządzenia Mi",
-                "ru": "Токен Устройства Mi",
-                "ko": "Mi 기기 토큰"
-              }
-            },
-            {
-              "id": "polling",
-              "type": "number",
-              "value": 60,
-              "attr": {
-                "min": 5,
-                "max": 3600
-              },
-              "label": {
-                "en": "Polling Frequency",
-                "nl": "Polling frequentie",
-                "da": "Polling Frekvens",
-                "de": "Abfragefrequenz",
-                "es": "Frecuencia de sondeo",
-                "fr": "Fréquence de sondage",
-                "it": "Frequenza di polling",
-                "no": "Polling Frekvens",
-                "sv": "Pollingfrekvens",
-                "pl": "Częstotliwość odpytywania",
-                "ru": "Частота опроса",
-                "ko": "폴링 빈도"
-              }
-            }
-          ]
-        },
-        {
-          "type": "group",
-          "label": {
             "en": "Feeder preferences"
           },
           "children": [
@@ -23386,6 +23251,91 @@
               "value": true,
               "label": {
                 "en": "Food bowl spillage prevention"
+              }
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Device data"
+          },
+          "children": [
+            {
+              "id": "error",
+              "type": "label",
+              "label": {
+                "en": "Error"
+              },
+              "value": "No error"
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Device settings"
+          },
+          "children": [
+            {
+              "id": "address",
+              "type": "text",
+              "value": "0.0.0.0",
+              "label": {
+                "en": "IP Address",
+                "nl": "IP adres",
+                "da": "IP-adresse",
+                "de": "IP-Adresse",
+                "es": "Dirección IP",
+                "fr": "Adresse IP",
+                "it": "Indirizzo IP",
+                "no": "IP-adresse",
+                "sv": "IP-adress",
+                "pl": "Adres IP",
+                "ru": "IP-адрес",
+                "ko": "IP 주소"
+              }
+            },
+            {
+              "id": "token",
+              "type": "text",
+              "value": "",
+              "label": {
+                "en": "Mi Device Token",
+                "nl": "Mi Apparaat Token",
+                "da": "Mi Enheds Token",
+                "de": "Mi Gerätetoken",
+                "es": "Token del Dispositivo Mi",
+                "fr": "Jeton de l'Appareil Mi",
+                "it": "Token Dispositivo Mi",
+                "no": "Mi Enhet Token",
+                "sv": "Mi Enhetstoken",
+                "pl": "Token Urządzenia Mi",
+                "ru": "Токен Устройства Mi",
+                "ko": "Mi 기기 토큰"
+              }
+            },
+            {
+              "id": "polling",
+              "type": "number",
+              "value": 60,
+              "attr": {
+                "min": 5,
+                "max": 3600
+              },
+              "label": {
+                "en": "Polling Frequency",
+                "nl": "Polling frequentie",
+                "da": "Polling Frekvens",
+                "de": "Abfragefrequenz",
+                "es": "Frecuencia de sondeo",
+                "fr": "Fréquence de sondage",
+                "it": "Frequenza di polling",
+                "no": "Polling Frekvens",
+                "sv": "Pollingfrekvens",
+                "pl": "Częstotliwość odpytywania",
+                "ru": "Частота опроса",
+                "ko": "폴링 빈도"
               }
             }
           ]

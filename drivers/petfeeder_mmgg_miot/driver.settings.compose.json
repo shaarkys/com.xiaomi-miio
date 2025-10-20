@@ -2,132 +2,6 @@
   {
     "type": "group",
     "label": {
-      "en": "User Settings",
-      "nl": "Gebruikersinstellingem",
-      "da": "Brugerindstillinger",
-      "de": "Benutzereinstellungen",
-      "es": "Configuración del usuario",
-      "fr": "Paramètres utilisateur",
-      "it": "Impostazioni utente",
-      "no": "Brukerinnstillinger",
-      "sv": "Användarinställningar",
-      "pl": "Ustawienia użytkownika",
-      "ru": "Настройки пользователя",
-      "ko": "사용자 설정"
-    },
-    "children": [
-      {
-        "id": "led",
-        "type": "checkbox",
-        "value": true,
-        "label": {
-          "en": "LED",
-          "nl": "LED",
-          "da": "LED",
-          "de": "LED",
-          "es": "LED",
-          "fr": "LED",
-          "it": "LED",
-          "no": "LED",
-          "sv": "LED",
-          "pl": "LED",
-          "ru": "Светодиод",
-          "ko": "LED"
-        }
-      },
-      {
-        "id": "buzzer",
-        "type": "checkbox",
-        "value": true,
-        "label": {
-          "en": "Buzzer",
-          "nl": "Buzzer",
-          "da": "Summer",
-          "de": "Summer",
-          "es": "Zumbador",
-          "fr": "Buzzer",
-          "it": "Cicalino",
-          "no": "Summing",
-          "sv": "Summer",
-          "pl": "Buzzer",
-          "ru": "Зуммер",
-          "ko": "부저"
-        }
-      }
-    ]
-  },
-  {
-    "type": "group",
-    "label": {
-      "en": "Device data",
-      "nl": "Apparaat data",
-      "da": "Enhedsdata",
-      "de": "Gerätedaten",
-      "es": "Datos del dispositivo",
-      "fr": "Données de l'appareil",
-      "it": "Dati del dispositivo",
-      "no": "Enhetsdata",
-      "sv": "Enhetsdata",
-      "pl": "Dane urządzenia",
-      "ru": "Данные устройства",
-      "ko": "장치 데이터"
-    },
-    "children": [
-      {
-        "id": "error",
-        "type": "label",
-        "label": {
-          "en": "Error",
-          "nl": "Error",
-          "da": "Fejl",
-          "de": "Fehler",
-          "es": "Error",
-          "fr": "Erreur",
-          "it": "Errore",
-          "no": "Feil",
-          "sv": "Fel",
-          "pl": "Błąd",
-          "ru": "Ошибка",
-          "ko": "오류"
-        },
-        "value": "No error"
-      }
-    ]
-  },
-  {
-    "type": "group",
-    "label": {
-      "en": "Device Settings",
-      "nl": "Apparaat instellingen",
-      "da": "Enhedsindstillinger",
-      "de": "Geräteeinstellungen",
-      "es": "Configuración del dispositivo",
-      "fr": "Paramètres de l'appareil",
-      "it": "Impostazioni del dispositivo",
-      "no": "Enhetsinnstillinger",
-      "sv": "Enhetsinställningar",
-      "pl": "Ustawienia urządzenia",
-      "ru": "Настройки устройства",
-      "ko": "장치 설정"
-    },
-    "children": [
-      {
-        "id": "address",
-        "$extends": "address"
-      },
-      {
-        "id": "token",
-        "$extends": "token"
-      },
-      {
-        "id": "polling",
-        "$extends": "polling"
-      }
-    ]
-  },
-  {
-    "type": "group",
-    "label": {
       "en": "Feeder preferences"
     },
     "children": [
@@ -200,6 +74,42 @@
         "label": {
           "en": "Food bowl spillage prevention"
         }
+      }
+    ]
+  },
+  {
+    "type": "group",
+    "label": {
+      "en": "Device data"
+    },
+    "children": [
+      {
+        "id": "error",
+        "type": "label",
+        "label": {
+          "en": "Error"
+        },
+        "value": "No error"
+      }
+    ]
+  },
+  {
+    "type": "group",
+    "label": {
+      "en": "Device settings"
+    },
+    "children": [
+      {
+        "id": "address",
+        "$extends": "address"
+      },
+      {
+        "id": "token",
+        "$extends": "token"
+      },
+      {
+        "id": "polling",
+        "$extends": "polling"
       }
     ]
   },

@@ -1,0 +1,39 @@
+{
+  "title": {
+    "en": "Set display schedule progress"
+  },
+  "titleFormatted": {
+    "en": "Display progress [[enabled]]"
+  },
+  "args": [
+    {
+      "name": "enabled",
+      "type": "dropdown",
+      "values": [
+        {
+          "id": "true",
+          "label": {
+            "en": "On"
+          }
+        },
+        {
+          "id": "false",
+          "label": {
+            "en": "Off"
+          }
+        }
+      ]
+    },
+    {
+      "name": "device",
+      "type": "device",
+      "placeholder": {
+        "en": "Select device"
+      },
+      "filter": "driver_id=petfeeder_mmgg_miot"
+    }
+  ],
+  "platforms": [
+    "local"
+  ]
+}

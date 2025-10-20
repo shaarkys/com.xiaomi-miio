@@ -99,7 +99,7 @@
         "ru": "Выбрать устройство",
         "ko": "장치 선택"
       },
-      "filter": "driver_id=airpurifier_zhimi_advanced_miot|fan_dmaker_advanced|heater_zhimi_heater_miot|humidifier_xiaomi_humidifier|petfeeder_mmgg_miot|petwaterdispenser_mmgg_miot|humidifier_deerma_humidifier_miot|humidifier_zhimi_humidifier_miot"
+      "filter": "driver_id=airpurifier_zhimi_advanced_miot|fan_dmaker_advanced|heater_zhimi_heater_miot|humidifier_xiaomi_humidifier|petwaterdispenser_mmgg_miot|humidifier_deerma_humidifier_miot|humidifier_zhimi_humidifier_miot"
     }
   ],
   "platforms": [

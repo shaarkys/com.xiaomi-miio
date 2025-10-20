@@ -346,7 +346,8 @@ class XiaomiMiioApp extends Homey.App {
     this.homey.flow.getActionCard('petfeederServeFood')
       .registerRunListener(async (args) => {
         try {
-          const portions = Math.max(1, Math.min(30, Math.round(Number(args.portions) || 0)));
+          const servingsArg = args.servings ?? args.portions;
+          const portions = Math.max(1, Math.min(30, Math.round(Number(servingsArg) || 0)));
           if (typeof args.device?.servePortions === 'function') {
             return await args.device.servePortions(portions);
           }
@@ -355,6 +356,24 @@ class XiaomiMiioApp extends Homey.App {
             return await args.device.miio.call('action', legacyAction, { retries: 1 });
           }
           throw new Error('Manual feeding not supported by this device');
+        } catch (error) {
+          return Promise.reject(error.message || error);
+        }
+      });
+
+    this.homey.flow.getActionCard('petfeederDisplaySchedule')
+      .registerRunListener(async (args) => {
+        try {
+          if (typeof args.device?.setDisplaySchedule !== 'function') {
+            throw new Error('Display control not supported by this device');
+          }
+          const enabled =
+            args.enabled === true ||
+            args.enabled === 'true' ||
+            args.enabled === 1 ||
+            args.enabled === '1';
+          await args.device.setDisplaySchedule(enabled);
+          return true;
         } catch (error) {
           return Promise.reject(error.message || error);
         }
