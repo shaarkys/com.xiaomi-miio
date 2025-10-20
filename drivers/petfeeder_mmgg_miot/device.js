@@ -30,7 +30,7 @@ const MODEL_TO_PRESET = {
     'mmgg.feeder.inland': 'default',
     'mmgg.feeder.spec': 'default',
     'xiaomi.feeder.pi2001': 'pi2001',
-    'xiaomi.feeder.iv2001': 'iv2001'
+    'xiaomi.feeder.iv2001': 'iv2001' // https://github.com/al-one/hass-xiaomi-miot/issues/2415#issuecomment-2727063411
 };
 
 function resolvePresetId(model) {
@@ -49,14 +49,16 @@ const BASE_GET_PROPS = [
 ];
 
 const IV2001_DEFAULTS = {
-    eaten_food_today: { siid: 2, piid: 18 }, // spec v2: today grams
-    eaten_food_total: { siid: 2, piid: 20 }, // spec v2: total grams
+    eaten_food_today: { siid: 2, piid: 18 }, // daily eaten grams
+    eaten_food_total_raw: { siid: 2, piid: 20 }, // lifetime eaten grams (if reported)
     food_out_status: { siid: 2, piid: 11 }, // spec v2: food-out fault flag
     heap_status: { siid: 2, piid: 15 }, // spec v2: heap/accumulation flag
     status_mode: { siid: 2, piid: 32 }, // spec v2: idle/busy state
     target_feeding_measure: { siid: 2, piid: 7 }, // grams configured in device app
     desiccant_level: { siid: 6, piid: 1 }, // correct MIoT mapping (percent remaining)
-    desiccant_time: { siid: 6, piid: 2 } // correct MIoT mapping (hours remaining)
+    desiccant_time: { siid: 6, piid: 2 }, // correct MIoT mapping (days remaining, some firmware returns hours)
+    schedule_progress: { siid: 5, piid: 15 }, // feeding schedule progress (%)
+    refill_reminder: { siid: 5, piid: 16 } // optional: refill reminder flag / counter
 };
 
 const IV2001_SETTING_PROPS = {
@@ -73,6 +75,10 @@ const IV2001_SETTING_PROPS = {
 const MANUAL_FEED_PORTION_GRAMS = 5; // fallback grams per portion when target measure missing
 const DESICCANT_FULL_DAYS = 30; // according to device UI (full pack lifetime)
 const MANUAL_FEED_MAX_PORTIONS = 30;
+const STORE_KEYS = {
+    eatenTotal: 'iv2001_eaten_food_total',
+    todaySnapshot: 'iv2001_today_snapshot'
+};
 
 
 // Human-readable mode mapping (conservative)
@@ -175,17 +181,30 @@ class PetFeederMiotDevice extends DeviceBase {
             };
 
             // State
+            const ymdNow = this._ymdNow();
+            const storedTotal = toNumber(this.getStoreValue(STORE_KEYS.eatenTotal));
+            const storedSnapshotRaw = this.getStoreValue(STORE_KEYS.todaySnapshot);
+            const storedSnapshot =
+                storedSnapshotRaw && typeof storedSnapshotRaw === 'object'
+                    ? {
+                          ymd: typeof storedSnapshotRaw.ymd === 'string' ? storedSnapshotRaw.ymd : ymdNow,
+                          value: toNumber(storedSnapshotRaw.value)
+                      }
+                    : { ymd: ymdNow, value: undefined };
+
             this._state = {
                 once: new Set(),
                 lastMode: 'unknown',
-                lastTotalG: undefined,
-                lastTodayG: undefined,
                 targetFeedingMeasure: MANUAL_FEED_PORTION_GRAMS,
                 suppressSettingApply: false,
                 desiccantAlarm: this.getCapabilityValue('alarm_desiccant_low') === true,
-                todayBaseline: { ymd: this._ymdNow(), totalAtMidnight: undefined },
+                todayTracker: storedSnapshot,
+                cumulativeTotal: Number.isFinite(storedTotal) ? storedTotal : 0,
                 lastDesiccantBranchLogAt: 0,
-                lastDesiccantBranchLogged: undefined
+                lastDesiccantBranchLogged: undefined,
+                lastDesiccantPct: undefined,
+                lastDesiccantDays: undefined,
+                lastTimeline: { excerpt: undefined, at: 0 }
             };
 
             // Read-only guard (prevents “Missing Capability Listener” warnings)
@@ -271,13 +290,15 @@ class PetFeederMiotDevice extends DeviceBase {
             const req = [
                 ...BASE_GET_PROPS,
                 { did: 'eaten_food_today', siid: IV2001_DEFAULTS.eaten_food_today.siid, piid: IV2001_DEFAULTS.eaten_food_today.piid },
-                { did: 'eaten_food_total', siid: IV2001_DEFAULTS.eaten_food_total.siid, piid: IV2001_DEFAULTS.eaten_food_total.piid },
+                { did: 'eaten_food_total_raw', siid: IV2001_DEFAULTS.eaten_food_total_raw.siid, piid: IV2001_DEFAULTS.eaten_food_total_raw.piid },
                 { did: 'food_out_status', siid: IV2001_DEFAULTS.food_out_status.siid, piid: IV2001_DEFAULTS.food_out_status.piid },
                 { did: 'heap_status', siid: IV2001_DEFAULTS.heap_status.siid, piid: IV2001_DEFAULTS.heap_status.piid },
                 { did: 'status_mode', siid: IV2001_DEFAULTS.status_mode.siid, piid: IV2001_DEFAULTS.status_mode.piid },
                 { did: 'target_feeding_measure', siid: IV2001_DEFAULTS.target_feeding_measure.siid, piid: IV2001_DEFAULTS.target_feeding_measure.piid },
                 { did: 'desiccant_level', siid: IV2001_DEFAULTS.desiccant_level.siid, piid: IV2001_DEFAULTS.desiccant_level.piid },
                 { did: 'desiccant_time', siid: IV2001_DEFAULTS.desiccant_time.siid, piid: IV2001_DEFAULTS.desiccant_time.piid },
+                { did: 'schedule_progress', siid: IV2001_DEFAULTS.schedule_progress.siid, piid: IV2001_DEFAULTS.schedule_progress.piid },
+                { did: 'refill_reminder', siid: IV2001_DEFAULTS.refill_reminder.siid, piid: IV2001_DEFAULTS.refill_reminder.piid },
                 ...settingsReq
             ];
 
@@ -342,58 +363,97 @@ class PetFeederMiotDevice extends DeviceBase {
     }
 
     async _updateEatenFood(g) {
-        const today = g.eaten_food_today;
-        const total = g.eaten_food_total;
+        const todayProp = g.eaten_food_today;
+        const totalProp = g.eaten_food_total_raw;
+        const scheduleProp = g.schedule_progress;
 
-        let todayG, totalG;
+        let todayG;
+        if (todayProp && todayProp.code === 0) todayG = toNumber(todayProp.value);
+        else if (todayProp && todayProp.code === -4001) this._onceWarn('[EATEN] today unsupported (-4001)');
+
+        if (scheduleProp && scheduleProp.code === 0) {
+            const schedule = toNumber(scheduleProp.value);
+            if (Number.isFinite(schedule)) this._state.scheduleProgress = schedule;
+        }
+
         const ymdNow = this._ymdNow();
+        let tracker = this._state.todayTracker || { ymd: ymdNow, value: undefined };
+        let deltaFromToday = 0;
 
-        if (total && total.code === 0) totalG = toNumber(total.value);
-        else if (total && total.code === -4001) this._onceWarn('[EATEN] total unsupported (-4001)');
-
-        if (today && today.code === 0) todayG = toNumber(today.value);
-        else if (today && today.code === -4001) this._onceWarn('[EATEN] today unsupported (-4001)');
-
-        // Derive "today" from total delta when needed
-        if (todayG === undefined && typeof totalG === 'number') {
-            if (this._state.todayBaseline.ymd !== ymdNow) {
-                this._state.todayBaseline.ymd = ymdNow;
-                this._state.todayBaseline.totalAtMidnight = totalG;
-                this.log('[EATEN] baseline set totalAtMidnight =', totalG);
+        if (typeof todayG === 'number') {
+            if (tracker.ymd !== ymdNow) {
+                tracker = { ymd: ymdNow, value: todayG };
+            } else if (typeof tracker.value === 'number') {
+                if (todayG >= tracker.value) {
+                    deltaFromToday = todayG - tracker.value;
+                } else {
+                    // counter reset (new day or manual reset)
+                    deltaFromToday = 0;
+                }
+                tracker.value = todayG;
+            } else {
+                tracker.value = todayG;
             }
-            if (typeof this._state.todayBaseline.totalAtMidnight === 'number') {
-                todayG = Math.max(0, Math.round(totalG - this._state.todayBaseline.totalAtMidnight));
+        } else {
+            if (tracker.ymd !== ymdNow) tracker = { ymd: ymdNow, value: undefined };
+        }
+
+        this._state.todayTracker = tracker;
+        try {
+            await this.setStoreValue(STORE_KEYS.todaySnapshot, tracker);
+        } catch (_) {}
+
+        const prevStoredTotal = Number.isFinite(this._state.cumulativeTotal) ? this._state.cumulativeTotal : undefined;
+        let total = prevStoredTotal ?? 0;
+        let deltaFromTotal = 0;
+
+        if (totalProp) {
+            if (totalProp.code === 0) {
+                let deviceTotal = toNumber(totalProp.value);
+                if (Number.isFinite(deviceTotal)) {
+                    deviceTotal = Math.max(0, Math.round(deviceTotal));
+                    if (typeof prevStoredTotal === 'number') {
+                        if (deviceTotal >= prevStoredTotal) deltaFromTotal = deviceTotal - prevStoredTotal;
+                        else deltaFromTotal = 0; // counter wrap/reset
+                    }
+                    total = deviceTotal;
+                    this._state.cumulativeTotal = deviceTotal;
+                    try {
+                        await this.setStoreValue(STORE_KEYS.eatenTotal, deviceTotal);
+                    } catch (_) {}
+                }
+            } else if (totalProp.code === -4001) {
+                this._onceWarn('[EATEN] total unsupported (-4001)');
             }
         }
 
-        const prevTotal = this._state.lastTotalG;
-        const wrapDetected =
-            this._state.todayBaseline.ymd === ymdNow &&
-            typeof prevTotal === 'number' &&
-            typeof totalG === 'number' &&
-            totalG < prevTotal;
-        if (wrapDetected && typeof totalG === 'number') {
-            this._state.todayBaseline = { ymd: ymdNow, totalAtMidnight: totalG };
-            this._state.lastTodayG = typeof todayG === 'number' ? todayG : undefined;
-            this.log('[EATEN] total wrap detected, baseline reset at', totalG);
+        if (!Number.isFinite(this._state.cumulativeTotal)) {
+            this._state.cumulativeTotal = total;
         }
 
-        if (this.hasCapability('petfeeder_eaten_food_total') && typeof totalG === 'number') {
-            await this._setCap('petfeeder_eaten_food_total', totalG);
-            this._state.lastTotalG = totalG;
-            if (!wrapDetected && typeof prevTotal === 'number' && prevTotal !== totalG) {
-                const delta = totalG - prevTotal;
-                await this._triggerEatenChanged(todayG, totalG, delta);
-            }
+        if ((totalProp?.code ?? -1) !== 0 && deltaFromToday > 0) {
+            total = (Number.isFinite(prevStoredTotal) ? prevStoredTotal : 0) + deltaFromToday;
+            this._state.cumulativeTotal = total;
+            try {
+                await this.setStoreValue(STORE_KEYS.eatenTotal, total);
+            } catch (_) {}
         }
+
+        const delta = deltaFromTotal > 0 ? deltaFromTotal : deltaFromToday;
 
         if (this.hasCapability('petfeeder_eaten_food_today') && typeof todayG === 'number') {
-            const prev = this._state.lastTodayG;
             await this._setCap('petfeeder_eaten_food_today', todayG);
-            this._state.lastTodayG = todayG;
-            if (!wrapDetected && typeof prev === 'number' && prev !== todayG && typeof this._state.lastTotalG !== 'number') {
-                await this._triggerEatenChanged(todayG, this._state.lastTotalG, todayG - prev);
-            }
+        }
+        if (this.hasCapability('petfeeder_eaten_food_total')) {
+            await this._setCap('petfeeder_eaten_food_total', total);
+        }
+
+        if (delta > 0) {
+            await this._triggerEatenChanged(
+                typeof todayG === 'number' ? todayG : tracker.value ?? 0,
+                total,
+                delta
+            );
         }
     }
 
@@ -431,6 +491,7 @@ class PetFeederMiotDevice extends DeviceBase {
                 await this._flow.feederStatusChanged?.trigger(this, { new_status: text, previous_status: prev || 'unknown' }, {});
                 this.log('[MODE] change:', prev, '->', text);
                 this._state.lastMode = text;
+                await this._timeline(`Feeder status -> ${text}`);
             }
         } else if (m && m.code === -4001) {
             this._onceWarn('[MODE] unsupported (-4001)');
@@ -483,10 +544,22 @@ class PetFeederMiotDevice extends DeviceBase {
         } else if (lvl && lvl.code === -4001) this._onceWarn('[DESICCANT] level unsupported (-4001)');
 
         if (tim && tim.code === 0) {
-            const normalized = normalizeDesiccantDays(tim.value);
-            if (normalized) {
-                days = normalized.days;
-                this._logDesiccantConversion(normalized.branch, tim.value, normalized.days);
+            const raw = toNumber(tim.value);
+            if (Number.isFinite(raw)) {
+                const normalized = normalizeDesiccantDays(raw);
+                if (normalized) {
+                    let computedDays = normalized.days;
+                    if (normalized.branch === 'hours' && computedDays > DESICCANT_FULL_DAYS * 2) {
+                        computedDays = Math.round(computedDays / 10);
+                    } else if (normalized.branch === 'seconds' && computedDays > DESICCANT_FULL_DAYS * 2) {
+                        computedDays = Math.round(computedDays / (24 * 10));
+                    }
+                    computedDays = clampNumber(computedDays, 0, 3650);
+                    if (Number.isFinite(computedDays)) {
+                        days = computedDays;
+                        this._logDesiccantConversion(normalized.branch, raw, days);
+                    }
+                }
             }
         } else if (tim && tim.code === -4001) this._onceWarn('[DESICCANT] time unsupported (-4001)');
 
@@ -496,12 +569,20 @@ class PetFeederMiotDevice extends DeviceBase {
                 pct = Math.round(estimated);
             }
         }
+        if (typeof days !== 'number' && typeof pct === 'number') {
+            const estimatedDays = clampNumber((pct / 100) * DESICCANT_FULL_DAYS, 0, DESICCANT_FULL_DAYS);
+            if (Number.isFinite(estimatedDays)) {
+                days = Math.round(estimatedDays);
+            }
+        }
 
         if (typeof pct === 'number' && this.hasCapability('measure_desiccant')) {
             await this._setCap('measure_desiccant', pct);
+            this._state.lastDesiccantPct = pct;
         }
         if (typeof days === 'number' && this.hasCapability('measure_desiccant_time')) {
             await this._setCap('measure_desiccant_time', days);
+            this._state.lastDesiccantDays = days;
         }
 
         if (this.hasCapability('alarm_desiccant_low') && typeof pct === 'number') {
@@ -514,8 +595,10 @@ class PetFeederMiotDevice extends DeviceBase {
                 if (alarm) {
                     await this._flow.desiccantLow?.trigger(this, { level_percent: pct }, {});
                     this.log('[DESICCANT] alarm ON at', pct, '% (<', thr, ')');
+                    await this._timeline(`Desiccant low (${pct}%)`);
                 } else {
                     this.log('[DESICCANT] alarm OFF at', pct, '% (>=', thr, ')');
+                    await this._timeline(`Desiccant recovered (${pct}%)`);
                 }
             }
         }
@@ -584,6 +667,18 @@ class PetFeederMiotDevice extends DeviceBase {
         }
     }
 
+    async setDisplaySchedule(enabled) {
+        const bool = enabled === true || enabled === 'true' || enabled === 1 || enabled === '1';
+        await this._applySettingToDevice('display_schedule_progress', bool);
+        try {
+            this._state.suppressSettingApply = true;
+            await this.updateSettingValue('display_schedule_progress', bool);
+        } finally {
+            this._state.suppressSettingApply = false;
+        }
+        return true;
+    }
+
     async servePortions(portionCount) {
         try {
             if (!this.miio) {
@@ -593,16 +688,14 @@ class PetFeederMiotDevice extends DeviceBase {
             const count = Number.isFinite(raw) ? Math.max(1, Math.min(MANUAL_FEED_MAX_PORTIONS, Math.round(raw))) : 1;
             const gramsPerPortion = Number.isFinite(this._state.targetFeedingMeasure) && this._state.targetFeedingMeasure > 0 ? this._state.targetFeedingMeasure : MANUAL_FEED_PORTION_GRAMS;
             const grams = count * gramsPerPortion;
-            // MIoT spec and field reports expect grams on siid:2 / piid:8 for the manual feed action.
-            const payload = {
-                siid: 2,
-                aiid: 1,
-                in: [
-                    { siid: 2, piid: 8, value: grams }
-                ]
-            };
-            const result = await this._callMiio('action', payload, { retries: 1 }, 8000);
+            const propertyPayload = [
+                { siid: 2, piid: 8, value: grams }
+            ];
+            await this._callMiio('set_properties', propertyPayload, { retries: 1 }, 8000);
+            const actionPayload = { siid: 2, aiid: 1, in: [] };
+            const result = await this._callMiio('action', actionPayload, { retries: 1 }, 12000);
             this.log('[FEED] manual feed', { portions: count, grams, grams_per_portion: gramsPerPortion });
+            await this._timeline(`Manual feed: ${count}x (${grams} g)`);
             return result;
         } catch (err) {
             const message = err?.message || err;
@@ -611,7 +704,7 @@ class PetFeederMiotDevice extends DeviceBase {
         }
     }
 
-    async _callMiio(method, params, options, timeoutMs = 5000) {
+    async _callMiio(method, params, options, timeoutMs = 8000) {
         const op = (async () => {
             return await this.miio.call(method, params, options || {});
         })();
@@ -654,6 +747,19 @@ class PetFeederMiotDevice extends DeviceBase {
         }
     }
 
+    async _timeline(excerpt, data) {
+        try {
+            if (!excerpt || !this.homey?.notifications?.createNotification) return;
+            const now = Date.now();
+            const last = this._state.lastTimeline || {};
+            if (last.excerpt === excerpt && now - (last.at || 0) < 60 * 1000) return;
+            await this.homey.notifications.createNotification({ excerpt, data });
+            this._state.lastTimeline = { excerpt, at: now };
+        } catch (e) {
+            this._warn('[TIMELINE] notification failed', e?.message);
+        }
+    }
+
     async _triggerEatenChanged(todayG, totalG, deltaG) {
         try {
             await this._flow.eatenFoodChanged?.trigger(
@@ -666,6 +772,9 @@ class PetFeederMiotDevice extends DeviceBase {
                 {}
             );
             this.log('[EATEN] trigger:', { today_g: todayG, total_g: totalG, delta_g: deltaG });
+            if (typeof deltaG === 'number' && deltaG > 0) {
+                await this._timeline(`Pet ate ${deltaG} g (today ${todayG} g)`);
+            }
         } catch (e) {
             this._warn('[EATEN] trigger error:', e?.message);
         }
