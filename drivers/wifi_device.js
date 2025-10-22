@@ -46,6 +46,7 @@ class MiWifiDeviceDevice extends Homey.Device {
                 } catch (e) {
                     /* ignore double-close */
                 }
+                this.miio = null;
             }
         } catch (error) {
             this.error(error);
@@ -63,6 +64,7 @@ class MiWifiDeviceDevice extends Homey.Device {
                 } catch (e) {
                     /* ignore double-close */
                 }
+                this.miio = null;
             }
         } catch (error) {
             this.error(error);
@@ -82,7 +84,7 @@ class MiWifiDeviceDevice extends Homey.Device {
     /* onoff */
     async onCapabilityOnoff(value, opts) {
         try {
-            if (this.miio) {
+            if (this.miio && typeof this.miio.setPower === 'function') {
                 return await this.miio.setPower(value);
             } else {
                 this.setUnavailable(this.homey.__('unreachable')).catch((error) => {
@@ -100,7 +102,7 @@ class MiWifiDeviceDevice extends Homey.Device {
     /* dim */
     async onCapabilityDim(value, opts) {
         try {
-            if (this.miio) {
+            if (this.miio && typeof this.miio.setBrightness === 'function') {
                 const brightness = value * 100;
                 return await this.miio.setBrightness(brightness);
             } else {
@@ -226,7 +228,7 @@ class MiWifiDeviceDevice extends Homey.Device {
                     await this.setCapabilityValue(capability, value);
                 }
             } else {
-                if (!this.miio.matches('cap:children')) {
+                if (!this.miio || typeof this.miio.matches !== 'function' || !this.miio.matches('cap:children')) {
                     this.log('adding capability ' + capability + ' to ' + this.getData().id + ' as the device seems to have values for this capability ...');
                     await this.addCapability(capability);
                     await this.setCapabilityValue(capability, value);
@@ -258,23 +260,24 @@ class MiWifiDeviceDevice extends Homey.Device {
     /* create device instance and start polling */
     async createDevice() {
         try {
-            /* ⬅ stop any previous timers/loops */
+            // stop any previous timers/loops
             this.homey.clearInterval(this.pollingInterval);
             this.homey.clearTimeout(this.recreateTimeout);
 
-            /* ⬅ dispose of an old miio instance safely */
+            // dispose of an old miio instance safely
             try {
                 this.miio?.destroy();
             } catch (e) {
                 /* ignore */
             }
+            this.miio = null;
 
             this.miio = await miio.device({
                 address: this.getSetting('address'),
                 token: this.getSetting('token')
             });
 
-            /* device came back → clear failure counter */
+            // device came back, clear failure counter
             this.deviceFailures = 0;
 
             if (!this.getAvailable()) await this.setAvailable();
@@ -282,14 +285,15 @@ class MiWifiDeviceDevice extends Homey.Device {
             this.startCapabilityListeners();
             this.pollDevice();
         } catch (error) {
-            /* mark unavailable */
+            // mark unavailable
             this.setUnavailable(this.homey.__('device.unreachable') + error.message).catch((err) => this.error(err));
 
-            /* exponential back-off: 10 s × 9 tries, then 10 min */
+            // exponential back-off: 10 s up to 9 tries, then 10 min
             this.deviceFailures = (this.deviceFailures || 0) + 1;
             const delay = this.deviceFailures <= 9 ? 10_000 : 600_000;
 
             this.recreateTimeout = this.homey.setTimeout(() => this.createDevice(), delay);
+            this.miio = null;
             this.error(error.message);
         }
     }
@@ -305,6 +309,7 @@ class MiWifiDeviceDevice extends Homey.Device {
                     } catch (e) {
                         /* ignore double-close */
                     }
+                    this.miio = null;
                 }
                 this.homey.setTimeout(() => {
                     this.createDevice();
@@ -315,6 +320,7 @@ class MiWifiDeviceDevice extends Homey.Device {
                 this.error(error);
             });
             this.deviceFailures++;
+            this.miio = null;
             this.createDevice();
             this.error(error.message);
         }
@@ -324,7 +330,7 @@ class MiWifiDeviceDevice extends Homey.Device {
     async getDeviceInfo() {
         try {
             this.log('WiFi Device Init: ' + this.getName() + ' and model ' + this.getStoreValue('model') + ' with ip ' + this.getSetting('address') + ' and capabilities ' + this.getCapabilities().toString());
-            if (this.miio) {
+            if (this.miio && typeof this.miio.matches === 'function') {
                 if (this.miio.matches('cap:state')) {
                     const states = await this.miio.state();
                     for (const state in states) {
@@ -361,53 +367,61 @@ class MiWifiDeviceDevice extends Homey.Device {
     /* RETRIEVE DEVICE DATA THROUGH POLLING */
     async retrieveDeviceData() {
         try {
+            if (!this.miio) {
+                this.setUnavailable(this.homey.__('device.unreachable')).catch((error) => this.error(error));
+                this.createDevice();
+                return;
+            }
+
+            const supports = (capability) => typeof this.miio?.matches === 'function' && this.miio.matches(capability);
+
             // CAPABILITIES
 
             /* onoff */
-            if (this.miio.matches('cap:power')) {
+            if (supports('cap:power')) {
                 const power = await this.miio.power();
                 this.updateCapabilityValue('onoff', power);
             }
 
             /* measure_power */
-            if (this.miio.matches('cap:power-load')) {
+            if (supports('cap:power-load')) {
                 const watt = await this.miio.powerLoad();
                 this.updateCapabilityValue('measure_power', watt);
             }
 
             /* meter_power */
-            if (this.miio.matches('cap:power-consumed')) {
+            if (supports('cap:power-consumed')) {
                 const wh = await this.miio.powerConsumed();
                 const kwh = wh / 1000;
                 this.updateCapabilityValue('meter_power', kwh);
             }
 
             /* measure_battery */
-            if (this.miio.matches('cap:battery-level')) {
+            if (supports('cap:battery-level')) {
                 const battery = await this.miio.batteryLevel();
                 this.updateCapabilityValue('measure_battery', this.util.clamp(battery, 0, 100));
             }
 
             /* measure_temperature */
-            if (this.miio.matches('cap:temperature')) {
+            if (supports('cap:temperature')) {
                 const temp = await this.miio.temperature();
                 this.updateCapabilityValue('measure_temperature', temp.value);
             }
 
             /* measure_humidity */
-            if (this.miio.matches('cap:relative-humidity')) {
+            if (supports('cap:relative-humidity')) {
                 const rh = await this.miio.relativeHumidity();
                 this.updateCapabilityValue('measure_humidity', rh);
             }
 
             /* measure_pm25 */
-            if (this.miio.matches('cap:pm2.5')) {
+            if (supports('cap:pm2.5')) {
                 const aqi = await this.miio.pm2_5();
                 this.updateCapabilityValue('measure_pm25', aqi);
             }
 
             /* measure_waterlevel */
-            if (this.miio.matches('cap:depth')) {
+            if (supports('cap:depth')) {
                 const depth = await this.miio.depth();
                 const waterlevel = this.util.clamp(Math.round(depth), 0, 100);
                 if (this.getCapabilityValue('measure_waterlevel') !== waterlevel) {
@@ -423,14 +437,14 @@ class MiWifiDeviceDevice extends Homey.Device {
             }
 
             /* dim */
-            if (this.miio.matches('cap:brightness')) {
+            if (supports('cap:brightness')) {
                 const brightness = await this.miio.brightness();
                 const dim = brightness / 100;
                 this.updateCapabilityValue('dim', dim);
             }
 
             /* measure_luminance */
-            if (this.miio.matches('cap:illuminance')) {
+            if (supports('cap:illuminance')) {
                 const luminance = await this.miio.illuminance();
                 this.updateCapabilityValue('measure_luminance', luminance.value);
             }
@@ -439,9 +453,10 @@ class MiWifiDeviceDevice extends Homey.Device {
             // not clear on how to set light_temperature from polling
 
             /* light_hue & light_saturation for child device */
-            if (this.miio.matches('cap:children')) {
-                if (this.miio.child('light').matches('cap:colorable')) {
-                    const color = await this.miio.child('light').color();
+            if (supports('cap:children') && typeof this.miio.child === 'function') {
+                const lightChild = this.miio.child('light');
+                if (lightChild && typeof lightChild.matches === 'function' && lightChild.matches('cap:colorable') && typeof lightChild.color === 'function') {
+                    const color = await lightChild.color();
 
                     const colorChanged = tinycolor({ r: color.values[0], g: color.values[1], b: color.values[2] });
                     const hsv = colorChanged.toHsv();
@@ -456,7 +471,7 @@ class MiWifiDeviceDevice extends Homey.Device {
             // STORE VALUES
 
             /* mode */
-            if (this.miio.matches('cap:mode')) {
+            if (supports('cap:mode')) {
                 const mode = await this.miio.mode();
                 this.handleModeEvent(mode);
                 if (this.getStoreValue('mode') !== mode && mode !== null) {
@@ -465,7 +480,7 @@ class MiWifiDeviceDevice extends Homey.Device {
             }
 
             /* state */
-            if (this.miio.matches('cap:state')) {
+            if (supports('cap:state')) {
                 const states = await this.miio.state();
                 for (const state in states) {
                     await this.setStoreValue(state, states[state]);
@@ -473,7 +488,7 @@ class MiWifiDeviceDevice extends Homey.Device {
             }
 
             /* fanspeed */
-            if (this.miio.matches('cap:fan-speed')) {
+            if (supports('cap:fan-speed')) {
                 const fanspeed = await this.miio.getState('fanSpeed');
                 if (this.getStoreValue('fanspeed') !== fanspeed) {
                     await this.setStoreValue('fanspeed', fanspeed);
@@ -481,7 +496,7 @@ class MiWifiDeviceDevice extends Homey.Device {
             }
 
             /* roll */
-            if (this.miio.matches('cap:roll-angle')) {
+            if (supports('cap:roll-angle')) {
                 const angle = await this.miio.getState('roll');
                 if (this.getStoreValue('angle') !== angle) {
                     await this.setStoreValue('angle', angle);
@@ -489,7 +504,7 @@ class MiWifiDeviceDevice extends Homey.Device {
             }
 
             /* adjustable-roll-angle */
-            if (this.miio.matches('cap:adjustable-roll-angle')) {
+            if (supports('cap:adjustable-roll-angle')) {
                 const roll_angle = await this.miio.getState('roll_angle');
                 if (this.getStoreValue('roll_angle') !== Number(roll_angle)) {
                     await this.setStoreValue('roll_angle', Number(roll_angle));
@@ -497,7 +512,7 @@ class MiWifiDeviceDevice extends Homey.Device {
             }
 
             /* switchable-child-lock */
-            if (this.miio.matches('cap:switchable-child-lock')) {
+            if (supports('cap:switchable-child-lock')) {
                 const child_lock = await this.miio.getState('child_lock');
                 if (this.getStoreValue('child_lock') !== child_lock) {
                     await this.setStoreValue('child_lock', child_lock);
@@ -505,7 +520,7 @@ class MiWifiDeviceDevice extends Homey.Device {
             }
 
             /* eyecare */
-            if (this.miio.matches('cap:eyecare')) {
+            if (supports('cap:eyecare')) {
                 const eyecare = await this.miio.eyeCare();
                 if (this.getStoreValue('eyecare') !== eyecare) {
                     await this.setStoreValue('eyecare', eyecare);
@@ -533,10 +548,11 @@ class MiWifiDeviceDevice extends Homey.Device {
                 this.setUnavailable(this.homey.__('device.unreachable') + error.message).catch((error) => this.error(error));
             }
 
-            /* RETRY AFTER 60 s — **now tracked so onDeleted/onUninit can clear it** */
+            /* RETRY AFTER 60 s - **now tracked so onDeleted/onUninit can clear it** */
             this.recreateTimeout = this.homey.setTimeout(() => {
                 this.createDevice();
             }, 60000);
+            this.miio = null;
 
             this.error(error);
         }
@@ -607,8 +623,9 @@ class MiWifiDeviceDevice extends Homey.Device {
             });
 
             /* light_hue & light_saturation for child device */
-            if (this.miio.matches('cap:children')) {
-                this.miio.child('light').on('colorChanged', (c) => {
+            if (typeof this.miio?.matches === 'function' && this.miio.matches('cap:children') && typeof this.miio.child === 'function') {
+                const lightChild = this.miio.child('light');
+                lightChild?.on?.('colorChanged', (c) => {
                     const colorChanged = tinycolor({ r: c.rgb.red, g: c.rgb.green, b: c.rgb.blue });
                     const hsv = colorChanged.toHsv();
                     const hue = Math.round(hsv.h) / 360;
@@ -619,7 +636,7 @@ class MiWifiDeviceDevice extends Homey.Device {
                 });
 
                 /* dim */
-                this.miio.child('light').on('brightnessChanged', (brightness) => {
+                lightChild?.on?.('brightnessChanged', (brightness) => {
                     const dim = brightness / 100;
                     this.updateCapabilityValue('dim', dim);
                 });
