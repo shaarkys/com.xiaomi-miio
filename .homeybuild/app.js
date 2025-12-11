@@ -379,6 +379,19 @@ class XiaomiMiioApp extends Homey.App {
         }
       });
 
+    this.homey.flow.getActionCard('petfeederCalibrate')
+      .registerRunListener(async (args) => {
+        try {
+          if (typeof args.device?.calibrateScale !== 'function') {
+            throw new Error('Calibration not supported by this device');
+          }
+          await args.device.calibrateScale();
+          return true;
+        } catch (error) {
+          return Promise.reject(error.message || error);
+        }
+      });
+
     // AIR PURIFIER, ZHIMI FAN
     this.homey.flow.getActionCard('ledAirpurifierHumidifier')
       .registerRunListener(async (args) => {

@@ -50,8 +50,9 @@ const BASE_GET_PROPS = [
 
 const IV2001_DEFAULTS = {
     eaten_food_today: { siid: 2, piid: 18 }, // daily eaten grams
-    eaten_food_total_raw: { siid: 2, piid: 20 }, // lifetime eaten grams (if reported)
+    food_in_bowl: { siid: 4, piid: 6 }, // mmgg-spec weightlevel (grams)
     food_out_status: { siid: 2, piid: 11 }, // spec v2: food-out fault flag
+    food_out_progress: { siid: 5, piid: 11 }, // xiaomi-spec: food-out progress (%)
     heap_status: { siid: 2, piid: 15 }, // spec v2: heap/accumulation flag
     status_mode: { siid: 2, piid: 32 }, // spec v2: idle/busy state
     target_feeding_measure: { siid: 2, piid: 7 }, // grams configured in device app
@@ -76,9 +77,10 @@ const MANUAL_FEED_PORTION_GRAMS = 5; // fallback grams per portion when target m
 const DESICCANT_FULL_DAYS = 30; // according to device UI (full pack lifetime)
 const MANUAL_FEED_MAX_PORTIONS = 30;
 const STORE_KEYS = {
-    eatenTotal: 'iv2001_eaten_food_total',
     todaySnapshot: 'iv2001_today_snapshot'
 };
+const BOWL_DELTA_THRESHOLD = 0.5; // grams, ignore noise smaller than this
+const PROGRESS_COMPLETE_THRESHOLD = 99.5; // treat >=99.5% as completed dispensing
 
 
 // Human-readable mode mapping (conservative)
@@ -89,7 +91,11 @@ const MODE_MAP = new Map([
     [3, 'fault']
 ]);
 
-const FOODLEVEL_ENUM_VALUES = new Set(['0', '1', '2', '3', '4']);
+const FOODLEVEL_ENUM_VALUES = new Set(['0', '1']);
+const FOODLEVEL_LABELS = new Map([
+    ['0', 'normal'],
+    ['1', 'low']
+]);
 
 // ───────────────────────────────────────────────────────────────────────────────
 // Small helpers
@@ -182,24 +188,34 @@ class PetFeederMiotDevice extends DeviceBase {
 
             // State
             const ymdNow = this._ymdNow();
-            const storedTotal = toNumber(this.getStoreValue(STORE_KEYS.eatenTotal));
             const storedSnapshotRaw = this.getStoreValue(STORE_KEYS.todaySnapshot);
-            const storedSnapshot =
+            const trackerSnapshot =
                 storedSnapshotRaw && typeof storedSnapshotRaw === 'object'
                     ? {
                           ymd: typeof storedSnapshotRaw.ymd === 'string' ? storedSnapshotRaw.ymd : ymdNow,
                           value: toNumber(storedSnapshotRaw.value)
                       }
-                    : { ymd: ymdNow, value: undefined };
-
+                    : { ymd: ymdNow, value: 0 };
+            if (!Number.isFinite(trackerSnapshot.value)) trackerSnapshot.value = 0;
             this._state = {
                 once: new Set(),
                 lastMode: 'unknown',
                 targetFeedingMeasure: MANUAL_FEED_PORTION_GRAMS,
                 suppressSettingApply: false,
                 desiccantAlarm: this.getCapabilityValue('alarm_desiccant_low') === true,
-                todayTracker: storedSnapshot,
-                cumulativeTotal: Number.isFinite(storedTotal) ? storedTotal : 0,
+                todayTracker: trackerSnapshot,
+                pendingDuringDispense: 0,
+                lastBowlGrams: Number.isFinite(toNumber(this.getCapabilityValue('petfeeder_food_in_bowl')))
+                    ? Math.max(0, toNumber(this.getCapabilityValue('petfeeder_food_in_bowl')))
+                    : undefined,
+                estimatedBowl: Number.isFinite(toNumber(this.getCapabilityValue('petfeeder_food_in_bowl')))
+                    ? Math.max(0, toNumber(this.getCapabilityValue('petfeeder_food_in_bowl')))
+                    : undefined,
+                lastProgressValue: undefined,
+                lastProgressComplete: true,
+                bowlUnsupported: false,
+                progressActive: false,
+                progressDose: undefined,
                 lastDesiccantBranchLogAt: 0,
                 lastDesiccantBranchLogged: undefined,
                 lastDesiccantPct: undefined,
@@ -207,7 +223,10 @@ class PetFeederMiotDevice extends DeviceBase {
                 lastTimeline: { excerpt: undefined, at: 0 }
             };
 
-            // Read-only guard (prevents “Missing Capability Listener” warnings)
+
+            await this._syncEatenSetting(trackerSnapshot.value);
+
+            // Read-only guard (prevents "Missing Capability Listener" warnings)
             if (this.hasCapability('petfeeder_foodlevel')) {
                 this.registerCapabilityListener('petfeeder_foodlevel', async () => {
                     throw new Error('petfeeder_foodlevel is read-only');
@@ -238,6 +257,8 @@ class PetFeederMiotDevice extends DeviceBase {
 
     async onSettings({ oldSettings, newSettings, changedKeys }) {
         try {
+            if (!this._state) this._state = { suppressSettingApply: false };
+            this._state.onSettingsActive = true;
             if (changedKeys.includes('address') || changedKeys.includes('token') || changedKeys.includes('polling')) {
                 if (this._pollTimer) this.homey.clearInterval(this._pollTimer);
                 await this._initMiio();
@@ -259,8 +280,20 @@ class PetFeederMiotDevice extends DeviceBase {
                     }
                 }
             }
+
+            if (changedKeys.includes('eaten_food_today_adjust')) {
+                const adjustValue = toNumber(newSettings.eaten_food_today_adjust);
+                if (Number.isFinite(adjustValue) && adjustValue >= 0) {
+                    await this._applyManualEatenAdjust(adjustValue, true);
+                } else if (adjustValue !== undefined) {
+                    this._warn('[SETTINGS] invalid eaten_food_today_adjust value');
+                }
+            }
+
         } catch (e) {
             this._warn('[IV2001] onSettings error:', e?.message);
+        } finally {
+            if (this._state) this._state.onSettingsActive = false;
         }
         return true;
     }
@@ -290,8 +323,9 @@ class PetFeederMiotDevice extends DeviceBase {
             const req = [
                 ...BASE_GET_PROPS,
                 { did: 'eaten_food_today', siid: IV2001_DEFAULTS.eaten_food_today.siid, piid: IV2001_DEFAULTS.eaten_food_today.piid },
-                { did: 'eaten_food_total_raw', siid: IV2001_DEFAULTS.eaten_food_total_raw.siid, piid: IV2001_DEFAULTS.eaten_food_total_raw.piid },
+                { did: 'food_in_bowl', siid: IV2001_DEFAULTS.food_in_bowl.siid, piid: IV2001_DEFAULTS.food_in_bowl.piid },
                 { did: 'food_out_status', siid: IV2001_DEFAULTS.food_out_status.siid, piid: IV2001_DEFAULTS.food_out_status.piid },
+                { did: 'food_out_progress', siid: IV2001_DEFAULTS.food_out_progress.siid, piid: IV2001_DEFAULTS.food_out_progress.piid },
                 { did: 'heap_status', siid: IV2001_DEFAULTS.heap_status.siid, piid: IV2001_DEFAULTS.heap_status.piid },
                 { did: 'status_mode', siid: IV2001_DEFAULTS.status_mode.siid, piid: IV2001_DEFAULTS.status_mode.piid },
                 { did: 'target_feeding_measure', siid: IV2001_DEFAULTS.target_feeding_measure.siid, piid: IV2001_DEFAULTS.target_feeding_measure.piid },
@@ -351,11 +385,12 @@ class PetFeederMiotDevice extends DeviceBase {
 
         if (this.hasCapability('petfeeder_foodlevel')) {
             if (f && f.code === 0 && typeof f.value !== 'undefined') {
-                const enumValue = String(f.value);
-                if (!FOODLEVEL_ENUM_VALUES.has(enumValue)) {
+                const rawValue = String(f.value);
+                if (!FOODLEVEL_ENUM_VALUES.has(rawValue)) {
                     this._onceWarn(`[FOODLEVEL] unexpected value: ${JSON.stringify(f.value)}`);
                 }
-                await this._setCap('petfeeder_foodlevel', enumValue);
+                const mappedValue = FOODLEVEL_LABELS.get(rawValue) || 'unknown';
+                await this._setCap('petfeeder_foodlevel', mappedValue);
             } else if (f && f.code === -4001) {
                 this._onceWarn('[FOODLEVEL] unsupported (-4001)');
             }
@@ -363,97 +398,172 @@ class PetFeederMiotDevice extends DeviceBase {
     }
 
     async _updateEatenFood(g) {
-        const todayProp = g.eaten_food_today;
-        const totalProp = g.eaten_food_total_raw;
+        const bowlProp = g.food_in_bowl;
+        const progressOutProp = g.food_out_progress;
         const scheduleProp = g.schedule_progress;
 
-        let todayG;
-        if (todayProp && todayProp.code === 0) todayG = toNumber(todayProp.value);
-        else if (todayProp && todayProp.code === -4001) this._onceWarn('[EATEN] today unsupported (-4001)');
+        let bowl;
+        let bowlSupported = false;
+        if (bowlProp && bowlProp.code === 0) {
+            const raw = toNumber(bowlProp.value);
+            if (Number.isFinite(raw)) {
+                bowl = Math.max(0, raw);
+                bowlSupported = true;
+                if (this._state) {
+                    this._state.bowlUnsupported = false;
+                    this._state.estimatedBowl = bowl;
+                }
+            }
+        } else if (bowlProp && bowlProp.code === -4001) {
+            this._onceWarn('[EATEN] bowl level unsupported (-4001)');
+            if (this._state) this._state.bowlUnsupported = true;
+        }
+        if (!bowlSupported && this._state?.estimatedBowl !== undefined) {
+            bowl = this._state.estimatedBowl;
+        }
 
-        if (scheduleProp && scheduleProp.code === 0) {
-            const schedule = toNumber(scheduleProp.value);
-            if (Number.isFinite(schedule)) this._state.scheduleProgress = schedule;
+        let progress;
+        if (progressOutProp && progressOutProp.code === 0) {
+            const raw = toNumber(progressOutProp.value);
+            if (Number.isFinite(raw)) progress = clampNumber(raw, 0, 100);
+        } else if (progressOutProp && progressOutProp.code === -4001) {
+            this._onceWarn('[EATEN] food-out progress unsupported (-4001)');
+        }
+
+        if (progress === undefined) {
+            if (scheduleProp && scheduleProp.code === 0) {
+                const raw = toNumber(scheduleProp.value);
+                if (Number.isFinite(raw)) progress = clampNumber(raw, 0, 100);
+            } else if (scheduleProp && scheduleProp.code === -4001) {
+                this._onceWarn('[EATEN] schedule progress unsupported (-4001)');
+            }
+        }
+
+        const progressValue = typeof progress === 'number' ? progress : undefined;
+        const progressComplete = progressValue === undefined ? true : progressValue >= PROGRESS_COMPLETE_THRESHOLD;
+        const progressLabel = progressValue === undefined ? 'n/a' : progressValue.toFixed(1);
+
+        if (this._state) {
+            const progressActiveNow = !progressComplete;
+            if (progressActiveNow) {
+                if (!this._state.progressActive) {
+                    this._state.progressActive = true;
+                    if (this._state.bowlUnsupported) {
+                        const expected = Number.isFinite(this._state.targetFeedingMeasure) && this._state.targetFeedingMeasure > 0
+                            ? this._state.targetFeedingMeasure
+                            : MANUAL_FEED_PORTION_GRAMS;
+                        this._state.progressDose = expected;
+                        this.log(`[EATEN] feed started (no bowl sensor), expect ${expected} g`);
+                    }
+                }
+            } else if (this._state.progressActive) {
+                if (this._state.bowlUnsupported && Number.isFinite(this._state.progressDose) && this._state.progressDose > 0) {
+                    const existing = Number.isFinite(this._state.fallbackPending) ? this._state.fallbackPending : 0;
+                    this._state.fallbackPending = existing + this._state.progressDose;
+                    this.log(`[EATEN] feed finished (no bowl sensor) -> ${this._state.progressDose} g`);
+                }
+                this._state.progressActive = false;
+                this._state.progressDose = undefined;
+            }
+        }
+
+        if (this.hasCapability('petfeeder_food_out_progress') && typeof progressValue === 'number') {
+            await this._setCap('petfeeder_food_out_progress', Math.round(progressValue));
+        }
+        if (this.hasCapability('petfeeder_schedule_progress') && typeof progressValue === 'number') {
+            await this._setCap('petfeeder_schedule_progress', Math.round(progressValue));
+        }
+        if (this.hasCapability('petfeeder_busy')) {
+            await this._setCap('petfeeder_busy', !progressComplete);
+        }
+        if (bowlSupported && this.hasCapability('petfeeder_food_in_bowl') && typeof bowl === 'number') {
+            await this._setCap('petfeeder_food_in_bowl', bowl);
         }
 
         const ymdNow = this._ymdNow();
-        let tracker = this._state.todayTracker || { ymd: ymdNow, value: undefined };
-        let deltaFromToday = 0;
+        const prevTracker = this._state.todayTracker || { ymd: ymdNow, value: 0 };
+        const tracker =
+            prevTracker.ymd === ymdNow
+                ? { ymd: prevTracker.ymd, value: Number.isFinite(prevTracker.value) ? prevTracker.value : 0 }
+                : { ymd: ymdNow, value: 0 };
 
-        if (typeof todayG === 'number') {
-            if (tracker.ymd !== ymdNow) {
-                tracker = { ymd: ymdNow, value: todayG };
-            } else if (typeof tracker.value === 'number') {
-                if (todayG >= tracker.value) {
-                    deltaFromToday = todayG - tracker.value;
+        const prevBowl = this._state.lastBowlGrams;
+        let pending = Number.isFinite(this._state.pendingDuringDispense) ? this._state.pendingDuringDispense : 0;
+        if (Number.isFinite(this._state?.fallbackPending) && this._state.fallbackPending > 0) {
+            pending += this._state.fallbackPending;
+            this._state.fallbackPending = 0;
+        }
+        let delta = 0;
+
+        if (bowlSupported && typeof bowl === 'number' && typeof prevBowl === 'number') {
+            const diff = prevBowl - bowl;
+            if (diff > BOWL_DELTA_THRESHOLD) {
+                if (progressComplete) {
+                    delta += diff;
                 } else {
-                    // counter reset (new day or manual reset)
-                    deltaFromToday = 0;
+                    pending += diff;
+                    this.log(`[EATEN] queued ${diff.toFixed(1)} g while dispenser active (${progressLabel}%)`);
                 }
-                tracker.value = todayG;
-            } else {
-                tracker.value = todayG;
+            } else if (diff < -BOWL_DELTA_THRESHOLD) {
+                const message = progressComplete
+                    ? `[EATEN] bowl increased by ${Math.abs(diff).toFixed(1)} g with dispenser idle`
+                    : `[EATEN] bowl increased by ${Math.abs(diff).toFixed(1)} g while dispenser active (${progressLabel}%)`;
+                this.log(message);
             }
-        } else {
-            if (tracker.ymd !== ymdNow) tracker = { ymd: ymdNow, value: undefined };
+        } else if (bowlSupported && typeof bowl === 'number' && typeof prevBowl !== 'number') {
+            this.log(`[EATEN] tracking bowl at ${bowl.toFixed(1)} g (progress ${progressLabel}%)`);
         }
 
-        this._state.todayTracker = tracker;
-        try {
-            await this.setStoreValue(STORE_KEYS.todaySnapshot, tracker);
-        } catch (_) {}
-
-        const prevStoredTotal = Number.isFinite(this._state.cumulativeTotal) ? this._state.cumulativeTotal : undefined;
-        let total = prevStoredTotal ?? 0;
-        let deltaFromTotal = 0;
-
-        if (totalProp) {
-            if (totalProp.code === 0) {
-                let deviceTotal = toNumber(totalProp.value);
-                if (Number.isFinite(deviceTotal)) {
-                    deviceTotal = Math.max(0, Math.round(deviceTotal));
-                    if (typeof prevStoredTotal === 'number') {
-                        if (deviceTotal >= prevStoredTotal) deltaFromTotal = deviceTotal - prevStoredTotal;
-                        else deltaFromTotal = 0; // counter wrap/reset
-                    }
-                    total = deviceTotal;
-                    this._state.cumulativeTotal = deviceTotal;
-                    try {
-                        await this.setStoreValue(STORE_KEYS.eatenTotal, deviceTotal);
-                    } catch (_) {}
-                }
-            } else if (totalProp.code === -4001) {
-                this._onceWarn('[EATEN] total unsupported (-4001)');
-            }
+        if (progressComplete && pending > 0) {
+            delta += pending;
+            this.log(`[EATEN] applied ${pending.toFixed(1)} g collected during dispensing`);
+            pending = 0;
         }
 
-        if (!Number.isFinite(this._state.cumulativeTotal)) {
-            this._state.cumulativeTotal = total;
-        }
+        if (!Number.isFinite(tracker.value)) tracker.value = 0;
+        tracker.value = Math.max(0, tracker.value + delta);
 
-        if ((totalProp?.code ?? -1) !== 0 && deltaFromToday > 0) {
-            total = (Number.isFinite(prevStoredTotal) ? prevStoredTotal : 0) + deltaFromToday;
-            this._state.cumulativeTotal = total;
+        const previousValue = Number.isFinite(prevTracker.value) ? prevTracker.value : 0;
+        const todayChanged = tracker.ymd !== prevTracker.ymd || Math.abs(previousValue - tracker.value) > 0.1;
+        if (todayChanged || delta > 0.01) {
             try {
-                await this.setStoreValue(STORE_KEYS.eatenTotal, total);
+                await this.setStoreValue(STORE_KEYS.todaySnapshot, tracker);
             } catch (_) {}
         }
 
-        const delta = deltaFromTotal > 0 ? deltaFromTotal : deltaFromToday;
-
-        if (this.hasCapability('petfeeder_eaten_food_today') && typeof todayG === 'number') {
-            await this._setCap('petfeeder_eaten_food_today', todayG);
+        this._state.todayTracker = tracker;
+        if (delta > 0 && this._state && this._state.bowlUnsupported) {
+            const previousBowl = Number.isFinite(prevBowl)
+                ? prevBowl
+                : Number.isFinite(this._state.estimatedBowl)
+                ? this._state.estimatedBowl
+                : 0;
+            const estimated = Math.max(0, previousBowl - delta);
+            this._state.estimatedBowl = estimated;
+            this._state.lastBowlGrams = estimated;
+            if (this.hasCapability('petfeeder_food_in_bowl')) {
+                const rounded = Math.round(estimated * 10) / 10;
+                await this._setCap('petfeeder_food_in_bowl', Math.max(0, rounded));
+            }
         }
-        if (this.hasCapability('petfeeder_eaten_food_total')) {
-            await this._setCap('petfeeder_eaten_food_total', total);
+        this._state.pendingDuringDispense = pending;
+        if (bowlSupported && typeof bowl === 'number') {
+            this._state.lastBowlGrams = bowl;
+        } else if (this._state && this._state.estimatedBowl !== undefined) {
+            this._state.lastBowlGrams = this._state.estimatedBowl;
+        }
+        this._state.lastProgressValue = progressValue;
+        this._state.lastProgressComplete = progressComplete;
+
+        const todayRounded = Math.round(tracker.value);
+        if (this.hasCapability('petfeeder_eaten_food_today')) {
+            await this._setCap('petfeeder_eaten_food_today', todayRounded);
         }
 
-        if (delta > 0) {
-            await this._triggerEatenChanged(
-                typeof todayG === 'number' ? todayG : tracker.value ?? 0,
-                total,
-                delta
-            );
+        await this._syncEatenSetting(todayRounded);
+
+        if (delta > 0.1) {
+            await this._triggerEatenChanged(todayRounded, delta);
         }
     }
 
@@ -760,23 +870,62 @@ class PetFeederMiotDevice extends DeviceBase {
         }
     }
 
-    async _triggerEatenChanged(todayG, totalG, deltaG) {
+    async _triggerEatenChanged(todayG, deltaG) {
         try {
+            const todayValue = Number.isFinite(todayG) ? Math.round(todayG) : 0;
+            const deltaValue = Number.isFinite(deltaG) ? Math.round(deltaG) : 0;
             await this._flow.eatenFoodChanged?.trigger(
                 this,
                 {
-                    today_g: typeof todayG === 'number' ? todayG : 0,
-                    total_g: typeof totalG === 'number' ? totalG : 0,
-                    delta_g: typeof deltaG === 'number' ? deltaG : 0
+                    today_g: todayValue,
+                    total_g: todayValue,
+                    delta_g: deltaValue
                 },
                 {}
             );
-            this.log('[EATEN] trigger:', { today_g: todayG, total_g: totalG, delta_g: deltaG });
-            if (typeof deltaG === 'number' && deltaG > 0) {
-                await this._timeline(`Pet ate ${deltaG} g (today ${todayG} g)`);
+            this.log('[EATEN] trigger:', { today_g: todayValue, delta_g: deltaValue });
+            if (deltaValue > 0) {
+                await this._timeline(`Pet ate ${deltaValue} g (today ${todayValue} g)`);
             }
         } catch (e) {
             this._warn('[EATEN] trigger error:', e?.message);
+        }
+    }
+
+    async _applyManualEatenAdjust(value, skipSettingSync = false) {
+        const ymdNow = this._ymdNow();
+        const normalized = Number.isFinite(value) ? Math.max(0, Math.round(value)) : 0;
+        const tracker = { ymd: ymdNow, value: normalized };
+        this._state.todayTracker = tracker;\n        if (delta > 0 && this._state?.bowlUnsupported) {\n            const previousBowl = Number.isFinite(prevBowl) ? prevBowl : Number.isFinite(this._state.estimatedBowl) ? this._state.estimatedBowl : 0;\n            const estimated = Math.max(0, previousBowl - delta);\n            this._state.estimatedBowl = estimated;\n            this._state.lastBowlGrams = estimated;\n            if (this.hasCapability('petfeeder_food_in_bowl')) {\n                const rounded = Math.round(estimated * 10) / 10;\n                await this._setCap('petfeeder_food_in_bowl', Math.max(0, rounded));\n            }\n        }
+        this._state.pendingDuringDispense = 0;
+        try {
+            await this.setStoreValue(STORE_KEYS.todaySnapshot, tracker);
+        } catch (_) {}
+        if (this.hasCapability('petfeeder_eaten_food_today')) {
+            await this._setCap('petfeeder_eaten_food_today', normalized);
+        }
+        this.log('[EATEN] manual correction applied', normalized, 'g');
+        if (!skipSettingSync) {
+            await this._syncEatenSetting(normalized);
+        }
+    }
+
+    async _syncEatenSetting(value) {
+        if (!this._state) return;
+        if (this._state.suppressSettingApply) return;
+        if (this._state.onSettingsActive) return;
+        const settings = this.getSettings() || {};
+        const currentRaw = toNumber(settings.eaten_food_today_adjust);
+        const target = Number.isFinite(value) ? Math.max(0, Math.round(value)) : 0;
+        const currentNormalized = Number.isFinite(currentRaw) ? Math.max(0, Math.round(currentRaw)) : 0;
+        if (currentNormalized === target) return;
+        try {
+            this._state.suppressSettingApply = true;
+            await this.updateSettingValue('eaten_food_today_adjust', target);
+        } catch (e) {
+            this._warn('[SETTINGS] sync eaten value failed', e?.message);
+        } finally {
+            this._state.suppressSettingApply = false;
         }
     }
 
@@ -806,7 +955,20 @@ class PetFeederMiotDevice extends DeviceBase {
     }
 
     async _ensureCapabilities() {
-        const required = ['petfeeder_foodlevel', 'petfeeder_eaten_food_today', 'petfeeder_eaten_food_total', 'petfeeder_food_out_status', 'petfeeder_heap_status', 'petfeeder_status_mode', 'measure_desiccant', 'measure_desiccant_time', 'alarm_desiccant_low'];
+        const required = [
+            'petfeeder_foodlevel',
+            'petfeeder_eaten_food_today',
+            'petfeeder_food_out_status',
+            'petfeeder_food_out_progress',
+            'petfeeder_heap_status',
+            'petfeeder_status_mode',
+            'petfeeder_busy',
+            'petfeeder_food_in_bowl',
+            'petfeeder_schedule_progress',
+            'measure_desiccant',
+            'measure_desiccant_time',
+            'alarm_desiccant_low'
+        ];
         for (const id of required) {
             try {
                 if (!this.hasCapability(id)) {
@@ -815,6 +977,15 @@ class PetFeederMiotDevice extends DeviceBase {
                 }
             } catch (e) {
                 this._warn('[INIT] addCapability failed', id, e?.message);
+            }
+        }
+
+        if (this.hasCapability('petfeeder_eaten_food_total')) {
+            try {
+                await this.removeCapability('petfeeder_eaten_food_total');
+                this.log('[INIT] removed capability:', 'petfeeder_eaten_food_total');
+            } catch (e) {
+                this._warn('[INIT] removeCapability failed', 'petfeeder_eaten_food_total', e?.message);
             }
         }
     }
@@ -884,5 +1055,11 @@ class PetFeederMiotDevice extends DeviceBase {
 }
 
 module.exports = PetFeederMiotDevice;
+
+
+
+
+
+
 
 

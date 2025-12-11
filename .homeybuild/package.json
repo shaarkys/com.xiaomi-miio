@@ -4,9 +4,9 @@
   "main": "app.js",
   "scripts": {},
   "devDependencies": {
-    "@tsconfig/node12": "^12.1.4",
-    "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.10",
-    "@types/node": "^22.10.6"
+    "@tsconfig/node12": "^12.1.5",
+    "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.12",
+    "@types/node": "^24.9.1"
   },
   "dependencies": {
     "@thingbound/discovery": "github:thingbound/discovery",

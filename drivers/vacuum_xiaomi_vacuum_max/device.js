@@ -592,6 +592,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             const water_level_prop = this.getMiotProp(result, 'water_level');
             const path_mode_prop = this.getMiotProp(result, 'path_mode');
             const carpet_mode_prop = this.getMiotProp(result, 'carpet_avoidance');
+            const detergent_left_prop = this.getMiotProp(result, 'detergent_left_level');
 
             const consumables = this.deviceProperties.supports.consumables
                 ? [
@@ -781,6 +782,16 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             if (device_fault && this.deviceProperties.error_codes.hasOwnProperty(device_fault.value)) {
                 err = this.deviceProperties.error_codes[device_fault.value];
             }
+
+            // Some models keep broadcasting the last "water tank empty" fault even after refilling.
+            // When we have evidence that water is present again, clear the stale fault so the tile recovers.
+            const isWaterTankFault = device_fault && Number(device_fault.value) === 210030;
+            const hasDetergentReading = this.deviceProperties.supports.detergent && detergent_left_prop && Number(detergent_left_prop.value) > 0;
+            const hasWaterLevelReading = this.deviceProperties.supports.water_level && water_level_prop && Number(water_level_prop.value) > 0;
+            if (isWaterTankFault && (hasDetergentReading || hasWaterLevelReading)) {
+                err = 'OK';
+            }
+
             let safeError = typeof err === 'string' ? err : 'Unknown Error';
             if (stateKey === 'cleaning') safeError = 'OK - Working';
 
@@ -813,6 +824,24 @@ class XiaomiVacuumMiotDeviceMax extends Device {
         try {
             const timeDiv = this._timeDivisor || 3600;
             const areaDiv = this._areaDivisor || 100;
+
+            // Clean up any legacy string values (e.g. "0 h") that break numeric settings.
+            const currentTimeSetting = Number(this.getSetting('total_work_time'));
+            const currentAreaSetting = Number(this.getSetting('total_cleared_area'));
+            const currentCountSetting = Number(this.getSetting('total_clean_count'));
+            if (!Number.isFinite(currentTimeSetting)) {
+                await this.setSettings({ total_work_time: 0 });
+                await this.total_work_time_token.setValue(0);
+            }
+            if (!Number.isFinite(currentAreaSetting)) {
+                await this.setSettings({ total_cleared_area: 0 });
+                await this.total_cleared_area_token.setValue(0);
+            }
+            if (!Number.isFinite(currentCountSetting)) {
+                await this.setSettings({ total_clean_count: 0 });
+                await this.total_clean_count_token.setValue(0);
+            }
+
             if (this.getSetting('total_work_time') === undefined) {
                 const h = +((totals.clean_time || 0) / timeDiv).toFixed(3);
                 await this.setSettings({ total_work_time: h });
@@ -924,7 +953,8 @@ class XiaomiVacuumMiotDeviceMax extends Device {
     }
 
     async _accumulateJobTotals() {
-        const prev = Number(this.getSetting('total_clean_count') || 0);
+        const prevRaw = Number(this.getSetting('total_clean_count'));
+        const prev = Number.isFinite(prevRaw) ? prevRaw : 0;
         const next = prev + 1;
         await this.setSettings({ total_clean_count: next });
         await this.total_clean_count_token.setValue(next);
@@ -937,13 +967,17 @@ class XiaomiVacuumMiotDeviceMax extends Device {
         const timeDiv = this._timeDivisor || 3600;
         const deltaAreaM2 = deltaAreaRaw / areaDiv;
         const deltaHours = deltaTimeRaw / timeDiv;
-        const prevArea = Number(this.getSetting('total_cleared_area') || 0);
-        const prevTime = Number(this.getSetting('total_work_time') || 0);
+        const prevAreaRaw = Number(this.getSetting('total_cleared_area'));
+        const prevTimeRaw = Number(this.getSetting('total_work_time'));
+        const prevArea = Number.isFinite(prevAreaRaw) ? prevAreaRaw : 0;
+        const prevTime = Number.isFinite(prevTimeRaw) ? prevTimeRaw : 0;
         const newArea = +(prevArea + deltaAreaM2).toFixed(2);
         const newTime = +(prevTime + deltaHours).toFixed(3);
-        await this.setSettings({ total_cleared_area: newArea, total_work_time: newTime });
-        await this.total_cleared_area_token.setValue(newArea);
-        await this.total_work_time_token.setValue(newTime);
+        const safeArea = Number.isFinite(newArea) ? newArea : 0;
+        const safeTime = Number.isFinite(newTime) ? newTime : 0;
+        await this.setSettings({ total_cleared_area: safeArea, total_work_time: safeTime });
+        await this.total_cleared_area_token.setValue(safeArea);
+        await this.total_work_time_token.setValue(safeTime);
         this.log(`[SESSION] deltaArea=${deltaAreaM2.toFixed(2)}m², deltaTime=${deltaHours.toFixed(2)}h`);
     }
 

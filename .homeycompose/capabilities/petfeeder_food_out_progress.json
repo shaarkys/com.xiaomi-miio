@@ -1,0 +1,15 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Food out progress"
+  },
+  "getable": true,
+  "setable": false,
+  "units": {
+    "en": "%"
+  },
+  "min": 0,
+  "max": 100,
+  "decimals": 0,
+  "uiComponent": "sensor"
+}

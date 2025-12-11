@@ -1,11 +1,21 @@
 {
   "type": "number",
-  "title": { "en": "Eaten Food Today" },
-  "desc": { "en": "Food eaten since midnight" },
+  "title": {
+    "en": "Eaten Food Today"
+  },
+  "desc": {
+    "en": "Food eaten since midnight"
+  },
   "getable": true,
   "setable": false,
-  "units": { "en": "g" },
+  "units": {
+    "en": "g"
+  },
   "decimals": 0,
   "min": 0,
-  "uiComponent": "sensor"
+  "uiComponent": "sensor",
+  "insights": true,
+  "insightsTitle": {
+    "en": "Food eaten today"
+  }
 }

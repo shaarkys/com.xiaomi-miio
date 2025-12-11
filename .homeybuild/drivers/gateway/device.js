@@ -16,9 +16,13 @@ class GatewayDevice extends Device {
             // LISTENERS FOR UPDATING CAPABILITIES
             this.registerCapabilityListener('onoff', async (value) => {
                 try {
-                    if (this.miio) {
+                    if (this.miio && typeof this.miio.child === 'function') {
                         const lightChild = this.miio.child('light');
-                        if (!lightChild) {
+                        if (!lightChild || typeof lightChild.setPower !== 'function') {
+                            this.setUnavailable(this.homey.__('unreachable')).catch((error) => {
+                                this.error(error);
+                            });
+                            this.createDevice();
                             this.error('Light child device not available');
                             return Promise.reject(new Error('Light child device not available'));
                         }
@@ -38,7 +42,7 @@ class GatewayDevice extends Device {
 
             this.registerCapabilityListener('dim', async (value) => {
                 try {
-                    if (this.miio) {
+                    if (this.miio && typeof this.miio.child === 'function') {
                         const brightness = value * 100;
                         if (brightness < 1 && this.getCapabilityValue('onoff')) {
                             this.triggerCapabilityListener('onoff', false);
@@ -46,7 +50,11 @@ class GatewayDevice extends Device {
                             this.triggerCapabilityListener('onoff', true);
                         }
                         const lightChild = this.miio.child('light');
-                        if (!lightChild) {
+                        if (!lightChild || typeof lightChild.setBrightness !== 'function') {
+                            this.setUnavailable(this.homey.__('unreachable')).catch((error) => {
+                                this.error(error);
+                            });
+                            this.createDevice();
                             this.error('Light child device not available');
                             return Promise.reject(new Error('Light child device not available'));
                         }
@@ -68,7 +76,7 @@ class GatewayDevice extends Device {
                 ['light_hue', 'light_saturation'],
                 async (valueObj) => {
                     try {
-                        if (this.miio) {
+                        if (this.miio && typeof this.miio.child === 'function') {
                             if (valueObj.hasOwnProperty('light_hue')) {
                                 var hue_value = valueObj.light_hue;
                             } else {
@@ -86,7 +94,17 @@ class GatewayDevice extends Device {
                             const dim = this.getCapabilityValue('dim') * 100;
                             const colorUpdate = tinycolor({ h: Math.round(hue), s: Math.round(saturation), v: dim });
 
-                            return await this.miio.child('light').color(colorUpdate.toRgbString());
+                            const lightChild = this.miio.child('light');
+                            if (!lightChild || typeof lightChild.color !== 'function') {
+                                this.setUnavailable(this.homey.__('unreachable')).catch((error) => {
+                                    this.error(error);
+                                });
+                                this.createDevice();
+                                this.error('Light child device not available');
+                                return Promise.reject(new Error('Light child device not available'));
+                            }
+
+                            return await lightChild.color(colorUpdate.toRgbString());
                         } else {
                             this.setUnavailable(this.homey.__('unreachable')).catch((error) => {
                                 this.error(error);
@@ -283,10 +301,11 @@ class GatewayDevice extends Device {
             }
 
             /* light */
-            if (this.miio.matches('cap:children')) {
-                if (this.miio.child('light')) {
-                    if (this.miio.child('light').matches('cap:colorable')) {
-                        const color = await this.miio.child('light').color();
+            if (this.miio.matches('cap:children') && typeof this.miio.child === 'function') {
+                const lightChild = this.miio.child('light');
+                if (lightChild && typeof lightChild.matches === 'function' && typeof lightChild.color === 'function') {
+                    if (lightChild.matches('cap:colorable')) {
+                        const color = await lightChild.color();
 
                         const colorChanged = tinycolor({ r: color.values[0], g: color.values[1], b: color.values[2] });
                         const hsv = colorChanged.toHsv();

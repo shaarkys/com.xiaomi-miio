@@ -1,0 +1,16 @@
+{
+  "type": "boolean",
+  "title": {
+    "en": "Feeder busy"
+  },
+  "getable": true,
+  "setable": false,
+  "uiComponent": "toggle",
+  "insights": true,
+  "insightsTitleTrue": {
+    "en": "Feeding"
+  },
+  "insightsTitleFalse": {
+    "en": "Idle"
+  }
+}

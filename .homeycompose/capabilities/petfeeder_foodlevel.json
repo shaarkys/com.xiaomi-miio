@@ -16,55 +16,22 @@
   },
   "values": [
     {
-      "id": "0",
       "title": {
-        "en": "Normal",
-        "nl": "Normaal",
-        "da": "Normal",
-        "de": "Normal",
-        "es": "Normal",
-        "fr": "Normal",
-        "it": "Normale",
-        "no": "Normal",
-        "sv": "Normal",
-        "pl": "Normalny",
-        "ru": "Нормальный",
-        "ko": "정상"
-      }
+        "en": "Normal"
+      },
+      "id": "normal"
     },
     {
-      "id": "1",
       "title": {
-        "en": "Low",
-        "nl": "Laag",
-        "da": "Lav",
-        "de": "Niedrig",
-        "es": "Bajo",
-        "fr": "Bas",
-        "it": "Basso",
-        "no": "Lav",
-        "sv": "Låg",
-        "pl": "Niski",
-        "ru": "Низкий",
-        "ko": "낮음"
-      }
+        "en": "Low"
+      },
+      "id": "low"
     },
     {
-      "id": "2",
       "title": {
-        "en": "Empty",
-        "nl": "Leeg",
-        "da": "Tom",
-        "de": "Leer",
-        "es": "Vacío",
-        "fr": "Vide",
-        "it": "Vuoto",
-        "no": "Tom",
-        "sv": "Tom",
-        "pl": "Pusty",
-        "ru": "Пустой",
-        "ko": "비어 있음"
-      }
+        "en": "Unknown"
+      },
+      "id": "unknown"
     }
   ],
   "getable": true,

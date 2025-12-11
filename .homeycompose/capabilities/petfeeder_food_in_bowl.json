@@ -1,0 +1,18 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Food left in bowl"
+  },
+  "units": {
+    "en": "g"
+  },
+  "decimals": 1,
+  "min": 0,
+  "getable": true,
+  "setable": false,
+  "insights": true,
+  "insightsTitle": {
+    "en": "Food in bowl"
+  },
+  "uiComponent": "sensor"
+}

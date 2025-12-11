@@ -8078,6 +8078,25 @@
       },
       {
         "title": {
+          "en": "Calibrate feeder scale"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "placeholder": {
+              "en": "Select device"
+            },
+            "filter": "driver_id=petfeeder_mmgg_miot"
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "id": "petfeederCalibrate"
+      },
+      {
+        "title": {
           "en": "Set display schedule progress"
         },
         "titleFormatted": {
@@ -23167,10 +23186,13 @@
       "capabilities": [
         "petfeeder_foodlevel",
         "petfeeder_eaten_food_today",
-        "petfeeder_eaten_food_total",
         "petfeeder_food_out_status",
+        "petfeeder_food_out_progress",
         "petfeeder_heap_status",
         "petfeeder_status_mode",
+        "petfeeder_busy",
+        "petfeeder_food_in_bowl",
+        "petfeeder_schedule_progress",
         "measure_desiccant",
         "measure_desiccant_time",
         "alarm_desiccant_low"
@@ -23356,6 +23378,19 @@
               "max": 100,
               "step": 1,
               "value": 20
+            },
+            {
+              "id": "eaten_food_today_adjust",
+              "type": "number",
+              "label": {
+                "en": "Manual eaten food today (g)"
+              },
+              "step": 1,
+              "min": 0,
+              "value": 0,
+              "hint": {
+                "en": "Set the current daily eaten food amount if you need to correct the calculation."
+              }
             }
           ]
         }
@@ -31023,6 +31058,22 @@
       },
       "insights": true
     },
+    "petfeeder_busy": {
+      "type": "boolean",
+      "title": {
+        "en": "Feeder busy"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "toggle",
+      "insights": true,
+      "insightsTitleTrue": {
+        "en": "Feeding"
+      },
+      "insightsTitleFalse": {
+        "en": "Idle"
+      }
+    },
     "petfeeder_eaten_food_today": {
       "type": "number",
       "title": {
@@ -31038,7 +31089,11 @@
       },
       "decimals": 0,
       "min": 0,
-      "uiComponent": "sensor"
+      "uiComponent": "sensor",
+      "insights": true,
+      "insightsTitle": {
+        "en": "Food eaten today"
+      }
     },
     "petfeeder_eaten_food_total": {
       "type": "number",
@@ -31055,6 +31110,39 @@
       },
       "decimals": 0,
       "min": 0,
+      "uiComponent": "sensor"
+    },
+    "petfeeder_food_in_bowl": {
+      "type": "number",
+      "title": {
+        "en": "Food left in bowl"
+      },
+      "units": {
+        "en": "g"
+      },
+      "decimals": 1,
+      "min": 0,
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "insightsTitle": {
+        "en": "Food in bowl"
+      },
+      "uiComponent": "sensor"
+    },
+    "petfeeder_food_out_progress": {
+      "type": "number",
+      "title": {
+        "en": "Food out progress"
+      },
+      "getable": true,
+      "setable": false,
+      "units": {
+        "en": "%"
+      },
+      "min": 0,
+      "max": 100,
+      "decimals": 0,
       "uiComponent": "sensor"
     },
     "petfeeder_food_out_status": {
@@ -31098,55 +31186,22 @@
       },
       "values": [
         {
-          "id": "0",
           "title": {
-            "en": "Normal",
-            "nl": "Normaal",
-            "da": "Normal",
-            "de": "Normal",
-            "es": "Normal",
-            "fr": "Normal",
-            "it": "Normale",
-            "no": "Normal",
-            "sv": "Normal",
-            "pl": "Normalny",
-            "ru": "Нормальный",
-            "ko": "정상"
-          }
+            "en": "Normal"
+          },
+          "id": "normal"
         },
         {
-          "id": "1",
           "title": {
-            "en": "Low",
-            "nl": "Laag",
-            "da": "Lav",
-            "de": "Niedrig",
-            "es": "Bajo",
-            "fr": "Bas",
-            "it": "Basso",
-            "no": "Lav",
-            "sv": "Låg",
-            "pl": "Niski",
-            "ru": "Низкий",
-            "ko": "낮음"
-          }
+            "en": "Low"
+          },
+          "id": "low"
         },
         {
-          "id": "2",
           "title": {
-            "en": "Empty",
-            "nl": "Leeg",
-            "da": "Tom",
-            "de": "Leer",
-            "es": "Vacío",
-            "fr": "Vide",
-            "it": "Vuoto",
-            "no": "Tom",
-            "sv": "Tom",
-            "pl": "Pusty",
-            "ru": "Пустой",
-            "ko": "비어 있음"
-          }
+            "en": "Unknown"
+          },
+          "id": "unknown"
         }
       ],
       "getable": true,
@@ -31175,6 +31230,21 @@
         }
       ],
       "uiComponent": "picker"
+    },
+    "petfeeder_schedule_progress": {
+      "type": "number",
+      "title": {
+        "en": "Schedule progress"
+      },
+      "units": {
+        "en": "%"
+      },
+      "decimals": 0,
+      "min": 0,
+      "max": 100,
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor"
     },
     "petfeeder_status_mode": {
       "type": "enum",

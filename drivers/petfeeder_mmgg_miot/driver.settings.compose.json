@@ -129,6 +129,19 @@
         "max": 100,
         "step": 1,
         "value": 20
+      },
+      {
+        "id": "eaten_food_today_adjust",
+        "type": "number",
+        "label": {
+          "en": "Manual eaten food today (g)"
+        },
+        "step": 1,
+        "min": 0,
+        "value": 0,
+        "hint": {
+          "en": "Set the current daily eaten food amount if you need to correct the calculation."
+        }
       }
     ]
   }
