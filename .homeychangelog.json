@@ -367,5 +367,8 @@
   },
   "3.4.44": {
     "en": "Xiaomi X20 / X20+ (c102gl), petfeeder_mmgg_miot and humidifier_deerma_humidifier_miot specific fixes"
+  },
+  "3.4.45": {
+    "en": "Petfeeder - work in progress, Xiaomi Vacuum Miot Max adjustments "
   }
 }
