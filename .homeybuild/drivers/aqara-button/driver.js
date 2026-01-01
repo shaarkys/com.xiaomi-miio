@@ -14,11 +14,11 @@ class AqaraButton extends Driver {
     this.homey.flow.getDeviceTriggerCard('click_long');
 
     this.config = {
-      model: ["sensor_switch.aq2", "sensor_switch"]
+      model: ["sensor_switch.aq2", "sensor_switch", "remote.b1acn01"]
     }
-    
+
   }
-  
+
 }
 
 module.exports = AqaraButton;
