@@ -373,5 +373,8 @@
   },
   "3.4.46": {
     "en": "Added remote.b1acn0 -  Chinese model of Aqara mini switch - credits MCFurry"
+  },
+  "3.4.47": {
+    "en": "X20Pro / xiaomi.vacuum.d102gl water level checks adjustments"
   }
 }
