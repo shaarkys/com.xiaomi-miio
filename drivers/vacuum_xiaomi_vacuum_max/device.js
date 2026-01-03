@@ -592,7 +592,6 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             const water_level_prop = this.getMiotProp(result, 'water_level');
             const path_mode_prop = this.getMiotProp(result, 'path_mode');
             const carpet_mode_prop = this.getMiotProp(result, 'carpet_avoidance');
-            const detergent_left_prop = this.getMiotProp(result, 'detergent_left_level');
 
             const consumables = this.deviceProperties.supports.consumables
                 ? [
@@ -783,17 +782,9 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                 err = this.deviceProperties.error_codes[device_fault.value];
             }
 
-            // Some models keep broadcasting the last "water tank empty" fault even after refilling.
-            // When we have evidence that water is present again, clear the stale fault so the tile recovers.
-            const isWaterTankFault = device_fault && Number(device_fault.value) === 210030;
-            const hasDetergentReading = this.deviceProperties.supports.detergent && detergent_left_prop && Number(detergent_left_prop.value) > 0;
-            const hasWaterLevelReading = this.deviceProperties.supports.water_level && water_level_prop && Number(water_level_prop.value) > 0;
-            if (isWaterTankFault && (hasDetergentReading || hasWaterLevelReading)) {
-                err = 'OK';
-            }
-
             let safeError = typeof err === 'string' ? err : 'Unknown Error';
-            if (stateKey === 'cleaning') safeError = 'OK - Working';
+            const okStates = new Set(['Everything-is-ok', 'OK', 'OK / Busy']);
+            if (stateKey === 'cleaning' && okStates.has(err)) safeError = 'OK - Working';
 
             await this.updateCapabilityValue('vacuum_xiaomi_status', safeError);
             if (this.getSetting('error') !== err) {

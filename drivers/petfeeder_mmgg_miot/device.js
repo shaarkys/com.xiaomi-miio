@@ -48,21 +48,34 @@ const BASE_GET_PROPS = [
     { did: 'foodlevel', siid: 2, piid: 6 }
 ];
 
-const IV2001_DEFAULTS = {
+const LEGACY_MIOT_PROPS = {
     eaten_food_today: { siid: 2, piid: 18 }, // daily eaten grams
-    food_in_bowl: { siid: 4, piid: 6 }, // mmgg-spec weightlevel (grams)
-    food_out_status: { siid: 2, piid: 11 }, // spec v2: food-out fault flag
+    food_in_bowl: { siid: 4, piid: 6 }, // firmware-dependent; may be unsupported (-4001)
+    food_out_status: { siid: 2, piid: 26 }, // FOOD_OUT_STATUS (0/1)
     food_out_progress: { siid: 5, piid: 11 }, // xiaomi-spec: food-out progress (%)
     heap_status: { siid: 2, piid: 15 }, // spec v2: heap/accumulation flag
-    status_mode: { siid: 2, piid: 32 }, // spec v2: idle/busy state
-    target_feeding_measure: { siid: 2, piid: 7 }, // grams configured in device app
+    // Note: Legacy MIoT mappings are inconsistent; derive status from flags/progress.
+    target_feeding_measure: { siid: 2, piid: 8 }, // FEEDING_MEASURE (often -4001 for read)
+    target_feeding_measure_legacy: { siid: 2, piid: 7 }, // fallback (observed on some firmwares)
     desiccant_level: { siid: 6, piid: 1 }, // correct MIoT mapping (percent remaining)
     desiccant_time: { siid: 6, piid: 2 }, // correct MIoT mapping (days remaining, some firmware returns hours)
     schedule_progress: { siid: 5, piid: 15 }, // feeding schedule progress (%)
     refill_reminder: { siid: 5, piid: 16 } // optional: refill reminder flag / counter
 };
 
-const IV2001_SETTING_PROPS = {
+const IV2001_MIOT_PROPS = {
+    eaten_food_today: { siid: 2, piid: 18 }, // eaten-food-measure
+    eaten_food_today_alt: { siid: 2, piid: 23 }, // eaten-food-measure (alt)
+    food_out_status: { siid: 2, piid: 10 }, // food stuck status (0 normal, 1 abnormal)
+    target_feeding_measure: { siid: 2, piid: 7 }, // target-feeding-measure
+    feeding_measure: { siid: 2, piid: 8 }, // feeding-measure (action input)
+    food_out_progress: { siid: 5, piid: 11 }, // food-out progress (%)
+    screen_display_mode: { siid: 5, piid: 18 }, // set-screen-display
+    desiccant_level: { siid: 6, piid: 1 }, // desiccant-left-level
+    desiccant_time: { siid: 6, piid: 2 } // desiccant-left-time
+};
+
+const LEGACY_SETTING_PROPS = {
     child_lock: { siid: 3, piid: 1, type: 'bool' }, // physical-controls-locked
     auto_screen_off: { siid: 3, piid: 3, type: 'uint8_bool' }, // mode 0/1 (auto screen-off)
     display_schedule_progress: { siid: 5, piid: 4, type: 'bool' }, // plan-process-display
@@ -72,6 +85,18 @@ const IV2001_SETTING_PROPS = {
     dispensing_error_correction: { siid: 5, piid: 12, type: 'uint8_bool' }, // compensate-switch 0/1
     bowl_spillage_prevention: { siid: 5, piid: 14, type: 'uint8_bool' } // prevent-accumulation 0/1
 };
+
+const IV2001_SETTING_PROPS = {
+    child_lock: { siid: 3, piid: 3, type: 'uint8_bool' } // physical control locked mode (0/1)
+};
+
+function resolveMiotProps(presetId) {
+    return presetId === 'iv2001' ? IV2001_MIOT_PROPS : LEGACY_MIOT_PROPS;
+}
+
+function resolveSettingProps(presetId) {
+    return presetId === 'iv2001' ? IV2001_SETTING_PROPS : LEGACY_SETTING_PROPS;
+}
 
 const MANUAL_FEED_PORTION_GRAMS = 5; // fallback grams per portion when target measure missing
 const DESICCANT_FULL_DAYS = 30; // according to device UI (full pack lifetime)
@@ -167,6 +192,8 @@ class PetFeederMiotDevice extends DeviceBase {
             // Resolve model->preset (kept for completeness; we operate fine on any feeder)
             const model = this.getStoreValue('model') || this.getData()?.model || 'xiaomi.feeder.iv2001';
             this._presetId = resolvePresetId(model);
+            this._miotProps = resolveMiotProps(this._presetId);
+            this._settingProps = resolveSettingProps(this._presetId);
 
             // Ensure capabilities exist (upgrade-safe)
             await this._ensureCapabilities();
@@ -268,7 +295,7 @@ class PetFeederMiotDevice extends DeviceBase {
             }
 
             for (const key of changedKeys) {
-                if (!Object.prototype.hasOwnProperty.call(IV2001_SETTING_PROPS, key)) continue;
+                if (!Object.prototype.hasOwnProperty.call(this._settingProps || {}, key)) continue;
                 if (this._state?.suppressSettingApply) continue;
                 try {
                     await this._applySettingToDevice(key, newSettings[key]);
@@ -313,28 +340,38 @@ class PetFeederMiotDevice extends DeviceBase {
                 return;
             }
 
+            const miotProps = this._miotProps || LEGACY_MIOT_PROPS;
+            const settingProps = this._settingProps || LEGACY_SETTING_PROPS;
+
             // Build default read set
-            const settingsReq = Object.entries(IV2001_SETTING_PROPS).map(([key, def]) => ({
+            const settingsReq = Object.entries(settingProps).map(([key, def]) => ({
                 did: `setting_${key}`,
                 siid: def.siid,
                 piid: def.piid
             }));
 
-            const req = [
-                ...BASE_GET_PROPS,
-                { did: 'eaten_food_today', siid: IV2001_DEFAULTS.eaten_food_today.siid, piid: IV2001_DEFAULTS.eaten_food_today.piid },
-                { did: 'food_in_bowl', siid: IV2001_DEFAULTS.food_in_bowl.siid, piid: IV2001_DEFAULTS.food_in_bowl.piid },
-                { did: 'food_out_status', siid: IV2001_DEFAULTS.food_out_status.siid, piid: IV2001_DEFAULTS.food_out_status.piid },
-                { did: 'food_out_progress', siid: IV2001_DEFAULTS.food_out_progress.siid, piid: IV2001_DEFAULTS.food_out_progress.piid },
-                { did: 'heap_status', siid: IV2001_DEFAULTS.heap_status.siid, piid: IV2001_DEFAULTS.heap_status.piid },
-                { did: 'status_mode', siid: IV2001_DEFAULTS.status_mode.siid, piid: IV2001_DEFAULTS.status_mode.piid },
-                { did: 'target_feeding_measure', siid: IV2001_DEFAULTS.target_feeding_measure.siid, piid: IV2001_DEFAULTS.target_feeding_measure.piid },
-                { did: 'desiccant_level', siid: IV2001_DEFAULTS.desiccant_level.siid, piid: IV2001_DEFAULTS.desiccant_level.piid },
-                { did: 'desiccant_time', siid: IV2001_DEFAULTS.desiccant_time.siid, piid: IV2001_DEFAULTS.desiccant_time.piid },
-                { did: 'schedule_progress', siid: IV2001_DEFAULTS.schedule_progress.siid, piid: IV2001_DEFAULTS.schedule_progress.piid },
-                { did: 'refill_reminder', siid: IV2001_DEFAULTS.refill_reminder.siid, piid: IV2001_DEFAULTS.refill_reminder.piid },
-                ...settingsReq
-            ];
+            const req = [...BASE_GET_PROPS];
+            const addProp = (did, def) => {
+                if (!def) return;
+                req.push({ did, siid: def.siid, piid: def.piid });
+            };
+
+            addProp('eaten_food_today', miotProps.eaten_food_today);
+            addProp('eaten_food_today_alt', miotProps.eaten_food_today_alt);
+            addProp('food_in_bowl', miotProps.food_in_bowl);
+            addProp('food_out_status', miotProps.food_out_status);
+            addProp('food_out_progress', miotProps.food_out_progress);
+            addProp('heap_status', miotProps.heap_status);
+            addProp('target_feeding_measure', miotProps.target_feeding_measure);
+            addProp('target_feeding_measure_legacy', miotProps.target_feeding_measure_legacy);
+            addProp('feeding_measure', miotProps.feeding_measure);
+            addProp('desiccant_level', miotProps.desiccant_level);
+            addProp('desiccant_time', miotProps.desiccant_time);
+            addProp('schedule_progress', miotProps.schedule_progress);
+            addProp('refill_reminder', miotProps.refill_reminder);
+            addProp('screen_display_mode', miotProps.screen_display_mode);
+
+            req.push(...settingsReq);
 
             const res = await this._safeGetProps(req);
             const got = this._indexResults(req, res);
@@ -398,29 +435,8 @@ class PetFeederMiotDevice extends DeviceBase {
     }
 
     async _updateEatenFood(g) {
-        const bowlProp = g.food_in_bowl;
         const progressOutProp = g.food_out_progress;
         const scheduleProp = g.schedule_progress;
-
-        let bowl;
-        let bowlSupported = false;
-        if (bowlProp && bowlProp.code === 0) {
-            const raw = toNumber(bowlProp.value);
-            if (Number.isFinite(raw)) {
-                bowl = Math.max(0, raw);
-                bowlSupported = true;
-                if (this._state) {
-                    this._state.bowlUnsupported = false;
-                    this._state.estimatedBowl = bowl;
-                }
-            }
-        } else if (bowlProp && bowlProp.code === -4001) {
-            this._onceWarn('[EATEN] bowl level unsupported (-4001)');
-            if (this._state) this._state.bowlUnsupported = true;
-        }
-        if (!bowlSupported && this._state?.estimatedBowl !== undefined) {
-            bowl = this._state.estimatedBowl;
-        }
 
         let progress;
         if (progressOutProp && progressOutProp.code === 0) {
@@ -442,6 +458,86 @@ class PetFeederMiotDevice extends DeviceBase {
         const progressValue = typeof progress === 'number' ? progress : undefined;
         const progressComplete = progressValue === undefined ? true : progressValue >= PROGRESS_COMPLETE_THRESHOLD;
         const progressLabel = progressValue === undefined ? 'n/a' : progressValue.toFixed(1);
+
+        if (this.hasCapability('petfeeder_food_out_progress') && typeof progressValue === 'number') {
+            await this._setCap('petfeeder_food_out_progress', Math.round(progressValue));
+        }
+        if (this.hasCapability('petfeeder_schedule_progress') && typeof progressValue === 'number') {
+            await this._setCap('petfeeder_schedule_progress', Math.round(progressValue));
+        }
+        if (this.hasCapability('petfeeder_busy')) {
+            await this._setCap('petfeeder_busy', !progressComplete);
+        }
+
+        if (this._state) {
+            this._state.lastProgressValue = progressValue;
+            this._state.lastProgressComplete = progressComplete;
+        }
+
+        const miotEaten = (() => {
+            const primary = g.eaten_food_today;
+            const alt = g.eaten_food_today_alt;
+            const pick = primary && primary.code === 0 ? primary : alt && alt.code === 0 ? alt : undefined;
+            if (!pick) return undefined;
+            const value = toNumber(pick.value);
+            return Number.isFinite(value) ? Math.max(0, value) : undefined;
+        })();
+
+        if (this._presetId === 'iv2001' && Number.isFinite(miotEaten)) {
+            const ymdNow = this._ymdNow();
+            const prevTracker = this._state.todayTracker || { ymd: ymdNow, value: 0 };
+            const prevValue = Number.isFinite(prevTracker.value) ? prevTracker.value : 0;
+            const sameDay = prevTracker.ymd === ymdNow;
+            const normalized = Math.max(0, Math.round(miotEaten));
+            const deltaRaw = sameDay ? normalized - prevValue : normalized;
+            const delta = deltaRaw > 0 ? deltaRaw : 0;
+
+            const tracker = { ymd: ymdNow, value: normalized };
+            const changed = !sameDay || Math.abs(prevValue - normalized) > 0.1;
+            if (changed) {
+                try {
+                    await this.setStoreValue(STORE_KEYS.todaySnapshot, tracker);
+                } catch (_) {}
+            }
+
+            this._state.todayTracker = tracker;
+            this._state.pendingDuringDispense = 0;
+            this._state.fallbackPending = 0;
+            this._state.progressActive = false;
+            this._state.progressDose = undefined;
+
+            if (this.hasCapability('petfeeder_eaten_food_today')) {
+                await this._setCap('petfeeder_eaten_food_today', normalized);
+            }
+
+            await this._syncEatenSetting(normalized);
+
+            if (delta > 0.1) {
+                await this._triggerEatenChanged(normalized, delta);
+            }
+            return;
+        }
+
+        const bowlProp = g.food_in_bowl;
+        let bowl;
+        let bowlSupported = false;
+        if (bowlProp && bowlProp.code === 0) {
+            const raw = toNumber(bowlProp.value);
+            if (Number.isFinite(raw)) {
+                bowl = Math.max(0, raw);
+                bowlSupported = true;
+                if (this._state) {
+                    this._state.bowlUnsupported = false;
+                    this._state.estimatedBowl = bowl;
+                }
+            }
+        } else if (bowlProp && bowlProp.code === -4001) {
+            this._onceWarn('[EATEN] bowl level unsupported (-4001)');
+            if (this._state) this._state.bowlUnsupported = true;
+        }
+        if (!bowlSupported && this._state?.estimatedBowl !== undefined) {
+            bowl = this._state.estimatedBowl;
+        }
 
         if (this._state) {
             const progressActiveNow = !progressComplete;
@@ -467,15 +563,6 @@ class PetFeederMiotDevice extends DeviceBase {
             }
         }
 
-        if (this.hasCapability('petfeeder_food_out_progress') && typeof progressValue === 'number') {
-            await this._setCap('petfeeder_food_out_progress', Math.round(progressValue));
-        }
-        if (this.hasCapability('petfeeder_schedule_progress') && typeof progressValue === 'number') {
-            await this._setCap('petfeeder_schedule_progress', Math.round(progressValue));
-        }
-        if (this.hasCapability('petfeeder_busy')) {
-            await this._setCap('petfeeder_busy', !progressComplete);
-        }
         if (bowlSupported && this.hasCapability('petfeeder_food_in_bowl') && typeof bowl === 'number') {
             await this._setCap('petfeeder_food_in_bowl', bowl);
         }
@@ -552,8 +639,6 @@ class PetFeederMiotDevice extends DeviceBase {
         } else if (this._state && this._state.estimatedBowl !== undefined) {
             this._state.lastBowlGrams = this._state.estimatedBowl;
         }
-        this._state.lastProgressValue = progressValue;
-        this._state.lastProgressComplete = progressComplete;
 
         const todayRounded = Math.round(tracker.value);
         if (this.hasCapability('petfeeder_eaten_food_today')) {
@@ -590,28 +675,56 @@ class PetFeederMiotDevice extends DeviceBase {
     }
 
     async _updateStatusMode(g) {
-        const m = g.status_mode;
         if (!this.hasCapability('petfeeder_status_mode')) return;
 
-        if (m && m.code === 0) {
-            const text = MODE_MAP.get(toNumber(m.value)) || 'unknown';
-            const prev = this._state.lastMode;
-            await this._setCap('petfeeder_status_mode', text);
-            if (text !== prev) {
-                await this._flow.feederStatusChanged?.trigger(this, { new_status: text, previous_status: prev || 'unknown' }, {});
-                this.log('[MODE] change:', prev, '->', text);
-                this._state.lastMode = text;
-                await this._timeline(`Feeder status -> ${text}`);
+        const isFault = (() => {
+            const err = g.error;
+            if (err && err.code === 0) {
+                const v = toNumber(err.value);
+                if (Number.isFinite(v) && v !== 0) return true;
+                if (typeof err.value !== 'undefined' && String(err.value) !== '0') return true;
             }
-        } else if (m && m.code === -4001) {
-            this._onceWarn('[MODE] unsupported (-4001)');
+            const out = g.food_out_status;
+            if (out && out.code === 0 && toNumber(out.value) === 1) return true;
+            const heap = g.heap_status;
+            if (heap && heap.code === 0 && toNumber(heap.value) === 1) return true;
+            return false;
+        })();
+
+        const isFeeding = (() => {
+            if (this.getCapabilityValue('petfeeder_busy') === true) return true;
+
+            const progress = g.food_out_progress;
+            if (progress && progress.code === 0) {
+                const v = toNumber(progress.value);
+                if (Number.isFinite(v) && v < PROGRESS_COMPLETE_THRESHOLD) return true;
+            }
+            const schedule = g.schedule_progress;
+            if (schedule && schedule.code === 0) {
+                const v = toNumber(schedule.value);
+                if (Number.isFinite(v) && v < PROGRESS_COMPLETE_THRESHOLD) return true;
+            }
+            return false;
+        })();
+
+        const text = isFault ? 'fault' : isFeeding ? 'feeding' : 'idle';
+        const prev = this._state.lastMode;
+        await this._setCap('petfeeder_status_mode', text);
+        if (text !== prev) {
+            await this._flow.feederStatusChanged?.trigger(this, { new_status: text, previous_status: prev || 'unknown' }, {});
+            this.log('[MODE] change:', prev, '->', text);
+            this._state.lastMode = text;
+            await this._timeline(`Feeder status -> ${text}`);
         }
     }
 
     async _updateTargetFeedingMeasure(g) {
-        const t = g.target_feeding_measure;
-        if (!t || t.code !== 0) return;
-        const value = toNumber(t.value);
+        const primary = g.target_feeding_measure;
+        const legacy = g.target_feeding_measure_legacy;
+        const pick = primary && primary.code === 0 ? primary : legacy && legacy.code === 0 ? legacy : undefined;
+        if (!pick) return;
+
+        const value = toNumber(pick.value);
         if (!Number.isFinite(value) || value <= 0) return;
         const normalized = Math.max(1, Math.round(value));
         if (this._state.targetFeedingMeasure !== normalized) {
@@ -622,7 +735,8 @@ class PetFeederMiotDevice extends DeviceBase {
 
     async _syncSettingsFromMiot(g) {
         const patch = {};
-        for (const [key, def] of Object.entries(IV2001_SETTING_PROPS)) {
+        const settingProps = this._settingProps || LEGACY_SETTING_PROPS;
+        for (const [key, def] of Object.entries(settingProps)) {
             const entry = g[`setting_${key}`];
             if (!entry || entry.code !== 0) continue;
             const normalized = this._normalizeSettingFromDevice(def, entry.value);
@@ -798,12 +912,18 @@ class PetFeederMiotDevice extends DeviceBase {
             const count = Number.isFinite(raw) ? Math.max(1, Math.min(MANUAL_FEED_MAX_PORTIONS, Math.round(raw))) : 1;
             const gramsPerPortion = Number.isFinite(this._state.targetFeedingMeasure) && this._state.targetFeedingMeasure > 0 ? this._state.targetFeedingMeasure : MANUAL_FEED_PORTION_GRAMS;
             const grams = count * gramsPerPortion;
-            const propertyPayload = [
-                { siid: 2, piid: 8, value: grams }
-            ];
-            await this._callMiio('set_properties', propertyPayload, { retries: 1 }, 8000);
-            const actionPayload = { siid: 2, aiid: 1, in: [] };
-            const result = await this._callMiio('action', actionPayload, { retries: 1 }, 12000);
+            let result;
+            if (this._presetId === 'iv2001') {
+                const actionPayload = { siid: 2, aiid: 1, in: [grams] };
+                result = await this._callMiio('action', actionPayload, { retries: 1 }, 12000);
+            } else {
+                const propertyPayload = [
+                    { siid: 2, piid: 8, value: grams }
+                ];
+                await this._callMiio('set_properties', propertyPayload, { retries: 1 }, 8000);
+                const actionPayload = { siid: 2, aiid: 1, in: [] };
+                result = await this._callMiio('action', actionPayload, { retries: 1 }, 12000);
+            }
             this.log('[FEED] manual feed', { portions: count, grams, grams_per_portion: gramsPerPortion });
             await this._timeline(`Manual feed: ${count}x (${grams} g)`);
             return result;
@@ -896,7 +1016,7 @@ class PetFeederMiotDevice extends DeviceBase {
         const ymdNow = this._ymdNow();
         const normalized = Number.isFinite(value) ? Math.max(0, Math.round(value)) : 0;
         const tracker = { ymd: ymdNow, value: normalized };
-        this._state.todayTracker = tracker;\n        if (delta > 0 && this._state?.bowlUnsupported) {\n            const previousBowl = Number.isFinite(prevBowl) ? prevBowl : Number.isFinite(this._state.estimatedBowl) ? this._state.estimatedBowl : 0;\n            const estimated = Math.max(0, previousBowl - delta);\n            this._state.estimatedBowl = estimated;\n            this._state.lastBowlGrams = estimated;\n            if (this.hasCapability('petfeeder_food_in_bowl')) {\n                const rounded = Math.round(estimated * 10) / 10;\n                await this._setCap('petfeeder_food_in_bowl', Math.max(0, rounded));\n            }\n        }
+        this._state.todayTracker = tracker;
         this._state.pendingDuringDispense = 0;
         try {
             await this.setStoreValue(STORE_KEYS.todaySnapshot, tracker);
@@ -1026,7 +1146,7 @@ class PetFeederMiotDevice extends DeviceBase {
     }
 
     async _applySettingToDevice(key, value) {
-        const def = IV2001_SETTING_PROPS[key];
+        const def = (this._settingProps || LEGACY_SETTING_PROPS)[key];
         if (!def) return;
         if (!this.miio) throw new Error('miio not ready');
 
@@ -1055,11 +1175,3 @@ class PetFeederMiotDevice extends DeviceBase {
 }
 
 module.exports = PetFeederMiotDevice;
-
-
-
-
-
-
-
-
