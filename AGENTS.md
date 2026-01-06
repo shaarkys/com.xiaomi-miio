@@ -34,6 +34,7 @@ You must always respect Homey SDK 3 - https://apps.developer.homey.app/ and APP 
 - Update capability and flow definitions in `.homeycompose/` and keep driver/device code in sync.
 - Add comments only for complex logic. Maintain existing comments and change only in case they are not correct anymore due to the performed changes
 - Any JSON must follow Athom Homey SDK baselines and must not contain any comment
+- When adding new capability, it's assumed they might not exist yet since the pairing, so must be checked for existance and created if missing
 
 ## Homey Compose Rules
 

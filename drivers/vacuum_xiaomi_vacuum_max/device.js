@@ -206,6 +206,21 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             const model = this.getStoreValue('model');
             this.deviceProperties = properties[mapping[model]] || properties.properties_d109gl;
             this._model = model;
+            if (this._model === 'xiaomi.vacuum.d102gl') {
+                this.deviceProperties = {
+                    ...this.deviceProperties,
+                    get_properties: [...this.deviceProperties.get_properties]
+                };
+                const extraProps = [
+                    { did: 'water_check_status', siid: 2, piid: 54 },
+                    { did: 'fault_ids', siid: 2, piid: 66 }
+                ];
+                for (const prop of extraProps) {
+                    if (!this.deviceProperties.get_properties.some((existing) => existing.did === prop.did)) {
+                        this.deviceProperties.get_properties.push(prop);
+                    }
+                }
+            }
             this._areaDivisor = (this.deviceProperties.scale && this.deviceProperties.scale.area_divisor) || 100;
             this._timeDivisor = (this.deviceProperties.scale && this.deviceProperties.scale.time_divisor) || 3600;
             this._carpetModeState = this.getStoreValue('carpetModeState') || '0';
@@ -592,6 +607,8 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             const water_level_prop = this.getMiotProp(result, 'water_level');
             const path_mode_prop = this.getMiotProp(result, 'path_mode');
             const carpet_mode_prop = this.getMiotProp(result, 'carpet_avoidance');
+            const water_check_status = this._model === 'xiaomi.vacuum.d102gl' ? this.getMiotProp(result, 'water_check_status') : null;
+            const fault_ids = this._model === 'xiaomi.vacuum.d102gl' ? this.getMiotProp(result, 'fault_ids') : null;
 
             const consumables = this.deviceProperties.supports.consumables
                 ? [
@@ -780,6 +797,28 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             let err = 'Everything-is-ok';
             if (device_fault && this.deviceProperties.error_codes.hasOwnProperty(device_fault.value)) {
                 err = this.deviceProperties.error_codes[device_fault.value];
+            }
+
+            const isWaterTankFault = device_fault && Number(device_fault.value) === 210030;
+            if (isWaterTankFault && this._model === 'xiaomi.vacuum.d102gl') {
+                const waterCheckValue = water_check_status && water_check_status.value != null ? Number(water_check_status.value) : null;
+                const waterCheckSuccess = waterCheckValue === 2;
+                const waterCheckFail = waterCheckValue === 3;
+                let hasWaterFaultId = null;
+                if (fault_ids && typeof fault_ids.value === 'string') {
+                    const ids = fault_ids.value.match(/\d+/g);
+                    if (!ids) {
+                        hasWaterFaultId = false;
+                    } else {
+                        hasWaterFaultId = ids.map((id) => Number(id)).includes(210030);
+                    }
+                }
+
+                if (waterCheckSuccess || hasWaterFaultId === false || (stateKey === 'cleaning' && !waterCheckFail && hasWaterFaultId !== true)) {
+                    err = 'Everything-is-ok';
+                } else if (waterCheckFail) {
+                    err = 'Water tank empty';
+                }
             }
 
             let safeError = typeof err === 'string' ? err : 'Unknown Error';
