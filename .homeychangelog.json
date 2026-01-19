@@ -379,5 +379,8 @@
   },
   "3.4.48": {
     "en": "X20Pro / xiaomi.vacuum.d102gl water level checks adjustments"
+  },
+  "3.4.49": {
+    "en": "Minor vacuum_xiaomi_vacuum_max related fixes in case of device unavailability"
   }
 }
