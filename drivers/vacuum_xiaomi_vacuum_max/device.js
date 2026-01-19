@@ -618,6 +618,13 @@ class XiaomiVacuumMiotDeviceMax extends Device {
 
     async retrieveDeviceData() {
         try {
+            if (!this.miio || typeof this.miio.call !== 'function') {
+                if (this.getAvailable()) {
+                    this.setUnavailable(this.homey.__('device.unreachable')).catch((error) => this.error(error));
+                }
+                this.createDevice();
+                return;
+            }
             if (!this._syncModelFromDevice()) return;
             const result = await this.miio.call('get_properties', this.deviceProperties.get_properties, { retries: 1 });
 
