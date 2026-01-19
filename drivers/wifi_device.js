@@ -276,6 +276,9 @@ class MiWifiDeviceDevice extends Homey.Device {
                 address: this.getSetting('address'),
                 token: this.getSetting('token')
             });
+            if (!this.miio) {
+                throw new Error('miio.device returned null');
+            }
 
             // device came back, clear failure counter
             this.deviceFailures = 0;
@@ -561,6 +564,9 @@ class MiWifiDeviceDevice extends Homey.Device {
     /* START CAPABILITY LISTENERS */
     async startCapabilityListeners() {
         try {
+            if (!this.miio) {
+                return;
+            }
             /* avoid piling up listeners after reconnects */
             this.miio.removeAllListeners?.();
 

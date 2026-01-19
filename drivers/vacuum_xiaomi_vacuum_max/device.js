@@ -188,6 +188,70 @@ class XiaomiVacuumMiotDeviceMax extends Device {
         return found;
     }
 
+    _getDeviceModel() {
+        if (this.miio) {
+            return this.miio.miioModel || (this.miio.management && this.miio.management.model) || null;
+        }
+        return null;
+    }
+
+    _applyModelProperties(model) {
+        const mappedKey = mapping[model];
+        this.deviceProperties = properties[mappedKey] || properties.properties_d109gl;
+        this._model = model;
+        if (this._model === 'xiaomi.vacuum.d102gl') {
+            this.deviceProperties = {
+                ...this.deviceProperties,
+                get_properties: [...this.deviceProperties.get_properties]
+            };
+            const extraProps = [
+                { did: 'water_check_status', siid: 2, piid: 54 },
+                { did: 'fault_ids', siid: 2, piid: 66 }
+            ];
+            for (const prop of extraProps) {
+                if (!this.deviceProperties.get_properties.some((existing) => existing.did === prop.did)) {
+                    this.deviceProperties.get_properties.push(prop);
+                }
+            }
+        }
+        this._areaDivisor = (this.deviceProperties.scale && this.deviceProperties.scale.area_divisor) || 100;
+        this._timeDivisor = (this.deviceProperties.scale && this.deviceProperties.scale.time_divisor) || 3600;
+    }
+
+    _syncModelFromDevice() {
+        const actualModel = this._getDeviceModel();
+        if (!actualModel) return true;
+
+        if (this._model !== actualModel) {
+            if (!this._modelMismatchLogged) {
+                this.log(`[MODEL] Detected model change: ${this._model || 'unknown'} -> ${actualModel}`);
+                this._modelMismatchLogged = true;
+            }
+            this._model = actualModel;
+            try {
+                this.setStoreValue('model', actualModel);
+            } catch (_) {}
+        }
+
+        const mappedKey = mapping[this._model];
+        if (!mappedKey) {
+            if (this._unsupportedModel !== this._model) {
+                this._unsupportedModel = this._model;
+                this.log(`[MODEL] Unsupported model for vacuum_xiaomi_vacuum_max: ${this._model}`);
+            }
+            if (this.getAvailable()) {
+                this.setUnavailable(`Unsupported model for this driver: ${this._model}`).catch(() => {});
+            }
+            return false;
+        }
+
+        if (this._unsupportedModel) this._unsupportedModel = null;
+
+        this._applyModelProperties(this._model);
+
+        return true;
+    }
+
     async onInit() {
         try {
             if (!this.util) this.util = new Util({ homey: this.homey });
@@ -204,25 +268,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             this._isSessionActive = false;
 
             const model = this.getStoreValue('model');
-            this.deviceProperties = properties[mapping[model]] || properties.properties_d109gl;
-            this._model = model;
-            if (this._model === 'xiaomi.vacuum.d102gl') {
-                this.deviceProperties = {
-                    ...this.deviceProperties,
-                    get_properties: [...this.deviceProperties.get_properties]
-                };
-                const extraProps = [
-                    { did: 'water_check_status', siid: 2, piid: 54 },
-                    { did: 'fault_ids', siid: 2, piid: 66 }
-                ];
-                for (const prop of extraProps) {
-                    if (!this.deviceProperties.get_properties.some((existing) => existing.did === prop.did)) {
-                        this.deviceProperties.get_properties.push(prop);
-                    }
-                }
-            }
-            this._areaDivisor = (this.deviceProperties.scale && this.deviceProperties.scale.area_divisor) || 100;
-            this._timeDivisor = (this.deviceProperties.scale && this.deviceProperties.scale.time_divisor) || 3600;
+            this._applyModelProperties(model);
             this._carpetModeState = this.getStoreValue('carpetModeState') || '0';
             if (!this.getStoreValue('carpetModeState')) {
                 try {
@@ -389,6 +435,29 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                 }
             });
 
+            const registerVacuumAction = (cardId, capabilityId, argKey, supportKey) => {
+                this.homey.flow.getActionCard(cardId).registerRunListener(async (args) => {
+                    try {
+                        const target = args.device;
+                        if (!target || !target.deviceProperties || !target.deviceProperties.supports || !target.deviceProperties.supports[supportKey]) {
+                            return Promise.reject('Feature not supported by this device.');
+                        }
+                        if (!target.hasCapability(capabilityId)) {
+                            return Promise.reject('Capability not available on this device.');
+                        }
+                        return await target.triggerCapabilityListener(capabilityId, args[argKey]);
+                    } catch (error) {
+                        return Promise.reject(error && error.message ? error.message : error);
+                    }
+                });
+            };
+
+            registerVacuumAction('set_sweep_mop_type', 'vacuum_xiaomi_mop_mode_max', 'mode', 'mopmode');
+            registerVacuumAction('set_cleaning_mode', 'vacuum_xiaomi_cleaning_mode_max', 'power', 'cleaning_mode');
+            registerVacuumAction('set_water_level', 'vacuum_xiaomi_water_level_max', 'level', 'water_level');
+            registerVacuumAction('set_path_mode', 'vacuum_xiaomi_path_mode_max', 'mode', 'path_mode');
+            registerVacuumAction('set_carpet_avoidance', 'vacuum_xiaomi_carpet_mode_max', 'mode', 'carpet_avoidance');
+
             // Capability listeners: register only for supported features
             if (this.deviceProperties.supports.carpet_avoidance) {
                 this.registerCapabilityListener('vacuum_xiaomi_carpet_mode_max', async (value) => {
@@ -549,6 +618,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
 
     async retrieveDeviceData() {
         try {
+            if (!this._syncModelFromDevice()) return;
             const result = await this.miio.call('get_properties', this.deviceProperties.get_properties, { retries: 1 });
 
             // Fetch rooms only when needed and only until discovered
