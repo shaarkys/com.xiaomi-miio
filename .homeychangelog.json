@@ -382,5 +382,8 @@
   },
   "3.4.49": {
     "en": "Minor vacuum_xiaomi_vacuum_max related fixes in case of device unavailability"
+  },
+  "3.4.50": {
+    "en": "Fix pet_waterer_xiaomi ON/OFF status reporting."
   }
 }
