@@ -39,6 +39,16 @@ const modes_iv02 = {
 };
 
 class PetwaterdispenserXiaomiDevice extends Device {
+    normalizeBooleanValue(value) {
+        if (typeof value === 'boolean') return value;
+        if (typeof value === 'number') return value === 1;
+        if (typeof value === 'string') {
+            const normalized = value.toLowerCase();
+            return normalized === '1' || normalized === 'true' || normalized === 'on';
+        }
+        return false;
+    }
+
     // Helper method to pretty print properties (similar to the reference device)
     prettyPrintProperties(result, propertyDefs) {
         try {
@@ -89,7 +99,7 @@ class PetwaterdispenserXiaomiDevice extends Device {
                                 {
                                     siid: this.deviceProperties.set_properties.onoff.siid,
                                     piid: this.deviceProperties.set_properties.onoff.piid,
-                                    value: value ? 1 : 0
+                                    value: !!value
                                 }
                             ],
                             { retries: 1 }
@@ -180,7 +190,7 @@ class PetwaterdispenserXiaomiDevice extends Device {
 
             /* Capabilities */
             if (onoff) {
-                await this.updateCapabilityValue('onoff', onoff.value === 1);
+                await this.updateCapabilityValue('onoff', this.normalizeBooleanValue(onoff.value));
             }
 
             if (mode && this.getCapabilityValue('petwaterdispenser_mmgg_mode_3') !== mode.value.toString()) {
