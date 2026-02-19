@@ -385,5 +385,8 @@
   },
   "3.4.50": {
     "en": "Fix pet_waterer_xiaomi ON/OFF status reporting."
+  },
+  "3.4.51": {
+    "en": "Add support for Xiaomi Robot Vacuum S20+ (xiaomi.vacuum.b108gl)"
   }
 }
