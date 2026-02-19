@@ -8,6 +8,7 @@ const Util = require('../../lib/util.js');
 // https://home.miot-spec.com/spec/xiaomi.vacuum.d109gl // Xiaomi Robot Vacuum X20 Max
 // https://home.miot-spec.com/spec/xiaomi.vacuum.d102gl // Xiaomi Robot Vacuum X20 Pro  (original mapping kept)
 // https://home.miot-spec.com/spec/xiaomi.vacuum.c102gl // Xiaomi Robot Vacuum X20 / X20+
+// https://home.miot-spec.com/spec/xiaomi.vacuum.b108gl // Xiaomi Robot Vacuum S20+
 
 /** ------------------------------------------------------------------
  *  Shared constants (hoisted)
@@ -54,11 +55,21 @@ const STATUS_MAPPING_C102 = {
     stopped_error: [4]
 };
 
+const STATUS_MAPPING_B108GL = {
+    cleaning: [4, 7, 9],
+    spot_cleaning: [],
+    docked: [8],
+    charging: [2, 3, 6],
+    stopped: [1, 5, 10],
+    stopped_error: []
+};
+
 /** Model → property-set */
 const mapping = {
     'xiaomi.vacuum.d109gl': 'properties_d109gl',
     'xiaomi.vacuum.d102gl': 'properties_d109gl', // unchanged — you said it’s flawless
-    'xiaomi.vacuum.c102gl': 'properties_c102gl' // X20 / X20+ specific minimal + room action change
+    'xiaomi.vacuum.c102gl': 'properties_c102gl', // X20 / X20+ specific minimal + room action change
+    'xiaomi.vacuum.b108gl': 'properties_b108gl'
 };
 
 /** Property sets */
@@ -171,6 +182,48 @@ const properties = {
         },
         error_codes: ERROR_CODES,
         status_mapping: STATUS_MAPPING_C102
+    },
+
+    /* S20+ (b108gl) */
+    properties_b108gl: {
+        get_rooms: [{ did: 'rooms', siid: 2, piid: 13 }],
+        get_properties: [
+            { did: 'device_status', siid: 2, piid: 1 },
+            { did: 'device_fault', siid: 2, piid: 2 },
+            { did: 'battery', siid: 3, piid: 1 },
+            { did: 'mode', siid: 2, piid: 3 },
+            { did: 'cleaning_mode', siid: 2, piid: 8 },
+            { did: 'water_level', siid: 2, piid: 9 },
+            { did: 'carpet_avoidance', siid: 2, piid: 20 },
+            { did: 'total_clean_time', siid: 2, piid: 6 },
+            { did: 'total_clean_area', siid: 2, piid: 5 }
+        ],
+        set_properties: {
+            start_clean: { siid: 2, aiid: 1, did: 'call-2-1', in: [] },
+            stop_clean: { siid: 2, aiid: 2, did: 'call-2-2', in: [] },
+            home: { siid: 3, aiid: 1, did: 'call-3-1', in: [] },
+            mopmode: { siid: 2, piid: 3 },
+            cleaning_mode: { siid: 2, piid: 8 },
+            water_level: { siid: 2, piid: 9 },
+            room_clean_action: { siid: 2, aiid: 13, piid: 13 },
+            carpet_avoidance: { siid: 2, piid: 20 }
+        },
+        supports: {
+            rooms: true,
+            mopmode: true,
+            cleaning_mode: true,
+            water_level: true,
+            path_mode: false,
+            carpet_avoidance: true,
+            consumables: false,
+            detergent: false
+        },
+        scale: {
+            area_divisor: 100,
+            time_divisor: 3600
+        },
+        error_codes: ERROR_CODES,
+        status_mapping: STATUS_MAPPING_B108GL
     }
 };
 
@@ -277,6 +330,12 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             }
 
             // Only add optional caps if model actually supports them
+            if (this.deviceProperties.supports.path_mode && !this.hasCapability('vacuum_xiaomi_path_mode_max')) {
+                await this.addCapability('vacuum_xiaomi_path_mode_max');
+            }
+            if (!this.deviceProperties.supports.path_mode && this.hasCapability('vacuum_xiaomi_path_mode_max')) {
+                await this.removeCapability('vacuum_xiaomi_path_mode_max');
+            }
             if (this.deviceProperties.supports.carpet_avoidance && !this.hasCapability('vacuum_xiaomi_carpet_mode_max')) {
                 await this.addCapability('vacuum_xiaomi_carpet_mode_max');
             }
@@ -1176,6 +1235,13 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             const idx = Number(raw);
             return Number.isNaN(idx) ? '1' : (mapping[idx] !== undefined ? mapping[idx] : '1');
         }
+        if (this.getModelIdentifier() === 'xiaomi.vacuum.b108gl') {
+            const numeric = Number(raw);
+            if (Number.isNaN(numeric)) return '1';
+            if (numeric <= 0) return '1';
+            if (numeric > 3) return '3';
+            return String(numeric);
+        }
         return String(raw);
     }
 
@@ -1255,6 +1321,20 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                 default:
                     return { payload: [], state: this._carpetModeState };
             }
+        }
+        if (model === 'xiaomi.vacuum.b108gl') {
+            const primary = this.deviceProperties.set_properties.carpet_avoidance;
+            if (!primary) {
+                return { payload: [], state: this._carpetModeState };
+            }
+            const normalizedValue = desired === '3' ? 0 : Number(desired);
+            if (Number.isNaN(normalizedValue)) {
+                return { payload: [], state: this._carpetModeState };
+            }
+            return {
+                payload: [{ siid: primary.siid, piid: primary.piid, value: normalizedValue }],
+                state: String(normalizedValue)
+            };
         }
         const primary = this.deviceProperties.set_properties.carpet_avoidance;
         if (!primary) {
