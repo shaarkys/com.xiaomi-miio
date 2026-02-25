@@ -16,20 +16,6 @@ const modes = {
   4: "Humidity"
 };
 
-const properties = [
-  "Humidifier_Gear",
-  "Humidity_Value",
-  "HumiSet_Value",
-  "Led_State",
-  "OnOff_State",
-  "TemperatureValue",
-  "TipSound_State",
-  "waterstatus",
-  "watertankstatus"
-];
-
-const validModeValues = new Set(["1", "2", "3", "4"]);
-
 class HumidifierDeermaJSQDevice extends Device {
 
   async onInit() {
@@ -110,73 +96,29 @@ class HumidifierDeermaJSQDevice extends Device {
     return Promise.resolve(true);
   }
 
-  async getPropertiesSingleRequest() {
-    const values = [];
-
-    // Some deerma.humidifier.(mj)jsq models return invalid values when queried in bulk.
-    for (const property of properties) {
-      const result = await this.miio.call("get_prop", [property], { retries: 1 });
-      values.push(Array.isArray(result) ? result[0] : result);
-    }
-
-    return values;
-  }
-
-  asNumber(value) {
-    const numberValue = Number(value);
-    return Number.isFinite(numberValue) ? numberValue : null;
-  }
-
   async retrieveDeviceData() {
     try {
 
-      const result = await this.getPropertiesSingleRequest();
+      const result = await this.miio.call("get_prop", ["Humidifier_Gear", "Humidity_Value", "HumiSet_Value", "Led_State", "OnOff_State", "TemperatureValue", "TipSound_State", "waterstatus", "watertankstatus"], { retries: 1 });
       if (!this.getAvailable()) { await this.setAvailable(); }
 
-      const modeValue = this.asNumber(result[0]);
-      const humidityValue = this.asNumber(result[1]);
-      const targetHumidityValue = this.asNumber(result[2]);
-      const ledValue = this.asNumber(result[3]);
-      const onOffValue = this.asNumber(result[4]);
-      const temperatureValue = this.asNumber(result[5]);
-      const buzzerValue = this.asNumber(result[6]);
-      const waterStatusValue = this.asNumber(result[7]);
-      const waterTankStatusValue = this.asNumber(result[8]);
-
       /* capabilities */
-      if (humidityValue !== null) {
-        await this.updateCapabilityValue("measure_humidity", humidityValue);
-      }
-      if (targetHumidityValue !== null) {
-        await this.updateCapabilityValue("target_humidity", targetHumidityValue / 100);
-      }
-      if (onOffValue !== null) {
-        await this.updateCapabilityValue("onoff", onOffValue === 1);
-      }
-      if (temperatureValue !== null) {
-        await this.updateCapabilityValue("measure_temperature", temperatureValue);
-      }
-      if (waterStatusValue !== null) {
-        await this.updateCapabilityValue("alarm_water", waterStatusValue === 0);
-      }
-      if (waterTankStatusValue !== null) {
-        await this.updateCapabilityValue("alarm_tank_empty", waterTankStatusValue !== 0);
-      }
+      await this.updateCapabilityValue("measure_humidity", parseInt(result[1]));
+      await this.updateCapabilityValue("target_humidity", parseInt(result[2]) / 100);
+      await this.updateCapabilityValue("onoff", result[4] === 1 ? true : false);
+      await this.updateCapabilityValue("measure_temperature", parseInt(result[5]));
+      await this.updateCapabilityValue("alarm_water", result[7] === 0 ? true : false);
+      await this.updateCapabilityValue("alarm_tank_empty", result[8] === 0 ? false : true);
       
       /* settings */
-      if (ledValue !== null) {
-        await this.updateSettingValue("led", ledValue === 1);
-      }
-      if (buzzerValue !== null) {
-        await this.updateSettingValue("buzzer", buzzerValue === 1);
-      }
+      await this.updateSettingValue("led", result[3] === 1 ? true : false);
+      await this.updateSettingValue("buzzer", result[6] === 1 ? true : false);
 
       /* mode capability */
-      const modeCapabilityValue = modeValue !== null ? modeValue.toString() : null;
-      if (modeCapabilityValue && validModeValues.has(modeCapabilityValue) && this.getCapabilityValue('humidifier_deerma_jsq_mode') !== modeCapabilityValue) {
+      if (this.getCapabilityValue('humidifier_deerma_jsq_mode') !== result[0].toString()) {
         const previous_mode = this.getCapabilityValue('humidifier_deerma_jsq_mode');
-        await this.setCapabilityValue('humidifier_deerma_jsq_mode', modeCapabilityValue);
-        await this.homey.flow.getDeviceTriggerCard('triggerModeChanged').trigger(this, {"new_mode": modes[modeValue], "previous_mode": modes[+previous_mode] }).catch(error => { this.error(error) });
+        await this.setCapabilityValue('humidifier_deerma_jsq_mode', result[0].toString());
+        await this.homey.flow.getDeviceTriggerCard('triggerModeChanged').trigger(this, {"new_mode": modes[result[0]], "previous_mode": modes[+previous_mode] }).catch(error => { this.error(error) });
       }
 
     } catch (error) {
