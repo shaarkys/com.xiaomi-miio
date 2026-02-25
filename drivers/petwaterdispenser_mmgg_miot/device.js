@@ -8,6 +8,7 @@ const Util = require('../../lib/util.js');
 // https://home.miot-spec.com/spec/mmgg.pet_waterer.s1 // Xiaomi Smart Pet Fountain
 // https://home.miot-spec.com/spec/mmgg.pet_waterer.s4 // Xiaomi Smart Pet Fountain
 // https://home.miot-spec.com/spec/mmgg.pet_waterer.wi11 // Xiaomi Smart Pet Fountain
+// https://home.miot-spec.com/spec/xiaomi.pet_waterer.iv02 // Xiaomi Smart Pet Fountain 2
 
 const mapping = {
   "mmgg.pet_waterer.s1": "mapping_sx", 
