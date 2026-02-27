@@ -391,5 +391,8 @@
   },
   "3.4.52": {
     "en": "Add support for Xiaomi Robot Vacuum S20+ (xiaomi.vacuum.b108gl)"
+  },
+  "3.4.53": {
+    "en": "Handled UDP unreachable errors in network.js as retries instead of crashes."
   }
 }
