@@ -11,6 +11,18 @@ const tokens = require('./tokens');
 const safeishJSON = require('./safeishJSON');
 
 const PORT = 54321;
+const SOFT_NETWORK_ERROR_CODES = new Set([
+	'ENETUNREACH',
+	'EHOSTUNREACH',
+	'ETIMEDOUT',
+	'ECONNREFUSED',
+	'EHOSTDOWN',
+	'ENETDOWN'
+]);
+
+function isSoftNetworkError(err) {
+	return Boolean(err && SOFT_NETWORK_ERROR_CODES.has(err.code));
+}
 
 const ERRORS = {
 	'-5001': (method, args, err) => err.message === 'invalid_arg' ? 'Invalid argument' : err.message,
@@ -45,11 +57,19 @@ class Network extends EventEmitter {
 		try {
 			this.packet.handshake();
 			const data = Buffer.from(this.packet.raw);
-			this.socket.send(data, 0, data.length, PORT, '255.255.255.255');
+			this.socket.send(data, 0, data.length, PORT, '255.255.255.255', err => {
+				if (err) {
+					this.debug('Discovery broadcast failed', err);
+				}
+			});
 
 			// Broadcast an extra time in 500 milliseconds in case the first broadcast misses a few devices
 			setTimeout(() => {
-				this.socket.send(data, 0, data.length, PORT, '255.255.255.255');
+				this.socket.send(data, 0, data.length, PORT, '255.255.255.255', err => {
+					if (err) {
+						this.debug('Discovery broadcast retry failed', err);
+					}
+				});
 			}, 500);
 		} catch (error) {
 			this.debug(error);
@@ -144,6 +164,10 @@ class Network extends EventEmitter {
 	createSocket() {
 		try {
 			this._socket = dgram.createSocket('udp4');
+			this._socket.on('error', err => {
+				// Keep transport errors local so they do not crash the process.
+				this.debug('Network socket error', err);
+			});
 			setTimeout(() => {
 				// Bind the socket and when it is ready mark it for broadcasting
 				try {
@@ -454,7 +478,17 @@ class DeviceInfo {
 				// Create and send the handshake data
 				this.packet.handshake();
 				const data = this.packet.raw;
-				this.parent.socket.send(data, 0, data.length, this.port, this.address, err => err && reject(err));
+				this.parent.socket.send(data, 0, data.length, this.port, this.address, err => {
+					if (!err) return;
+
+					if (isSoftNetworkError(err)) {
+						// Let handshake timeout drive retry logic for transient network failures.
+						this.debug('Handshake send soft network error', err);
+						return;
+					}
+
+					reject(err);
+				});
 	
 				// Handler called when a reply to the handshake is received
 				this.handshakeResolve = () => {
@@ -554,6 +588,7 @@ class DeviceInfo {
 							this.debug('Reached maximum number of retries, giving up');
 							const err = new Error('Call to device timed out');
 							err.code = 'timeout';
+							promise.reject(err);
 						}
 					} catch (error) {
 						promise.reject(error);
@@ -614,7 +649,17 @@ class DeviceInfo {
 	
 							const data = this.packet.raw;
 	
-							this.parent.socket.send(data, 0, data.length, this.port, this.address, err => err && promise.reject(err));
+							this.parent.socket.send(data, 0, data.length, this.port, this.address, err => {
+								if (!err) return;
+
+								if (isSoftNetworkError(err)) {
+									// Retry timer already queued below, so do not fail fast here.
+									this.debug('Call send soft network error', err);
+									return;
+								}
+
+								promise.reject(err);
+							});
 	
 							// Queue a retry in 2 seconds
 							setTimeout(retry, 2000);
