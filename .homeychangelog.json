@@ -397,5 +397,8 @@
   },
   "3.4.54": {
     "en": "Support for Xiaomi Robot Vacuum H40 (*experimental) / Xiaomi Vacuum Cleaner MIoT MAX (WiFi) driver"
+  },
+  "3.4.55": {
+    "en": "Very experimental support for Mijia Smart Scent Diffuser (diffuser_xwhzp_diffuser_xwxfj) /  new driver Mijia Smart Scent Diffuser (WiFi)"
   }
 }
