@@ -73,6 +73,7 @@ class Util {
 
     'leshow.humidifier.jsq1': 'Xiaomi Humidifier Pro',
     'shuii.humidifier.jsq001': 'Humidifier JSQ001',
+    'xwhzp.diffuser.xwxfj': 'Mijia Smart Scent Diffuser',
 
     'dmaker.derh.22ht': 'Xiaomi Smart Dehumidifier',
 

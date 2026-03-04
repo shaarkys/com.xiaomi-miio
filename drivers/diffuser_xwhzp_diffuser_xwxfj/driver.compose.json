@@ -1,0 +1,64 @@
+{
+  "name": {
+    "en": "Mijia Smart Scent Diffuser (WiFi)",
+    "nl": "Mijia Smart Geurverspreider (WiFi)",
+    "da": "Mijia Smart Duftdiffuser (WiFi)",
+    "de": "Mijia Smart Duftdiffusor (WiFi)",
+    "es": "Difusor Aromatico Inteligente Mijia (WiFi)",
+    "fr": "Diffuseur de parfum intelligent Mijia (WiFi)",
+    "it": "Diffusore di fragranze smart Mijia (WiFi)",
+    "no": "Mijia Smart duftspreder (WiFi)",
+    "sv": "Mijia Smart doftspridare (WiFi)",
+    "pl": "Inteligentny dyfuzor zapachu Mijia (WiFi)",
+    "ru": "Mijia smart aroma-diffuser (WiFi)",
+    "ko": "Mijia smart scent diffuser (WiFi)"
+  },
+  "images": {
+    "large": "drivers/humidifier_xiaomi_humidifier/assets/images/large.jpg",
+    "small": "drivers/humidifier_xiaomi_humidifier/assets/images/small.jpg"
+  },
+  "class": "humidifier",
+  "$extends": [
+    "defaults"
+  ],
+  "capabilities": [
+    "onoff",
+    "diffuser_xwhzp_mode",
+    "diffuser_xwhzp_fragrance_out_time",
+    "dim",
+    "light_hue",
+    "light_saturation",
+    "measure_waterlevel",
+    "alarm_tank_empty",
+    "measure_battery",
+    "alarm_battery"
+  ],
+  "capabilitiesOptions": {
+    "dim": {
+      "title": {
+        "en": "Ambient light brightness",
+        "nl": "Helderheid sfeerverlichting",
+        "da": "Lysstyrke for stemningslys",
+        "de": "Helligkeit des Umgebungslichts",
+        "es": "Brillo de luz ambiental",
+        "fr": "Luminosite de la lumiere d'ambiance",
+        "it": "Luminosita luce ambiente",
+        "no": "Lysstyrke for stemningslys",
+        "sv": "Ljusstyrka for omgivningsljus",
+        "pl": "Jasnosc oswietlenia ambientowego",
+        "ru": "Yarkost ambientnogo osveshcheniya",
+        "ko": "ambient light brightness"
+      }
+    },
+    "diffuser_xwhzp_fragrance_out_time": {
+      "min": 30,
+      "max": 120,
+      "step": 10
+    }
+  },
+  "energy": {
+    "batteries": [
+      "INTERNAL"
+    ]
+  }
+}

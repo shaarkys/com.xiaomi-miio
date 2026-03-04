@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generator: Adobe Illustrator 24.0.2, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+
+<svg
+   version="1.1"
+   id="Слой_1"
+   x="0px"
+   y="0px"
+   viewBox="0 0 256 256"
+   style="enable-background:new 0 0 256 256;"
+   xml:space="preserve"
+   sodipodi:docname="icon.svg"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><defs
+   id="defs4" /><sodipodi:namedview
+   id="namedview4"
+   pagecolor="#ffffff"
+   bordercolor="#000000"
+   borderopacity="0.25"
+   inkscape:showpageshadow="2"
+   inkscape:pageopacity="0.0"
+   inkscape:pagecheckerboard="0"
+   inkscape:deskcolor="#d1d1d1"
+   inkscape:zoom="4.5820312"
+   inkscape:cx="131.05541"
+   inkscape:cy="128"
+   inkscape:window-width="3440"
+   inkscape:window-height="1369"
+   inkscape:window-x="-8"
+   inkscape:window-y="-8"
+   inkscape:window-maximized="1"
+   inkscape:current-layer="Слой_1" />
+<style
+   type="text/css"
+   id="style1">
+	.st0{fill:none;stroke:#000000;stroke-width:5;stroke-miterlimit:10;}
+	.st1{fill:none;stroke:#000000;stroke-miterlimit:10;}
+	.st2{font-family:'MyriadPro-Regular';}
+	.st3{font-size:6.2925px;}
+</style>
+<ellipse
+   class="st0"
+   cx="128.04"
+   cy="34.13"
+   rx="62.43"
+   ry="23.9"
+   id="ellipse1" /><path
+   class="st0"
+   id="ellipse1-7"
+   style="fill:none;stroke:#000000;stroke-width:4;stroke-miterlimit:10;stroke-dasharray:none"
+   sodipodi:type="arc"
+   sodipodi:cx="127.35371"
+   sodipodi:cy="142.28894"
+   sodipodi:rx="62.214272"
+   sodipodi:ry="26.92181"
+   sodipodi:start="0"
+   sodipodi:end="3.1415927"
+   sodipodi:open="true"
+   sodipodi:arc-type="arc"
+   d="m 189.56798,142.28894 a 62.214272,26.92181 0 0 1 -31.10714,23.31497 62.214272,26.92181 0 0 1 -62.214269,0 62.214272,26.92181 0 0 1 -31.107136,-23.31497" />
+<path
+   class="st0"
+   d="M189.62,221.43c0,15.14-27.95,27.42-62.43,27.42s-62.43-12.28-62.43-27.42"
+   id="path1" />
+<line
+   class="st0"
+   x1="65.61"
+   y1="34.13"
+   x2="64.75"
+   y2="221.43"
+   id="line1" />
+<line
+   class="st0"
+   x1="189.62"
+   y1="221.43"
+   x2="190.47"
+   y2="34.13"
+   id="line2" />
+<ellipse
+   class="st1"
+   cx="127.4"
+   cy="41.04"
+   rx="47.39"
+   ry="13.23"
+   id="ellipse2" />
+
+<path
+   class="st1"
+   d="M109.41,53.28c-1.29-0.9-2.02-1.92-2.02-2.99c0-3.77,8.99-6.83,20.07-6.83c11.09,0,20.07,3.06,20.07,6.83  c0,0.94-0.56,1.84-1.58,2.66"
+   id="path3" />
+<polyline
+   class="st1"
+   points="131.52,122.42 131.52,120.23 127.19,121.72 123.28,120.23 123.28,125.38 "
+   id="polyline3"
+   transform="translate(-0.2182438,13.749361)" />
+<path
+   class="st1"
+   d="m 130.99176,137.65936 c 0.07,2.74 -0.6,3.72 -2.27,4.54 -1.63,0.8 -3.85,-0.02 -5.13,-1.34"
+   id="path4" />
+
+<ellipse
+   style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:square;stroke-linejoin:bevel;stroke-miterlimit:11.7;stroke-dasharray:none;paint-order:stroke markers fill"
+   id="path5"
+   cx="118.72464"
+   cy="20.187553"
+   rx="0.87297529"
+   ry="0.54560953" /><ellipse
+   style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:square;stroke-linejoin:bevel;stroke-miterlimit:11.7;stroke-dasharray:none;paint-order:stroke markers fill"
+   id="path5-3"
+   cx="137.31628"
+   cy="20.454391"
+   rx="0.87297529"
+   ry="0.54560953" /><ellipse
+   style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:square;stroke-linejoin:bevel;stroke-miterlimit:11.7;stroke-dasharray:none;paint-order:stroke markers fill"
+   id="path5-2"
+   cx="128.02046"
+   cy="20.320972"
+   rx="0.87297529"
+   ry="0.54560953" /></svg>

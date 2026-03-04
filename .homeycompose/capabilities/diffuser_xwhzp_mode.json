@@ -1,0 +1,62 @@
+{
+  "type": "enum",
+  "title": {
+    "en": "Mode",
+    "nl": "Modus",
+    "da": "Tilstand",
+    "de": "Modus",
+    "es": "Modo",
+    "fr": "Mode",
+    "it": "Modalita",
+    "no": "Modus",
+    "sv": "Lage",
+    "pl": "Tryb",
+    "ru": "Rezhim",
+    "ko": "mode"
+  },
+  "values": [
+    {
+      "id": "0",
+      "title": { "en": "Sleep" }
+    },
+    {
+      "id": "1",
+      "title": { "en": "Reading" }
+    },
+    {
+      "id": "2",
+      "title": { "en": "Exercise" }
+    },
+    {
+      "id": "3",
+      "title": { "en": "Wakeup" }
+    },
+    {
+      "id": "4",
+      "title": { "en": "Custom Mode 1" }
+    },
+    {
+      "id": "5",
+      "title": { "en": "Custom Mode 2" }
+    },
+    {
+      "id": "6",
+      "title": { "en": "Custom Mode 3" }
+    },
+    {
+      "id": "7",
+      "title": { "en": "Custom Mode 4" }
+    },
+    {
+      "id": "8",
+      "title": { "en": "Try It" }
+    },
+    {
+      "id": "9",
+      "title": { "en": "Idle Mode" }
+    }
+  ],
+  "getable": true,
+  "setable": true,
+  "icon": "/assets/icons/humidifier-mode.svg"
+}

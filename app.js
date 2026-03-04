@@ -323,6 +323,15 @@ class XiaomiMiioApp extends Homey.App {
         }
       });
 
+    this.homey.flow.getActionCard('modeDiffuserXwhzp')
+      .registerRunListener(async (args) => {
+        try {
+          return await args.device.triggerCapabilityListener('diffuser_xwhzp_mode', args.mode);
+        } catch (error) {
+          return Promise.reject(error.message);
+        }
+      });
+
     this.homey.flow.getActionCard('modeDehumidifierDmaker')
       .registerRunListener(async (args) => {
         try {

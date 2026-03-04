@@ -2175,7 +2175,7 @@
               "ru": "Выберите устройство",
               "ko": "디바이스 선택"
             },
-            "filter": "driver_id=mi-airpurifier|airpurifier_zhimi_advanced|airpurifier_zhimi_advanced_miot|airpurifier_zhimi_airpurifier_ma2|airpurifier_dmaker_airfresh_t2017|airfresh_zhimi_airfresh|humidifier_zhimi_humidifier|humidifier_zhimi_humidifier_miot|humidifier_deerma_humidifier_jsq|humidifier_deerma_humidifier_miot|dmaker_fan_1c|fan_zhimi_advanced|zhimi_fan_za5|airfryer_careli_miot|petwaterdispenser_mmgg_miot|pet_waterer_xiaomi|petfeeder_mmgg_miot|humidifier_xiaomi_humidifier|dehumidifier_dmaker_derh_miot|humidifier_leshow_humidifier_jsq1"
+            "filter": "driver_id=mi-airpurifier|airpurifier_zhimi_advanced|airpurifier_zhimi_advanced_miot|airpurifier_zhimi_airpurifier_ma2|airpurifier_dmaker_airfresh_t2017|airfresh_zhimi_airfresh|humidifier_zhimi_humidifier|humidifier_zhimi_humidifier_miot|humidifier_deerma_humidifier_jsq|humidifier_deerma_humidifier_miot|dmaker_fan_1c|fan_zhimi_advanced|zhimi_fan_za5|airfryer_careli_miot|petwaterdispenser_mmgg_miot|pet_waterer_xiaomi|petfeeder_mmgg_miot|humidifier_xiaomi_humidifier|dehumidifier_dmaker_derh_miot|humidifier_leshow_humidifier_jsq1|diffuser_xwhzp_diffuser_xwxfj"
           }
         ],
         "platforms": [
@@ -7268,6 +7268,108 @@
           "local"
         ],
         "id": "modeDehumidifierDmaker"
+      },
+      {
+        "id": "modeDiffuserXwhzp",
+        "title": {
+          "en": "Set Mode",
+          "nl": "Stel modus in",
+          "da": "Saet tilstand",
+          "de": "Modus einstellen",
+          "es": "Establecer modo",
+          "fr": "Definir le mode",
+          "it": "Imposta modalita",
+          "no": "Sett modus",
+          "sv": "Stall in lage",
+          "pl": "Ustaw tryb",
+          "ru": "Ustanovit rezhim",
+          "ko": "mode set"
+        },
+        "titleFormatted": {
+          "en": "Set mode to [[mode]]"
+        },
+        "args": [
+          {
+            "name": "mode",
+            "title": {
+              "en": "Mode"
+            },
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "0",
+                "title": {
+                  "en": "Sleep"
+                }
+              },
+              {
+                "id": "1",
+                "title": {
+                  "en": "Reading"
+                }
+              },
+              {
+                "id": "2",
+                "title": {
+                  "en": "Exercise"
+                }
+              },
+              {
+                "id": "3",
+                "title": {
+                  "en": "Wakeup"
+                }
+              },
+              {
+                "id": "4",
+                "title": {
+                  "en": "Custom Mode 1"
+                }
+              },
+              {
+                "id": "5",
+                "title": {
+                  "en": "Custom Mode 2"
+                }
+              },
+              {
+                "id": "6",
+                "title": {
+                  "en": "Custom Mode 3"
+                }
+              },
+              {
+                "id": "7",
+                "title": {
+                  "en": "Custom Mode 4"
+                }
+              },
+              {
+                "id": "8",
+                "title": {
+                  "en": "Try It"
+                }
+              },
+              {
+                "id": "9",
+                "title": {
+                  "en": "Idle Mode"
+                }
+              }
+            ]
+          },
+          {
+            "name": "device",
+            "type": "device",
+            "placeholder": {
+              "en": "Select Mijia Smart Scent Diffuser"
+            },
+            "filter": "driver_id=diffuser_xwhzp_diffuser_xwxfj"
+          }
+        ],
+        "platforms": [
+          "local"
+        ]
       },
       {
         "id": "modeDmakerFan",
@@ -16587,6 +16689,173 @@
             "pl": "Ustawienia urządzenia",
             "ru": "Настройки устройства",
             "ko": "장치 설정"
+          },
+          "children": [
+            {
+              "id": "address",
+              "type": "text",
+              "value": "0.0.0.0",
+              "label": {
+                "en": "IP Address",
+                "nl": "IP adres",
+                "da": "IP-adresse",
+                "de": "IP-Adresse",
+                "es": "Dirección IP",
+                "fr": "Adresse IP",
+                "it": "Indirizzo IP",
+                "no": "IP-adresse",
+                "sv": "IP-adress",
+                "pl": "Adres IP",
+                "ru": "IP-адрес",
+                "ko": "IP 주소"
+              }
+            },
+            {
+              "id": "token",
+              "type": "text",
+              "value": "",
+              "label": {
+                "en": "Mi Device Token",
+                "nl": "Mi Apparaat Token",
+                "da": "Mi Enheds Token",
+                "de": "Mi Gerätetoken",
+                "es": "Token del Dispositivo Mi",
+                "fr": "Jeton de l'Appareil Mi",
+                "it": "Token Dispositivo Mi",
+                "no": "Mi Enhet Token",
+                "sv": "Mi Enhetstoken",
+                "pl": "Token Urządzenia Mi",
+                "ru": "Токен Устройства Mi",
+                "ko": "Mi 기기 토큰"
+              }
+            },
+            {
+              "id": "polling",
+              "type": "number",
+              "value": 60,
+              "attr": {
+                "min": 5,
+                "max": 3600
+              },
+              "label": {
+                "en": "Polling Frequency",
+                "nl": "Polling frequentie",
+                "da": "Polling Frekvens",
+                "de": "Abfragefrequenz",
+                "es": "Frecuencia de sondeo",
+                "fr": "Fréquence de sondage",
+                "it": "Frequenza di polling",
+                "no": "Polling Frekvens",
+                "sv": "Pollingfrekvens",
+                "pl": "Częstotliwość odpytywania",
+                "ru": "Частота опроса",
+                "ko": "폴링 빈도"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "icon": "/drivers/diffuser_xwhzp_diffuser_xwxfj/assets/icon.svg",
+      "pair": [
+        {
+          "id": "start",
+          "navigation": {
+            "next": "pair"
+          }
+        },
+        {
+          "id": "pair"
+        },
+        {
+          "id": "add_device"
+        }
+      ],
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [
+        "lan"
+      ],
+      "name": {
+        "en": "Mijia Smart Scent Diffuser (WiFi)",
+        "nl": "Mijia Smart Geurverspreider (WiFi)",
+        "da": "Mijia Smart Duftdiffuser (WiFi)",
+        "de": "Mijia Smart Duftdiffusor (WiFi)",
+        "es": "Difusor Aromatico Inteligente Mijia (WiFi)",
+        "fr": "Diffuseur de parfum intelligent Mijia (WiFi)",
+        "it": "Diffusore di fragranze smart Mijia (WiFi)",
+        "no": "Mijia Smart duftspreder (WiFi)",
+        "sv": "Mijia Smart doftspridare (WiFi)",
+        "pl": "Inteligentny dyfuzor zapachu Mijia (WiFi)",
+        "ru": "Mijia smart aroma-diffuser (WiFi)",
+        "ko": "Mijia smart scent diffuser (WiFi)"
+      },
+      "images": {
+        "large": "drivers/humidifier_xiaomi_humidifier/assets/images/large.jpg",
+        "small": "drivers/humidifier_xiaomi_humidifier/assets/images/small.jpg"
+      },
+      "class": "humidifier",
+      "capabilities": [
+        "onoff",
+        "diffuser_xwhzp_mode",
+        "diffuser_xwhzp_fragrance_out_time",
+        "dim",
+        "light_hue",
+        "light_saturation",
+        "measure_waterlevel",
+        "alarm_tank_empty",
+        "measure_battery",
+        "alarm_battery"
+      ],
+      "capabilitiesOptions": {
+        "dim": {
+          "title": {
+            "en": "Ambient light brightness",
+            "nl": "Helderheid sfeerverlichting",
+            "da": "Lysstyrke for stemningslys",
+            "de": "Helligkeit des Umgebungslichts",
+            "es": "Brillo de luz ambiental",
+            "fr": "Luminosite de la lumiere d'ambiance",
+            "it": "Luminosita luce ambiente",
+            "no": "Lysstyrke for stemningslys",
+            "sv": "Ljusstyrka for omgivningsljus",
+            "pl": "Jasnosc oswietlenia ambientowego",
+            "ru": "Yarkost ambientnogo osveshcheniya",
+            "ko": "ambient light brightness"
+          }
+        },
+        "diffuser_xwhzp_fragrance_out_time": {
+          "min": 30,
+          "max": 120,
+          "step": 10
+        }
+      },
+      "energy": {
+        "batteries": [
+          "INTERNAL"
+        ]
+      },
+      "id": "diffuser_xwhzp_diffuser_xwxfj",
+      "settings": [
+        {
+          "type": "group",
+          "label": {
+            "en": "Device Settings",
+            "nl": "Apparaat instellingen",
+            "da": "Enhedsindstillinger",
+            "de": "Geräteeinstellungen",
+            "es": "Configuración del dispositivo",
+            "fr": "Paramètres de l'appareil",
+            "it": "Impostazioni del dispositivo",
+            "no": "Enhetsinnstillinger",
+            "sv": "Enhetsinställningar",
+            "pl": "Ustawienia urządzenia",
+            "ru": "Настройки устройства",
+            "ko": "장치 설정",
+            "ja": "デバイス設定",
+            "zh": "设备设置"
           },
           "children": [
             {
@@ -29760,6 +30029,124 @@
             "pl": "Suszenie ubrań",
             "ru": "Сушка одежды",
             "ko": "의류 건조"
+          }
+        }
+      ],
+      "getable": true,
+      "setable": true,
+      "icon": "/assets/icons/humidifier-mode.svg"
+    },
+    "diffuser_xwhzp_fragrance_out_time": {
+      "type": "number",
+      "title": {
+        "en": "Fragrance Out Time",
+        "nl": "Geurafgifte tijd",
+        "da": "Duftudslipstid",
+        "de": "Duftabgabezeit",
+        "es": "Tiempo de salida de fragancia",
+        "fr": "Duree de diffusion",
+        "it": "Durata erogazione fragranza",
+        "no": "Duftutslippstid",
+        "sv": "Doftutslappstid",
+        "pl": "Czas emisji zapachu",
+        "ru": "Vremya vydeleniya aromata",
+        "ko": "fragrance out time"
+      },
+      "icon": "/assets/icons/target_time.svg",
+      "getable": true,
+      "setable": true,
+      "uiComponent": "slider",
+      "units": {
+        "en": "s",
+        "nl": "s",
+        "da": "s",
+        "de": "s",
+        "es": "s",
+        "fr": "s",
+        "it": "s",
+        "no": "s",
+        "sv": "s",
+        "pl": "s",
+        "ru": "s",
+        "ko": "s"
+      },
+      "insights": true
+    },
+    "diffuser_xwhzp_mode": {
+      "type": "enum",
+      "title": {
+        "en": "Mode",
+        "nl": "Modus",
+        "da": "Tilstand",
+        "de": "Modus",
+        "es": "Modo",
+        "fr": "Mode",
+        "it": "Modalita",
+        "no": "Modus",
+        "sv": "Lage",
+        "pl": "Tryb",
+        "ru": "Rezhim",
+        "ko": "mode"
+      },
+      "values": [
+        {
+          "id": "0",
+          "title": {
+            "en": "Sleep"
+          }
+        },
+        {
+          "id": "1",
+          "title": {
+            "en": "Reading"
+          }
+        },
+        {
+          "id": "2",
+          "title": {
+            "en": "Exercise"
+          }
+        },
+        {
+          "id": "3",
+          "title": {
+            "en": "Wakeup"
+          }
+        },
+        {
+          "id": "4",
+          "title": {
+            "en": "Custom Mode 1"
+          }
+        },
+        {
+          "id": "5",
+          "title": {
+            "en": "Custom Mode 2"
+          }
+        },
+        {
+          "id": "6",
+          "title": {
+            "en": "Custom Mode 3"
+          }
+        },
+        {
+          "id": "7",
+          "title": {
+            "en": "Custom Mode 4"
+          }
+        },
+        {
+          "id": "8",
+          "title": {
+            "en": "Try It"
+          }
+        },
+        {
+          "id": "9",
+          "title": {
+            "en": "Idle Mode"
           }
         }
       ],

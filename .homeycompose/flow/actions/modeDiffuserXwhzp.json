@@ -1,0 +1,52 @@
+{
+  "id": "modeDiffuserXwhzp",
+  "title": {
+    "en": "Set Mode",
+    "nl": "Stel modus in",
+    "da": "Saet tilstand",
+    "de": "Modus einstellen",
+    "es": "Establecer modo",
+    "fr": "Definir le mode",
+    "it": "Imposta modalita",
+    "no": "Sett modus",
+    "sv": "Stall in lage",
+    "pl": "Ustaw tryb",
+    "ru": "Ustanovit rezhim",
+    "ko": "mode set"
+  },
+  "titleFormatted": {
+    "en": "Set mode to [[mode]]"
+  },
+  "args": [
+    {
+      "name": "mode",
+      "title": {
+        "en": "Mode"
+      },
+      "type": "dropdown",
+      "values": [
+        { "id": "0", "title": { "en": "Sleep" } },
+        { "id": "1", "title": { "en": "Reading" } },
+        { "id": "2", "title": { "en": "Exercise" } },
+        { "id": "3", "title": { "en": "Wakeup" } },
+        { "id": "4", "title": { "en": "Custom Mode 1" } },
+        { "id": "5", "title": { "en": "Custom Mode 2" } },
+        { "id": "6", "title": { "en": "Custom Mode 3" } },
+        { "id": "7", "title": { "en": "Custom Mode 4" } },
+        { "id": "8", "title": { "en": "Try It" } },
+        { "id": "9", "title": { "en": "Idle Mode" } }
+      ]
+    },
+    {
+      "name": "device",
+      "type": "device",
+      "placeholder": {
+        "en": "Select Mijia Smart Scent Diffuser"
+      },
+      "filter": "driver_id=diffuser_xwhzp_diffuser_xwxfj"
+    }
+  ],
+  "platforms": [
+    "local"
+  ]
+}

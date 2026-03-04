@@ -1,0 +1,36 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Fragrance Out Time",
+    "nl": "Geurafgifte tijd",
+    "da": "Duftudslipstid",
+    "de": "Duftabgabezeit",
+    "es": "Tiempo de salida de fragancia",
+    "fr": "Duree de diffusion",
+    "it": "Durata erogazione fragranza",
+    "no": "Duftutslippstid",
+    "sv": "Doftutslappstid",
+    "pl": "Czas emisji zapachu",
+    "ru": "Vremya vydeleniya aromata",
+    "ko": "fragrance out time"
+  },
+  "icon": "/assets/icons/target_time.svg",
+  "getable": true,
+  "setable": true,
+  "uiComponent": "slider",
+  "units": {
+    "en": "s",
+    "nl": "s",
+    "da": "s",
+    "de": "s",
+    "es": "s",
+    "fr": "s",
+    "it": "s",
+    "no": "s",
+    "sv": "s",
+    "pl": "s",
+    "ru": "s",
+    "ko": "s"
+  },
+  "insights": true
+}
