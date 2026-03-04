@@ -7,6 +7,7 @@ const Util = require('../../lib/util.js');
 /* supported devices */
 // https://home.miot-spec.com/spec/xiaomi.vacuum.d109gl // Xiaomi Robot Vacuum X20 Max
 // https://home.miot-spec.com/spec/xiaomi.vacuum.d102gl // Xiaomi Robot Vacuum X20 Pro  (original mapping kept)
+// https://home.miot-spec.com/spec/xiaomi.vacuum.d101 // Xiaomi Robot Vacuum H40
 // https://home.miot-spec.com/spec/xiaomi.vacuum.c102gl // Xiaomi Robot Vacuum X20 / X20+
 // https://home.miot-spec.com/spec/xiaomi.vacuum.b108gl // Xiaomi Robot Vacuum S20+
 
@@ -64,10 +65,21 @@ const STATUS_MAPPING_B108GL = {
     stopped_error: []
 };
 
+const STATUS_MAPPING_D101 = {
+    cleaning: [4, 7, 8, 10, 12, 16, 17, 19, 22],
+    spot_cleaning: [],
+    docked: [9, 11, 14, 23],
+    charging: [2, 3, 6, 13, 21, 24],
+    stopped: [1, 5, 18, 20],
+    stopped_error: [15]
+};
+
 /** Model → property-set */
 const mapping = {
     'xiaomi.vacuum.d109gl': 'properties_d109gl',
     'xiaomi.vacuum.d102gl': 'properties_d109gl', // unchanged — you said it’s flawless
+    'xiaomi.vacuum.d101': 'properties_d101',
+    'xiaomi.vacuum.d101gl': 'properties_d101',
     'xiaomi.vacuum.c102gl': 'properties_c102gl', // X20 / X20+ specific minimal + room action change
     'xiaomi.vacuum.b108gl': 'properties_b108gl'
 };
@@ -127,6 +139,55 @@ const properties = {
         },
         error_codes: ERROR_CODES,
         status_mapping: STATUS_MAPPING
+    },
+
+    /* H40 (d101) */
+    properties_d101: {
+        get_rooms: [{ did: 'rooms', siid: 2, piid: 16 }],
+        get_properties: [
+            { did: 'device_status', siid: 2, piid: 2 },
+            { did: 'device_fault', siid: 2, piid: 3 },
+            { did: 'mode', siid: 2, piid: 4 },
+            { did: 'battery', siid: 3, piid: 1 },
+            { did: 'main_brush_life_level', siid: 12, piid: 1 },
+            { did: 'side_brush_life_level', siid: 13, piid: 1 },
+            { did: 'filter_life_level', siid: 14, piid: 1 },
+            { did: 'total_clean_time', siid: 2, piid: 7 },
+            { did: 'total_clean_count', siid: 2, piid: 8 },
+            { did: 'total_clean_area', siid: 2, piid: 6 },
+            { did: 'cleaning_mode', siid: 2, piid: 9 },
+            { did: 'water_level', siid: 2, piid: 10 },
+            { did: 'path_mode', siid: 2, piid: 74 },
+            { did: 'carpet_avoidance', siid: 2, piid: 73 }
+        ],
+        set_properties: {
+            start_clean: { siid: 2, aiid: 1, did: 'call-2-1', in: [] },
+            stop_clean: { siid: 2, aiid: 2, did: 'call-2-2', in: [] },
+            find: { siid: 6, aiid: 1, did: 'call-6-1', in: [] },
+            home: { siid: 3, aiid: 1, did: 'call-3-1', in: [] },
+            mopmode: { siid: 2, piid: 4 },
+            cleaning_mode: { siid: 2, piid: 9 },
+            water_level: { siid: 2, piid: 10 },
+            path_mode: { siid: 2, piid: 74 },
+            room_clean_action: { siid: 2, aiid: 16, piid: 15 },
+            carpet_avoidance: { siid: 2, piid: 73 }
+        },
+        supports: {
+            rooms: true,
+            mopmode: true,
+            cleaning_mode: true,
+            water_level: true,
+            path_mode: true,
+            carpet_avoidance: true,
+            consumables: true,
+            detergent: false
+        },
+        scale: {
+            area_divisor: 100,
+            time_divisor: 3600
+        },
+        error_codes: ERROR_CODES,
+        status_mapping: STATUS_MAPPING_D101
     },
 
     /* X20 / X20+ (c102gl)
