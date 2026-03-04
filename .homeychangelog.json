@@ -394,5 +394,8 @@
   },
   "3.4.53": {
     "en": "Handled UDP unreachable errors in network.js as retries instead of crashes."
+  },
+  "3.4.54": {
+    "en": "Support for Xiaomi Robot Vacuum H40 (*experimental) / Xiaomi Vacuum Cleaner MIoT MAX (WiFi) driver"
   }
 }
