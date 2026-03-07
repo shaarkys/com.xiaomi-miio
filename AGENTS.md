@@ -13,7 +13,7 @@ You must always respect Homey SDK 3 - https://apps.developer.homey.app/ and APP 
   - `/drivers`
   - `/capabilities`
   - `/flow`
-- `/.homeybuild`: generated build output; do not edit
+- `/.homeybuild`: generated build output; do not edit, no need to analyse as this is serving code prior to the Homey app instalation
 - `/drivers/<driver_id>`: driver and device code plus pairing views
   - `driver.js`, `device.js`, `assets/`, `pair/`
 - `/lib`: shared modules and helpers

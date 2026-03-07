@@ -187,7 +187,7 @@
       "게이트웨이"
     ]
   },
-  "version": "3.4.55",
+  "version": "3.4.56",
   "compatibility": ">=12.2.0",
   "platforms": [
     "local"
@@ -16793,8 +16793,8 @@
         "ko": "Mijia smart scent diffuser (WiFi)"
       },
       "images": {
-        "large": "drivers/humidifier_xiaomi_humidifier/assets/images/large.jpg",
-        "small": "drivers/humidifier_xiaomi_humidifier/assets/images/small.jpg"
+        "large": "drivers/diffuser_xwhzp_diffuser_xwxfj/assets/images/large.jpg",
+        "small": "drivers/diffuser_xwhzp_diffuser_xwxfj/assets/images/small.jpg"
       },
       "class": "humidifier",
       "capabilities": [

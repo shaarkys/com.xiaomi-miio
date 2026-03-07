@@ -80,6 +80,7 @@ const mapping = {
     'xiaomi.vacuum.d102gl': 'properties_d109gl', // unchanged — you said it’s flawless
     'xiaomi.vacuum.d101': 'properties_d101',
     'xiaomi.vacuum.d101gl': 'properties_d101',
+    'xiaomi.vacuum.ov51gl': 'properties_d101',
     'xiaomi.vacuum.c102gl': 'properties_c102gl', // X20 / X20+ specific minimal + room action change
     'xiaomi.vacuum.b108gl': 'properties_b108gl'
 };
