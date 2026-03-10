@@ -406,5 +406,8 @@
   },
   "3.4.57": {
     "en": "Support for xiaomi.vacuum.ov51gl (Xiaomi Robot Vacuum H40 (EU) ) (*experimental) / Xiaomi Vacuum Cleaner MIoT MAX (WiFi) driver"
+  },
+  "3.4.58": {
+    "en": "Fixed zhimi.airpurifier.v7 to expose only Auto, Night, and Favorite modes and to scale favorite fan speed as 16 steps over 0–100% instead of 0–1600%"
   }
 }
