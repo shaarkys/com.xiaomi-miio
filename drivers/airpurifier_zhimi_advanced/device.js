@@ -34,6 +34,18 @@ const CAPABILITY_MODE_TO_MIOT = {
   idle: 3,
 };
 
+const V7_SUPPORTED_MODES = new Set(['auto', 'silent', 'favorite']);
+const V7_MODE_OPTIONS = [
+  { id: 'auto', title: 'Auto' },
+  { id: 'silent', title: 'Night' },
+  { id: 'favorite', title: 'Favorite' },
+];
+const V7_FAVORITE_LEVEL_MAX = 16;
+
+const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+const normalizeV7FavoriteLevel = (value) => clamp(Number(value) || 0, 0, V7_FAVORITE_LEVEL_MAX) / V7_FAVORITE_LEVEL_MAX;
+const denormalizeV7FavoriteLevel = (value) => Math.round(clamp(Number(value) || 0, 0, 1) * V7_FAVORITE_LEVEL_MAX);
+
 const MIOT_PROPERTIES = {
   'zhimi.airp.meb1': {
     get_properties: [
@@ -70,9 +82,21 @@ class AdvancedOlderMiAirPurifierDevice extends Device {
       if (!this.util) this.util = new Util({ homey: this.homey });
 
       this.model = this.getStoreValue('model');
+      this.isV7 = this.model === 'zhimi.airpurifier.v7';
       this.isMiot = Object.prototype.hasOwnProperty.call(MIOT_PROPERTIES, this.model);
       if (this.isMiot) {
         this.deviceProperties = MIOT_PROPERTIES[this.model];
+      }
+
+      if (this.isV7) {
+        await this.setCapabilityOptions('airpurifier_mode', {
+          values: V7_MODE_OPTIONS,
+        });
+        await this.setCapabilityOptions('fan_speed', {
+          min: 0,
+          max: 1,
+          step: 1 / V7_FAVORITE_LEVEL_MAX,
+        });
       }
       
       // GENERIC DEVICE INIT ACTIONS
@@ -125,6 +149,15 @@ class AdvancedOlderMiAirPurifierDevice extends Device {
               value: numericFanLevel,
             }], { retries: 1 });
           }
+
+          if (this.isV7) {
+            const numericFanLevel = Number(value);
+            if (Number.isNaN(numericFanLevel)) {
+              return Promise.reject(new Error('Invalid fan speed value: ' + value));
+            }
+
+            return await this.miio.setFavoriteLevel(denormalizeV7FavoriteLevel(numericFanLevel));
+          }
         }
       });
 
@@ -147,6 +180,10 @@ class AdvancedOlderMiAirPurifierDevice extends Device {
               piid: this.deviceProperties.set_properties.fanlevel.piid,
               value: numericFanLevel,
             }], { retries: 1 });
+          }
+
+          if (this.isV7 && !V7_SUPPORTED_MODES.has(value)) {
+            return Promise.reject(new Error('Unsupported mode for v7 device: ' + value));
           }
           return await this.miio.call('set_mode', [value], { retries: 1 });
         } catch (error) {
@@ -228,7 +265,7 @@ class AdvancedOlderMiAirPurifierDevice extends Device {
       await this.updateCapabilityValue('measure_humidity', result[2]);
       await this.updateCapabilityValue('measure_temperature', result[3] / 10);
       await this.updateCapabilityValue('measure_luminance', result[4]);
-      await this.updateCapabilityValue('fan_speed', result[6]);
+      await this.updateCapabilityValue('fan_speed', this.isV7 ? normalizeV7FavoriteLevel(result[6]) : result[6]);
 
       /* settings */
       await this.updateSettingValue('buzzer', result[7] === 'on');
@@ -238,6 +275,10 @@ class AdvancedOlderMiAirPurifierDevice extends Device {
       await this.updateSettingValue('f1_hour_used', `${result[11]}h`);
 
       /* mode capability */
+      if (this.isV7 && !V7_SUPPORTED_MODES.has(result[5])) {
+        return;
+      }
+
       if (this.getCapabilityValue('airpurifier_mode') !== result[5]) {
         const previousMode = this.getCapabilityValue('airpurifier_mode');
         await this.setCapabilityValue('airpurifier_mode', result[5]);
