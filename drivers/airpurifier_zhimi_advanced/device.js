@@ -115,17 +115,17 @@ class AdvancedOlderMiAirPurifierDevice extends Device {
           }
 
           if (this.isMiot) {
-            const miotValue = CAPABILITY_MODE_TO_MIOT[value];
-            if (miotValue === undefined) {
-              return Promise.reject(new Error('Unsupported mode for MIoT device: ' + value));
-            }
-
             return await this.miio.call('set_properties', [{
-              siid: this.deviceProperties.set_properties.mode.siid,
-              piid: this.deviceProperties.set_properties.mode.piid,
-              value: miotValue,
+              siid: this.deviceProperties.set_properties.power.siid,
+              piid: this.deviceProperties.set_properties.power.piid,
+              value: Boolean(value),
             }], { retries: 1 });
           }
+
+          return await this.onCapabilityOnoff(value);
+        } catch (error) {
+          this.error(error);
+          return Promise.reject(error);
         }
       });
 
@@ -150,14 +150,15 @@ class AdvancedOlderMiAirPurifierDevice extends Device {
             }], { retries: 1 });
           }
 
-          if (this.isV7) {
-            const numericFanLevel = Number(value);
-            if (Number.isNaN(numericFanLevel)) {
-              return Promise.reject(new Error('Invalid fan speed value: ' + value));
-            }
-
-            return await this.miio.setFavoriteLevel(denormalizeV7FavoriteLevel(numericFanLevel));
+          const numericFanLevel = Number(value);
+          if (Number.isNaN(numericFanLevel)) {
+            return Promise.reject(new Error('Invalid fan speed value: ' + value));
           }
+
+          return await this.miio.setFavoriteLevel(this.isV7 ? denormalizeV7FavoriteLevel(numericFanLevel) : numericFanLevel);
+        } catch (error) {
+          this.error(error);
+          return Promise.reject(error);
         }
       });
 
@@ -170,15 +171,15 @@ class AdvancedOlderMiAirPurifierDevice extends Device {
           }
 
           if (this.isMiot) {
-            const numericFanLevel = Number(value);
-            if (Number.isNaN(numericFanLevel)) {
-              return Promise.reject(new Error('Invalid fan speed value: ' + value));
+            const miotValue = CAPABILITY_MODE_TO_MIOT[value];
+            if (miotValue === undefined) {
+              return Promise.reject(new Error('Unsupported mode for MIoT device: ' + value));
             }
 
             return await this.miio.call('set_properties', [{
-              siid: this.deviceProperties.set_properties.fanlevel.siid,
-              piid: this.deviceProperties.set_properties.fanlevel.piid,
-              value: numericFanLevel,
+              siid: this.deviceProperties.set_properties.mode.siid,
+              piid: this.deviceProperties.set_properties.mode.piid,
+              value: miotValue,
             }], { retries: 1 });
           }
 
