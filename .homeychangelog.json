@@ -418,5 +418,8 @@
   },
   "3.4.61": {
     "en": "Fixed the air purifier Mode has changed trigger"
+  },
+  "3.4.62": {
+    "en": "Fix for zhimi.airpurifier.v7"
   }
 }
