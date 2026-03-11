@@ -412,5 +412,8 @@
   },
   "3.4.59": {
     "en": "Fixed zhimi.airpurifier.v7 initialization "
+  },
+  "3.4.60": {
+    "en": "Restricted zhimi.airpurifier.v7 flow-card mode choices to supported options only"
   }
 }
