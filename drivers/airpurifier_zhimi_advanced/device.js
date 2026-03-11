@@ -170,23 +170,33 @@ class AdvancedOlderMiAirPurifierDevice extends Device {
             return Promise.reject('Device unreachable, please try again ...');
           }
 
+          const previousMode = this.getCapabilityValue('airpurifier_mode');
+          let result;
+
           if (this.isMiot) {
             const miotValue = CAPABILITY_MODE_TO_MIOT[value];
             if (miotValue === undefined) {
               return Promise.reject(new Error('Unsupported mode for MIoT device: ' + value));
             }
 
-            return await this.miio.call('set_properties', [{
+            result = await this.miio.call('set_properties', [{
               siid: this.deviceProperties.set_properties.mode.siid,
               piid: this.deviceProperties.set_properties.mode.piid,
               value: miotValue,
             }], { retries: 1 });
+          } else {
+            if (this.isV7 && !V7_SUPPORTED_MODES.has(value)) {
+              return Promise.reject(new Error('Unsupported mode for v7 device: ' + value));
+            }
+            result = await this.miio.call('set_mode', [value], { retries: 1 });
           }
 
-          if (this.isV7 && !V7_SUPPORTED_MODES.has(value)) {
-            return Promise.reject(new Error('Unsupported mode for v7 device: ' + value));
+          if (previousMode !== value) {
+            await this.setCapabilityValue('airpurifier_mode', value);
+            await this.homey.flow.getDeviceTriggerCard('triggerModeChanged').trigger(this, { new_mode: value, previous_mode: previousMode }).catch(error => { this.error(error); });
           }
-          return await this.miio.call('set_mode', [value], { retries: 1 });
+
+          return result;
         } catch (error) {
           this.error(error);
           return Promise.reject(error);
