@@ -415,5 +415,8 @@
   },
   "3.4.60": {
     "en": "Restricted zhimi.airpurifier.v7 flow-card mode choices to supported options only"
+  },
+  "3.4.61": {
+    "en": "Fixed the air purifier Mode has changed trigger"
   }
 }
