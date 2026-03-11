@@ -6963,162 +6963,6 @@
         },
         "args": [
           {
-            "name": "mode",
-            "title": {
-              "en": "Mode",
-              "nl": "Modus",
-              "da": "Tilstand",
-              "de": "Modus",
-              "es": "Modo",
-              "fr": "Mode",
-              "it": "Modalità",
-              "no": "Modus",
-              "sv": "Läge",
-              "pl": "Tryb",
-              "ru": "Режим",
-              "ko": "모드"
-            },
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "auto",
-                "title": {
-                  "en": "Auto",
-                  "nl": "Auto",
-                  "da": "Auto",
-                  "de": "Auto",
-                  "es": "Auto",
-                  "fr": "Auto",
-                  "it": "Auto",
-                  "no": "Auto",
-                  "sv": "Auto",
-                  "pl": "Auto",
-                  "ru": "Авто",
-                  "ko": "자동"
-                }
-              },
-              {
-                "id": "silent",
-                "title": {
-                  "en": "Silent",
-                  "nl": "Stil",
-                  "da": "Stille",
-                  "de": "Leise",
-                  "es": "Silencioso",
-                  "fr": "Silencieux",
-                  "it": "Silenzioso",
-                  "no": "Stille",
-                  "sv": "Tyst",
-                  "pl": "Cichy",
-                  "ru": "Тихий",
-                  "ko": "조용한"
-                }
-              },
-              {
-                "id": "favorite",
-                "title": {
-                  "en": "Favorite",
-                  "nl": "Favoriet",
-                  "da": "Favorit",
-                  "de": "Favorit",
-                  "es": "Favorito",
-                  "fr": "Favori",
-                  "it": "Preferito",
-                  "no": "Favoritt",
-                  "sv": "Favorit",
-                  "pl": "Ulubiony",
-                  "ru": "Любимый",
-                  "ko": "즐겨 찾기"
-                }
-              },
-              {
-                "id": "idle",
-                "title": {
-                  "en": "Idle",
-                  "nl": "Standby",
-                  "da": "I dvale",
-                  "de": "Leerlauf",
-                  "es": "Inactivo",
-                  "fr": "Inactif",
-                  "it": "Inattivo",
-                  "no": "Inaktiv",
-                  "sv": "Inaktiv",
-                  "pl": "Bezczynny",
-                  "ru": "Ожидание",
-                  "ko": "대기모드"
-                }
-              },
-              {
-                "id": "low",
-                "title": {
-                  "en": "Low",
-                  "nl": "Laag",
-                  "da": "Lav",
-                  "de": "Niedrig",
-                  "es": "Bajo",
-                  "fr": "Bas",
-                  "it": "Basso",
-                  "no": "Lav",
-                  "sv": "Låg",
-                  "pl": "Niski",
-                  "ru": "Низкий",
-                  "ko": "낮음"
-                }
-              },
-              {
-                "id": "medium",
-                "title": {
-                  "en": "Medium",
-                  "nl": "Medium",
-                  "da": "Mellem",
-                  "de": "Mittel",
-                  "es": "Medio",
-                  "fr": "Moyen",
-                  "it": "Medio",
-                  "no": "Middels",
-                  "sv": "Mellan",
-                  "pl": "Średni",
-                  "ru": "Средний",
-                  "ko": "중간"
-                }
-              },
-              {
-                "id": "high",
-                "title": {
-                  "en": "High",
-                  "nl": "Hoog",
-                  "da": "Høj",
-                  "de": "Hoch",
-                  "es": "Alto",
-                  "fr": "Élevé",
-                  "it": "Alto",
-                  "no": "Høy",
-                  "sv": "Hög",
-                  "pl": "Wysoki",
-                  "ru": "Высокий",
-                  "ko": "높음"
-                }
-              },
-              {
-                "id": "strong",
-                "title": {
-                  "en": "Strong",
-                  "nl": "Sterk",
-                  "da": "Stærk",
-                  "de": "Stark",
-                  "es": "Fuerte",
-                  "fr": "Fort",
-                  "it": "Forte",
-                  "no": "Sterk",
-                  "sv": "Stark",
-                  "pl": "Silny",
-                  "ru": "Сильный",
-                  "ko": "강한"
-                }
-              }
-            ]
-          },
-          {
             "name": "device",
             "type": "device",
             "placeholder": {
@@ -7136,6 +6980,24 @@
               "ko": "Mi 공기청정기 선택"
             },
             "filter": "driver_id=mi-airpurifier|airpurifier_zhimi_advanced"
+          },
+          {
+            "name": "mode",
+            "title": {
+              "en": "Mode",
+              "nl": "Modus",
+              "da": "Tilstand",
+              "de": "Modus",
+              "es": "Modo",
+              "fr": "Mode",
+              "it": "Modalità",
+              "no": "Modus",
+              "sv": "Läge",
+              "pl": "Tryb",
+              "ru": "Режим",
+              "ko": "모드"
+            },
+            "type": "autocomplete"
           }
         ],
         "platforms": [
