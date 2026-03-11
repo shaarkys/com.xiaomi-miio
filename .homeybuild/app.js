@@ -4,24 +4,6 @@ const Homey = require('homey');
 const miio = require("miio");
 const MiHub = require("./lib/MiHub");
 
-const AIRPURIFIER_MODE_FLOW_OPTIONS = {
-  default: [
-    { id: 'auto', name: 'Auto' },
-    { id: 'silent', name: 'Silent' },
-    { id: 'favorite', name: 'Favorite' },
-    { id: 'idle', name: 'Idle' },
-    { id: 'low', name: 'Low' },
-    { id: 'medium', name: 'Medium' },
-    { id: 'high', name: 'High' },
-    { id: 'strong', name: 'Strong' },
-  ],
-  zhimiAirPurifierV7: [
-    { id: 'auto', name: 'Auto' },
-    { id: 'silent', name: 'Night' },
-    { id: 'favorite', name: 'Favorite' },
-  ],
-};
-
 class XiaomiMiioApp extends Homey.App {
 
   async onInit() {
@@ -242,21 +224,18 @@ class XiaomiMiioApp extends Homey.App {
 
     // AIR PURIFIER
     this.homey.flow.getActionCard('modeAirpurifier')
-      .registerArgumentAutocompleteListener('mode', async (query, args) => {
-        const selectedModes = args.device?.getStoreValue?.('model') === 'zhimi.airpurifier.v7'
-          ? AIRPURIFIER_MODE_FLOW_OPTIONS.zhimiAirPurifierV7
-          : AIRPURIFIER_MODE_FLOW_OPTIONS.default;
-
-        const normalizedQuery = query.trim().toLowerCase();
-        return selectedModes.filter((mode) => {
-          if (!normalizedQuery) return true;
-          return mode.name.toLowerCase().includes(normalizedQuery);
-        });
-      })
       .registerRunListener(async (args) => {
         try {
-          const mode = typeof args.mode === 'object' && args.mode !== null ? args.mode.id : args.mode;
-          return await args.device.triggerCapabilityListener('airpurifier_mode', mode);
+          return await args.device.triggerCapabilityListener('airpurifier_mode', args.mode);
+        } catch (error) {
+          return Promise.reject(error.message);
+        }
+      });
+
+    this.homey.flow.getActionCard('modeAirpurifierV7')
+      .registerRunListener(async (args) => {
+        try {
+          return await args.device.triggerCapabilityListener('airpurifier_mode', args.mode);
         } catch (error) {
           return Promise.reject(error.message);
         }

@@ -6963,6 +6963,162 @@
         },
         "args": [
           {
+            "name": "mode",
+            "title": {
+              "en": "Mode",
+              "nl": "Modus",
+              "da": "Tilstand",
+              "de": "Modus",
+              "es": "Modo",
+              "fr": "Mode",
+              "it": "Modalità",
+              "no": "Modus",
+              "sv": "Läge",
+              "pl": "Tryb",
+              "ru": "Режим",
+              "ko": "모드"
+            },
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "auto",
+                "title": {
+                  "en": "Auto",
+                  "nl": "Auto",
+                  "da": "Auto",
+                  "de": "Auto",
+                  "es": "Auto",
+                  "fr": "Auto",
+                  "it": "Auto",
+                  "no": "Auto",
+                  "sv": "Auto",
+                  "pl": "Auto",
+                  "ru": "Авто",
+                  "ko": "자동"
+                }
+              },
+              {
+                "id": "silent",
+                "title": {
+                  "en": "Silent",
+                  "nl": "Stil",
+                  "da": "Stille",
+                  "de": "Leise",
+                  "es": "Silencioso",
+                  "fr": "Silencieux",
+                  "it": "Silenzioso",
+                  "no": "Stille",
+                  "sv": "Tyst",
+                  "pl": "Cichy",
+                  "ru": "Тихий",
+                  "ko": "조용한"
+                }
+              },
+              {
+                "id": "favorite",
+                "title": {
+                  "en": "Favorite",
+                  "nl": "Favoriet",
+                  "da": "Favorit",
+                  "de": "Favorit",
+                  "es": "Favorito",
+                  "fr": "Favori",
+                  "it": "Preferito",
+                  "no": "Favoritt",
+                  "sv": "Favorit",
+                  "pl": "Ulubiony",
+                  "ru": "Любимый",
+                  "ko": "즐겨 찾기"
+                }
+              },
+              {
+                "id": "idle",
+                "title": {
+                  "en": "Idle",
+                  "nl": "Standby",
+                  "da": "I dvale",
+                  "de": "Leerlauf",
+                  "es": "Inactivo",
+                  "fr": "Inactif",
+                  "it": "Inattivo",
+                  "no": "Inaktiv",
+                  "sv": "Inaktiv",
+                  "pl": "Bezczynny",
+                  "ru": "Ожидание",
+                  "ko": "대기모드"
+                }
+              },
+              {
+                "id": "low",
+                "title": {
+                  "en": "Low",
+                  "nl": "Laag",
+                  "da": "Lav",
+                  "de": "Niedrig",
+                  "es": "Bajo",
+                  "fr": "Bas",
+                  "it": "Basso",
+                  "no": "Lav",
+                  "sv": "Låg",
+                  "pl": "Niski",
+                  "ru": "Низкий",
+                  "ko": "낮음"
+                }
+              },
+              {
+                "id": "medium",
+                "title": {
+                  "en": "Medium",
+                  "nl": "Medium",
+                  "da": "Mellem",
+                  "de": "Mittel",
+                  "es": "Medio",
+                  "fr": "Moyen",
+                  "it": "Medio",
+                  "no": "Middels",
+                  "sv": "Mellan",
+                  "pl": "Średni",
+                  "ru": "Средний",
+                  "ko": "중간"
+                }
+              },
+              {
+                "id": "high",
+                "title": {
+                  "en": "High",
+                  "nl": "Hoog",
+                  "da": "Høj",
+                  "de": "Hoch",
+                  "es": "Alto",
+                  "fr": "Élevé",
+                  "it": "Alto",
+                  "no": "Høy",
+                  "sv": "Hög",
+                  "pl": "Wysoki",
+                  "ru": "Высокий",
+                  "ko": "높음"
+                }
+              },
+              {
+                "id": "strong",
+                "title": {
+                  "en": "Strong",
+                  "nl": "Sterk",
+                  "da": "Stærk",
+                  "de": "Stark",
+                  "es": "Fuerte",
+                  "fr": "Fort",
+                  "it": "Forte",
+                  "no": "Sterk",
+                  "sv": "Stark",
+                  "pl": "Silny",
+                  "ru": "Сильный",
+                  "ko": "강한"
+                }
+              }
+            ]
+          },
+          {
             "name": "device",
             "type": "device",
             "placeholder": {
@@ -6980,7 +7136,44 @@
               "ko": "Mi 공기청정기 선택"
             },
             "filter": "driver_id=mi-airpurifier|airpurifier_zhimi_advanced"
-          },
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "id": "modeAirpurifier"
+      },
+      {
+        "id": "modeAirpurifierV7",
+        "title": {
+          "en": "Set mode (v7)",
+          "nl": "Stel modus in (v7)",
+          "da": "Indstil tilstand (v7)",
+          "de": "Modus einstellen (v7)",
+          "es": "Configurar modo (v7)",
+          "fr": "Définir le mode (v7)",
+          "it": "Imposta modalità (v7)",
+          "no": "Sett modus (v7)",
+          "sv": "Ställ in läge (v7)",
+          "pl": "Ustaw tryb (v7)",
+          "ru": "Установить режим (v7)",
+          "ko": "모드 설정 (v7)"
+        },
+        "titleFormatted": {
+          "en": "Set v7 mode to [[mode]]",
+          "nl": "Stel v7-modus in op [[mode]]",
+          "da": "Indstil v7-tilstand til [[mode]]",
+          "de": "V7-Modus einstellen auf [[mode]]",
+          "es": "Configurar modo v7 a [[mode]]",
+          "fr": "Définir le mode v7 sur [[mode]]",
+          "it": "Imposta modalità v7 su [[mode]]",
+          "no": "Sett v7-modus til [[mode]]",
+          "sv": "Ställ in v7-läge till [[mode]]",
+          "pl": "Ustaw tryb v7 na [[mode]]",
+          "ru": "Установить режим v7 на [[mode]]",
+          "ko": "v7 모드를 [[mode]](으)로 설정"
+        },
+        "args": [
           {
             "name": "mode",
             "title": {
@@ -6997,13 +7190,84 @@
               "ru": "Режим",
               "ko": "모드"
             },
-            "type": "autocomplete"
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "auto",
+                "title": {
+                  "en": "Auto",
+                  "nl": "Auto",
+                  "da": "Auto",
+                  "de": "Auto",
+                  "es": "Auto",
+                  "fr": "Auto",
+                  "it": "Auto",
+                  "no": "Auto",
+                  "sv": "Auto",
+                  "pl": "Auto",
+                  "ru": "Авто",
+                  "ko": "자동"
+                }
+              },
+              {
+                "id": "silent",
+                "title": {
+                  "en": "Night",
+                  "nl": "Nacht",
+                  "da": "Nat",
+                  "de": "Nacht",
+                  "es": "Noche",
+                  "fr": "Nuit",
+                  "it": "Notte",
+                  "no": "Natt",
+                  "sv": "Natt",
+                  "pl": "Noc",
+                  "ru": "Ночь",
+                  "ko": "야간"
+                }
+              },
+              {
+                "id": "favorite",
+                "title": {
+                  "en": "Favorite",
+                  "nl": "Favoriet",
+                  "da": "Favorit",
+                  "de": "Favorit",
+                  "es": "Favorito",
+                  "fr": "Favori",
+                  "it": "Preferito",
+                  "no": "Favoritt",
+                  "sv": "Favorit",
+                  "pl": "Ulubiony",
+                  "ru": "Любимый",
+                  "ko": "즐겨찾기"
+                }
+              }
+            ]
+          },
+          {
+            "name": "device",
+            "type": "device",
+            "placeholder": {
+              "en": "Select Mi Air Purifier v7",
+              "nl": "Selecteer Mi Luchtreiniger v7",
+              "da": "Vælg Mi Luftrenser v7",
+              "de": "Wählen Sie Mi Luftreiniger v7",
+              "es": "Seleccionar Mi Purificador de Aire v7",
+              "fr": "Sélectionner Mi Purificateur d'air v7",
+              "it": "Seleziona Mi Purificatore d'aria v7",
+              "no": "Velg Mi Luftrenser v7",
+              "sv": "Välj Mi Luftrenare v7",
+              "pl": "Wybierz Mi Oczyszczacz Powietrza v7",
+              "ru": "Выбрать Mi Очиститель Воздуха v7",
+              "ko": "Mi 공기청정기 v7 선택"
+            },
+            "filter": "driver_id=airpurifier_zhimi_advanced"
           }
         ],
         "platforms": [
           "local"
-        ],
-        "id": "modeAirpurifier"
+        ]
       },
       {
         "title": {
