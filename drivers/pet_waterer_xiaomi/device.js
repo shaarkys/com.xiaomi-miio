@@ -11,6 +11,12 @@ const mapping = {
     'xiaomi.pet_waterer.iv02': 'mapping_iv02'
 };
 
+const chargingStates = {
+    0: 'Not charging',
+    1: 'Charging',
+    2: 'Charge full'
+};
+
 const properties = {
     mapping_iv02: {
         get_properties: [
@@ -22,7 +28,11 @@ const properties = {
             { did: 'water_shortage_status', siid: 2, piid: 10 }, // Water shortage (bool)
             { did: 'out_water_interval_5', siid: 2, piid: 11 }, // Out water interval (step 5)
             { did: 'filter_life_level', siid: 3, piid: 1 }, // Filter life (%)
-            { did: 'filter_left_time', siid: 3, piid: 2 } // Filter left time (days)
+            { did: 'filter_left_time', siid: 3, piid: 2 }, // Filter left time (days)
+            { did: 'battery_level', siid: 5, piid: 1 }, // Battery level (%)
+            { did: 'charging_state', siid: 5, piid: 2 }, // Charging state
+            { did: 'low_battery', siid: 9, piid: 5 }, // Insufficient power
+            { did: 'usb_insert_state', siid: 9, piid: 6 } // USB plug-in status
         ],
         set_properties: {
             onoff: { siid: 2, piid: 1 },
@@ -47,6 +57,20 @@ class PetwaterdispenserXiaomiDevice extends Device {
             return normalized === '1' || normalized === 'true' || normalized === 'on';
         }
         return false;
+    }
+
+    getPropertyDefinition(did) {
+        return this.deviceProperties.get_properties.find((property) => property.did === did);
+    }
+
+    getPropertyResult(result, did) {
+        const property = this.getPropertyDefinition(did);
+        if (!property) return undefined;
+
+        return result.find((entry) => {
+            if (entry.did === did) return true;
+            return entry.siid === property.siid && entry.piid === property.piid;
+        });
     }
 
     // Helper method to pretty print properties (similar to the reference device)
@@ -74,10 +98,11 @@ class PetwaterdispenserXiaomiDevice extends Device {
             if (!this.util) this.util = new Util({ homey: this.homey });
 
             this.log('Xiaomi Smart Pet Fountain 2 initializing...');
-            this.bootSequence();
 
             // Use mapping/properties for model (future-proof)
             this.deviceProperties = properties[mapping[this.getStoreValue('model')]] !== undefined ? properties[mapping[this.getStoreValue('model')]] : properties[mapping['xiaomi.pet_waterer.iv02']];
+
+            this.bootSequence();
 
             // FLOW TRIGGER CARDS
             this.homey.flow.getDeviceTriggerCard('triggerModeChanged');
@@ -180,13 +205,16 @@ class PetwaterdispenserXiaomiDevice extends Device {
             }
             this._lastPropertyValues = resultValues;
 
-            const onoff = result.find((obj) => obj.did === 'onoff');
-            const error_value = result.find((obj) => obj.did === 'fault');
-            const status = result.find((obj) => obj.did === 'status');
-            const mode = result.find((obj) => obj.did === 'mode');
-            const water_shortage = result.find((obj) => obj.did === 'water_shortage_status');
-            const filter_life = result.find((obj) => obj.did === 'filter_life_level');
-            const filter_days_left = result.find((obj) => obj.did === 'filter_left_time');
+            const onoff = this.getPropertyResult(result, 'onoff');
+            const error_value = this.getPropertyResult(result, 'fault');
+            const mode = this.getPropertyResult(result, 'mode');
+            const water_shortage = this.getPropertyResult(result, 'water_shortage_status');
+            const filter_life = this.getPropertyResult(result, 'filter_life_level');
+            const filter_days_left = this.getPropertyResult(result, 'filter_left_time');
+            const battery_level = this.getPropertyResult(result, 'battery_level');
+            const charging_state = this.getPropertyResult(result, 'charging_state');
+            const low_battery = this.getPropertyResult(result, 'low_battery');
+            const usb_insert_state = this.getPropertyResult(result, 'usb_insert_state');
 
             /* Capabilities */
             if (onoff) {
@@ -210,26 +238,39 @@ class PetwaterdispenserXiaomiDevice extends Device {
                 await this.updateCapabilityValue('alarm_tank_empty', !!water_shortage.value);
             }
 
+            if (battery_level && typeof battery_level.value === 'number') {
+                const batteryPercentage = this.util.clamp(battery_level.value, 0, 100);
+                const isLowBattery = low_battery ? this.normalizeBooleanValue(low_battery.value) : batteryPercentage <= 20;
+
+                await this.updateCapabilityValue('measure_battery', batteryPercentage);
+                await this.updateCapabilityValue('alarm_battery', isLowBattery);
+            } else if (low_battery) {
+                await this.updateCapabilityValue('alarm_battery', this.normalizeBooleanValue(low_battery.value));
+            }
+
+            if (usb_insert_state) {
+                const powerSource = this.normalizeBooleanValue(usb_insert_state.value) ? 'Connected to power' : 'Battery powered';
+                await this.updateSettingValue('power_source', powerSource);
+            }
+
+            if (charging_state && chargingStates[charging_state.value] !== undefined) {
+                await this.updateSettingValue('charging_state', chargingStates[charging_state.value]);
+            }
+
             if (error_value) {
                 const errorMsg = error_value.value === 0 ? 'No Error' : `Error code: ${error_value.value}`;
-                // Fix: Use dynamic key name for settings update
-                const settingsUpdate = { error: errorMsg };
-                await this.setSettings(settingsUpdate);
+                await this.updateSettingValue('error', errorMsg);
                 this.log(`[diagnostics] Device error status: ${errorMsg}`);
             }
 
             // Update filter status as capabilities
             if (filter_life) {
-                const filterLifeSettings = { filter_life_remaining: filter_life.value + '%' };
-                await this.setSettings(filterLifeSettings);
-
+                await this.updateSettingValue('filter_life_remaining', `${filter_life.value}%`);
                 await this.updateCapabilityValue('measure_filter_life', filter_life.value);
             }
 
             if (filter_days_left) {
-                const filterDaysSettings = { filter_days_left: filter_days_left.value };
-                await this.setSettings(filterDaysSettings);
-
+                await this.setSettings({ filter_days_left: filter_days_left.value });
                 await this.updateCapabilityValue('measure_filter_days_left', filter_days_left.value);
             }
         } catch (error) {
