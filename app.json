@@ -23369,12 +23369,15 @@
         "petwaterdispenser_mmgg_mode_3",
         "alarm_tank_empty",
         "alarm_pump_supply",
-        "measure_battery",
-        "alarm_battery",
         "measure_filter_life",
         "measure_filter_days_left",
         "alarm_water_shortage"
       ],
+      "energy": {
+        "batteries": [
+          "INTERNAL"
+        ]
+      },
       "tokens": [
         {
           "name": "error",

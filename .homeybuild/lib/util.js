@@ -58,6 +58,7 @@ class Util {
     'zhimi.humidifier.cb1': 'Smartmi Evaporative Humidifier',
     'zhimi.humidifier.cb2': 'Smartmi Evaporative Humidifier',
     'zhimi.humidifier.ca4': 'Smartmi Evaporative Humidifier v2',
+    'zhimi.humidifier.ca6': 'Smartmi Evaporative Humidifier 3',
     'zhimi.humidifier.jd1': 'Smartmi Humidifier Rainforest',
 
     'xiaomi.humidifier.airmx': 'Mijia Mistless Humidifier 3 Pro',
