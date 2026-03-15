@@ -187,7 +187,7 @@
       "게이트웨이"
     ]
   },
-  "version": "3.4.61",
+  "version": "3.4.63",
   "compatibility": ">=12.2.0",
   "platforms": [
     "local"
@@ -23369,6 +23369,8 @@
         "petwaterdispenser_mmgg_mode_3",
         "alarm_tank_empty",
         "alarm_pump_supply",
+        "measure_battery",
+        "alarm_battery",
         "measure_filter_life",
         "measure_filter_days_left",
         "alarm_water_shortage"
@@ -23489,6 +23491,44 @@
             "ko": "오류"
           },
           "value": "No error"
+        },
+        {
+          "id": "power_source",
+          "type": "label",
+          "label": {
+            "en": "Power source",
+            "nl": "Voedingsbron",
+            "da": "Strømkilde",
+            "de": "Stromquelle",
+            "es": "Fuente de alimentacion",
+            "fr": "Source d'alimentation",
+            "it": "Fonte di alimentazione",
+            "no": "Strømkilde",
+            "sv": "Stromkalla",
+            "pl": "Zrodlo zasilania",
+            "ru": "Источник питания",
+            "ko": "전원 공급원"
+          },
+          "value": "Unknown"
+        },
+        {
+          "id": "charging_state",
+          "type": "label",
+          "label": {
+            "en": "Charging state",
+            "nl": "Laadstatus",
+            "da": "Opladningsstatus",
+            "de": "Ladestatus",
+            "es": "Estado de carga",
+            "fr": "Etat de charge",
+            "it": "Stato di carica",
+            "no": "Ladestatus",
+            "sv": "Laddningsstatus",
+            "pl": "Stan ladowania",
+            "ru": "Состояние зарядки",
+            "ko": "충전 상태"
+          },
+          "value": "Unknown"
         },
         {
           "id": "address",
