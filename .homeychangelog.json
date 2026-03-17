@@ -427,5 +427,8 @@
   },
   "3.4.64": {
     "en": "Support for Smartmi Evaporative Humidifier 3 / zhimi.humidifier.ca6"
+  },
+  "3.4.65": {
+    "en": "Adjusted the zhimi.humidifier.ca6 water-level mapping"
   }
 }
