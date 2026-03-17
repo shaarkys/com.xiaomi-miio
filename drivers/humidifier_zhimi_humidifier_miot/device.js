@@ -138,7 +138,10 @@ class MiHumidifierCa4Device extends Device {
     }
 
     if (this.isCa6()) {
-      return this.util.clamp(Math.round((Number(value) / 2) * 100), 0, 100);
+      // CA6 reports a coarse 0..2 "water amount level" rather than a real percentage.
+      // In practice raw value 1 already represents a normal filled tank, so exposing it as
+      // 50% in Homey is misleading and causes the reading to appear stuck at half-full.
+      return Number(value) > 0 ? 100 : 0;
     }
 
     return value;
