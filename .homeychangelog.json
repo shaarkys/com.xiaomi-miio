@@ -430,5 +430,8 @@
   },
   "3.4.65": {
     "en": "Adjusted the zhimi.humidifier.ca6 water-level mapping"
+  },
+  "3.4.66": {
+    "en": "Adjusted the zhimi.humidifier.ca6 water-level mapping"
   }
 }
