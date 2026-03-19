@@ -18,11 +18,11 @@ const MODE_LABELS = {
 };
 
 const WATER_STATE_BY_FAULT = {
-  0: 'sufficient',
+  0: 'normal',
   5: 'empty',
 };
 
-const DEFAULT_WATER_STATE = 'sufficient';
+const DEFAULT_WATER_STATE = 'normal';
 
 const properties = {
   leshow_jsq1: {

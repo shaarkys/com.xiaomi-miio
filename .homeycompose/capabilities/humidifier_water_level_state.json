@@ -4,21 +4,27 @@
     "en": "Water level state"
   },
   "desc": {
-    "en": "Indicates whether there is enough water in the tank"
+    "en": "Indicates the current water level state in the tank"
   },
   "getable": true,
   "setable": false,
   "values": [
     {
-      "id": "sufficient",
-      "title": {
-        "en": "Sufficient"
-      }
-    },
-    {
       "id": "empty",
       "title": {
         "en": "Empty"
+      }
+    },
+    {
+      "id": "normal",
+      "title": {
+        "en": "Normal"
+      }
+    },
+    {
+      "id": "full",
+      "title": {
+        "en": "Full"
       }
     }
   ],

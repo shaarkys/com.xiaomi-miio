@@ -100,6 +100,12 @@ const modeOptions = {
   ]
 };
 
+const CA6_WATER_LEVEL_STATE_BY_VALUE = {
+  0: 'empty',
+  1: 'normal',
+  2: 'full',
+};
+
 class MiHumidifierCa4Device extends Device {
 
   getModel() {
@@ -137,14 +143,12 @@ class MiHumidifierCa4Device extends Device {
       return value;
     }
 
-    if (this.isCa6()) {
-      // CA6 reports a coarse 0..2 "water amount level" rather than a real percentage.
-      // In practice raw value 1 already represents a normal filled tank, so exposing it as
-      // 50% in Homey is misleading and causes the reading to appear stuck at half-full.
-      return Number(value) > 0 ? 100 : 0;
-    }
-
     return value;
+  }
+
+  getCa6WaterLevelState(value) {
+    const numericValue = Number(value);
+    return CA6_WATER_LEVEL_STATE_BY_VALUE[numericValue] || 'normal';
   }
 
   async onInit() {
@@ -163,6 +167,12 @@ class MiHumidifierCa4Device extends Device {
       }
       if (this.getModel() === 'zhimi.humidifier.jd1' && this.hasCapability('onoff.dry')) {
         await this.removeCapability('onoff.dry');
+      }
+      if (this.isCa6() && this.hasCapability('measure_waterlevel')) {
+        await this.removeCapability('measure_waterlevel');
+      }
+      if (this.isCa6() && !this.hasCapability('humidifier_water_level_state')) {
+        await this.addCapability('humidifier_water_level_state');
       }
 
       await this.setCapabilityOptions('humidifier_zhimi_mode_miot', {
@@ -325,13 +335,18 @@ class MiHumidifierCa4Device extends Device {
         await this.homey.flow.getDeviceTriggerCard('triggerModeChanged').trigger(this, {"new_mode": this.getModeLabel(mode.value), "previous_mode": previous_mode !== undefined && previous_mode !== null ? this.getModeLabel(previous_mode) : undefined }).catch(error => { this.error(error) });
       }
 
-      /* measure_waterlevel capability */
+      /* water level capability */
       const measure_waterlevel = result.find(obj => obj.did === 'water_level');
-      const normalizedWaterlevel = this.normalizeWaterLevelValue(measure_waterlevel.value);
-      if (this.getCapabilityValue('measure_waterlevel') !== normalizedWaterlevel) {
-        const previous_waterlevel = await this.getCapabilityValue('measure_waterlevel');
-        await this.setCapabilityValue('measure_waterlevel', normalizedWaterlevel);
-        await this.homey.flow.getDeviceTriggerCard('humidifier2Waterlevel').trigger(this, {"waterlevel": normalizedWaterlevel, "previous_waterlevel": previous_waterlevel }).catch(error => { this.error(error) });
+      if (this.isCa6()) {
+        const waterLevelState = this.getCa6WaterLevelState(measure_waterlevel.value);
+        await this.updateCapabilityValue('humidifier_water_level_state', waterLevelState);
+      } else {
+        const normalizedWaterlevel = this.normalizeWaterLevelValue(measure_waterlevel.value);
+        if (this.getCapabilityValue('measure_waterlevel') !== normalizedWaterlevel) {
+          const previous_waterlevel = await this.getCapabilityValue('measure_waterlevel');
+          await this.setCapabilityValue('measure_waterlevel', normalizedWaterlevel);
+          await this.homey.flow.getDeviceTriggerCard('humidifier2Waterlevel').trigger(this, {"waterlevel": normalizedWaterlevel, "previous_waterlevel": previous_waterlevel }).catch(error => { this.error(error) });
+        }
       }
 
     } catch (error) {
