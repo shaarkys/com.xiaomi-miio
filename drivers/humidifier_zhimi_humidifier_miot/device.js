@@ -332,7 +332,7 @@ class MiHumidifierCa4Device extends Device {
       if (this.getCapabilityValue('humidifier_zhimi_mode_miot') !== mode.value.toString()) {
         const previous_mode = this.getCapabilityValue('humidifier_zhimi_mode_miot');
         await this.setCapabilityValue('humidifier_zhimi_mode_miot', mode.value.toString());
-        await this.homey.flow.getDeviceTriggerCard('triggerModeChanged').trigger(this, {"new_mode": this.getModeLabel(mode.value), "previous_mode": previous_mode !== undefined && previous_mode !== null ? this.getModeLabel(previous_mode) : undefined }).catch(error => { this.error(error) });
+        await this.homey.flow.getDeviceTriggerCard('triggerModeChanged').trigger(this, {"new_mode": this.getModeLabel(mode.value), "previous_mode": previous_mode !== undefined && previous_mode !== null ? this.getModeLabel(previous_mode) : '' }).catch(error => { this.error(error) });
       }
 
       /* water level capability */

@@ -259,7 +259,7 @@ class XiaomiHumidifierMIoTDevice extends Device {
             previous_mode:
               previousMode !== undefined && previousMode !== null
                 ? this.getModeLabel(previousMode)
-                : undefined,
+                : '',
           })
           .catch((error) => {
             this.error(error);

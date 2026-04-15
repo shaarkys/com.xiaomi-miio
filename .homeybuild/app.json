@@ -187,7 +187,7 @@
       "게이트웨이"
     ]
   },
-  "version": "3.4.66",
+  "version": "3.4.67",
   "compatibility": ">=12.2.0",
   "platforms": [
     "local"
@@ -30912,6 +30912,7 @@
       "desc": {
         "en": "Indicates the current water level state in the tank"
       },
+      "uiComponent": "sensor",
       "getable": true,
       "setable": false,
       "values": [
