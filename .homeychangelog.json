@@ -433,5 +433,8 @@
   },
   "3.4.66": {
     "en": "Adjusted the zhimi.humidifier.ca6 water-level mapping"
+  },
+  "3.4.67": {
+    "en": "Added support for xiaomi.humidifier.600ek (Mijia Smart Evaporative Humidifier Pro)"
   }
 }
