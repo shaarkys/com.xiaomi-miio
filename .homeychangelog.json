@@ -436,5 +436,8 @@
   },
   "3.4.67": {
     "en": "Added support for xiaomi.humidifier.600ek (Mijia Smart Evaporative Humidifier Pro)"
+  },
+  "3.4.68": {
+    "en": "Fixed xiaomi.humidifier.600ek target humidity scaling, X20 Max water-shortage fix"
   }
 }
