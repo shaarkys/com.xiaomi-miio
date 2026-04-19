@@ -401,7 +401,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             if (this.deviceProperties.supports.carpet_avoidance && !this.hasCapability('vacuum_xiaomi_carpet_mode_max')) {
                 await this.addCapability('vacuum_xiaomi_carpet_mode_max');
             }
-            if (!this.hasCapability('alarm_water_shortage') && this.deviceProperties.supports.detergent) {
+            if (!this.hasCapability('alarm_water_shortage')) {
                 await this.addCapability('alarm_water_shortage');
             }
 
@@ -983,14 +983,6 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                 this.vacuumConsumables(consumables);
             }
 
-            // detergent near-empty flag only if supported
-            if (this.deviceProperties.supports.detergent) {
-                const det = this.getMiotProp(result, 'detergent_depletion_reminder');
-                if (det && det.value != null) {
-                    await this.updateCapabilityValue('alarm_water_shortage', !!det.value);
-                }
-            }
-
             /* error/status tiles + flows */
             let err = 'Everything-is-ok';
             if (device_fault && this.deviceProperties.error_codes.hasOwnProperty(device_fault.value)) {
@@ -1017,6 +1009,16 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                 } else if (waterCheckFail) {
                     err = 'Water tank empty';
                 }
+            }
+
+            if (this.hasCapability('alarm_water_shortage')) {
+                const waterShortageErrors = new Set(['Water tank empty', 'No-water-error']);
+                let detergentShortage = false;
+                if (this.deviceProperties.supports.detergent) {
+                    const det = this.getMiotProp(result, 'detergent_depletion_reminder');
+                    detergentShortage = !!(det && det.value != null && det.value);
+                }
+                await this.updateCapabilityValue('alarm_water_shortage', waterShortageErrors.has(err) || detergentShortage);
             }
 
             let safeError = typeof err === 'string' ? err : 'Unknown Error';
