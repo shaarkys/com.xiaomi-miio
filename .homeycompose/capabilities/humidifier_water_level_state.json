@@ -6,7 +6,6 @@
   "desc": {
     "en": "Indicates the current water level state in the tank"
   },
-  "uiComponent": "sensor",
   "getable": true,
   "setable": false,
   "values": [

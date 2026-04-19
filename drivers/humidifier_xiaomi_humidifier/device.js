@@ -114,10 +114,26 @@ class XiaomiHumidifierMIoTDevice extends Device {
 
   getTargetHumidityOptions() {
     if (this.is600ek()) {
-      return { min: 40, max: 70, step: 1 };
+      return { min: 0.4, max: 0.7, step: 0.01 };
     }
 
     return { min: 40, max: 70, step: 10 };
+  }
+
+  getTargetHumidityCapabilityValue(value) {
+    if (this.is600ek()) {
+      return value / 100;
+    }
+
+    return value;
+  }
+
+  getTargetHumidityMiotValue(value) {
+    if (this.is600ek()) {
+      return Math.round(value * 100);
+    }
+
+    return value;
   }
 
   getErrorLabel(value) {
@@ -187,19 +203,18 @@ class XiaomiHumidifierMIoTDevice extends Device {
           : properties[MODEL_MAPPING['xiaomi.humidifier.*']];
 
       if (this.is600ek()) {
-        const unsupportedCapabilities = ['onoff.dry', 'measure_temperature', 'measure_waterlevel'];
+        const unsupportedCapabilities = [
+          'onoff.dry',
+          'measure_temperature',
+          'measure_waterlevel',
+          'humidifier_water_level_state',
+        ];
         for (const capability of unsupportedCapabilities) {
           if (this.hasCapability(capability)) {
             await this.removeCapability(capability).catch((error) => {
               this.error(`Failed to remove capability ${capability}: ${error.message ?? error}`);
             });
           }
-        }
-
-        if (!this.hasCapability('humidifier_water_level_state')) {
-          await this.addCapability('humidifier_water_level_state').catch((error) => {
-            this.error(`Failed to add capability humidifier_water_level_state: ${error.message ?? error}`);
-          });
         }
       }
 
@@ -214,7 +229,7 @@ class XiaomiHumidifierMIoTDevice extends Device {
       );
       this.registerCapabilityListener('target_humidity', (value) => {
         const options = this.getTargetHumidityOptions();
-        const humidity = this.util.clamp(Number(value), options.min, options.max);
+        const humidity = this.getTargetHumidityMiotValue(this.util.clamp(Number(value), options.min, options.max));
         return this.handleSetProperty('target_humidity', humidity);
       });
 
@@ -286,7 +301,7 @@ class XiaomiHumidifierMIoTDevice extends Device {
 
       const targetHumidity = indexed.target_humidity;
       if (this.hasUsableValue(targetHumidity) && typeof targetHumidity.value === 'number') {
-        await this.updateCapabilityValue('target_humidity', targetHumidity.value);
+        await this.updateCapabilityValue('target_humidity', this.getTargetHumidityCapabilityValue(targetHumidity.value));
       }
 
       const onoffDry = indexed.dry;
@@ -329,12 +344,7 @@ class XiaomiHumidifierMIoTDevice extends Device {
         await this.handleModeEvent(mode.value);
       }
 
-      if (this.is600ek()) {
-        if (this.hasUsableValue(errorValue) && this.hasCapability('humidifier_water_level_state')) {
-          const waterState = Number(errorValue.value) === 4 ? 'empty' : 'normal';
-          await this.updateCapabilityValue('humidifier_water_level_state', waterState);
-        }
-      } else {
+      if (!this.is600ek()) {
         const measureWaterlevel = indexed.water_level;
         if (this.hasUsableValue(measureWaterlevel)) {
           const waterLevel = measureWaterlevel.value;
