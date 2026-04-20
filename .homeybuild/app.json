@@ -187,7 +187,7 @@
       "게이트웨이"
     ]
   },
-  "version": "3.4.67",
+  "version": "3.4.68",
   "compatibility": ">=12.2.0",
   "platforms": [
     "local"
@@ -31545,6 +31545,23 @@
       "getable": true,
       "setable": false,
       "icon": "/assets/icons/measure_smoke_density.svg"
+    },
+    "measure_target_humidity": {
+      "type": "number",
+      "title": {
+        "en": "Target humidity"
+      },
+      "desc": {
+        "en": "Target humidity for Insights"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": null,
+      "units": {
+        "en": "%"
+      },
+      "decimals": 0,
+      "insights": true
     },
     "measure_tvoc": {
       "type": "number",

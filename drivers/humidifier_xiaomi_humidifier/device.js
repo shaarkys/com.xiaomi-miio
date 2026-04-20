@@ -114,7 +114,7 @@ class XiaomiHumidifierMIoTDevice extends Device {
 
   getTargetHumidityOptions() {
     if (this.is600ek()) {
-      return { min: 0.4, max: 0.7, step: 0.01 };
+      return { min: 0.4, max: 0.7, step: 0.01, preventInsights: true };
     }
 
     return { min: 40, max: 70, step: 10 };
@@ -216,6 +216,12 @@ class XiaomiHumidifierMIoTDevice extends Device {
             });
           }
         }
+
+        if (!this.hasCapability('measure_target_humidity')) {
+          await this.addCapability('measure_target_humidity').catch((error) => {
+            this.error(`Failed to add capability measure_target_humidity: ${error.message ?? error}`);
+          });
+        }
       }
 
       await this.setCapabilityOptions('humidifier_xiaomi_mode', {
@@ -230,7 +236,12 @@ class XiaomiHumidifierMIoTDevice extends Device {
       this.registerCapabilityListener('target_humidity', (value) => {
         const options = this.getTargetHumidityOptions();
         const humidity = this.getTargetHumidityMiotValue(this.util.clamp(Number(value), options.min, options.max));
-        return this.handleSetProperty('target_humidity', humidity);
+        return this.handleSetProperty('target_humidity', humidity).then(async (result) => {
+          if (this.is600ek() && this.hasCapability('measure_target_humidity')) {
+            await this.updateCapabilityValue('measure_target_humidity', humidity);
+          }
+          return result;
+        });
       });
 
       if (this.hasCapability('onoff.dry') && this.deviceProperties?.set_properties?.onoff_dry) {
@@ -302,6 +313,9 @@ class XiaomiHumidifierMIoTDevice extends Device {
       const targetHumidity = indexed.target_humidity;
       if (this.hasUsableValue(targetHumidity) && typeof targetHumidity.value === 'number') {
         await this.updateCapabilityValue('target_humidity', this.getTargetHumidityCapabilityValue(targetHumidity.value));
+        if (this.is600ek() && this.hasCapability('measure_target_humidity')) {
+          await this.updateCapabilityValue('measure_target_humidity', targetHumidity.value);
+        }
       }
 
       const onoffDry = indexed.dry;

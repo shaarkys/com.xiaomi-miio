@@ -1,0 +1,17 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Target humidity"
+  },
+  "desc": {
+    "en": "Target humidity for Insights"
+  },
+  "getable": true,
+  "setable": false,
+  "uiComponent": null,
+  "units": {
+    "en": "%"
+  },
+  "decimals": 0,
+  "insights": true
+}
