@@ -439,5 +439,8 @@
   },
   "3.4.68": {
     "en": "Fixed xiaomi.humidifier.600ek target humidity scaling, X20 Max water-shortage fix"
+  },
+  "3.4.69": {
+    "en": "Fixed Mijia Smart Evaporative Humidifier Pro target humidity Insights"
   }
 }
