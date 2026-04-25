@@ -442,5 +442,8 @@
   },
   "3.4.69": {
     "en": "Fixed Mijia Smart Evaporative Humidifier Pro target humidity Insights"
+  },
+  "3.4.70": {
+    "en": "Added support for Xiaomi Smart Dehumidifier Lite and Mijia Smart Dehumidifier 13L, including the water tank full alarm capability."
   }
 }
