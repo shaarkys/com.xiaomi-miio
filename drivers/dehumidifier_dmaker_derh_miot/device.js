@@ -6,10 +6,15 @@ const Util = require('../../lib/util.js');
 
 /* supported devices */
 // https://home.miot-spec.com/spec/dmaker.derh.22ht
+// https://home.miot-spec.com/spec/xiaomi.derh.lite
 
 const mapping = {
+  "dmaker.derh.22": "mapping_default",
   "dmaker.derh.22ht": "mapping_default",
   "dmaker.derh.*": "mapping_default",
+  "xiaomi.derh.lite": "mapping_default",
+  "xiaomi.derh.13l": "mapping_default",
+  "xiaomi.derh.*": "mapping_default",
 };
 
 const properties = {
@@ -53,6 +58,10 @@ class DehumidifierDmakerDerhMiotDevice extends Device {
 
       // DEVICE VARIABLES
       this.deviceProperties = properties[mapping[this.getStoreValue('model')]] !== undefined ? properties[mapping[this.getStoreValue('model')]] : properties[mapping['dmaker.derh.*']];
+
+      if (!this.hasCapability('alarm_water')) {
+        await this.addCapability('alarm_water');
+      }
 
       this.errorCodes = {
         0: "No Faults",
@@ -161,6 +170,7 @@ class DehumidifierDmakerDerhMiotDevice extends Device {
 
       /* capabilities */
       await this.updateCapabilityValue("onoff", onoff.value);
+      await this.updateCapabilityValue("alarm_water", errors.value === 1);
       await this.updateCapabilityValue("target_humidity", target_humidity.value / 100);
       await this.updateCapabilityValue("measure_humidity", measure_humidity.value);
       await this.updateCapabilityValue("measure_temperature", measure_temperature.value);    

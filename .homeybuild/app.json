@@ -187,7 +187,7 @@
       "게이트웨이"
     ]
   },
-  "version": "3.4.68",
+  "version": "3.4.69",
   "compatibility": ">=12.2.0",
   "platforms": [
     "local"
@@ -16676,12 +16676,29 @@
         "dehumidifier_dmaker_mode",
         "target_humidity",
         "measure_humidity",
-        "measure_temperature"
+        "measure_temperature",
+        "alarm_water"
       ],
       "capabilitiesOptions": {
         "target_humidity": {
           "min": 0.4,
           "max": 0.8
+        },
+        "alarm_water": {
+          "title": {
+            "en": "Water Tank Full",
+            "nl": "Watertank vol",
+            "da": "Vandtank fuld",
+            "de": "Wassertank voll",
+            "es": "Depósito de agua lleno",
+            "fr": "Réservoir d'eau plein",
+            "it": "Serbatoio dell'acqua pieno",
+            "no": "Vanntank full",
+            "sv": "Vattentank full",
+            "pl": "Zbiornik wody pełny",
+            "ru": "Резервуар для воды заполнен",
+            "ko": "물탱크 가득 참"
+          }
         }
       },
       "id": "dehumidifier_dmaker_derh_miot",
