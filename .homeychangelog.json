@@ -445,5 +445,8 @@
   },
   "3.4.70": {
     "en": "Added support for Xiaomi Smart Dehumidifier Lite and Mijia Smart Dehumidifier 13L, including the water tank full alarm capability."
+  },
+  "3.4.71": {
+    "en": "Added support for Yeelight Arwen Ceiling Light D (yeelink.light.ceil43), including main light and ambient light controls."
   }
 }
