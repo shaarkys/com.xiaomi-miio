@@ -219,6 +219,7 @@ class Util {
     'philips.light.mono1': 'Philips Light Bulb',
     'philips.light.downlight': 'Philips Down Light',
     'philips.light.strip5': 'Philips / Xiaomi Smart Lightstrip Pro',
+    'yeelink.light.ceil43': 'Yeelight Arwen Ceiling Light D',
 
     'lumi.gateway.v2': 'Xiaomi Gateway v1',
     'lumi.gateway.v3': 'Xiaomi Gateway v2',

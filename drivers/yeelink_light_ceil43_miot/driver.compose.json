@@ -1,0 +1,78 @@
+{
+  "name": {
+    "en": "Yeelight Arwen Ceiling Light D (WiFi)",
+    "nl": "Yeelight Arwen Plafondlamp D (WiFi)",
+    "da": "Yeelight Arwen Loftslampe D (WiFi)",
+    "de": "Yeelight Arwen Deckenleuchte D (WiFi)",
+    "es": "Luz de techo Yeelight Arwen D (WiFi)",
+    "fr": "Plafonnier Yeelight Arwen D (WiFi)",
+    "it": "Plafoniera Yeelight Arwen D (WiFi)",
+    "no": "Yeelight Arwen Taklampe D (WiFi)",
+    "sv": "Yeelight Arwen Taklampa D (WiFi)",
+    "pl": "Lampa sufitowa Yeelight Arwen D (WiFi)",
+    "ru": "Потолочный светильник Yeelight Arwen D (WiFi)",
+    "ko": "Yeelight Arwen 천장 조명 D (WiFi)"
+  },
+  "images": {
+    "large": "drivers/yeelink_light_ceil43_miot/assets/images/large.jpg",
+    "small": "drivers/yeelink_light_ceil43_miot/assets/images/small.jpg"
+  },
+  "class": "light",
+  "$extends": [
+    "defaults"
+  ],
+  "capabilities": [
+    "onoff",
+    "dim",
+    "light_temperature",
+    "light_hue",
+    "light_saturation",
+    "onoff.ambient",
+    "dim.ambient",
+    "light_temperature.ambient",
+    "light_hue.ambient",
+    "light_saturation.ambient"
+  ],
+  "capabilitiesOptions": {
+    "dim": {
+      "min": 0.01
+    },
+    "onoff.ambient": {
+      "title": {
+        "en": "Ambient Light",
+        "nl": "Sfeerverlichting",
+        "da": "Stemningslys",
+        "de": "Ambiente-Licht",
+        "es": "Luz ambiental",
+        "fr": "Lumière d'ambiance",
+        "it": "Luce ambientale",
+        "no": "Stemningslys",
+        "sv": "Stämningsljus",
+        "pl": "Swiatlo otoczenia",
+        "ru": "Фоновая подсветка",
+        "ko": "무드등"
+      }
+    },
+    "dim.ambient": {
+      "title": {
+        "en": "Ambient Brightness"
+      },
+      "min": 0.01
+    },
+    "light_temperature.ambient": {
+      "title": {
+        "en": "Ambient Temperature"
+      }
+    },
+    "light_hue.ambient": {
+      "title": {
+        "en": "Ambient Hue"
+      }
+    },
+    "light_saturation.ambient": {
+      "title": {
+        "en": "Ambient Saturation"
+      }
+    }
+  }
+}

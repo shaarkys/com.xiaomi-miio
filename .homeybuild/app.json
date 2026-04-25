@@ -187,7 +187,7 @@
       "게이트웨이"
     ]
   },
-  "version": "3.4.69",
+  "version": "3.4.70",
   "compatibility": ">=12.2.0",
   "platforms": [
     "local"
@@ -28863,6 +28863,187 @@
                 "pl": "Kod modelu urządzenia",
                 "ru": "Код модели устройства",
                 "ko": "장치 모델 코드"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "icon": "/drivers/yeelink_light_ceil43_miot/assets/icon.svg",
+      "pair": [
+        {
+          "id": "start",
+          "navigation": {
+            "next": "pair"
+          }
+        },
+        {
+          "id": "pair"
+        },
+        {
+          "id": "add_device"
+        }
+      ],
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [
+        "lan"
+      ],
+      "name": {
+        "en": "Yeelight Arwen Ceiling Light D (WiFi)",
+        "nl": "Yeelight Arwen Plafondlamp D (WiFi)",
+        "da": "Yeelight Arwen Loftslampe D (WiFi)",
+        "de": "Yeelight Arwen Deckenleuchte D (WiFi)",
+        "es": "Luz de techo Yeelight Arwen D (WiFi)",
+        "fr": "Plafonnier Yeelight Arwen D (WiFi)",
+        "it": "Plafoniera Yeelight Arwen D (WiFi)",
+        "no": "Yeelight Arwen Taklampe D (WiFi)",
+        "sv": "Yeelight Arwen Taklampa D (WiFi)",
+        "pl": "Lampa sufitowa Yeelight Arwen D (WiFi)",
+        "ru": "Потолочный светильник Yeelight Arwen D (WiFi)",
+        "ko": "Yeelight Arwen 천장 조명 D (WiFi)"
+      },
+      "images": {
+        "large": "drivers/yeelink_light_ceil43_miot/assets/images/large.jpg",
+        "small": "drivers/yeelink_light_ceil43_miot/assets/images/small.jpg"
+      },
+      "class": "light",
+      "capabilities": [
+        "onoff",
+        "dim",
+        "light_temperature",
+        "light_hue",
+        "light_saturation",
+        "onoff.ambient",
+        "dim.ambient",
+        "light_temperature.ambient",
+        "light_hue.ambient",
+        "light_saturation.ambient"
+      ],
+      "capabilitiesOptions": {
+        "dim": {
+          "min": 0.01
+        },
+        "onoff.ambient": {
+          "title": {
+            "en": "Ambient Light",
+            "nl": "Sfeerverlichting",
+            "da": "Stemningslys",
+            "de": "Ambiente-Licht",
+            "es": "Luz ambiental",
+            "fr": "Lumière d'ambiance",
+            "it": "Luce ambientale",
+            "no": "Stemningslys",
+            "sv": "Stämningsljus",
+            "pl": "Swiatlo otoczenia",
+            "ru": "Фоновая подсветка",
+            "ko": "무드등"
+          }
+        },
+        "dim.ambient": {
+          "title": {
+            "en": "Ambient Brightness"
+          },
+          "min": 0.01
+        },
+        "light_temperature.ambient": {
+          "title": {
+            "en": "Ambient Temperature"
+          }
+        },
+        "light_hue.ambient": {
+          "title": {
+            "en": "Ambient Hue"
+          }
+        },
+        "light_saturation.ambient": {
+          "title": {
+            "en": "Ambient Saturation"
+          }
+        }
+      },
+      "id": "yeelink_light_ceil43_miot",
+      "settings": [
+        {
+          "type": "group",
+          "label": {
+            "en": "Device Settings",
+            "nl": "Apparaat instellingen",
+            "da": "Enhedsindstillinger",
+            "de": "Geräteeinstellungen",
+            "es": "Configuración del dispositivo",
+            "fr": "Paramètres de l'appareil",
+            "it": "Impostazioni del dispositivo",
+            "no": "Enhetsinnstillinger",
+            "sv": "Enhetsinställningar",
+            "pl": "Ustawienia urządzenia",
+            "ru": "Настройки устройства",
+            "ko": "장치 설정",
+            "ja": "デバイス設定",
+            "zh": "设备设置"
+          },
+          "children": [
+            {
+              "id": "address",
+              "type": "text",
+              "value": "0.0.0.0",
+              "label": {
+                "en": "IP Address",
+                "nl": "IP adres",
+                "da": "IP-adresse",
+                "de": "IP-Adresse",
+                "es": "Dirección IP",
+                "fr": "Adresse IP",
+                "it": "Indirizzo IP",
+                "no": "IP-adresse",
+                "sv": "IP-adress",
+                "pl": "Adres IP",
+                "ru": "IP-адрес",
+                "ko": "IP 주소"
+              }
+            },
+            {
+              "id": "token",
+              "type": "text",
+              "value": "",
+              "label": {
+                "en": "Mi Device Token",
+                "nl": "Mi Apparaat Token",
+                "da": "Mi Enheds Token",
+                "de": "Mi Gerätetoken",
+                "es": "Token del Dispositivo Mi",
+                "fr": "Jeton de l'Appareil Mi",
+                "it": "Token Dispositivo Mi",
+                "no": "Mi Enhet Token",
+                "sv": "Mi Enhetstoken",
+                "pl": "Token Urządzenia Mi",
+                "ru": "Токен Устройства Mi",
+                "ko": "Mi 기기 토큰"
+              }
+            },
+            {
+              "id": "polling",
+              "type": "number",
+              "value": 60,
+              "attr": {
+                "min": 5,
+                "max": 3600
+              },
+              "label": {
+                "en": "Polling Frequency",
+                "nl": "Polling frequentie",
+                "da": "Polling Frekvens",
+                "de": "Abfragefrequenz",
+                "es": "Frecuencia de sondeo",
+                "fr": "Fréquence de sondage",
+                "it": "Frequenza di polling",
+                "no": "Polling Frekvens",
+                "sv": "Pollingfrekvens",
+                "pl": "Częstotliwość odpytywania",
+                "ru": "Частота опроса",
+                "ko": "폴링 빈도"
               }
             }
           ]
