@@ -448,5 +448,8 @@
   },
   "3.4.71": {
     "en": "Added support for Yeelight Arwen Ceiling Light D (yeelink.light.ceil43), including main light and ambient light controls."
+  },
+  "3.4.72": {
+    "en": " Improved color picker handling and added Day/Night/Color/Flow mode selection for Yeelight Arwen Ceiling Light D (yeelink.light.ceil43)"
   }
 }
