@@ -24,11 +24,14 @@
   "capabilities": [
     "onoff",
     "dim",
+    "light_mode",
+    "yeelight_ceil43_mode",
     "light_temperature",
     "light_hue",
     "light_saturation",
     "onoff.ambient",
     "dim.ambient",
+    "light_mode.ambient",
     "light_temperature.ambient",
     "light_hue.ambient",
     "light_saturation.ambient"
@@ -58,6 +61,11 @@
         "en": "Ambient Brightness"
       },
       "min": 0.01
+    },
+    "light_mode.ambient": {
+      "title": {
+        "en": "Ambient Mode"
+      }
     },
     "light_temperature.ambient": {
       "title": {

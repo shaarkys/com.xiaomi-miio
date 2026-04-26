@@ -1,0 +1,91 @@
+{
+  "type": "enum",
+  "title": {
+    "en": "Mode",
+    "nl": "Modus",
+    "da": "Tilstand",
+    "de": "Modus",
+    "es": "Modo",
+    "fr": "Mode",
+    "it": "Modalita",
+    "no": "Modus",
+    "sv": "Lage",
+    "pl": "Tryb",
+    "ru": "Режим",
+    "ko": "모드"
+  },
+  "getable": true,
+  "setable": true,
+  "uiComponent": "picker",
+  "values": [
+    {
+      "id": "0",
+      "title": {
+        "en": "Day",
+        "nl": "Dag",
+        "da": "Dag",
+        "de": "Tag",
+        "es": "Dia",
+        "fr": "Jour",
+        "it": "Giorno",
+        "no": "Dag",
+        "sv": "Dag",
+        "pl": "Dzien",
+        "ru": "День",
+        "ko": "주간"
+      }
+    },
+    {
+      "id": "1",
+      "title": {
+        "en": "Night",
+        "nl": "Nacht",
+        "da": "Nat",
+        "de": "Nacht",
+        "es": "Noche",
+        "fr": "Nuit",
+        "it": "Notte",
+        "no": "Natt",
+        "sv": "Natt",
+        "pl": "Noc",
+        "ru": "Ночь",
+        "ko": "야간"
+      }
+    },
+    {
+      "id": "2",
+      "title": {
+        "en": "Color",
+        "nl": "Kleur",
+        "da": "Farve",
+        "de": "Farbe",
+        "es": "Color",
+        "fr": "Couleur",
+        "it": "Colore",
+        "no": "Farge",
+        "sv": "Farg",
+        "pl": "Kolor",
+        "ru": "Цвет",
+        "ko": "색상"
+      }
+    },
+    {
+      "id": "3",
+      "title": {
+        "en": "Flow",
+        "nl": "Flow",
+        "da": "Flow",
+        "de": "Flow",
+        "es": "Flujo",
+        "fr": "Flux",
+        "it": "Flusso",
+        "no": "Flyt",
+        "sv": "Flode",
+        "pl": "Przeplyw",
+        "ru": "Поток",
+        "ko": "흐름"
+      }
+    }
+  ],
+  "icon": "/assets/icons/airpurifier-mode.svg"
+}
