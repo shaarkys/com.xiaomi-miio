@@ -1,7 +1,7 @@
 {
   "name": "is-arrayish",
   "description": "Determines if an object can be used as an array",
-  "version": "0.3.2",
+  "version": "0.3.4",
   "author": "Qix (http://github.com/qix-)",
   "keywords": [
     "is",

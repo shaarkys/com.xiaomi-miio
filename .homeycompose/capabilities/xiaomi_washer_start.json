@@ -1,0 +1,10 @@
+{
+  "type": "boolean",
+  "title": {
+    "en": "Start Program",
+    "nl": "Start Programma"
+  },
+  "getable": false,
+  "setable": true,
+  "uiComponent": "button"
+}

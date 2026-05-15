@@ -1,0 +1,15 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Time Left",
+    "nl": "Resterende tijd"
+  },
+  "getable": true,
+  "setable": false,
+  "uiComponent": "sensor",
+  "units": {
+    "en": "min",
+    "nl": "min"
+  },
+  "decimals": 0
+}
