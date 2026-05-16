@@ -222,6 +222,34 @@ class XiaomiMiioApp extends Homey.App {
         }
       });    
 
+    // WASHER
+    this.homey.flow.getActionCard('washerStart')
+      .registerRunListener(async (args) => {
+        try {
+          return await args.device.runWasherAction('start');
+        } catch (error) {
+          return Promise.reject(error.message);
+        }
+      });
+
+    this.homey.flow.getActionCard('washerPause')
+      .registerRunListener(async (args) => {
+        try {
+          return await args.device.runWasherAction('pause');
+        } catch (error) {
+          return Promise.reject(error.message);
+        }
+      });
+
+    this.homey.flow.getActionCard('washerStop')
+      .registerRunListener(async (args) => {
+        try {
+          return await args.device.runWasherAction('stop');
+        } catch (error) {
+          return Promise.reject(error.message);
+        }
+      });
+
     // AIR PURIFIER
     this.homey.flow.getActionCard('modeAirpurifier')
       .registerRunListener(async (args) => {

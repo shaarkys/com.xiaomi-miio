@@ -1,0 +1,19 @@
+{
+  "type": "enum",
+  "title": {
+    "en": "Spin Speed",
+    "nl": "Centrifugeersnelheid"
+  },
+  "getable": true,
+  "setable": true,
+  "uiComponent": "picker",
+  "values": [
+    { "id": "0", "title": { "en": "0 (No Spin)", "nl": "0 (Niet centrifugeren)" } },
+    { "id": "400", "title": { "en": "400 RPM", "nl": "400 Toeren" } },
+    { "id": "600", "title": { "en": "600 RPM", "nl": "600 Toeren" } },
+    { "id": "800", "title": { "en": "800 RPM", "nl": "800 Toeren" } },
+    { "id": "1000", "title": { "en": "1000 RPM", "nl": "1000 Toeren" } },
+    { "id": "1200", "title": { "en": "1200 RPM", "nl": "1200 Toeren" } },
+    { "id": "1400", "title": { "en": "1400 RPM", "nl": "1400 Toeren" } }
+  ]
+}

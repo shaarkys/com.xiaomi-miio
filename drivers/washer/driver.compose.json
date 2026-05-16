@@ -1,0 +1,24 @@
+{
+  "name": {
+    "en": "Xiaomi Washer Dryer Pro",
+    "nl": "Xiaomi Washer Dryer Pro"
+  },
+  "images": {
+    "large": "drivers/washer/assets/images/large.jpg",
+    "small": "drivers/washer/assets/images/small.jpg"
+  },
+  "class": "other",
+  "$extends": [
+    "defaults"
+  ],
+  "capabilities": [
+    "onoff",
+    "xiaomi_washer_start",
+    "xiaomi_washer_pause",
+    "xiaomi_washer_stop",
+    "xiaomi_washer_left_time",
+    "measure_temperature",
+    "xiaomi_washer_mode",
+    "xiaomi_washer_spin_speed"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "type": "boolean",
+  "title": {
+    "en": "Stop Program",
+    "nl": "Stop Programma"
+  },
+  "getable": false,
+  "setable": true,
+  "uiComponent": "button"
+}
