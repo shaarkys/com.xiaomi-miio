@@ -7,10 +7,10 @@ const Util = require('../../lib/util.js');
 /* supported devices */
 // https://home.miot-spec.com/spec/xiaomi.vacuum.d109gl // Xiaomi Robot Vacuum X20 Max
 // https://home.miot-spec.com/spec/xiaomi.vacuum.d102gl // Xiaomi Robot Vacuum X20 Pro  (original mapping kept)
-// https://home.miot-spec.com/spec/xiaomi.vacuum.d101 // Xiaomi Robot Vacuum H40
+// https://home.miot-spec.com/spec/xiaomi.vacuum.d101 // Xiaomi Robot Vacuum H40 Chinese
 // https://home.miot-spec.com/spec/xiaomi.vacuum.c102gl // Xiaomi Robot Vacuum X20 / X20+
 // https://home.miot-spec.com/spec/xiaomi.vacuum.b108gl // Xiaomi Robot Vacuum S20+
-
+// https://home.miot-spec.com/spec/xiaomi.vacuum.ov51gl // Xiaomi Robot Vacuum H40
 /** ------------------------------------------------------------------
  *  Shared constants (hoisted)
  *  ------------------------------------------------------------------ */
