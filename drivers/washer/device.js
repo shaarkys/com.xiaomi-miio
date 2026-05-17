@@ -35,15 +35,34 @@ class WasherMiotDevice extends Device {
 
       this.deviceProperties = properties[mapping[this.getStoreValue('model')]] !== undefined ? properties[mapping[this.getStoreValue('model')]] : properties[mapping['mibx5.washer.*']];
 
-      // Exacte vertaling van de MIoT fault codes naar leesbare tekst
       this.errorCodes = {
         0: "No Faults", 1: "Door Lock Malfunction", 2: "Water Intake Malfunction", 
         3: "Water Draining Malfunction", 4: "Water Level Sensor Malfunction", 5: "Overflow",
         6: "Motor Driver Comm Malfunction", 7: "Motor Fault C2", 16: "Dehydration Fault (Unbalanced)",
-        17: "Drying Heating Tube Malfunction", 18: "Drying Fan Malfunction" // Vul gerust verder aan
+        17: "Drying Heating Tube Malfunction", 18: "Drying Fan Malfunction"
       };
 
-      // 1. AAN/UIT SCHAKELAAR
+      // Dynamische migratie van capabilities (bijgewerkt met de measure_ prefix)
+      const requiredCapabilities = [
+        'onoff', 'xiaomi_washer_start', 'xiaomi_washer_pause', 'xiaomi_washer_stop',
+        'measure_washer_left_time', 'measure_temperature', 'xiaomi_washer_mode',
+        'xiaomi_washer_spin_speed'
+      ];
+      for (const cap of requiredCapabilities) {
+        if (!this.hasCapability(cap)) {
+          await this.addCapability(cap).catch(error => this.error(error));
+        }
+      }
+
+      // RUIM OVERBODIGE ENERGIEMETERS OP (Als die er tijdens het testen in waren gezet)
+      if (this.hasCapability('meter_water')) {
+        await this.removeCapability('meter_water').catch(error => this.error(error));
+      }
+      if (this.hasCapability('meter_power')) {
+        await this.removeCapability('meter_power').catch(error => this.error(error));
+      }
+
+      // 1. AAN/UIT SCHAKELAAR (Voor de flows & handmatige bediening)
       this.registerCapabilityListener('onoff', async ( value ) => {
         try {
           if (this.miio) {
@@ -57,11 +76,10 @@ class WasherMiotDevice extends Device {
         }
       });
 
-      // 2. WASPROGRAMMA KIEZEN (Dropdown)
+      // 2. WASPROGRAMMA KIEZEN
       this.registerCapabilityListener('xiaomi_washer_mode', async ( value ) => {
         try {
           if (this.miio) {
-            // value komt binnen als string vanuit Homey UI, MIoT verwacht een integer
             return await this.miio.call("set_properties", [{ siid: 2, piid: 3, value: parseInt(value) }], { retries: 1 });
           } else {
             throw new Error('Device unreachable');
@@ -72,7 +90,7 @@ class WasherMiotDevice extends Device {
         }
       });
 
-      // 3. TOERENTAL INSTELLEN (Dropdown)
+      // 3. TOERENTAL INSTELLEN
       this.registerCapabilityListener('xiaomi_washer_spin_speed', async ( value ) => {
         try {
           if (this.miio) {
@@ -86,7 +104,7 @@ class WasherMiotDevice extends Device {
         }
       });
 
-      // 4. UI KNOPPEN (Start, Stop, Pauze) - Vervangt de oude Flow Actions
+      // 4. UI KNOPPEN
       this.registerCapabilityListener('xiaomi_washer_start', async () => {
         try {
           if (this.miio) return await this.miio.call("action", { did: "call-2-2", siid: 2, aiid: 2, in: [] }, { retries: 1 });
@@ -116,7 +134,8 @@ class WasherMiotDevice extends Device {
           return Promise.reject(error);
         }
       });
-// 5. FLOW ACTIES (Voor in de flow editor)
+
+      // 5. FLOW ACTIES
       this.homey.flow.getActionCard('WasherStart').registerRunListener(async (args, state) => {
         try {
           if (this.miio) return await this.miio.call("action", { did: "call-2-2", siid: 2, aiid: 2, in: [] }, { retries: 1 });
@@ -146,6 +165,7 @@ class WasherMiotDevice extends Device {
           return false;
         }
       });
+
     } catch (error) {
       this.error(error);
     }
@@ -164,7 +184,6 @@ class WasherMiotDevice extends Device {
       const spin_speed = result.find(obj => obj.did === 'spin_speed');
       const target_temperature = result.find(obj => obj.did === 'target_temperature');
       const left_time = result.find(obj => obj.did === 'left_time');
-      const run_status = result.find(obj => obj.did === 'run_status');
 
       /* CAPABILITIES UPDATEN */
       if (power !== undefined) {
@@ -172,7 +191,7 @@ class WasherMiotDevice extends Device {
       }
 
       if (left_time !== undefined) {
-         await this.updateCapabilityValue("xiaomi_washer_left_time", left_time.value);
+         await this.updateCapabilityValue("measure_washer_left_time", left_time.value);
       }
 
       if (target_temperature !== undefined) {
@@ -187,41 +206,28 @@ class WasherMiotDevice extends Device {
          await this.updateCapabilityValue("xiaomi_washer_spin_speed", spin_speed.value.toString());
       }
 
-      /* SETTINGS UPDATEN (Fouten & Status tekst) */
+      /* SETTINGS UPDATEN */
       if (fault !== undefined) {
          const errorStr = this.errorCodes[fault.value] || `Unknown error: ${fault.value}`;
          await this.updateSettingValue("error", errorStr);
       }
 
-      /* FLOW TRIGGERS (Programma gestart of klaar) */
+      /* FLOW TRIGGERS */
       if (status !== undefined) {
          const currentStatus = status.value;
          const previousStatus = this.getStoreValue('previous_status');
 
-         // Controleer of de status is veranderd ten opzichte van de vorige meting
          if (currentStatus !== previousStatus) {
             this.setStoreValue('previous_status', currentStatus);
 
-            // Status 3 is 'Busy' (Programma is gestart)
             if (currentStatus === 3 && previousStatus !== 3) {
                this.homey.flow.getDeviceTriggerCard('WasherStarted').trigger(this, {}, {}).catch(error => this.error(error));
             }
             
-            // Status 5 is 'Completed' (Programma is klaar)
             if (currentStatus === 5 && previousStatus !== 5) {
                this.homey.flow.getDeviceTriggerCard('WasherFinished').trigger(this, {}, {}).catch(error => this.error(error));
             }
          }
-      }
-	  // Voeg nieuwe capabilities toe aan bestaande apparaten
-      if (!this.hasCapability('xiaomi_washer_start')) {
-        await this.addCapability('xiaomi_washer_start').catch(error => this.error(error));
-      }
-      if (!this.hasCapability('xiaomi_washer_pause')) {
-        await this.addCapability('xiaomi_washer_pause').catch(error => this.error(error));
-      }
-      if (!this.hasCapability('xiaomi_washer_stop')) {
-        await this.addCapability('xiaomi_washer_stop').catch(error => this.error(error));
       }
 
     } catch (error) {

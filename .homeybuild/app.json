@@ -28955,11 +28955,12 @@
         "xiaomi_washer_start",
         "xiaomi_washer_pause",
         "xiaomi_washer_stop",
-        "xiaomi_washer_left_time",
+        "measure_washer_left_time",
         "measure_temperature",
         "xiaomi_washer_mode",
         "xiaomi_washer_spin_speed"
       ],
+      "statusIndicator": "measure_washer_left_time",
       "id": "washer",
       "settings": [
         {
@@ -31990,6 +31991,21 @@
       "decimals": 3,
       "insights": true
     },
+    "measure_washer_left_time": {
+      "type": "number",
+      "title": {
+        "en": "Remaining Time",
+        "nl": "Resterende tijd"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "units": {
+        "en": "min",
+        "nl": "min"
+      },
+      "decimals": 0
+    },
     "measure_waterlevel": {
       "type": "number",
       "title": {
@@ -33732,21 +33748,6 @@
       "setable": true,
       "icon": "/assets/icons/water-level.svg"
     },
-    "xiaomi_washer_left_time": {
-      "type": "number",
-      "title": {
-        "en": "Time Left",
-        "nl": "Resterende tijd"
-      },
-      "getable": true,
-      "setable": false,
-      "uiComponent": "sensor",
-      "units": {
-        "en": "min",
-        "nl": "min"
-      },
-      "decimals": 0
-    },
     "xiaomi_washer_mode": {
       "type": "enum",
       "title": {
@@ -34005,7 +34006,8 @@
       },
       "getable": false,
       "setable": true,
-      "uiComponent": "button"
+      "uiComponent": "button",
+      "icon": "/assets/icons/pause.svg"
     },
     "xiaomi_washer_spin_speed": {
       "type": "enum",
@@ -34076,7 +34078,8 @@
       },
       "getable": false,
       "setable": true,
-      "uiComponent": "button"
+      "uiComponent": "button",
+      "icon": "/assets/icons/start.svg"
     },
     "xiaomi_washer_stop": {
       "type": "boolean",
@@ -34086,7 +34089,8 @@
       },
       "getable": false,
       "setable": true,
-      "uiComponent": "button"
+      "uiComponent": "button",
+      "icon": "/assets/icons/stop.svg"
     },
     "yeelight_ceil43_mode": {
       "type": "enum",

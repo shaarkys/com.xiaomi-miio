@@ -6,5 +6,6 @@
   },
   "getable": false,
   "setable": true,
-  "uiComponent": "button"
+  "uiComponent": "button",
+  "icon": "/assets/icons/stop.svg"
 }

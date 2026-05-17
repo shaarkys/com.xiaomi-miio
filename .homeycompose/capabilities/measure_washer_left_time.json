@@ -1,7 +1,7 @@
 {
   "type": "number",
   "title": {
-    "en": "Time Left",
+    "en": "Remaining Time",
     "nl": "Resterende tijd"
   },
   "getable": true,
