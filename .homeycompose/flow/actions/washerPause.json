@@ -1,0 +1,20 @@
+{
+  "title": {
+    "en": "Pause washing",
+    "nl": "Pauzeer wasprogramma"
+  },
+  "args": [
+    {
+      "name": "device",
+      "type": "device",
+      "placeholder": {
+        "en": "Select washer",
+        "nl": "Selecteer wasmachine"
+      },
+      "filter": "driver_id=washer"
+    }
+  ],
+  "platforms": [
+    "local"
+  ]
+}

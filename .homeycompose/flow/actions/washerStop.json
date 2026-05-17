@@ -1,0 +1,20 @@
+{
+  "title": {
+    "en": "Stop washing",
+    "nl": "Stop wasprogramma"
+  },
+  "args": [
+    {
+      "name": "device",
+      "type": "device",
+      "placeholder": {
+        "en": "Select washer",
+        "nl": "Selecteer wasmachine"
+      },
+      "filter": "driver_id=washer"
+    }
+  ],
+  "platforms": [
+    "local"
+  ]
+}
