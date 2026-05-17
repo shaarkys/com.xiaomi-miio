@@ -16,9 +16,10 @@
     "xiaomi_washer_start",
     "xiaomi_washer_pause",
     "xiaomi_washer_stop",
-    "xiaomi_washer_left_time",
+    "measure_washer_left_time",
     "measure_temperature",
     "xiaomi_washer_mode",
     "xiaomi_washer_spin_speed"
-  ]
+  ],
+  "statusIndicator": "measure_washer_left_time"
 }

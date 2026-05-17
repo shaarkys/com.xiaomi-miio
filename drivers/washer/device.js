@@ -28,7 +28,7 @@ const washerCapabilities = [
   'xiaomi_washer_start',
   'xiaomi_washer_pause',
   'xiaomi_washer_stop',
-  'xiaomi_washer_left_time',
+  'measure_washer_left_time',
   'xiaomi_washer_mode',
   'xiaomi_washer_spin_speed',
 ];
@@ -46,6 +46,7 @@ class WasherMiotDevice extends Device {
       if (!this.util) this.util = new Util({ homey: this.homey });
 
       await this.ensureWasherCapabilities();
+      await this.cleanupWasherCapabilities();
 
       this.bootSequence();
 
@@ -101,6 +102,14 @@ class WasherMiotDevice extends Device {
     }
   }
 
+  async cleanupWasherCapabilities() {
+    for (const capability of ['xiaomi_washer_left_time', 'meter_water', 'meter_power']) {
+      if (this.hasCapability(capability)) {
+        await this.removeCapability(capability).catch(error => this.error(error));
+      }
+    }
+  }
+
   async setMiotProperty(siid, piid, value) {
     try {
       if (!this.miio) {
@@ -143,7 +152,7 @@ class WasherMiotDevice extends Device {
       }
 
       if (leftTime !== undefined) {
-        await this.updateCapabilityValue('xiaomi_washer_left_time', leftTime.value);
+        await this.updateCapabilityValue('measure_washer_left_time', leftTime.value);
       }
 
       if (targetTemperature !== undefined) {
