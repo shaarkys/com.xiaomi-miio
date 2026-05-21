@@ -463,5 +463,8 @@
   },
   "3.4.76": {
     "en": "Add Smartmi Air Purifier 3 support"
+  },
+  "3.4.77": {
+    "en": " Updated selected Homey device classes to better match their device types"
   }
 }

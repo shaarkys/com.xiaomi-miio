@@ -187,7 +187,7 @@
       "게이트웨이"
     ]
   },
-  "version": "3.4.76",
+  "version": "3.4.77",
   "compatibility": ">=12.2.0",
   "platforms": [
     "local"
@@ -13545,7 +13545,7 @@
         "large": "drivers/airpurifier_zhimi_advanced_miot/assets/images/large.jpg",
         "small": "drivers/airpurifier_zhimi_advanced_miot/assets/images/small.jpg"
       },
-      "class": "sensor",
+      "class": "airpurifier",
       "capabilities": [
         "onoff",
         "measure_pm25",
@@ -16624,7 +16624,7 @@
         "large": "/drivers/ctrl_86plug_aq1/assets/images/large.jpg",
         "small": "/drivers/ctrl_86plug_aq1/assets/images/small.jpg"
       },
-      "class": "light",
+      "class": "socket",
       "capabilities": [
         "onoff",
         "meter_power",
@@ -17022,7 +17022,7 @@
         "large": "drivers/diffuser_xwhzp_diffuser_xwxfj/assets/images/large.jpg",
         "small": "drivers/diffuser_xwhzp_diffuser_xwxfj/assets/images/small.jpg"
       },
-      "class": "humidifier",
+      "class": "diffuser",
       "capabilities": [
         "onoff",
         "diffuser_xwhzp_mode",
@@ -25768,7 +25768,7 @@
         "large": "drivers/remote_chuangmi_remote_v2/assets/images/large.jpg",
         "small": "drivers/remote_chuangmi_remote_v2/assets/images/small.jpg"
       },
-      "class": "other",
+      "class": "remote",
       "capabilities": [
         "onoff",
         "channel_up",
@@ -25944,7 +25944,7 @@
         "large": "/drivers/smoke_sensor/assets/images/large.jpg",
         "small": "/drivers/smoke_sensor/assets/images/small.jpg"
       },
-      "class": "sensor",
+      "class": "smokealarm",
       "capabilities": [
         "alarm_smoke",
         "measure_smoke_density",
@@ -28982,7 +28982,7 @@
         "large": "drivers/washer/assets/images/large.jpg",
         "small": "drivers/washer/assets/images/small.jpg"
       },
-      "class": "other",
+      "class": "washer_and_dryer",
       "capabilities": [
         "onoff",
         "xiaomi_washer_start",
