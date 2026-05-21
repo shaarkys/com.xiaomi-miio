@@ -19,7 +19,7 @@
     "large": "drivers/airpurifier_zhimi_advanced_miot/assets/images/large.jpg",
     "small": "drivers/airpurifier_zhimi_advanced_miot/assets/images/small.jpg"
   },
-  "class": "sensor",
+  "class": "airpurifier",
   "$extends": [
     "defaults"
   ],

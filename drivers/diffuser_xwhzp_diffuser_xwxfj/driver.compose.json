@@ -17,7 +17,7 @@
     "large": "drivers/diffuser_xwhzp_diffuser_xwxfj/assets/images/large.jpg",
     "small": "drivers/diffuser_xwhzp_diffuser_xwxfj/assets/images/small.jpg"
   },
-  "class": "humidifier",
+  "class": "diffuser",
   "$extends": [
     "defaults"
   ],

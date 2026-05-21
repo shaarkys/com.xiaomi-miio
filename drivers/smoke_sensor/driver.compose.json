@@ -17,7 +17,7 @@
     "large": "/drivers/smoke_sensor/assets/images/large.jpg",
     "small": "/drivers/smoke_sensor/assets/images/small.jpg"
   },
-  "class": "sensor",
+  "class": "smokealarm",
   "$extends": [
     "defaults_subdevice"
   ],

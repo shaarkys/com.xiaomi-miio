@@ -7,7 +7,7 @@
     "large": "drivers/washer/assets/images/large.jpg",
     "small": "drivers/washer/assets/images/small.jpg"
   },
-  "class": "other",
+  "class": "washer_and_dryer",
   "$extends": [
     "defaults"
   ],

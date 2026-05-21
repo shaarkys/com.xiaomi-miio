@@ -17,7 +17,7 @@
     "large": "/drivers/ctrl_86plug_aq1/assets/images/large.jpg",
     "small": "/drivers/ctrl_86plug_aq1/assets/images/small.jpg"
   },
-  "class": "light",
+  "class": "socket",
   "$extends": [
     "defaults_subdevice"
   ],

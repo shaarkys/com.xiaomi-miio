@@ -17,7 +17,7 @@
     "large": "drivers/remote_chuangmi_remote_v2/assets/images/large.jpg",
     "small": "drivers/remote_chuangmi_remote_v2/assets/images/small.jpg"
   },
-  "class": "other",
+  "class": "remote",
   "$extends": [
     "defaults"
   ],
