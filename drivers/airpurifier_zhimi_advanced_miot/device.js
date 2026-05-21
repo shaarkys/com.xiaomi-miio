@@ -20,6 +20,7 @@ const Util = require('../../lib/util.js');
 // https://home.miot-spec.com/spec/zhimi.airpurifier.rma1 // Airpurifier 4 Lite
 // https://home.miot-spec.com/spec/zhimi.airp.rmb1 // Airpurifier 4 Lite
 // https://home.miot-spec.com/spec/zhimi.airpurifier.za1 // Smartmi Air Purifier
+// https://home.miot-spec.com/spec/zhimi.airp.za3 // Smartmi Air Purifier 3
 // https://home.miot-spec.com/spec/zhimi.airp.meb1 // Xiaomi Smart Air Purifier Elite
 // https://home.miot-spec.com/spec/xiaomi.airp.cpa4 // Xiaomi Smart Air Purifier 4 Compact
 
@@ -39,6 +40,7 @@ const mapping = {
   "zhimi.airpurifier.rma1": "mapping_rma1",
   "zhimi.airp.rmb1": "mapping_rmb1",
   "zhimi.airpurifier.za1": "mapping_za1",
+  "zhimi.airp.za3": "mapping_za3",
   "zhimi.airp.meb1": "mapping_airp_meb1",
   "xiaomi.airp.cpa4": "mapping_cpa4",
   "zhimi.airpurifier.*": "mapping_default",
@@ -251,6 +253,28 @@ const properties = {
       "light": { "min": 0, "max": 2 }
     }
   },
+  "mapping_za3": {
+    "get_properties": [
+      { did: "power", siid: 2, piid: 1 }, // onoff
+      { did: "mode", siid: 2, piid: 4 }, // airpurifier_zhimi_mode
+      { did: "humidity", siid: 3, piid: 1 }, // measure_humidity
+      { did: "aqi", siid: 3, piid: 4 }, // measure_pm25
+      { did: "temperature", siid: 3, piid: 7 }, // measure_temperature
+      { did: "buzzer", siid: 6, piid: 1 }, // settings.buzzer
+      { did: "light", siid: 7, piid: 2 }, // settings.led
+      { did: "filter_life_remaining", siid: 4, piid: 1 }, // settings.filter_life_remaining
+      { did: "filter_hours_used", siid: 4, piid: 3 } // settings.filter_hours_used
+    ],
+    "set_properties": {
+      "power": { siid: 2, piid: 1 },
+      "mode": { siid: 2, piid: 4 },
+      "buzzer": { siid: 6, piid: 1 },
+      "light": { siid: 7, piid: 2 }
+    },
+    "device_properties": {
+      "light": { "min": 0, "max": 2 }
+    }
+  },
   "mapping_cpa4": {
     "get_properties": [
       { did: "power", siid: 2, piid: 1 }, // onoff
@@ -402,7 +426,7 @@ class AdvancedMiAirPurifierMiotDevice extends Device {
       const buzzer = await this.miio.call("set_properties", [{ siid: this.deviceProperties.set_properties.buzzer.siid, piid: this.deviceProperties.set_properties.buzzer.piid, value: newSettings.buzzer }], { retries: 1 });
     }
 
-    if (changedKeys.includes("childLock")) {
+    if (changedKeys.includes("childLock") && this.deviceProperties.set_properties.child_lock !== undefined) {
       const childlock = await this.miio.call("set_properties", [{ siid: this.deviceProperties.set_properties.child_lock.siid, piid: this.deviceProperties.set_properties.child_lock.piid, value: newSettings.childLock }], { retries: 1 });
     }
 
@@ -447,7 +471,9 @@ class AdvancedMiAirPurifierMiotDevice extends Device {
       /* settings */
       await this.updateSettingValue("led", led.value === this.deviceProperties.device_properties.light.min ? false : true);
       await this.updateSettingValue("buzzer", buzzer.value);
-      await this.updateSettingValue("childLock", child_lock.value);
+      if (child_lock !== undefined) {
+        await this.updateSettingValue("childLock", child_lock.value);
+      }
       await this.updateSettingValue("filter_life_remaining", filter_life_remaining.value + '%');
       await this.updateSettingValue("filter_hours_used", filter_hours_used.value + 'h');
       if (purify_volume !== undefined) {
