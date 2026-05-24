@@ -349,8 +349,8 @@ const properties = {
             water_shortage: false
         },
         scale: {
-            area_divisor: 100,
-            time_divisor: 3600
+            area_divisor: 1,
+            time_divisor: 60
         },
         error_codes: ERROR_CODES_C108,
         status_mapping: STATUS_MAPPING_C108
@@ -879,9 +879,9 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             const device_fault = this.getMiotProp(result, 'device_fault');
             const mop_mode = this.getMiotProp(result, 'mode');
             const cleaning_mode_prop = this.getMiotProp(result, 'cleaning_mode');
-            const water_level_prop = this.getMiotProp(result, 'water_level');
-            const path_mode_prop = this.getMiotProp(result, 'path_mode');
-            const carpet_mode_prop = this.getMiotProp(result, 'carpet_avoidance');
+            const water_level_prop = this.deviceProperties.supports.water_level ? this.getMiotProp(result, 'water_level') : null;
+            const path_mode_prop = this.deviceProperties.supports.path_mode ? this.getMiotProp(result, 'path_mode') : null;
+            const carpet_mode_prop = this.deviceProperties.supports.carpet_avoidance ? this.getMiotProp(result, 'carpet_avoidance') : null;
             const water_check_status = this._model === 'xiaomi.vacuum.d102gl' ? this.getMiotProp(result, 'water_check_status') : null;
             const fault_ids = this._model === 'xiaomi.vacuum.d102gl' ? this.getMiotProp(result, 'fault_ids') : null;
 
