@@ -472,5 +472,8 @@
   },
   "3.4.79": {
     "en": "Add Xiaomi Robot Vacuum E5 support"
+  },
+  "3.4.80": {
+    "en": "Tune Xiaomi Robot Vacuum E5 telemetry"
   }
 }
