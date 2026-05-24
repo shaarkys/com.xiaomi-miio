@@ -469,5 +469,8 @@
   },
   "3.4.78": {
     "en": "Dependency update"
+  },
+  "3.4.79": {
+    "en": "Add Xiaomi Robot Vacuum E5 support"
   }
 }
