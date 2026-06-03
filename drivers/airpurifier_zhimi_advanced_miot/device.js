@@ -23,6 +23,7 @@ const Util = require('../../lib/util.js');
 // https://home.miot-spec.com/spec/zhimi.airp.za3 // Smartmi Air Purifier 3
 // https://home.miot-spec.com/spec/zhimi.airp.meb1 // Xiaomi Smart Air Purifier Elite
 // https://home.miot-spec.com/spec/xiaomi.airp.cpa4 // Xiaomi Smart Air Purifier 4 Compact
+// https://home.miot-spec.com/spec/zhimi.airp.cpa4 // Xiaomi Smart Air Purifier 4 Compact
 
 const mapping = {
   "zhimi.airpurifier.ma4": "mapping_default", 
@@ -43,8 +44,11 @@ const mapping = {
   "zhimi.airp.za3": "mapping_za3",
   "zhimi.airp.meb1": "mapping_airp_meb1",
   "xiaomi.airp.cpa4": "mapping_cpa4",
+  "zhimi.airp.cpa4": "mapping_cpa4",
   "zhimi.airpurifier.*": "mapping_default",
 };
+
+const cpa4Models = ['xiaomi.airp.cpa4', 'zhimi.airp.cpa4'];
 
 const properties = {
   "mapping_default": {
@@ -318,10 +322,10 @@ class AdvancedMiAirPurifierMiotDevice extends Device {
       this.bootSequence();
 
       // ADD DEVICES DEPENDANT CAPABILITIES
-      if (this.getStoreValue('model') === 'xiaomi.airp.cpa4' && this.hasCapability('airpurifier_zhimi_fanlevel')) {
+      if (cpa4Models.includes(this.getStoreValue('model')) && this.hasCapability('airpurifier_zhimi_fanlevel')) {
         this.removeCapability('airpurifier_zhimi_fanlevel');
       }
-      if (this.getStoreValue('model') === 'xiaomi.airp.cpa4' && !this.hasCapability('airpurifier_xiaomi_fanlevel')) {
+      if (cpa4Models.includes(this.getStoreValue('model')) && !this.hasCapability('airpurifier_xiaomi_fanlevel')) {
         this.addCapability('airpurifier_xiaomi_fanlevel');
       }
 
@@ -489,7 +493,7 @@ class AdvancedMiAirPurifierMiotDevice extends Device {
       }
 
       /* device specific settings */
-      if (this.getStoreValue('model') === 'xiaomi.airp.cpa4' && fanlevel !== undefined) {
+      if (cpa4Models.includes(this.getStoreValue('model')) && fanlevel !== undefined) {
         await this.updateCapabilityValue("airpurifier_xiaomi_fanlevel", Number(fanlevel.value));
       } else if (fanlevel !== undefined) {
         await this.updateCapabilityValue("airpurifier_zhimi_fanlevel", fanlevel.value.toString());
