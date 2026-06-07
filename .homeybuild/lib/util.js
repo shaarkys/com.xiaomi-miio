@@ -41,6 +41,7 @@ class Util {
     'zhimi.airp.za3': 'Smartmi Air Purifier 3',
     'zhimi.airp.meb1': 'Xiaomi Smart Air Purifier Elite',
     'xiaomi.airp.cpa4': 'Xiaomi Smart Air Purifier 4 Compact',
+    'zhimi.airp.cpa4': 'Xiaomi Smart Air Purifier 4 Compact',
 
     'zhimi.airfresh.va2': 'Smartmi Fresh Air System VA2',
     'zhimi.airfresh.va4': 'Smartmi Fresh Air System VA4',
@@ -100,6 +101,7 @@ class Util {
     'zhimi.fan.za4': 'Smartmi Standing Fan 2S',
     'zhimi.fan.za5': 'Smartmi Standing Fan 3',
     "xiaomi.fan.p45": "Xiaomi Smart Tower Fan 2",
+    'xiaomi.fan.p85': 'Mijia Smart Standing Fan Pro Slim',
 
     'zhimi.heater.mc2': 'Smart Space Heater S',
     'zhimi.heater.za2': 'Smart Space Heater 1S',
@@ -181,6 +183,7 @@ class Util {
     'xiaomi.vacuum.d101gl': 'Xiaomi Robot Vacuum H40 (CN)',
     'xiaomi.vacuum.ov51gl': 'Xiaomi Robot Vacuum H40 (EU)',
     'xiaomi.vacuum.b108gl': 'Xiaomi Robot Vacuum S20+',
+    'xiaomi.vacuum.c108': 'Xiaomi Robot Vacuum E5',
 
     'ijai.vacuum.v1': 'Mi Robot Vacuum-Mop Pro',
     'ijai.vacuum.v2': 'Mi Robot Vacuum-Mop 2',

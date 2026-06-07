@@ -475,5 +475,8 @@
   },
   "3.4.80": {
     "en": "Tune Xiaomi Robot Vacuum E5 telemetry"
+  },
+  "3.4.81": {
+    "en": "Add zhimi CPA4 air purifier support"
   }
 }
