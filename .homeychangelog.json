@@ -478,5 +478,11 @@
   },
   "3.4.81": {
     "en": "Add zhimi CPA4 air purifier support"
+  },
+  "3.4.82": {
+    "en": "// https://home.miot-spec.com/spec/xiaomi.vacuum.ov51gl // Xiaomi Robot Vacuum H40"
+  },
+  "3.4.83": {
+    "en": "Add Xiaomi fan p85 support / Mijia Smart Standing Fan Pro Slim"
   }
 }
