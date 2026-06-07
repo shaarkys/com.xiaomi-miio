@@ -15,6 +15,7 @@ const Util = require('../../lib/util.js');
 // https://home.miot-spec.com/spec/dmaker.fan.p44
 // https://home.miot-spec.com/spec/dmaker.fan.1c
 // https://home.miot-spec.com/spec/xiaomi.fan.p45
+// https://home.miot-spec.com/spec/xiaomi.fan.p85
 
 const mapping = {
     'dmaker.fan.p9': 'properties_p9',
@@ -27,7 +28,8 @@ const mapping = {
     'dmaker.fan.p44': 'properties_p44',
     'dmaker.fan.1c': 'properties_1c',
     'dmaker.fan.*': 'properties_p9',
-    'xiaomi.fan.p45': 'properties_p45'
+    'xiaomi.fan.p45': 'properties_p45',
+    'xiaomi.fan.p85': 'properties_p85'
 };
 
 const properties = {
@@ -197,6 +199,30 @@ const properties = {
             buzzer: { siid: 7, piid: 1 },
             child_lock: { siid: 11, piid: 1 }
         }
+    },
+    properties_p85: {
+        get_properties: [
+            { did: 'power', siid: 2, piid: 1 }, // onoff
+            { did: 'fan_level', siid: 2, piid: 4 }, // dim           (gear 1-4)
+            { did: 'mode', siid: 2, piid: 3 }, // fan_dmaker_mode 0-Straight / 1-Natural
+            { did: 'oscillating_mode', siid: 2, piid: 6 }, // oscillating   (bool)
+            { did: 'oscillating_mode_angle', siid: 2, piid: 7 }, // fan_zhimi_angle 30/60/90
+            { did: 'fan_speed', siid: 11, piid: 6 }, // fan_speed     (1-100%)
+            { did: 'light', siid: 5, piid: 1 }, // settings.led  (bool)
+            { did: 'buzzer', siid: 7, piid: 1 }, // settings.buzzer (bool)
+            { did: 'child_lock', siid: 8, piid: 1 } // settings.childLock (bool)
+        ],
+
+        set_properties: {
+            fan_level: { siid: 2, piid: 4 },
+            oscillating_mode: { siid: 2, piid: 6 },
+            oscillating_mode_angle: { siid: 2, piid: 7 },
+            fan_speed: { siid: 11, piid: 6 },
+            mode: { siid: 2, piid: 3 },
+            light: { siid: 5, piid: 1 },
+            buzzer: { siid: 7, piid: 1 },
+            child_lock: { siid: 8, piid: 1 }
+        }
     }
 };
 
@@ -211,7 +237,19 @@ const modeMap = {
     'dmaker.fan.p39': { 0: 'Straight Wind', 1: 'Natural Wind', 2: 'Sleep' },
     'dmaker.fan.p44': { 0: 'Straight Wind', 1: 'Natural Wind', 2: 'Sleep', 3: 'Cold Air' },
     'dmaker.fan.1c': { 0: 'Straight Wind', 1: 'Sleep' },
-    'xiaomi.fan.p45': { 0: 'Straight Wind', 1: 'Natural Wind', 2: 'Sleep' }
+    'xiaomi.fan.p45': { 0: 'Straight Wind', 1: 'Natural Wind', 2: 'Sleep' },
+    'xiaomi.fan.p85': { 0: 'Straight Wind', 1: 'Natural Wind' }
+};
+
+const actionMap = {
+    'xiaomi.fan.p45': {
+        left: 4,
+        right: 5
+    },
+    'xiaomi.fan.p85': {
+        left: 6,
+        right: 7
+    }
 };
 
 class AdvancedDmakerFanMiotDevice extends Device {
@@ -471,11 +509,12 @@ class AdvancedDmakerFanMiotDevice extends Device {
 
         // Check for model
         const model = this.getStoreValue('model');
-        if (model === 'xiaomi.fan.p45') {
+        const action = actionMap[model];
+        if (action) {
             // Use MIOT Action call for Smart Tower Fan 2
             let aiid;
-            if (direction === 'left') aiid = 4;
-            else if (direction === 'right') aiid = 5;
+            if (direction === 'left') aiid = action.left;
+            else if (direction === 'right') aiid = action.right;
             else throw new Error('Invalid direction for rotateFanHead');
             try {
                 return await this.miio.call('action', {
