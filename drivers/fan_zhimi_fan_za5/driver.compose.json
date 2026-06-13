@@ -26,6 +26,7 @@
     "oscillating",
     "onoff.ion",
     "fan_speed",
+    "fan_zhimi_percentage_speed",
     "fan_zhimi_angle",
     "fan_zhimi_mode",
     "measure_humidity",

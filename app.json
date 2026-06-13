@@ -17768,6 +17768,7 @@
         "oscillating",
         "onoff.ion",
         "fan_speed",
+        "fan_zhimi_percentage_speed",
         "fan_zhimi_angle",
         "fan_zhimi_mode",
         "measure_humidity",
@@ -31029,6 +31030,32 @@
       ],
       "getable": true,
       "setable": true,
+      "icon": "/assets/icons/fanlevel.svg"
+    },
+    "fan_zhimi_percentage_speed": {
+      "type": "number",
+      "title": {
+        "en": "Fan Speed (%)",
+        "nl": "Ventilatorsnelheid (%)",
+        "da": "Ventilatorhastighed (%)",
+        "de": "Lüftergeschwindigkeit (%)",
+        "es": "Velocidad del ventilador (%)",
+        "fr": "Vitesse du ventilateur (%)",
+        "it": "Velocità ventola (%)",
+        "no": "Viftehastighet (%)",
+        "sv": "Fläkthastighet (%)",
+        "pl": "Prędkość wentylatora (%)",
+        "ru": "Скорость вентилятора (%)",
+        "ko": "팬 속도 (%)"
+      },
+      "getable": true,
+      "setable": true,
+      "min": 1,
+      "max": 100,
+      "step": 1,
+      "units": {
+        "en": "%"
+      },
       "icon": "/assets/icons/fanlevel.svg"
     },
     "heater_zhimi_heater_target_temperature": {
