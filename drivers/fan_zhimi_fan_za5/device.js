@@ -19,6 +19,7 @@ const params = [
   { did: "buzzer", siid: 5, piid: 1 }, // settings.buzzer
   { did: "humidity", siid: 7, piid: 1 }, // measure_humidity
   { did: "temperature", siid: 7, piid: 7 }, // measure_temperature
+  { did: "percentage_speed", siid: 6, piid: 8 }, // fan_zhimi_percentage_speed
 ];
 
 const modes = {
@@ -32,6 +33,10 @@ class ZhiMiFanZA5Device extends Device {
     try {
       if (!this.util) this.util = new Util({homey: this.homey});
       
+      if (!this.hasCapability('fan_zhimi_percentage_speed')) {
+        await this.addCapability('fan_zhimi_percentage_speed');
+      }
+
       // GENERIC DEVICE INIT ACTIONS
       this.bootSequence();
 
@@ -88,6 +93,22 @@ class ZhiMiFanZA5Device extends Device {
         try {
           if (this.miio) {
             return await this.miio.call("set_properties", [{ siid: 2, piid: 2, value: value }], { retries: 1 });
+          } else {
+            this.setUnavailable(this.homey.__('unreachable')).catch(error => { this.error(error) });
+            this.createDevice();
+            return Promise.reject('Device unreachable, please try again ...');
+          }
+        } catch (error) {
+          this.error(error);
+          return Promise.reject(error);
+        }
+      });
+
+      this.registerCapabilityListener('fan_zhimi_percentage_speed', async ( value ) => {
+        try {
+          if (this.miio) {
+            const speed = this.util.clamp(Math.round(Number(value)), 1, 100);
+            return await this.miio.call("set_properties", [{ siid: 6, piid: 8, value: speed }], { retries: 1 });
           } else {
             this.setUnavailable(this.homey.__('unreachable')).catch(error => { this.error(error) });
             this.createDevice();
@@ -165,6 +186,7 @@ class ZhiMiFanZA5Device extends Device {
       const oscillating = result.find(obj => obj.did === 'swing_mode');
       const onoff_ion = result.find(obj => obj.did === 'anion');
       const fan_zhimi_angle = result.find(obj => obj.did === 'swing_mode_angle');
+      const percentage_speed = result.find(obj => obj.did === 'percentage_speed');
       const measure_humidity = result.find(obj => obj.did === 'humidity');
       const measure_temperature = result.find(obj => obj.did === 'temperature');
 
@@ -175,6 +197,9 @@ class ZhiMiFanZA5Device extends Device {
       /* capabilities */
       await this.updateCapabilityValue("onoff", onoff.value);
       await this.updateCapabilityValue("fan_speed", fan_speed.value);
+      if (percentage_speed !== undefined && this.hasCapability('fan_zhimi_percentage_speed')) {
+        await this.updateCapabilityValue("fan_zhimi_percentage_speed", percentage_speed.value);
+      }
       await this.updateCapabilityValue("oscillating", oscillating.value);
       await this.updateCapabilityValue("onoff.ion", onoff_ion.value);
       await this.updateCapabilityValue("fan_zhimi_angle", fan_zhimi_angle.value.toString());

@@ -1,0 +1,26 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Fan Speed (%)",
+    "nl": "Ventilatorsnelheid (%)",
+    "da": "Ventilatorhastighed (%)",
+    "de": "Lüftergeschwindigkeit (%)",
+    "es": "Velocidad del ventilador (%)",
+    "fr": "Vitesse du ventilateur (%)",
+    "it": "Velocità ventola (%)",
+    "no": "Viftehastighet (%)",
+    "sv": "Fläkthastighet (%)",
+    "pl": "Prędkość wentylatora (%)",
+    "ru": "Скорость вентилятора (%)",
+    "ko": "팬 속도 (%)"
+  },
+  "getable": true,
+  "setable": true,
+  "min": 1,
+  "max": 100,
+  "step": 1,
+  "units": {
+    "en": "%"
+  },
+  "icon": "/assets/icons/fanlevel.svg"
+}
