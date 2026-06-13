@@ -490,5 +490,8 @@
   },
   "3.4.85": {
     "en": "Support for Xiaomi Smart Desktop Air Circulation Fan / xiaomi.fan.p70 (fan_dmaker_advanced)"
+  },
+  "3.4.86": {
+    "en": "Add percentage speed for Smartmi Fan 3"
   }
 }
