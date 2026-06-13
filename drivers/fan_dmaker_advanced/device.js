@@ -15,6 +15,7 @@ const Util = require('../../lib/util.js');
 // https://home.miot-spec.com/spec/dmaker.fan.p44
 // https://home.miot-spec.com/spec/dmaker.fan.1c
 // https://home.miot-spec.com/spec/xiaomi.fan.p45
+// https://home.miot-spec.com/spec/xiaomi.fan.p70
 // https://home.miot-spec.com/spec/xiaomi.fan.p85
 
 const mapping = {
@@ -29,6 +30,7 @@ const mapping = {
     'dmaker.fan.1c': 'properties_1c',
     'dmaker.fan.*': 'properties_p9',
     'xiaomi.fan.p45': 'properties_p45',
+    'xiaomi.fan.p70': 'properties_p70',
     'xiaomi.fan.p85': 'properties_p85'
 };
 
@@ -200,6 +202,30 @@ const properties = {
             child_lock: { siid: 11, piid: 1 }
         }
     },
+    properties_p70: {
+        get_properties: [
+            { did: 'power', siid: 2, piid: 1 }, // onoff
+            { did: 'fan_level', siid: 2, piid: 4 }, // dim           (gear 0-3)
+            { did: 'mode', siid: 2, piid: 3 }, // fan_dmaker_mode 0-Straight / 1-Natural
+            { did: 'oscillating_mode', siid: 2, piid: 6 }, // oscillating   (bool)
+            { did: 'oscillating_mode_angle', siid: 2, piid: 7 }, // fan_zhimi_angle 30/60/90/120
+            { did: 'fan_speed', siid: 2, piid: 5 }, // fan_speed     (1-100%)
+            { did: 'light', siid: 5, piid: 1 }, // settings.led  (bool)
+            { did: 'buzzer', siid: 7, piid: 1 }, // settings.buzzer (bool)
+            { did: 'child_lock', siid: 8, piid: 1 } // settings.childLock (bool)
+        ],
+
+        set_properties: {
+            fan_level: { siid: 2, piid: 4 },
+            oscillating_mode: { siid: 2, piid: 6 },
+            oscillating_mode_angle: { siid: 2, piid: 7 },
+            fan_speed: { siid: 2, piid: 5 },
+            mode: { siid: 2, piid: 3 },
+            light: { siid: 5, piid: 1 },
+            buzzer: { siid: 7, piid: 1 },
+            child_lock: { siid: 8, piid: 1 }
+        }
+    },
     properties_p85: {
         get_properties: [
             { did: 'power', siid: 2, piid: 1 }, // onoff
@@ -238,11 +264,20 @@ const modeMap = {
     'dmaker.fan.p44': { 0: 'Straight Wind', 1: 'Natural Wind', 2: 'Sleep', 3: 'Cold Air' },
     'dmaker.fan.1c': { 0: 'Straight Wind', 1: 'Sleep' },
     'xiaomi.fan.p45': { 0: 'Straight Wind', 1: 'Natural Wind', 2: 'Sleep' },
+    'xiaomi.fan.p70': { 0: 'Straight Wind', 1: 'Natural Wind' },
     'xiaomi.fan.p85': { 0: 'Straight Wind', 1: 'Natural Wind' }
+};
+
+const angleMap = {
+    'xiaomi.fan.p70': [30, 60, 90, 120]
 };
 
 const actionMap = {
     'xiaomi.fan.p45': {
+        left: 4,
+        right: 5
+    },
+    'xiaomi.fan.p70': {
         left: 4,
         right: 5
     },
@@ -267,6 +302,12 @@ class AdvancedDmakerFanMiotDevice extends Device {
             await this.setCapabilityOptions('fan_dmaker_mode', {
                 values: Object.keys(modeTable).map((id) => ({ id, title: modeTable[id] }))
             });
+
+            if (angleMap[modelId] && this.hasCapability('fan_zhimi_angle')) {
+                await this.setCapabilityOptions('fan_zhimi_angle', {
+                    values: angleMap[modelId].map((angle) => ({ id: angle.toString(), title: `${angle}°` }))
+                });
+            }
 
             // ADD DEVICES DEPENDANT CAPABILITIES
             if (this.getStoreValue('model') === 'dmaker.fan.p44' || this.getStoreValue('model') === 'dmaker.fan.1c') {
@@ -315,7 +356,8 @@ class AdvancedDmakerFanMiotDevice extends Device {
             this.registerCapabilityListener('oscillating', async (value) => {
                 try {
                     if (this.miio) {
-                        return await this.miio.call('set_properties', [{ did: 'oscillating_mode', siid: this.deviceProperties.set_properties.oscillating_mode.siid, piid: this.deviceProperties.set_properties.oscillating_mode.piid, value: value ? 1 : 0 }], { retries: 1 });
+                        const oscillatingValue = this.getStoreValue('model') === 'xiaomi.fan.p70' ? value : value ? 1 : 0;
+                        return await this.miio.call('set_properties', [{ did: 'oscillating_mode', siid: this.deviceProperties.set_properties.oscillating_mode.siid, piid: this.deviceProperties.set_properties.oscillating_mode.piid, value: oscillatingValue }], { retries: 1 });
                     } else {
                         this.setUnavailable(this.homey.__('unreachable')).catch((error) => {
                             this.error(error);
@@ -335,6 +377,7 @@ class AdvancedDmakerFanMiotDevice extends Device {
                     if (!this.miio) throw new Error('miio not initialised');
 
                     const prop = this.deviceProperties.set_properties.fan_level ?? { siid: 2, piid: 2 }; // fall‑back for older models
+                    const fanLevelValue = this.getStoreValue('model') === 'xiaomi.fan.p70' ? this.util.clamp(Math.round(value) - 1, 0, 3) : value;
 
                     return await this.miio.call(
                         'set_properties',
@@ -343,7 +386,7 @@ class AdvancedDmakerFanMiotDevice extends Device {
                                 did: 'fan_level',
                                 siid: prop.siid,
                                 piid: prop.piid,
-                                value: value
+                                value: fanLevelValue
                             }
                         ],
                         { retries: 1 }
@@ -376,7 +419,8 @@ class AdvancedDmakerFanMiotDevice extends Device {
             this.registerCapabilityListener('fan_speed', async (value) => {
                 try {
                     if (this.miio) {
-                        return await this.miio.call('set_properties', [{ did: 'fan_speed', siid: this.deviceProperties.set_properties.fan_speed.siid, piid: this.deviceProperties.set_properties.fan_speed.piid, value: value * 100 }], { retries: 1 });
+                        const fanSpeedValue = this.util.clamp(Math.round(value * 100), 1, 100);
+                        return await this.miio.call('set_properties', [{ did: 'fan_speed', siid: this.deviceProperties.set_properties.fan_speed.siid, piid: this.deviceProperties.set_properties.fan_speed.piid, value: fanSpeedValue }], { retries: 1 });
                     } else {
                         this.setUnavailable(this.homey.__('unreachable')).catch((error) => {
                             this.error(error);
@@ -450,8 +494,8 @@ class AdvancedDmakerFanMiotDevice extends Device {
 
             /* capabilities */
             await this.updateCapabilityValue('onoff', onoff.value);
-            await this.updateCapabilityValue('oscillating', oscillating_mode.value);
-            await this.updateCapabilityValue('dim', +dim_fan_level.value);
+            await this.updateCapabilityValue('oscillating', !!oscillating_mode.value);
+            await this.updateCapabilityValue('dim', this.getStoreValue('model') === 'xiaomi.fan.p70' ? +dim_fan_level.value + 1 : +dim_fan_level.value);
 
             if (this.hasCapability('fan_zhimi_angle')) {
                 const dim_oscillating_mode_angle = result.find((obj) => obj.did === 'oscillating_mode_angle');
