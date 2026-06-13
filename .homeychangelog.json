@@ -484,5 +484,8 @@
   },
   "3.4.83": {
     "en": "Add Xiaomi fan p85 support / Mijia Smart Standing Fan Pro Slim"
+  },
+  "3.4.84": {
+    "en": "Support for Xiaomi Smart Desktop Air Circulation Fan / xiaomi.fan.p70 (fan_dmaker_advanced)"
   }
 }
