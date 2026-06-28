@@ -16,6 +16,7 @@ const Util = require('../../lib/util.js');
 // https://home.miot-spec.com/spec/dmaker.fan.1c
 // https://home.miot-spec.com/spec/xiaomi.fan.p45
 // https://home.miot-spec.com/spec/xiaomi.fan.p70
+// https://home.miot-spec.com/spec/xiaomi.fan.p76
 // https://home.miot-spec.com/spec/xiaomi.fan.p85
 
 const mapping = {
@@ -31,6 +32,7 @@ const mapping = {
     'dmaker.fan.*': 'properties_p9',
     'xiaomi.fan.p45': 'properties_p45',
     'xiaomi.fan.p70': 'properties_p70',
+    'xiaomi.fan.p76': 'properties_p70',
     'xiaomi.fan.p85': 'properties_p85'
 };
 
@@ -121,7 +123,7 @@ const properties = {
             light: { siid: 4, piid: 1 },
             buzzer: { siid: 5, piid: 1 },
             child_lock: { siid: 7, piid: 1 },
-            set_move: { siid: 6, piid: 1 } 
+            set_move: { siid: 6, piid: 1 }
         }
     },
     properties_p39: {
@@ -203,6 +205,8 @@ const properties = {
         }
     },
     properties_p70: {
+        usesZeroIndexing: true, // device values are 0-based; the app is 1-based
+        usesNativeBoolean: true, // device expects a boolean type (true/false), not 1/0
         get_properties: [
             { did: 'power', siid: 2, piid: 1 }, // onoff
             { did: 'fan_level', siid: 2, piid: 4 }, // dim           (gear 0-3)
@@ -252,6 +256,14 @@ const properties = {
     }
 };
 
+/* Spec-identical models are aliased to a canonical model so they reuse its tables */
+const canonicalModelMap = {
+    'xiaomi.fan.p76': 'xiaomi.fan.p70'
+};
+
+/* Resolve a model to its canonical model */
+const getCanonicalModel = (model) => canonicalModelMap[model] ?? model;
+
 /* Model‑specific mode enumerations */
 const modeMap = {
     'dmaker.fan.p9': { 0: 'Straight Wind', 1: 'Natural Wind' },
@@ -274,14 +286,17 @@ const angleMap = {
 
 const actionMap = {
     'xiaomi.fan.p45': {
+        siid: 2,
         left: 4,
         right: 5
     },
     'xiaomi.fan.p70': {
+        siid: 2,
         left: 4,
         right: 5
     },
     'xiaomi.fan.p85': {
+        siid: 2,
         left: 6,
         right: 7
     }
@@ -296,16 +311,17 @@ class AdvancedDmakerFanMiotDevice extends Device {
             this.bootSequence();
 
             /* Build correct Mode selector for this model */
-            const modelId = this.getStoreValue('model');
-            const modeTable = modeMap[modelId] ?? { 0: 'Straight Wind' };
+            const model = this.getStoreValue('model');
+            const canonicalModel = getCanonicalModel(model);
+            const modeTable = modeMap[canonicalModel] ?? { 0: 'Straight Wind' };
 
             await this.setCapabilityOptions('fan_dmaker_mode', {
                 values: Object.keys(modeTable).map((id) => ({ id, title: modeTable[id] }))
             });
 
-            if (angleMap[modelId] && this.hasCapability('fan_zhimi_angle')) {
+            if (angleMap[canonicalModel] && this.hasCapability('fan_zhimi_angle')) {
                 await this.setCapabilityOptions('fan_zhimi_angle', {
-                    values: angleMap[modelId].map((angle) => ({ id: angle.toString(), title: `${angle}°` }))
+                    values: angleMap[canonicalModel].map((angle) => ({ id: angle.toString(), title: `${angle}°` }))
                 });
             }
 
@@ -356,7 +372,7 @@ class AdvancedDmakerFanMiotDevice extends Device {
             this.registerCapabilityListener('oscillating', async (value) => {
                 try {
                     if (this.miio) {
-                        const oscillatingValue = this.getStoreValue('model') === 'xiaomi.fan.p70' ? value : value ? 1 : 0;
+                        const oscillatingValue = this.deviceProperties.usesNativeBoolean ? value : value ? 1 : 0;
                         return await this.miio.call('set_properties', [{ did: 'oscillating_mode', siid: this.deviceProperties.set_properties.oscillating_mode.siid, piid: this.deviceProperties.set_properties.oscillating_mode.piid, value: oscillatingValue }], { retries: 1 });
                     } else {
                         this.setUnavailable(this.homey.__('unreachable')).catch((error) => {
@@ -377,7 +393,7 @@ class AdvancedDmakerFanMiotDevice extends Device {
                     if (!this.miio) throw new Error('miio not initialised');
 
                     const prop = this.deviceProperties.set_properties.fan_level ?? { siid: 2, piid: 2 }; // fall‑back for older models
-                    const fanLevelValue = this.getStoreValue('model') === 'xiaomi.fan.p70' ? this.util.clamp(Math.round(value) - 1, 0, 3) : value;
+                    const fanLevelValue = this.deviceProperties.usesZeroIndexing ? this.util.clamp(Math.round(value) - 1, 0, 3) : value;
 
                     return await this.miio.call(
                         'set_properties',
@@ -495,7 +511,7 @@ class AdvancedDmakerFanMiotDevice extends Device {
             /* capabilities */
             await this.updateCapabilityValue('onoff', onoff.value);
             await this.updateCapabilityValue('oscillating', !!oscillating_mode.value);
-            await this.updateCapabilityValue('dim', this.getStoreValue('model') === 'xiaomi.fan.p70' ? +dim_fan_level.value + 1 : +dim_fan_level.value);
+            await this.updateCapabilityValue('dim', this.deviceProperties.usesZeroIndexing ? +dim_fan_level.value + 1 : +dim_fan_level.value);
 
             if (this.hasCapability('fan_zhimi_angle')) {
                 const dim_oscillating_mode_angle = result.find((obj) => obj.did === 'oscillating_mode_angle');
@@ -519,7 +535,9 @@ class AdvancedDmakerFanMiotDevice extends Device {
             if (this.getCapabilityValue('fan_dmaker_mode') !== mode.value.toString()) {
                 const previous_mode = this.getCapabilityValue('fan_dmaker_mode');
                 await this.setCapabilityValue('fan_dmaker_mode', mode.value.toString());
-                const nameTable = modeMap[this.getStoreValue('model')] ?? {};
+                const model = this.getStoreValue('model');
+                const canonicalModel = getCanonicalModel(model);
+                const nameTable = modeMap[canonicalModel] ?? {};
                 await this.homey.flow
                     .getDeviceTriggerCard('triggerModeChanged')
                     .trigger(this, { new_mode: nameTable[mode.value] ?? String(mode.value), previous_mode: nameTable[previous_mode] ?? String(previous_mode) })
@@ -553,7 +571,8 @@ class AdvancedDmakerFanMiotDevice extends Device {
 
         // Check for model
         const model = this.getStoreValue('model');
-        const action = actionMap[model];
+        const canonicalModel = getCanonicalModel(model);
+        const action = actionMap[canonicalModel];
         if (action) {
             // Use MIOT Action call for Smart Tower Fan 2
             let aiid;
@@ -562,7 +581,7 @@ class AdvancedDmakerFanMiotDevice extends Device {
             else throw new Error('Invalid direction for rotateFanHead');
             try {
                 return await this.miio.call('action', {
-                    siid: 2,
+                    siid: action.siid,
                     aiid: aiid,
                     in: []
                 });
