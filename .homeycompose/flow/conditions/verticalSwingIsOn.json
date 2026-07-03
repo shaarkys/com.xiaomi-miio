@@ -1,0 +1,25 @@
+{
+  "title": {
+    "en": "Vertical Swing is !{{on|off}}",
+    "nl": "Verticale oscillatie is !{{aan|uit}}",
+    "da": "Lodret oscillation er !{{tændt|slukket}}",
+    "de": "Vertikale Oszillation ist !{{an|aus}}",
+    "es": "La oscilación vertical está !{{activada|desactivada}}",
+    "fr": "L'oscillation verticale est !{{activée|désactivée}}",
+    "it": "L'oscillazione verticale è !{{attiva|disattiva}}",
+    "no": "Vertikal oscillasjon er !{{på|av}}",
+    "sv": "Vertikal oscillation är !{{på|av}}",
+    "pl": "Oscylacja pionowa jest !{{włączona|wyłączona}}",
+    "ru": "Вертикальное колебание !{{включено|выключено}}",
+    "ko": "수직 진동이 !{{켜짐|꺼짐}}"
+  },
+  "args": [
+    {
+      "name": "device",
+      "type": "device",
+      "placeholder": { "en": "Select Device" },
+      "filter": "driver_id=fan_dmaker_advanced&capabilities=fan_dmaker_vertical_swing"
+    }
+  ],
+  "platforms": ["local"]
+}

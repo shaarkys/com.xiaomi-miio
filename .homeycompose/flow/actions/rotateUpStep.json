@@ -1,0 +1,39 @@
+{
+  "title": {
+    "en": "Rotate fan upward",
+    "nl": "Draai ventilator omhoog",
+    "da": "Drej ventilator opad",
+    "de": "Lüfter nach oben drehen",
+    "es": "Girar ventilador hacia arriba",
+    "fr": "Tourner le ventilateur vers le haut",
+    "it": "Ruota il ventilatore verso l'alto",
+    "no": "Drei viften oppover",
+    "sv": "Vrid fläkten uppåt",
+    "pl": "Obróć wentylator w górę",
+    "ru": "Повернуть вентилятор вверх",
+    "ko": "선풍기를 위로 회전"
+  },
+  "titleFormatted": {
+    "en": "Rotate fan upward",
+    "nl": "Draai ventilator omhoog",
+    "da": "Drej ventilator opad",
+    "de": "Lüfter nach oben drehen",
+    "es": "Girar ventilador hacia arriba",
+    "fr": "Tourner le ventilateur vers le haut",
+    "it": "Ruota il ventilatore verso l'alto",
+    "no": "Drei viften oppover",
+    "sv": "Vrid fläkten uppåt",
+    "pl": "Obróć wentylator w górę",
+    "ru": "Повернуть вентилятор вверх",
+    "ko": "선풍기를 위로 회전"
+  },
+  "args": [
+    {
+      "name": "device",
+      "type": "device",
+      "placeholder": { "en": "Select Device" },
+      "filter": "driver_id=fan_dmaker_advanced&capabilities=fan_dmaker_vertical_swing"
+    }
+  ],
+  "platforms": ["local"]
+}

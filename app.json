@@ -2370,6 +2370,66 @@
       },
       {
         "title": {
+          "en": "Vertical Swing turned off",
+          "nl": "Verticale oscillatie uitgeschakeld",
+          "da": "Lodret oscillation slukket",
+          "de": "Vertikale Oszillation ausgeschaltet",
+          "es": "Oscilación vertical desactivada",
+          "fr": "Oscillation verticale désactivée",
+          "it": "Oscillazione verticale disattivata",
+          "no": "Vertikal oscillasjon slått av",
+          "sv": "Vertikal oscillation avstängd",
+          "pl": "Oscylacja pionowa wyłączona",
+          "ru": "Вертикальное колебание выключено",
+          "ko": "수직 진동 꺼짐"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "placeholder": {
+              "en": "Select Device"
+            },
+            "filter": "driver_id=fan_dmaker_advanced"
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "id": "verticalSwingTurnedOff"
+      },
+      {
+        "title": {
+          "en": "Vertical Swing turned on",
+          "nl": "Verticale oscillatie ingeschakeld",
+          "da": "Lodret oscillation tændt",
+          "de": "Vertikale Oszillation eingeschaltet",
+          "es": "Oscilación vertical activada",
+          "fr": "Oscillation verticale activée",
+          "it": "Oscillazione verticale attivata",
+          "no": "Vertikal oscillasjon slått på",
+          "sv": "Vertikal oscillation påslagen",
+          "pl": "Oscylacja pionowa włączona",
+          "ru": "Вертикальное колебание включено",
+          "ko": "수직 진동 켜짐"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "placeholder": {
+              "en": "Select Device"
+            },
+            "filter": "driver_id=fan_dmaker_advanced"
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "id": "verticalSwingTurnedOn"
+      },
+      {
+        "title": {
           "en": "Washing program finished",
           "nl": "Wasprogramma is klaar"
         },
@@ -2807,6 +2867,36 @@
         "platforms": [
           "local"
         ]
+      },
+      {
+        "title": {
+          "en": "Vertical Swing is !{{on|off}}",
+          "nl": "Verticale oscillatie is !{{aan|uit}}",
+          "da": "Lodret oscillation er !{{tændt|slukket}}",
+          "de": "Vertikale Oszillation ist !{{an|aus}}",
+          "es": "La oscilación vertical está !{{activada|desactivada}}",
+          "fr": "L'oscillation verticale est !{{activée|désactivée}}",
+          "it": "L'oscillazione verticale è !{{attiva|disattiva}}",
+          "no": "Vertikal oscillasjon er !{{på|av}}",
+          "sv": "Vertikal oscillation är !{{på|av}}",
+          "pl": "Oscylacja pionowa jest !{{włączona|wyłączona}}",
+          "ru": "Вертикальное колебание !{{включено|выключено}}",
+          "ko": "수직 진동이 !{{켜짐|꺼짐}}"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "placeholder": {
+              "en": "Select Device"
+            },
+            "filter": "driver_id=fan_dmaker_advanced&capabilities=fan_dmaker_vertical_swing"
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "id": "verticalSwingIsOn"
       }
     ],
     "actions": [
@@ -3503,6 +3593,84 @@
         "id": "airpurifierZhimiMode"
       },
       {
+        "id": "changeSpeed",
+        "title": {
+          "en": "Set Speed",
+          "nl": "Stel snelheid in",
+          "da": "Indstil hastighed",
+          "de": "Geschwindigkeit einstellen",
+          "es": "Ajustar velocidad",
+          "fr": "Régler la vitesse",
+          "it": "Imposta velocità",
+          "no": "Sett hastighet",
+          "sv": "Ställ in hastighet",
+          "pl": "Ustaw prędkość",
+          "ru": "Установить скорость",
+          "ko": "속도 설정"
+        },
+        "titleFormatted": {
+          "en": "Set speed to [[speed]]",
+          "nl": "Stel snelheid in op [[speed]]",
+          "da": "Indstil hastighed til [[speed]]",
+          "de": "Geschwindigkeit auf [[speed]] einstellen",
+          "es": "Ajustar velocidad a [[speed]]",
+          "fr": "Régler la vitesse à [[speed]]",
+          "it": "Imposta velocità a [[speed]]",
+          "no": "Sett hastighet til [[speed]]",
+          "sv": "Ställ in hastighet till [[speed]]",
+          "pl": "Ustaw prędkość na [[speed]]",
+          "ru": "Установить скорость на [[speed]]",
+          "ko": "[[speed]]으로 속도 설정"
+        },
+        "args": [
+          {
+            "name": "speed",
+            "title": {
+              "en": "Speed",
+              "nl": "Snelheid",
+              "da": "Hastighed",
+              "de": "Geschwindigkeit",
+              "es": "Velocidad",
+              "fr": "Vitesse",
+              "it": "Velocità",
+              "no": "Hastighet",
+              "sv": "Hastighet",
+              "pl": "Prędkość",
+              "ru": "Скорость",
+              "ko": "속도"
+            },
+            "type": "range",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "label": "%",
+            "labelDecimals": 0
+          },
+          {
+            "name": "device",
+            "type": "device",
+            "placeholder": {
+              "en": "Select Device",
+              "nl": "Selecteer apparaat",
+              "da": "Vælg enhed",
+              "de": "Gerät auswählen",
+              "es": "Seleccionar dispositivo",
+              "fr": "Sélectionner un appareil",
+              "it": "Seleziona dispositivo",
+              "no": "Velg enhet",
+              "sv": "Välj enhet",
+              "pl": "Wybierz urządzenie",
+              "ru": "Выбрать устройство",
+              "ko": "장치 선택"
+            },
+            "filter": "driver_id=zhimi-fan|dmaker-fan"
+          }
+        ],
+        "platforms": [
+          "local"
+        ]
+      },
+      {
         "id": "cleanZoneVacuum",
         "title": {
           "en": "Start zone cleaning",
@@ -3822,6 +3990,115 @@
         "id": "enableBuzzer"
       },
       {
+        "id": "enableChildLock",
+        "title": {
+          "en": "Enable Child Lock",
+          "nl": "Instellen kindbeveiliging",
+          "da": "Aktivér børnelås",
+          "de": "Kindersicherung aktivieren",
+          "es": "Activar bloqueo infantil",
+          "fr": "Activer le verrouillage enfant",
+          "it": "Abilita blocco bambini",
+          "no": "Aktiver barnelås",
+          "sv": "Aktivera barnlås",
+          "pl": "Włącz blokadę rodzicielską",
+          "ru": "Включить детский замок",
+          "ko": "어린이 잠금 장치를 활성화"
+        },
+        "titleFormatted": {
+          "en": "Set child lock [[childlock]]",
+          "nl": "Wijzig kindbeveiliging naar [[childlock]]",
+          "da": "Indstil børnelås [[childlock]]",
+          "de": "Kindersicherung setzen [[childlock]]",
+          "es": "Configurar bloqueo infantil [[childlock]]",
+          "fr": "Définir le verrouillage enfant [[childlock]]",
+          "it": "Imposta blocco bambini [[childlock]]",
+          "no": "Sett barnelås [[childlock]]",
+          "sv": "Ställ in barnlåset [[childlock]]",
+          "pl": "Ustaw blokadę rodzicielską [[childlock]]",
+          "ru": "Установить детский замок [[childlock]]",
+          "ko": "어린이 잠금 설정 [[childlock]]"
+        },
+        "args": [
+          {
+            "name": "childlock",
+            "title": {
+              "en": "Childlock",
+              "nl": "Kinderslot",
+              "da": "Børnelås",
+              "de": "Kindersicherung",
+              "es": "Bloqueo infantil",
+              "fr": "Verrouillage enfant",
+              "it": "Blocco bambini",
+              "no": "Barnelås",
+              "sv": "Barnlås",
+              "pl": "Blokada rodzicielska",
+              "ru": "Детский замок",
+              "ko": "어린이 잠금 장치"
+            },
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "on",
+                "label": {
+                  "en": "On",
+                  "nl": "Aan",
+                  "da": "Til",
+                  "de": "Ein",
+                  "es": "Encendido",
+                  "fr": "Activé",
+                  "it": "Acceso",
+                  "no": "På",
+                  "sv": "På",
+                  "pl": "Włączone",
+                  "ru": "Вкл",
+                  "ko": "켜기"
+                }
+              },
+              {
+                "id": "off",
+                "label": {
+                  "en": "Off",
+                  "nl": "Uit",
+                  "da": "Fra",
+                  "de": "Aus",
+                  "es": "Apagado",
+                  "fr": "Désactivé",
+                  "it": "Spento",
+                  "no": "Av",
+                  "sv": "Av",
+                  "pl": "Wyłączone",
+                  "ru": "Выкл",
+                  "ko": "끄기"
+                }
+              }
+            ]
+          },
+          {
+            "name": "device",
+            "type": "device",
+            "placeholder": {
+              "en": "Select Device",
+              "nl": "Selecteer apparaat",
+              "da": "Vælg enhed",
+              "de": "Gerät auswählen",
+              "es": "Seleccionar dispositivo",
+              "fr": "Sélectionner l'appareil",
+              "it": "Seleziona dispositivo",
+              "no": "Velg enhet",
+              "sv": "Välj enhet",
+              "pl": "Wybierz urządzenie",
+              "ru": "Выберите устройство",
+              "ko": "장치 선택"
+            },
+            "filter": "driver_id=zhimi-fan|dmaker-fan|fan_zhimi_advanced|fan_zhimi_fan_za5"
+          }
+        ],
+        "platforms": [
+          "local"
+        ]
+      },
+      {
         "id": "enableEyecare",
         "title": {
           "en": "Switch Eyecare",
@@ -3941,115 +4218,6 @@
               "ko": "필립스 아이케어 램프 선택"
             },
             "filter": "driver_id=philips-eyecare"
-          }
-        ],
-        "platforms": [
-          "local"
-        ]
-      },
-      {
-        "id": "enableChildLock",
-        "title": {
-          "en": "Enable Child Lock",
-          "nl": "Instellen kindbeveiliging",
-          "da": "Aktivér børnelås",
-          "de": "Kindersicherung aktivieren",
-          "es": "Activar bloqueo infantil",
-          "fr": "Activer le verrouillage enfant",
-          "it": "Abilita blocco bambini",
-          "no": "Aktiver barnelås",
-          "sv": "Aktivera barnlås",
-          "pl": "Włącz blokadę rodzicielską",
-          "ru": "Включить детский замок",
-          "ko": "어린이 잠금 장치를 활성화"
-        },
-        "titleFormatted": {
-          "en": "Set child lock [[childlock]]",
-          "nl": "Wijzig kindbeveiliging naar [[childlock]]",
-          "da": "Indstil børnelås [[childlock]]",
-          "de": "Kindersicherung setzen [[childlock]]",
-          "es": "Configurar bloqueo infantil [[childlock]]",
-          "fr": "Définir le verrouillage enfant [[childlock]]",
-          "it": "Imposta blocco bambini [[childlock]]",
-          "no": "Sett barnelås [[childlock]]",
-          "sv": "Ställ in barnlåset [[childlock]]",
-          "pl": "Ustaw blokadę rodzicielską [[childlock]]",
-          "ru": "Установить детский замок [[childlock]]",
-          "ko": "어린이 잠금 설정 [[childlock]]"
-        },
-        "args": [
-          {
-            "name": "childlock",
-            "title": {
-              "en": "Childlock",
-              "nl": "Kinderslot",
-              "da": "Børnelås",
-              "de": "Kindersicherung",
-              "es": "Bloqueo infantil",
-              "fr": "Verrouillage enfant",
-              "it": "Blocco bambini",
-              "no": "Barnelås",
-              "sv": "Barnlås",
-              "pl": "Blokada rodzicielska",
-              "ru": "Детский замок",
-              "ko": "어린이 잠금 장치"
-            },
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "on",
-                "label": {
-                  "en": "On",
-                  "nl": "Aan",
-                  "da": "Til",
-                  "de": "Ein",
-                  "es": "Encendido",
-                  "fr": "Activé",
-                  "it": "Acceso",
-                  "no": "På",
-                  "sv": "På",
-                  "pl": "Włączone",
-                  "ru": "Вкл",
-                  "ko": "켜기"
-                }
-              },
-              {
-                "id": "off",
-                "label": {
-                  "en": "Off",
-                  "nl": "Uit",
-                  "da": "Fra",
-                  "de": "Aus",
-                  "es": "Apagado",
-                  "fr": "Désactivé",
-                  "it": "Spento",
-                  "no": "Av",
-                  "sv": "Av",
-                  "pl": "Wyłączone",
-                  "ru": "Выкл",
-                  "ko": "끄기"
-                }
-              }
-            ]
-          },
-          {
-            "name": "device",
-            "type": "device",
-            "placeholder": {
-              "en": "Select Device",
-              "nl": "Selecteer apparaat",
-              "da": "Vælg enhed",
-              "de": "Gerät auswählen",
-              "es": "Seleccionar dispositivo",
-              "fr": "Sélectionner l'appareil",
-              "it": "Seleziona dispositivo",
-              "no": "Velg enhet",
-              "sv": "Välj enhet",
-              "pl": "Wybierz urządzenie",
-              "ru": "Выберите устройство",
-              "ko": "장치 선택"
-            },
-            "filter": "driver_id=zhimi-fan|dmaker-fan|fan_zhimi_advanced|fan_zhimi_fan_za5"
           }
         ],
         "platforms": [
@@ -6626,84 +6794,6 @@
         "id": "humidifierZhimiModeMIoT"
       },
       {
-        "id": "changeSpeed",
-        "title": {
-          "en": "Set Speed",
-          "nl": "Stel snelheid in",
-          "da": "Indstil hastighed",
-          "de": "Geschwindigkeit einstellen",
-          "es": "Ajustar velocidad",
-          "fr": "Régler la vitesse",
-          "it": "Imposta velocità",
-          "no": "Sett hastighet",
-          "sv": "Ställ in hastighet",
-          "pl": "Ustaw prędkość",
-          "ru": "Установить скорость",
-          "ko": "속도 설정"
-        },
-        "titleFormatted": {
-          "en": "Set speed to [[speed]]",
-          "nl": "Stel snelheid in op [[speed]]",
-          "da": "Indstil hastighed til [[speed]]",
-          "de": "Geschwindigkeit auf [[speed]] einstellen",
-          "es": "Ajustar velocidad a [[speed]]",
-          "fr": "Régler la vitesse à [[speed]]",
-          "it": "Imposta velocità a [[speed]]",
-          "no": "Sett hastighet til [[speed]]",
-          "sv": "Ställ in hastighet till [[speed]]",
-          "pl": "Ustaw prędkość na [[speed]]",
-          "ru": "Установить скорость на [[speed]]",
-          "ko": "[[speed]]으로 속도 설정"
-        },
-        "args": [
-          {
-            "name": "speed",
-            "title": {
-              "en": "Speed",
-              "nl": "Snelheid",
-              "da": "Hastighed",
-              "de": "Geschwindigkeit",
-              "es": "Velocidad",
-              "fr": "Vitesse",
-              "it": "Velocità",
-              "no": "Hastighet",
-              "sv": "Hastighet",
-              "pl": "Prędkość",
-              "ru": "Скорость",
-              "ko": "속도"
-            },
-            "type": "range",
-            "min": 0,
-            "max": 100,
-            "step": 1,
-            "label": "%",
-            "labelDecimals": 0
-          },
-          {
-            "name": "device",
-            "type": "device",
-            "placeholder": {
-              "en": "Select Device",
-              "nl": "Selecteer apparaat",
-              "da": "Vælg enhed",
-              "de": "Gerät auswählen",
-              "es": "Seleccionar dispositivo",
-              "fr": "Sélectionner un appareil",
-              "it": "Seleziona dispositivo",
-              "no": "Velg enhet",
-              "sv": "Välj enhet",
-              "pl": "Wybierz urządzenie",
-              "ru": "Выбрать устройство",
-              "ko": "장치 선택"
-            },
-            "filter": "driver_id=zhimi-fan|dmaker-fan"
-          }
-        ],
-        "platforms": [
-          "local"
-        ]
-      },
-      {
         "title": {
           "en": "LED display brightness",
           "nl": "LED display helderheid",
@@ -8917,6 +9007,50 @@
       },
       {
         "title": {
+          "en": "Rotate fan downward",
+          "nl": "Draai ventilator omlaag",
+          "da": "Drej ventilator nedad",
+          "de": "Lüfter nach unten drehen",
+          "es": "Girar ventilador hacia abajo",
+          "fr": "Tourner le ventilateur vers le bas",
+          "it": "Ruota il ventilatore verso il basso",
+          "no": "Drei viften nedover",
+          "sv": "Vrid fläkten nedåt",
+          "pl": "Obróć wentylator w dół",
+          "ru": "Повернуть вентилятор вниз",
+          "ko": "선풍기를 아래로 회전"
+        },
+        "titleFormatted": {
+          "en": "Rotate fan downward",
+          "nl": "Draai ventilator omlaag",
+          "da": "Drej ventilator nedad",
+          "de": "Lüfter nach unten drehen",
+          "es": "Girar ventilador hacia abajo",
+          "fr": "Tourner le ventilateur vers le bas",
+          "it": "Ruota il ventilatore verso il basso",
+          "no": "Drei viften nedover",
+          "sv": "Vrid fläkten nedåt",
+          "pl": "Obróć wentylator w dół",
+          "ru": "Повернуть вентилятор вниз",
+          "ko": "선풍기를 아래로 회전"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "placeholder": {
+              "en": "Select Device"
+            },
+            "filter": "driver_id=fan_dmaker_advanced&capabilities=fan_dmaker_vertical_swing"
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "id": "rotateDownStep"
+      },
+      {
+        "title": {
           "en": "Rotate fan to the left",
           "de": "Lüfter nach links drehen"
         },
@@ -8962,6 +9096,50 @@
           "local"
         ],
         "id": "rotateRightStep"
+      },
+      {
+        "title": {
+          "en": "Rotate fan upward",
+          "nl": "Draai ventilator omhoog",
+          "da": "Drej ventilator opad",
+          "de": "Lüfter nach oben drehen",
+          "es": "Girar ventilador hacia arriba",
+          "fr": "Tourner le ventilateur vers le haut",
+          "it": "Ruota il ventilatore verso l'alto",
+          "no": "Drei viften oppover",
+          "sv": "Vrid fläkten uppåt",
+          "pl": "Obróć wentylator w górę",
+          "ru": "Повернуть вентилятор вверх",
+          "ko": "선풍기를 위로 회전"
+        },
+        "titleFormatted": {
+          "en": "Rotate fan upward",
+          "nl": "Draai ventilator omhoog",
+          "da": "Drej ventilator opad",
+          "de": "Lüfter nach oben drehen",
+          "es": "Girar ventilador hacia arriba",
+          "fr": "Tourner le ventilateur vers le haut",
+          "it": "Ruota il ventilatore verso l'alto",
+          "no": "Drei viften oppover",
+          "sv": "Vrid fläkten uppåt",
+          "pl": "Obróć wentylator w górę",
+          "ru": "Повернуть вентилятор вверх",
+          "ko": "선풍기를 위로 회전"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "placeholder": {
+              "en": "Select Device"
+            },
+            "filter": "driver_id=fan_dmaker_advanced&capabilities=fan_dmaker_vertical_swing"
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "id": "rotateUpStep"
       },
       {
         "title": {
@@ -9139,6 +9317,94 @@
           "local"
         ],
         "id": "setAngle"
+      },
+      {
+        "title": {
+          "en": "Change Vertical Swing Angle",
+          "nl": "Verticale draaihoek wijzigen",
+          "da": "Skift lodret svingvinkel",
+          "de": "Vertikalen Schwenkwinkel ändern",
+          "es": "Cambiar ángulo de giro vertical",
+          "fr": "Changer l'angle de balancement vertical",
+          "it": "Cambia angolo di oscillazione verticale",
+          "no": "Endre vertikal svingvinkel",
+          "sv": "Ändra vertikal svängvinkel",
+          "pl": "Zmień pionowy kąt huśtania",
+          "ru": "Изменить угол вертикального поворота",
+          "ko": "수직 스윙 각도 변경"
+        },
+        "titleFormatted": {
+          "en": "Change vertical swing angle to [[angle]]",
+          "nl": "Verticale draaihoek wijzigen naar [[angle]]",
+          "da": "Skift lodret svingvinkel til [[angle]]",
+          "de": "Vertikalen Schwenkwinkel ändern zu [[angle]]",
+          "es": "Cambiar ángulo de giro vertical a [[angle]]",
+          "fr": "Changer l'angle de balancement vertical en [[angle]]",
+          "it": "Cambia angolo di oscillazione verticale a [[angle]]",
+          "no": "Endre vertikal svingvinkel til [[angle]]",
+          "sv": "Ändra vertikal svängvinkel till [[angle]]",
+          "pl": "Zmień pionowy kąt huśtania na [[angle]]",
+          "ru": "Изменить угол вертикального поворота на [[angle]]",
+          "ko": "수직 스윙 각도를 [[angle]]로 변경"
+        },
+        "args": [
+          {
+            "name": "angle",
+            "title": {
+              "en": "Angle",
+              "nl": "Hoek",
+              "da": "Vinkel",
+              "de": "Winkel",
+              "es": "Ángulo",
+              "fr": "Angle",
+              "it": "Angolo",
+              "no": "Vinkel",
+              "sv": "Vinkel",
+              "pl": "Kąt",
+              "ru": "Угол",
+              "ko": "각도"
+            },
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "30",
+                "title": {
+                  "en": "30°"
+                }
+              },
+              {
+                "id": "60",
+                "title": {
+                  "en": "60°"
+                }
+              },
+              {
+                "id": "90",
+                "title": {
+                  "en": "90°"
+                }
+              },
+              {
+                "id": "100",
+                "title": {
+                  "en": "100°"
+                }
+              }
+            ]
+          },
+          {
+            "name": "device",
+            "type": "device",
+            "placeholder": {
+              "en": "Select Device"
+            },
+            "filter": "driver_id=fan_dmaker_advanced&capabilities=fan_dmaker_vertical_angle"
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "id": "setVerticalAngle"
       },
       {
         "id": "vacuumDreameFanspeed",
@@ -10706,6 +10972,138 @@
           "local"
         ],
         "id": "vacuumXiaomiMopMode"
+      },
+      {
+        "title": {
+          "en": "Disable Vertical Swing",
+          "nl": "Verticale oscillatie uitschakelen",
+          "da": "Deaktivér lodret oscillation",
+          "de": "Vertikale Oszillation deaktivieren",
+          "es": "Desactivar oscilación vertical",
+          "fr": "Désactiver l'oscillation verticale",
+          "it": "Disabilita oscillazione verticale",
+          "no": "Deaktiver vertikal oscillasjon",
+          "sv": "Inaktivera vertikal oscillation",
+          "pl": "Wyłącz oscylację pionową",
+          "ru": "Выключить вертикальное колебание",
+          "ko": "수직 진동 비활성화"
+        },
+        "titleFormatted": {
+          "en": "Disable Vertical Swing",
+          "nl": "Verticale oscillatie uitschakelen",
+          "da": "Deaktivér lodret oscillation",
+          "de": "Vertikale Oszillation deaktivieren",
+          "es": "Desactivar oscilación vertical",
+          "fr": "Désactiver l'oscillation verticale",
+          "it": "Disabilita oscillazione verticale",
+          "no": "Deaktiver vertikal oscillasjon",
+          "sv": "Inaktivera vertikal oscillation",
+          "pl": "Wyłącz oscylację pionową",
+          "ru": "Выключить вертикальное колебание",
+          "ko": "수직 진동 비활성화"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "placeholder": {
+              "en": "Select Device"
+            },
+            "filter": "driver_id=fan_dmaker_advanced&capabilities=fan_dmaker_vertical_swing"
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "id": "verticalSwingOff"
+      },
+      {
+        "title": {
+          "en": "Enable Vertical Swing",
+          "nl": "Verticale oscillatie inschakelen",
+          "da": "Aktivér lodret oscillation",
+          "de": "Vertikale Oszillation aktivieren",
+          "es": "Activar oscilación vertical",
+          "fr": "Activer l'oscillation verticale",
+          "it": "Abilita oscillazione verticale",
+          "no": "Aktiver vertikal oscillasjon",
+          "sv": "Aktivera vertikal oscillation",
+          "pl": "Włącz oscylację pionową",
+          "ru": "Включить вертикальное колебание",
+          "ko": "수직 진동 활성화"
+        },
+        "titleFormatted": {
+          "en": "Enable Vertical Swing",
+          "nl": "Verticale oscillatie inschakelen",
+          "da": "Aktivér lodret oscillation",
+          "de": "Vertikale Oszillation aktivieren",
+          "es": "Activar oscilación vertical",
+          "fr": "Activer l'oscillation verticale",
+          "it": "Abilita oscillazione verticale",
+          "no": "Aktiver vertikal oscillasjon",
+          "sv": "Aktivera vertikal oscillation",
+          "pl": "Włącz oscylację pionową",
+          "ru": "Включить вертикальное колебание",
+          "ko": "수직 진동 활성화"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "placeholder": {
+              "en": "Select Device"
+            },
+            "filter": "driver_id=fan_dmaker_advanced&capabilities=fan_dmaker_vertical_swing"
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "id": "verticalSwingOn"
+      },
+      {
+        "title": {
+          "en": "Toggle Vertical Swing",
+          "nl": "Verticale oscillatie omschakelen",
+          "da": "Skift lodret oscillation",
+          "de": "Vertikale Oszillation umschalten",
+          "es": "Alternar oscilación vertical",
+          "fr": "Basculer l'oscillation verticale",
+          "it": "Commuta oscillazione verticale",
+          "no": "Veksle vertikal oscillasjon",
+          "sv": "Växla vertikal oscillation",
+          "pl": "Przełącz oscylację pionową",
+          "ru": "Переключить вертикальное колебание",
+          "ko": "수직 진동 전환"
+        },
+        "titleFormatted": {
+          "en": "Toggle Vertical Swing",
+          "nl": "Verticale oscillatie omschakelen",
+          "da": "Skift lodret oscillation",
+          "de": "Vertikale Oszillation umschalten",
+          "es": "Alternar oscilación vertical",
+          "fr": "Basculer l'oscillation verticale",
+          "it": "Commuta oscillazione verticale",
+          "no": "Veksle vertikal oscillasjon",
+          "sv": "Växla vertikal oscillation",
+          "pl": "Przełącz oscylację pionową",
+          "ru": "Переключить вертикальное колебание",
+          "ko": "수직 진동 전환"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "placeholder": {
+              "en": "Select Device"
+            },
+            "filter": "driver_id=fan_dmaker_advanced&capabilities=fan_dmaker_vertical_swing"
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "id": "verticalSwingToggle"
       },
       {
         "title": {
@@ -17342,6 +17740,7 @@
             "ru": "Уровень вентилятора",
             "ko": "팬 레벨"
           },
+          "units": "",
           "min": 1,
           "max": 4,
           "step": 1
@@ -30851,6 +31250,66 @@
       "getable": true,
       "setable": true,
       "icon": "/assets/icons/fanlevel.svg"
+    },
+    "fan_dmaker_vertical_angle": {
+      "type": "enum",
+      "title": {
+        "en": "Vertical Swing Angle",
+        "nl": "Verticale draaihoek",
+        "da": "Lodret svingvinkel",
+        "de": "Vertikaler Schwenkwinkel",
+        "es": "Ángulo de giro vertical",
+        "fr": "Angle de balancement vertical",
+        "it": "Angolo di oscillazione verticale",
+        "no": "Vertikal svingvinkel",
+        "sv": "Vertikal svängvinkel",
+        "pl": "Pionowy kąt huśtania",
+        "ru": "Угол вертикального поворота",
+        "ko": "수직 스윙 각도"
+      },
+      "values": [
+        {
+          "id": "30",
+          "title": "30°"
+        },
+        {
+          "id": "60",
+          "title": "60°"
+        },
+        {
+          "id": "90",
+          "title": "90°"
+        },
+        {
+          "id": "100",
+          "title": "100°"
+        }
+      ],
+      "getable": true,
+      "setable": true,
+      "icon": "/assets/icons/oscillation-vertical.svg"
+    },
+    "fan_dmaker_vertical_swing": {
+      "type": "boolean",
+      "title": {
+        "en": "Vertical Swing",
+        "nl": "Verticale oscillatie",
+        "da": "Lodret oscillation",
+        "de": "Vertikale Oszillation",
+        "es": "Oscilación vertical",
+        "fr": "Oscillation verticale",
+        "it": "Oscillazione verticale",
+        "no": "Vertikal oscillasjon",
+        "sv": "Vertikal oscillation",
+        "pl": "Oscylacja pionowa",
+        "ru": "Вертикальное колебание",
+        "ko": "수직 진동"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "toggle",
+      "insights": false,
+      "icon": "/assets/icons/oscillation-vertical.svg"
     },
     "fan_zhimi_angle": {
       "type": "enum",

@@ -216,7 +216,9 @@ const properties = {
             { did: 'fan_speed', siid: 2, piid: 5 }, // fan_speed     (1-100%)
             { did: 'light', siid: 5, piid: 1 }, // settings.led  (bool)
             { did: 'buzzer', siid: 7, piid: 1 }, // settings.buzzer (bool)
-            { did: 'child_lock', siid: 8, piid: 1 } // settings.childLock (bool)
+            { did: 'child_lock', siid: 8, piid: 1 }, // settings.childLock (bool)
+            { did: 'vertical_swing', siid: 2, piid: 8 }, // fan_dmaker_vertical_swing (bool)
+            { did: 'vertical_swing_angle', siid: 2, piid: 9 } // fan_dmaker_vertical_angle 30/60/90/100
         ],
 
         set_properties: {
@@ -227,7 +229,9 @@ const properties = {
             mode: { siid: 2, piid: 3 },
             light: { siid: 5, piid: 1 },
             buzzer: { siid: 7, piid: 1 },
-            child_lock: { siid: 8, piid: 1 }
+            child_lock: { siid: 8, piid: 1 },
+            vertical_swing: { siid: 2, piid: 8 },
+            vertical_swing_angle: { siid: 2, piid: 9 }
         }
     },
     properties_p85: {
@@ -284,6 +288,10 @@ const angleMap = {
     'xiaomi.fan.p70': [30, 60, 90, 120]
 };
 
+const verticalAngleMap = {
+    'xiaomi.fan.p70': [30, 60, 90, 100]
+};
+
 const actionMap = {
     'xiaomi.fan.p45': {
         siid: 2,
@@ -293,7 +301,9 @@ const actionMap = {
     'xiaomi.fan.p70': {
         siid: 2,
         left: 4,
-        right: 5
+        right: 5,
+        up: 6,
+        down: 7
     },
     'xiaomi.fan.p85': {
         siid: 2,
@@ -338,17 +348,140 @@ class AdvancedDmakerFanMiotDevice extends Device {
             // DEVICE VARIABLES
             this.deviceProperties = properties[mapping[this.getStoreValue('model')]] !== undefined ? properties[mapping[this.getStoreValue('model')]] : properties[mapping['dmaker.fan.*']];
 
+            /* Vertical swing (up/down) — only for models whose spec exposes it (e.g. p70 / p76) */
+            if (this.deviceProperties.set_properties.vertical_swing !== undefined) {
+                if (!this.hasCapability('fan_dmaker_vertical_swing')) {
+                    await this.addCapability('fan_dmaker_vertical_swing');
+                }
+                if (!this.hasCapability('fan_dmaker_vertical_angle')) {
+                    await this.addCapability('fan_dmaker_vertical_angle');
+                }
+
+                /* Relabel the horizontal capabilities so both axes read symmetrically (only on models with vertical swing) */
+                await this.setCapabilityOptions('oscillating', {
+                    title: {
+                        en: 'Horizontal Swing',
+                        nl: 'Horizontale oscillatie',
+                        da: 'Vandret oscillation',
+                        de: 'Horizontale Oszillation',
+                        es: 'Oscilación horizontal',
+                        fr: 'Oscillation horizontale',
+                        it: 'Oscillazione orizzontale',
+                        no: 'Horisontal oscillasjon',
+                        sv: 'Horisontell oscillation',
+                        pl: 'Oscylacja pozioma',
+                        ru: 'Горизонтальное колебание',
+                        ko: '수평 진동'
+                    }
+                });
+
+                if (this.hasCapability('fan_zhimi_angle')) {
+                    await this.setCapabilityOptions('fan_zhimi_angle', {
+                        values: angleMap[canonicalModel].map((angle) => ({ id: angle.toString(), title: `${angle}°` })),
+                        title: {
+                            en: 'Horizontal Swing Angle',
+                            nl: 'Horizontale draaihoek',
+                            da: 'Vandret svingvinkel',
+                            de: 'Horizontaler Schwenkwinkel',
+                            es: 'Ángulo de giro horizontal',
+                            fr: 'Angle de balancement horizontal',
+                            it: 'Angolo di oscillazione orizzontale',
+                            no: 'Horisontal svingvinkel',
+                            sv: 'Horisontell svängvinkel',
+                            pl: 'Poziomy kąt huśtania',
+                            ru: 'Угол горизонтального поворота',
+                            ko: '수평 스윙 각도'
+                        }
+                    });
+                }
+
+                if (verticalAngleMap[canonicalModel]) {
+                    await this.setCapabilityOptions('fan_dmaker_vertical_angle', {
+                        values: verticalAngleMap[canonicalModel].map((angle) => ({ id: angle.toString(), title: `${angle}°` }))
+                    });
+                }
+
+                this.registerCapabilityListener('fan_dmaker_vertical_swing', async (value) => {
+                    try {
+                        if (this.miio) {
+                            const verticalSwingValue = this.deviceProperties.usesNativeBoolean ? value : value ? 1 : 0;
+                            return await this.miio.call('set_properties', [{ did: 'vertical_swing', siid: this.deviceProperties.set_properties.vertical_swing.siid, piid: this.deviceProperties.set_properties.vertical_swing.piid, value: verticalSwingValue }], { retries: 1 });
+                        } else {
+                            this.setUnavailable(this.homey.__('unreachable')).catch((error) => {
+                                this.error(error);
+                            });
+                            this.createDevice();
+                            return Promise.reject('Device unreachable, please try again ...');
+                        }
+                    } catch (error) {
+                        this.error(error);
+                        return Promise.reject(error);
+                    }
+                });
+
+                this.registerCapabilityListener('fan_dmaker_vertical_angle', async (value) => {
+                    try {
+                        if (this.miio) {
+                            return await this.miio.call('set_properties', [{ did: 'vertical_swing_angle', siid: this.deviceProperties.set_properties.vertical_swing_angle.siid, piid: this.deviceProperties.set_properties.vertical_swing_angle.piid, value: +value }], { retries: 1 });
+                        } else {
+                            this.setUnavailable(this.homey.__('unreachable')).catch((error) => {
+                                this.error(error);
+                            });
+                            this.createDevice();
+                            return Promise.reject('Device unreachable, please try again ...');
+                        }
+                    } catch (error) {
+                        this.error(error);
+                        return Promise.reject(error);
+                    }
+                });
+
+                // FLOW CARDS FOR VERTICAL SWING (only on models that expose it)
+                this.homey.flow.getDeviceTriggerCard('verticalSwingTurnedOn');
+                this.homey.flow.getDeviceTriggerCard('verticalSwingTurnedOff');
+
+                this.homey.flow.getActionCard('verticalSwingOn').registerRunListener(async (args, state) => {
+                    return args.device.triggerCapabilityListener('fan_dmaker_vertical_swing', true);
+                });
+
+                this.homey.flow.getActionCard('verticalSwingOff').registerRunListener(async (args, state) => {
+                    return args.device.triggerCapabilityListener('fan_dmaker_vertical_swing', false);
+                });
+
+                this.homey.flow.getActionCard('verticalSwingToggle').registerRunListener(async (args, state) => {
+                    return args.device.triggerCapabilityListener('fan_dmaker_vertical_swing', !args.device.getCapabilityValue('fan_dmaker_vertical_swing'));
+                });
+
+                this.homey.flow.getActionCard('setVerticalAngle').registerRunListener(async (args, state) => {
+                    return args.device.triggerCapabilityListener('fan_dmaker_vertical_angle', args.angle);
+                });
+
+                this.homey.flow.getConditionCard('verticalSwingIsOn').registerRunListener(async (args, state) => {
+                    return args.device.getCapabilityValue('fan_dmaker_vertical_swing') === true;
+                });
+            }
+
             // FLOW TRIGGER CARDS
             this.homey.flow.getDeviceTriggerCard('triggerModeChanged');
 
             // Register flow action for rotating left by one step
             this.homey.flow.getActionCard('rotateLeftStep').registerRunListener(async (args, state) => {
-                return this.rotateFanHead('left');
+                return args.device.rotateFanHead('left');
             });
 
             // Register flow action for rotating right by one step
             this.homey.flow.getActionCard('rotateRightStep').registerRunListener(async (args, state) => {
-                return this.rotateFanHead('right');
+                return args.device.rotateFanHead('right');
+            });
+
+            // Register flow action for rotating up by one step
+            this.homey.flow.getActionCard('rotateUpStep').registerRunListener(async (args, state) => {
+                return args.device.rotateFanHead('up');
+            });
+
+            // Register flow action for rotating down by one step
+            this.homey.flow.getActionCard('rotateDownStep').registerRunListener(async (args, state) => {
+                return args.device.rotateFanHead('down');
             });
 
             // LISTENERS FOR UPDATING CAPABILITIES
@@ -522,6 +655,28 @@ class AdvancedDmakerFanMiotDevice extends Device {
                 await this.updateCapabilityValue('fan_speed', fan_speed.value / 100);
             }
 
+            if (this.hasCapability('fan_dmaker_vertical_swing')) {
+                const vertical_swing = result.find((obj) => obj.did === 'vertical_swing');
+                if (vertical_swing !== undefined) {
+                    const previous_vertical_swing = this.getCapabilityValue('fan_dmaker_vertical_swing');
+                    await this.updateCapabilityValue('fan_dmaker_vertical_swing', !!vertical_swing.value);
+                    if (!!vertical_swing.value !== previous_vertical_swing) {
+                        await this.homey.flow
+                            .getDeviceTriggerCard(vertical_swing.value ? 'verticalSwingTurnedOn' : 'verticalSwingTurnedOff')
+                            .trigger(this)
+                            .catch((error) => {
+                                this.error(error);
+                            });
+                    }
+                }
+            }
+            if (this.hasCapability('fan_dmaker_vertical_angle')) {
+                const vertical_swing_angle = result.find((obj) => obj.did === 'vertical_swing_angle');
+                if (vertical_swing_angle !== undefined) {
+                    await this.updateCapabilityValue('fan_dmaker_vertical_angle', vertical_swing_angle.value.toString());
+                }
+            }
+
             /* settings */
             if (led !== undefined) {
                 await this.updateSettingValue('led', !!led.value);
@@ -563,8 +718,9 @@ class AdvancedDmakerFanMiotDevice extends Device {
     }
 
     /**
-     * Rotate the fan head by one device-defined step (typically 5–7.5 degrees) left or right.
-     * @param {"left"|"right"} direction
+     * Rotate the fan head by one device-defined step (typically 5–7.5 degrees).
+     * Left/right are supported by all action-based models; up/down only by models whose spec exposes them (e.g. p70 / p76).
+     * @param {"left"|"right"|"up"|"down"} direction
      */
     async rotateFanHead(direction) {
         this.log(`[Rotate] Requesting fan to rotate ${direction}`);
@@ -575,10 +731,8 @@ class AdvancedDmakerFanMiotDevice extends Device {
         const action = actionMap[canonicalModel];
         if (action) {
             // Use MIOT Action call for Smart Tower Fan 2
-            let aiid;
-            if (direction === 'left') aiid = action.left;
-            else if (direction === 'right') aiid = action.right;
-            else throw new Error('Invalid direction for rotateFanHead');
+            const aiid = action[direction];
+            if (aiid === undefined) throw new Error(`Direction '${direction}' not supported for this model`);
             try {
                 return await this.miio.call('action', {
                     siid: action.siid,

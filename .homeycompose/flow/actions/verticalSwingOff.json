@@ -1,0 +1,39 @@
+{
+  "title": {
+    "en": "Disable Vertical Swing",
+    "nl": "Verticale oscillatie uitschakelen",
+    "da": "Deaktivér lodret oscillation",
+    "de": "Vertikale Oszillation deaktivieren",
+    "es": "Desactivar oscilación vertical",
+    "fr": "Désactiver l'oscillation verticale",
+    "it": "Disabilita oscillazione verticale",
+    "no": "Deaktiver vertikal oscillasjon",
+    "sv": "Inaktivera vertikal oscillation",
+    "pl": "Wyłącz oscylację pionową",
+    "ru": "Выключить вертикальное колебание",
+    "ko": "수직 진동 비활성화"
+  },
+  "titleFormatted": {
+    "en": "Disable Vertical Swing",
+    "nl": "Verticale oscillatie uitschakelen",
+    "da": "Deaktivér lodret oscillation",
+    "de": "Vertikale Oszillation deaktivieren",
+    "es": "Desactivar oscilación vertical",
+    "fr": "Désactiver l'oscillation verticale",
+    "it": "Disabilita oscillazione verticale",
+    "no": "Deaktiver vertikal oscillasjon",
+    "sv": "Inaktivera vertikal oscillation",
+    "pl": "Wyłącz oscylację pionową",
+    "ru": "Выключить вертикальное колебание",
+    "ko": "수직 진동 비활성화"
+  },
+  "args": [
+    {
+      "name": "device",
+      "type": "device",
+      "placeholder": { "en": "Select Device" },
+      "filter": "driver_id=fan_dmaker_advanced&capabilities=fan_dmaker_vertical_swing"
+    }
+  ],
+  "platforms": ["local"]
+}
