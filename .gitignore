@@ -2,6 +2,7 @@
 /node_modules/
 /.homeybuild/
 .codegpt
+.idea/
 /.homeybuild
 /node_modules
 appdirectory.zip
