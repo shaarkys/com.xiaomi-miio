@@ -28,7 +28,25 @@
       },
       {
         "id": "polling",
-        "$extends": "polling"
+        "type": "number",
+        "value": 60,
+        "attr": {
+          "min": 5,
+          "max": 3600
+        },
+        "label": {
+          "en": "Polling rate (seconds)",
+          "nl": "Pollingfrequentie (seconden)"
+        }
+      },
+      {
+        "id": "polling_info",
+        "type": "label",
+        "label": {
+          "en": "External changes, such as using the Xiaomi app or the physical knob, are detected after the next polling interval.",
+          "nl": "Externe wijzigingen, zoals via de Xiaomi-app of de fysieke knop, worden na het volgende polling-interval gedetecteerd."
+        },
+        "value": ""
       }
     ]
   }

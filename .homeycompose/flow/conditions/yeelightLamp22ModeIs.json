@@ -1,0 +1,111 @@
+{
+  "title": {
+    "en": "My mode / scene is",
+    "nl": "Mijn modus / scene is"
+  },
+  "titleFormatted": {
+    "en": "My mode / scene is [[mode]]",
+    "nl": "Mijn modus / scene is [[mode]]"
+  },
+  "args": [
+    {
+      "name": "mode",
+      "title": {
+        "en": "My mode / scene",
+        "nl": "Mijn modus / scene"
+      },
+      "type": "dropdown",
+      "values": [
+        {
+          "id": "0",
+          "title": {
+            "en": "No mode/scene selected (Free mode)",
+            "nl": "Geen modus/scene geselecteerd (vrije modus)"
+          }
+        },
+        {
+          "id": "1",
+          "title": {
+            "en": "My mode 1",
+            "nl": "Mijn modus 1"
+          }
+        },
+        {
+          "id": "2",
+          "title": {
+            "en": "My mode 2",
+            "nl": "Mijn modus 2"
+          }
+        },
+        {
+          "id": "3",
+          "title": {
+            "en": "My mode 3",
+            "nl": "Mijn modus 3"
+          }
+        },
+        {
+          "id": "4",
+          "title": {
+            "en": "My mode 4",
+            "nl": "Mijn modus 4"
+          }
+        },
+        {
+          "id": "5",
+          "title": {
+            "en": "Reading",
+            "nl": "Lezen"
+          }
+        },
+        {
+          "id": "6",
+          "title": {
+            "en": "Office (Working)",
+            "nl": "Kantoor (Werken)"
+          }
+        },
+        {
+          "id": "7",
+          "title": {
+            "en": "Leisure (Movie)",
+            "nl": "Ontspanning (Film)"
+          }
+        },
+        {
+          "id": "8",
+          "title": {
+            "en": "Warm",
+            "nl": "Warm"
+          }
+        },
+        {
+          "id": "9",
+          "title": {
+            "en": "Computer (Anti blue-light)",
+            "nl": "Computer (anti-blauw licht)"
+          }
+        },
+        {
+          "id": "10",
+          "title": {
+            "en": "Blinking (Flow)",
+            "nl": "Knipperen (Flow)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "device",
+      "type": "device",
+      "placeholder": {
+        "en": "Select Xiaomi Monitor Light Bar S1",
+        "nl": "Selecteer Xiaomi Monitor Light Bar S1"
+      },
+      "filter": "driver_id=yeelink_light_lamp22_miot"
+    }
+  ],
+  "platforms": [
+    "local"
+  ]
+}
