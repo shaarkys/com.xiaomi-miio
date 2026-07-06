@@ -1,0 +1,39 @@
+{
+  "title": {
+    "en": "Toggle Vertical Swing",
+    "nl": "Verticale oscillatie omschakelen",
+    "da": "Skift lodret oscillation",
+    "de": "Vertikale Oszillation umschalten",
+    "es": "Alternar oscilación vertical",
+    "fr": "Basculer l'oscillation verticale",
+    "it": "Commuta oscillazione verticale",
+    "no": "Veksle vertikal oscillasjon",
+    "sv": "Växla vertikal oscillation",
+    "pl": "Przełącz oscylację pionową",
+    "ru": "Переключить вертикальное колебание",
+    "ko": "수직 진동 전환"
+  },
+  "titleFormatted": {
+    "en": "Toggle Vertical Swing",
+    "nl": "Verticale oscillatie omschakelen",
+    "da": "Skift lodret oscillation",
+    "de": "Vertikale Oszillation umschalten",
+    "es": "Alternar oscilación vertical",
+    "fr": "Basculer l'oscillation verticale",
+    "it": "Commuta oscillazione verticale",
+    "no": "Veksle vertikal oscillasjon",
+    "sv": "Växla vertikal oscillation",
+    "pl": "Przełącz oscylację pionową",
+    "ru": "Переключить вертикальное колебание",
+    "ko": "수직 진동 전환"
+  },
+  "args": [
+    {
+      "name": "device",
+      "type": "device",
+      "placeholder": { "en": "Select Device" },
+      "filter": "driver_id=fan_dmaker_advanced"
+    }
+  ],
+  "platforms": ["local"]
+}

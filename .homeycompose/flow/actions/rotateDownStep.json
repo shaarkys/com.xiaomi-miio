@@ -1,0 +1,39 @@
+{
+  "title": {
+    "en": "Rotate fan downward",
+    "nl": "Draai ventilator omlaag",
+    "da": "Drej ventilator nedad",
+    "de": "Lüfter nach unten drehen",
+    "es": "Girar ventilador hacia abajo",
+    "fr": "Tourner le ventilateur vers le bas",
+    "it": "Ruota il ventilatore verso il basso",
+    "no": "Drei viften nedover",
+    "sv": "Vrid fläkten nedåt",
+    "pl": "Obróć wentylator w dół",
+    "ru": "Повернуть вентилятор вниз",
+    "ko": "선풍기를 아래로 회전"
+  },
+  "titleFormatted": {
+    "en": "Rotate fan downward",
+    "nl": "Draai ventilator omlaag",
+    "da": "Drej ventilator nedad",
+    "de": "Lüfter nach unten drehen",
+    "es": "Girar ventilador hacia abajo",
+    "fr": "Tourner le ventilateur vers le bas",
+    "it": "Ruota il ventilatore verso il basso",
+    "no": "Drei viften nedover",
+    "sv": "Vrid fläkten nedåt",
+    "pl": "Obróć wentylator w dół",
+    "ru": "Повернуть вентилятор вниз",
+    "ko": "선풍기를 아래로 회전"
+  },
+  "args": [
+    {
+      "name": "device",
+      "type": "device",
+      "placeholder": { "en": "Select Device" },
+      "filter": "driver_id=fan_dmaker_advanced"
+    }
+  ],
+  "platforms": ["local"]
+}

@@ -1,0 +1,63 @@
+{
+  "title": {
+    "en": "Change Vertical Swing Angle",
+    "nl": "Verticale draaihoek wijzigen",
+    "da": "Skift lodret svingvinkel",
+    "de": "Vertikalen Schwenkwinkel ändern",
+    "es": "Cambiar ángulo de giro vertical",
+    "fr": "Changer l'angle de balancement vertical",
+    "it": "Cambia angolo di oscillazione verticale",
+    "no": "Endre vertikal svingvinkel",
+    "sv": "Ändra vertikal svängvinkel",
+    "pl": "Zmień pionowy kąt huśtania",
+    "ru": "Изменить угол вертикального поворота",
+    "ko": "수직 스윙 각도 변경"
+  },
+  "titleFormatted": {
+    "en": "Change vertical swing angle to [[angle]]",
+    "nl": "Verticale draaihoek wijzigen naar [[angle]]",
+    "da": "Skift lodret svingvinkel til [[angle]]",
+    "de": "Vertikalen Schwenkwinkel ändern zu [[angle]]",
+    "es": "Cambiar ángulo de giro vertical a [[angle]]",
+    "fr": "Changer l'angle de balancement vertical en [[angle]]",
+    "it": "Cambia angolo di oscillazione verticale a [[angle]]",
+    "no": "Endre vertikal svingvinkel til [[angle]]",
+    "sv": "Ändra vertikal svängvinkel till [[angle]]",
+    "pl": "Zmień pionowy kąt huśtania na [[angle]]",
+    "ru": "Изменить угол вертикального поворота на [[angle]]",
+    "ko": "수직 스윙 각도를 [[angle]]로 변경"
+  },
+  "args": [
+    {
+      "name": "angle",
+      "title": {
+        "en": "Angle",
+        "nl": "Hoek",
+        "da": "Vinkel",
+        "de": "Winkel",
+        "es": "Ángulo",
+        "fr": "Angle",
+        "it": "Angolo",
+        "no": "Vinkel",
+        "sv": "Vinkel",
+        "pl": "Kąt",
+        "ru": "Угол",
+        "ko": "각도"
+      },
+      "type": "dropdown",
+      "values": [
+        { "id": "30", "title": { "en": "30°" } },
+        { "id": "60", "title": { "en": "60°" } },
+        { "id": "90", "title": { "en": "90°" } },
+        { "id": "100", "title": { "en": "100°" } }
+      ]
+    },
+    {
+      "name": "device",
+      "type": "device",
+      "placeholder": { "en": "Select Device" },
+      "filter": "driver_id=fan_dmaker_advanced"
+    }
+  ],
+  "platforms": ["local"]
+}

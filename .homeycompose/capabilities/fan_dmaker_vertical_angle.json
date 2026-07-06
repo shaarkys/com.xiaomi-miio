@@ -1,0 +1,38 @@
+{
+  "type": "enum",
+  "title": {
+    "en": "Vertical Swing Angle",
+    "nl": "Verticale draaihoek",
+    "da": "Lodret svingvinkel",
+    "de": "Vertikaler Schwenkwinkel",
+    "es": "Ángulo de giro vertical",
+    "fr": "Angle de balancement vertical",
+    "it": "Angolo di oscillazione verticale",
+    "no": "Vertikal svingvinkel",
+    "sv": "Vertikal svängvinkel",
+    "pl": "Pionowy kąt huśtania",
+    "ru": "Угол вертикального поворота",
+    "ko": "수직 스윙 각도"
+  },
+  "values": [
+    {
+      "id": "30",
+      "title": { "en": "30°" }
+    },
+    {
+      "id": "60",
+      "title": { "en": "60°" }
+    },
+    {
+      "id": "90",
+      "title": { "en": "90°" }
+    },
+    {
+      "id": "100",
+      "title": { "en": "100°" }
+    }
+  ],
+  "getable": true,
+  "setable": true,
+  "icon": "/assets/icons/oscillation-vertical.svg"
+}
