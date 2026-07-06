@@ -1,0 +1,41 @@
+{
+  "name": {
+    "en": "Yeelight Color Bulb (legacy LAN) (WiFi)",
+    "nl": "Yeelight Color Bulb (legacy LAN) (WiFi)",
+    "da": "Yeelight Color Bulb (legacy LAN) (WiFi)",
+    "de": "Yeelight Color Bulb (legacy LAN) (WiFi)",
+    "es": "Yeelight Color Bulb (legacy LAN) (WiFi)",
+    "fr": "Yeelight Color Bulb (legacy LAN) (WiFi)",
+    "it": "Yeelight Color Bulb (legacy LAN) (WiFi)",
+    "no": "Yeelight Color Bulb (legacy LAN) (WiFi)",
+    "sv": "Yeelight Color Bulb (legacy LAN) (WiFi)",
+    "pl": "Yeelight Color Bulb (legacy LAN) (WiFi)",
+    "ru": "Yeelight Color Bulb (legacy LAN) (WiFi)",
+    "ko": "Yeelight Color Bulb (legacy LAN) (WiFi)"
+  },
+  "description": {
+    "en": "Product model: YLDP02YL. Uses the legacy Yeelight LAN API.",
+    "nl": "Productmodel: YLDP02YL. Gebruikt de legacy Yeelight LAN API."
+  },
+  "images": {
+    "large": "drivers/yeelink_light_color1_lan/assets/images/large.jpg",
+    "small": "drivers/yeelink_light_color1_lan/assets/images/small.jpg"
+  },
+  "class": "light",
+  "$extends": [
+    "defaults"
+  ],
+  "capabilities": [
+    "onoff",
+    "dim",
+    "light_mode",
+    "light_temperature",
+    "light_hue",
+    "light_saturation"
+  ],
+  "capabilitiesOptions": {
+    "dim": {
+      "min": 0.01
+    }
+  }
+}
