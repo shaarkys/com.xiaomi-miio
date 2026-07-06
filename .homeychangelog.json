@@ -502,5 +502,8 @@
   },
   "3.4.89": {
     "en": "Added Xiaomi Monitor Light Bar S1 (yeelink.light.lamp22) support with mode/scene Flow cards, contributed by @LieuweJ."
+  },
+  "3.4.90": {
+    "en": "Added Yeelight Color Bulb YLDP02YL (yeelink.light.color1) legacy LAN support, contributed by @LieuweJ."
   }
 }
