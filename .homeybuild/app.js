@@ -47,6 +47,25 @@ class XiaomiMiioApp extends Homey.App {
         }
       });
 
+    this.homey.flow.getActionCard('yeelightLamp22Mode')
+      .registerRunListener(async (args) => {
+        try {
+          return await args.device.triggerCapabilityListener('yeelight_lamp22_mode', args.mode);
+        } catch (error) {
+          return Promise.reject(error.message);
+        }
+      });
+
+    this.homey.flow.getConditionCard('yeelightLamp22ModeIs')
+      .registerRunListener(async (args) => {
+        return args.device.getCapabilityValue('yeelight_lamp22_mode') === args.mode;
+      });
+
+    this.homey.flow.getDeviceTriggerCard('yeelightLamp22ModeChanged')
+      .registerRunListener(async (args, state) => {
+        return args.mode === state.mode;
+      });
+
     // VACUUMS
     this.homey.flow.getActionCard('findVacuum')
       .registerRunListener(async (args) => {

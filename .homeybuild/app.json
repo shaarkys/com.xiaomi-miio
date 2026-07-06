@@ -187,7 +187,7 @@
       "게이트웨이"
     ]
   },
-  "version": "3.4.81",
+  "version": "3.4.89",
   "compatibility": ">=12.2.0",
   "platforms": [
     "local"
@@ -2370,6 +2370,66 @@
       },
       {
         "title": {
+          "en": "Vertical Swing turned off",
+          "nl": "Verticale oscillatie uitgeschakeld",
+          "da": "Lodret oscillation slukket",
+          "de": "Vertikale Oszillation ausgeschaltet",
+          "es": "Oscilación vertical desactivada",
+          "fr": "Oscillation verticale désactivée",
+          "it": "Oscillazione verticale disattivata",
+          "no": "Vertikal oscillasjon slått av",
+          "sv": "Vertikal oscillation avstängd",
+          "pl": "Oscylacja pionowa wyłączona",
+          "ru": "Вертикальное колебание выключено",
+          "ko": "수직 진동 꺼짐"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "placeholder": {
+              "en": "Select Device"
+            },
+            "filter": "driver_id=fan_dmaker_advanced"
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "id": "verticalSwingTurnedOff"
+      },
+      {
+        "title": {
+          "en": "Vertical Swing turned on",
+          "nl": "Verticale oscillatie ingeschakeld",
+          "da": "Lodret oscillation tændt",
+          "de": "Vertikale Oszillation eingeschaltet",
+          "es": "Oscilación vertical activada",
+          "fr": "Oscillation verticale activée",
+          "it": "Oscillazione verticale attivata",
+          "no": "Vertikal oscillasjon slått på",
+          "sv": "Vertikal oscillation påslagen",
+          "pl": "Oscylacja pionowa włączona",
+          "ru": "Вертикальное колебание включено",
+          "ko": "수직 진동 켜짐"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "placeholder": {
+              "en": "Select Device"
+            },
+            "filter": "driver_id=fan_dmaker_advanced"
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "id": "verticalSwingTurnedOn"
+      },
+      {
+        "title": {
           "en": "Washing program finished",
           "nl": "Wasprogramma is klaar"
         },
@@ -2387,6 +2447,142 @@
           "local"
         ],
         "id": "washerStarted"
+      },
+      {
+        "title": {
+          "en": "My mode / scene changed to",
+          "nl": "Mijn modus / scene gewijzigd naar"
+        },
+        "titleFormatted": {
+          "en": "My mode / scene changed to [[mode]]",
+          "nl": "Mijn modus / scene gewijzigd naar [[mode]]"
+        },
+        "hint": {
+          "en": "External changes are detected after the next polling interval. The polling interval can be adjusted in the device settings.",
+          "nl": "Externe wijzigingen worden na het volgende polling-interval gedetecteerd. Het polling-interval kan in de apparaatinstellingen worden aangepast."
+        },
+        "tokens": [
+          {
+            "name": "mode",
+            "type": "string",
+            "title": {
+              "en": "my mode / scene",
+              "nl": "mijn modus / scene"
+            },
+            "example": "Reading"
+          },
+          {
+            "name": "previous_mode",
+            "type": "string",
+            "title": {
+              "en": "previous my mode / scene",
+              "nl": "vorige mijn modus / scene"
+            },
+            "example": "My mode 1"
+          }
+        ],
+        "args": [
+          {
+            "name": "mode",
+            "title": {
+              "en": "My mode / scene",
+              "nl": "Mijn modus / scene"
+            },
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "0",
+                "title": {
+                  "en": "Free mode",
+                  "nl": "Vrije modus"
+                }
+              },
+              {
+                "id": "1",
+                "title": {
+                  "en": "My mode 1",
+                  "nl": "Mijn modus 1"
+                }
+              },
+              {
+                "id": "2",
+                "title": {
+                  "en": "My mode 2",
+                  "nl": "Mijn modus 2"
+                }
+              },
+              {
+                "id": "3",
+                "title": {
+                  "en": "My mode 3",
+                  "nl": "Mijn modus 3"
+                }
+              },
+              {
+                "id": "4",
+                "title": {
+                  "en": "My mode 4",
+                  "nl": "Mijn modus 4"
+                }
+              },
+              {
+                "id": "5",
+                "title": {
+                  "en": "Reading",
+                  "nl": "Lezen"
+                }
+              },
+              {
+                "id": "6",
+                "title": {
+                  "en": "Office",
+                  "nl": "Kantoor"
+                }
+              },
+              {
+                "id": "7",
+                "title": {
+                  "en": "Movie",
+                  "nl": "Film"
+                }
+              },
+              {
+                "id": "8",
+                "title": {
+                  "en": "Warm",
+                  "nl": "Warm"
+                }
+              },
+              {
+                "id": "9",
+                "title": {
+                  "en": "Computer",
+                  "nl": "Computer"
+                }
+              },
+              {
+                "id": "10",
+                "title": {
+                  "en": "Blinking",
+                  "nl": "Knipperen"
+                }
+              }
+            ]
+          },
+          {
+            "name": "device",
+            "type": "device",
+            "placeholder": {
+              "en": "Select Xiaomi Monitor Light Bar S1",
+              "nl": "Selecteer Xiaomi Monitor Light Bar S1"
+            },
+            "filter": "driver_id=yeelink_light_lamp22_miot"
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "id": "yeelightLamp22ModeChanged"
       },
       {
         "id": "vacuum_on_error",
@@ -2807,6 +3003,148 @@
         "platforms": [
           "local"
         ]
+      },
+      {
+        "title": {
+          "en": "Vertical Swing is !{{on|off}}",
+          "nl": "Verticale oscillatie is !{{aan|uit}}",
+          "da": "Lodret oscillation er !{{tændt|slukket}}",
+          "de": "Vertikale Oszillation ist !{{an|aus}}",
+          "es": "La oscilación vertical está !{{activada|desactivada}}",
+          "fr": "L'oscillation verticale est !{{activée|désactivée}}",
+          "it": "L'oscillazione verticale è !{{attiva|disattiva}}",
+          "no": "Vertikal oscillasjon er !{{på|av}}",
+          "sv": "Vertikal oscillation är !{{på|av}}",
+          "pl": "Oscylacja pionowa jest !{{włączona|wyłączona}}",
+          "ru": "Вертикальное колебание !{{включено|выключено}}",
+          "ko": "수직 진동이 !{{켜짐|꺼짐}}"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "placeholder": {
+              "en": "Select Device"
+            },
+            "filter": "driver_id=fan_dmaker_advanced"
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "id": "verticalSwingIsOn"
+      },
+      {
+        "title": {
+          "en": "My mode / scene is",
+          "nl": "Mijn modus / scene is"
+        },
+        "titleFormatted": {
+          "en": "My mode / scene is [[mode]]",
+          "nl": "Mijn modus / scene is [[mode]]"
+        },
+        "args": [
+          {
+            "name": "mode",
+            "title": {
+              "en": "My mode / scene",
+              "nl": "Mijn modus / scene"
+            },
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "0",
+                "title": {
+                  "en": "Free mode",
+                  "nl": "Vrije modus"
+                }
+              },
+              {
+                "id": "1",
+                "title": {
+                  "en": "My mode 1",
+                  "nl": "Mijn modus 1"
+                }
+              },
+              {
+                "id": "2",
+                "title": {
+                  "en": "My mode 2",
+                  "nl": "Mijn modus 2"
+                }
+              },
+              {
+                "id": "3",
+                "title": {
+                  "en": "My mode 3",
+                  "nl": "Mijn modus 3"
+                }
+              },
+              {
+                "id": "4",
+                "title": {
+                  "en": "My mode 4",
+                  "nl": "Mijn modus 4"
+                }
+              },
+              {
+                "id": "5",
+                "title": {
+                  "en": "Reading",
+                  "nl": "Lezen"
+                }
+              },
+              {
+                "id": "6",
+                "title": {
+                  "en": "Office",
+                  "nl": "Kantoor"
+                }
+              },
+              {
+                "id": "7",
+                "title": {
+                  "en": "Movie",
+                  "nl": "Film"
+                }
+              },
+              {
+                "id": "8",
+                "title": {
+                  "en": "Warm",
+                  "nl": "Warm"
+                }
+              },
+              {
+                "id": "9",
+                "title": {
+                  "en": "Computer",
+                  "nl": "Computer"
+                }
+              },
+              {
+                "id": "10",
+                "title": {
+                  "en": "Blinking",
+                  "nl": "Knipperen"
+                }
+              }
+            ]
+          },
+          {
+            "name": "device",
+            "type": "device",
+            "placeholder": {
+              "en": "Select Xiaomi Monitor Light Bar S1",
+              "nl": "Selecteer Xiaomi Monitor Light Bar S1"
+            },
+            "filter": "driver_id=yeelink_light_lamp22_miot"
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "id": "yeelightLamp22ModeIs"
       }
     ],
     "actions": [
@@ -8917,6 +9255,50 @@
       },
       {
         "title": {
+          "en": "Rotate fan downward",
+          "nl": "Draai ventilator omlaag",
+          "da": "Drej ventilator nedad",
+          "de": "Lüfter nach unten drehen",
+          "es": "Girar ventilador hacia abajo",
+          "fr": "Tourner le ventilateur vers le bas",
+          "it": "Ruota il ventilatore verso il basso",
+          "no": "Drei viften nedover",
+          "sv": "Vrid fläkten nedåt",
+          "pl": "Obróć wentylator w dół",
+          "ru": "Повернуть вентилятор вниз",
+          "ko": "선풍기를 아래로 회전"
+        },
+        "titleFormatted": {
+          "en": "Rotate fan downward",
+          "nl": "Draai ventilator omlaag",
+          "da": "Drej ventilator nedad",
+          "de": "Lüfter nach unten drehen",
+          "es": "Girar ventilador hacia abajo",
+          "fr": "Tourner le ventilateur vers le bas",
+          "it": "Ruota il ventilatore verso il basso",
+          "no": "Drei viften nedover",
+          "sv": "Vrid fläkten nedåt",
+          "pl": "Obróć wentylator w dół",
+          "ru": "Повернуть вентилятор вниз",
+          "ko": "선풍기를 아래로 회전"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "placeholder": {
+              "en": "Select Device"
+            },
+            "filter": "driver_id=fan_dmaker_advanced"
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "id": "rotateDownStep"
+      },
+      {
+        "title": {
           "en": "Rotate fan to the left",
           "de": "Lüfter nach links drehen"
         },
@@ -8962,6 +9344,50 @@
           "local"
         ],
         "id": "rotateRightStep"
+      },
+      {
+        "title": {
+          "en": "Rotate fan upward",
+          "nl": "Draai ventilator omhoog",
+          "da": "Drej ventilator opad",
+          "de": "Lüfter nach oben drehen",
+          "es": "Girar ventilador hacia arriba",
+          "fr": "Tourner le ventilateur vers le haut",
+          "it": "Ruota il ventilatore verso l'alto",
+          "no": "Drei viften oppover",
+          "sv": "Vrid fläkten uppåt",
+          "pl": "Obróć wentylator w górę",
+          "ru": "Повернуть вентилятор вверх",
+          "ko": "선풍기를 위로 회전"
+        },
+        "titleFormatted": {
+          "en": "Rotate fan upward",
+          "nl": "Draai ventilator omhoog",
+          "da": "Drej ventilator opad",
+          "de": "Lüfter nach oben drehen",
+          "es": "Girar ventilador hacia arriba",
+          "fr": "Tourner le ventilateur vers le haut",
+          "it": "Ruota il ventilatore verso l'alto",
+          "no": "Drei viften oppover",
+          "sv": "Vrid fläkten uppåt",
+          "pl": "Obróć wentylator w górę",
+          "ru": "Повернуть вентилятор вверх",
+          "ko": "선풍기를 위로 회전"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "placeholder": {
+              "en": "Select Device"
+            },
+            "filter": "driver_id=fan_dmaker_advanced"
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "id": "rotateUpStep"
       },
       {
         "title": {
@@ -9139,6 +9565,94 @@
           "local"
         ],
         "id": "setAngle"
+      },
+      {
+        "title": {
+          "en": "Change Vertical Swing Angle",
+          "nl": "Verticale draaihoek wijzigen",
+          "da": "Skift lodret svingvinkel",
+          "de": "Vertikalen Schwenkwinkel ändern",
+          "es": "Cambiar ángulo de giro vertical",
+          "fr": "Changer l'angle de balancement vertical",
+          "it": "Cambia angolo di oscillazione verticale",
+          "no": "Endre vertikal svingvinkel",
+          "sv": "Ändra vertikal svängvinkel",
+          "pl": "Zmień pionowy kąt huśtania",
+          "ru": "Изменить угол вертикального поворота",
+          "ko": "수직 스윙 각도 변경"
+        },
+        "titleFormatted": {
+          "en": "Change vertical swing angle to [[angle]]",
+          "nl": "Verticale draaihoek wijzigen naar [[angle]]",
+          "da": "Skift lodret svingvinkel til [[angle]]",
+          "de": "Vertikalen Schwenkwinkel ändern zu [[angle]]",
+          "es": "Cambiar ángulo de giro vertical a [[angle]]",
+          "fr": "Changer l'angle de balancement vertical en [[angle]]",
+          "it": "Cambia angolo di oscillazione verticale a [[angle]]",
+          "no": "Endre vertikal svingvinkel til [[angle]]",
+          "sv": "Ändra vertikal svängvinkel till [[angle]]",
+          "pl": "Zmień pionowy kąt huśtania na [[angle]]",
+          "ru": "Изменить угол вертикального поворота на [[angle]]",
+          "ko": "수직 스윙 각도를 [[angle]]로 변경"
+        },
+        "args": [
+          {
+            "name": "angle",
+            "title": {
+              "en": "Angle",
+              "nl": "Hoek",
+              "da": "Vinkel",
+              "de": "Winkel",
+              "es": "Ángulo",
+              "fr": "Angle",
+              "it": "Angolo",
+              "no": "Vinkel",
+              "sv": "Vinkel",
+              "pl": "Kąt",
+              "ru": "Угол",
+              "ko": "각도"
+            },
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "30",
+                "title": {
+                  "en": "30°"
+                }
+              },
+              {
+                "id": "60",
+                "title": {
+                  "en": "60°"
+                }
+              },
+              {
+                "id": "90",
+                "title": {
+                  "en": "90°"
+                }
+              },
+              {
+                "id": "100",
+                "title": {
+                  "en": "100°"
+                }
+              }
+            ]
+          },
+          {
+            "name": "device",
+            "type": "device",
+            "placeholder": {
+              "en": "Select Device"
+            },
+            "filter": "driver_id=fan_dmaker_advanced"
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "id": "setVerticalAngle"
       },
       {
         "id": "vacuumDreameFanspeed",
@@ -10709,6 +11223,138 @@
       },
       {
         "title": {
+          "en": "Disable Vertical Swing",
+          "nl": "Verticale oscillatie uitschakelen",
+          "da": "Deaktivér lodret oscillation",
+          "de": "Vertikale Oszillation deaktivieren",
+          "es": "Desactivar oscilación vertical",
+          "fr": "Désactiver l'oscillation verticale",
+          "it": "Disabilita oscillazione verticale",
+          "no": "Deaktiver vertikal oscillasjon",
+          "sv": "Inaktivera vertikal oscillation",
+          "pl": "Wyłącz oscylację pionową",
+          "ru": "Выключить вертикальное колебание",
+          "ko": "수직 진동 비활성화"
+        },
+        "titleFormatted": {
+          "en": "Disable Vertical Swing",
+          "nl": "Verticale oscillatie uitschakelen",
+          "da": "Deaktivér lodret oscillation",
+          "de": "Vertikale Oszillation deaktivieren",
+          "es": "Desactivar oscilación vertical",
+          "fr": "Désactiver l'oscillation verticale",
+          "it": "Disabilita oscillazione verticale",
+          "no": "Deaktiver vertikal oscillasjon",
+          "sv": "Inaktivera vertikal oscillation",
+          "pl": "Wyłącz oscylację pionową",
+          "ru": "Выключить вертикальное колебание",
+          "ko": "수직 진동 비활성화"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "placeholder": {
+              "en": "Select Device"
+            },
+            "filter": "driver_id=fan_dmaker_advanced"
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "id": "verticalSwingOff"
+      },
+      {
+        "title": {
+          "en": "Enable Vertical Swing",
+          "nl": "Verticale oscillatie inschakelen",
+          "da": "Aktivér lodret oscillation",
+          "de": "Vertikale Oszillation aktivieren",
+          "es": "Activar oscilación vertical",
+          "fr": "Activer l'oscillation verticale",
+          "it": "Abilita oscillazione verticale",
+          "no": "Aktiver vertikal oscillasjon",
+          "sv": "Aktivera vertikal oscillation",
+          "pl": "Włącz oscylację pionową",
+          "ru": "Включить вертикальное колебание",
+          "ko": "수직 진동 활성화"
+        },
+        "titleFormatted": {
+          "en": "Enable Vertical Swing",
+          "nl": "Verticale oscillatie inschakelen",
+          "da": "Aktivér lodret oscillation",
+          "de": "Vertikale Oszillation aktivieren",
+          "es": "Activar oscilación vertical",
+          "fr": "Activer l'oscillation verticale",
+          "it": "Abilita oscillazione verticale",
+          "no": "Aktiver vertikal oscillasjon",
+          "sv": "Aktivera vertikal oscillation",
+          "pl": "Włącz oscylację pionową",
+          "ru": "Включить вертикальное колебание",
+          "ko": "수직 진동 활성화"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "placeholder": {
+              "en": "Select Device"
+            },
+            "filter": "driver_id=fan_dmaker_advanced"
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "id": "verticalSwingOn"
+      },
+      {
+        "title": {
+          "en": "Toggle Vertical Swing",
+          "nl": "Verticale oscillatie omschakelen",
+          "da": "Skift lodret oscillation",
+          "de": "Vertikale Oszillation umschalten",
+          "es": "Alternar oscilación vertical",
+          "fr": "Basculer l'oscillation verticale",
+          "it": "Commuta oscillazione verticale",
+          "no": "Veksle vertikal oscillasjon",
+          "sv": "Växla vertikal oscillation",
+          "pl": "Przełącz oscylację pionową",
+          "ru": "Переключить вертикальное колебание",
+          "ko": "수직 진동 전환"
+        },
+        "titleFormatted": {
+          "en": "Toggle Vertical Swing",
+          "nl": "Verticale oscillatie omschakelen",
+          "da": "Skift lodret oscillation",
+          "de": "Vertikale Oszillation umschalten",
+          "es": "Alternar oscilación vertical",
+          "fr": "Basculer l'oscillation verticale",
+          "it": "Commuta oscillazione verticale",
+          "no": "Veksle vertikal oscillasjon",
+          "sv": "Växla vertikal oscillation",
+          "pl": "Przełącz oscylację pionową",
+          "ru": "Переключить вертикальное колебание",
+          "ko": "수직 진동 전환"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "placeholder": {
+              "en": "Select Device"
+            },
+            "filter": "driver_id=fan_dmaker_advanced"
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "id": "verticalSwingToggle"
+      },
+      {
+        "title": {
           "en": "Pause washing",
           "nl": "Pauzeer wasprogramma"
         },
@@ -10769,6 +11415,118 @@
           "local"
         ],
         "id": "washerStop"
+      },
+      {
+        "title": {
+          "en": "Set my mode / scene",
+          "nl": "Stel mijn modus / scene in"
+        },
+        "titleFormatted": {
+          "en": "Set my mode / scene to [[mode]]",
+          "nl": "Stel mijn modus / scene in op [[mode]]"
+        },
+        "args": [
+          {
+            "name": "mode",
+            "title": {
+              "en": "My mode / scene",
+              "nl": "Mijn modus / scene"
+            },
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "0",
+                "title": {
+                  "en": "Free mode",
+                  "nl": "Vrije modus"
+                }
+              },
+              {
+                "id": "1",
+                "title": {
+                  "en": "My mode 1",
+                  "nl": "Mijn modus 1"
+                }
+              },
+              {
+                "id": "2",
+                "title": {
+                  "en": "My mode 2",
+                  "nl": "Mijn modus 2"
+                }
+              },
+              {
+                "id": "3",
+                "title": {
+                  "en": "My mode 3",
+                  "nl": "Mijn modus 3"
+                }
+              },
+              {
+                "id": "4",
+                "title": {
+                  "en": "My mode 4",
+                  "nl": "Mijn modus 4"
+                }
+              },
+              {
+                "id": "5",
+                "title": {
+                  "en": "Reading",
+                  "nl": "Lezen"
+                }
+              },
+              {
+                "id": "6",
+                "title": {
+                  "en": "Office",
+                  "nl": "Kantoor"
+                }
+              },
+              {
+                "id": "7",
+                "title": {
+                  "en": "Movie",
+                  "nl": "Film"
+                }
+              },
+              {
+                "id": "8",
+                "title": {
+                  "en": "Warm",
+                  "nl": "Warm"
+                }
+              },
+              {
+                "id": "9",
+                "title": {
+                  "en": "Computer",
+                  "nl": "Computer"
+                }
+              },
+              {
+                "id": "10",
+                "title": {
+                  "en": "Blinking",
+                  "nl": "Knipperen"
+                }
+              }
+            ]
+          },
+          {
+            "name": "device",
+            "type": "device",
+            "placeholder": {
+              "en": "Select Xiaomi Monitor Light Bar S1",
+              "nl": "Selecteer Xiaomi Monitor Light Bar S1"
+            },
+            "filter": "driver_id=yeelink_light_lamp22_miot"
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "id": "yeelightLamp22Mode"
       },
       {
         "id": "advanced_room_cleaning",
@@ -17342,6 +18100,7 @@
             "ru": "Уровень вентилятора",
             "ko": "팬 레벨"
           },
+          "units": "",
           "min": 1,
           "max": 4,
           "step": 1
@@ -17768,6 +18527,7 @@
         "oscillating",
         "onoff.ion",
         "fan_speed",
+        "fan_zhimi_percentage_speed",
         "fan_zhimi_angle",
         "fan_zhimi_mode",
         "measure_humidity",
@@ -29276,6 +30036,147 @@
       ]
     },
     {
+      "icon": "/drivers/yeelink_light_lamp22_miot/assets/icon.svg",
+      "pair": [
+        {
+          "id": "start",
+          "navigation": {
+            "next": "pair"
+          }
+        },
+        {
+          "id": "pair"
+        },
+        {
+          "id": "add_device"
+        }
+      ],
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [
+        "lan"
+      ],
+      "name": {
+        "en": "Xiaomi Monitor Light Bar S1 (WiFi)",
+        "nl": "Xiaomi Monitor Light Bar S1 (WiFi)",
+        "da": "Xiaomi Monitor Light Bar S1 (WiFi)",
+        "de": "Xiaomi Monitor Light Bar S1 (WiFi)",
+        "es": "Xiaomi Monitor Light Bar S1 (WiFi)",
+        "fr": "Xiaomi Monitor Light Bar S1 (WiFi)",
+        "it": "Xiaomi Monitor Light Bar S1 (WiFi)",
+        "no": "Xiaomi Monitor Light Bar S1 (WiFi)",
+        "sv": "Xiaomi Monitor Light Bar S1 (WiFi)",
+        "pl": "Xiaomi Monitor Light Bar S1 (WiFi)",
+        "ru": "Xiaomi Monitor Light Bar S1 (WiFi)",
+        "ko": "Xiaomi Monitor Light Bar S1 (WiFi)"
+      },
+      "description": {
+        "en": "Product model: MJGJD02YL",
+        "nl": "Productmodel: MJGJD02YL"
+      },
+      "images": {
+        "large": "drivers/yeelink_light_lamp22_miot/assets/images/large.jpg",
+        "small": "drivers/yeelink_light_lamp22_miot/assets/images/small.jpg"
+      },
+      "class": "light",
+      "capabilities": [
+        "onoff",
+        "dim",
+        "light_temperature",
+        "yeelight_lamp22_mode"
+      ],
+      "capabilitiesOptions": {
+        "dim": {
+          "min": 0.01
+        }
+      },
+      "id": "yeelink_light_lamp22_miot",
+      "settings": [
+        {
+          "type": "group",
+          "label": {
+            "en": "Device Settings",
+            "nl": "Apparaat instellingen",
+            "da": "Enhedsindstillinger",
+            "de": "Geräteeinstellungen",
+            "es": "Configuración del dispositivo",
+            "fr": "Paramètres de l'appareil",
+            "it": "Impostazioni del dispositivo",
+            "no": "Enhetsinnstillinger",
+            "sv": "Enhetsinställningar",
+            "pl": "Ustawienia urządzenia",
+            "ru": "Настройки устройства",
+            "ko": "장치 설정",
+            "ja": "デバイス設定",
+            "zh": "设备设置"
+          },
+          "children": [
+            {
+              "id": "address",
+              "type": "text",
+              "value": "0.0.0.0",
+              "label": {
+                "en": "IP Address",
+                "nl": "IP adres",
+                "da": "IP-adresse",
+                "de": "IP-Adresse",
+                "es": "Dirección IP",
+                "fr": "Adresse IP",
+                "it": "Indirizzo IP",
+                "no": "IP-adresse",
+                "sv": "IP-adress",
+                "pl": "Adres IP",
+                "ru": "IP-адрес",
+                "ko": "IP 주소"
+              }
+            },
+            {
+              "id": "token",
+              "type": "text",
+              "value": "",
+              "label": {
+                "en": "Mi Device Token",
+                "nl": "Mi Apparaat Token",
+                "da": "Mi Enheds Token",
+                "de": "Mi Gerätetoken",
+                "es": "Token del Dispositivo Mi",
+                "fr": "Jeton de l'Appareil Mi",
+                "it": "Token Dispositivo Mi",
+                "no": "Mi Enhet Token",
+                "sv": "Mi Enhetstoken",
+                "pl": "Token Urządzenia Mi",
+                "ru": "Токен Устройства Mi",
+                "ko": "Mi 기기 토큰"
+              }
+            },
+            {
+              "id": "polling",
+              "type": "number",
+              "value": 60,
+              "attr": {
+                "min": 5,
+                "max": 3600
+              },
+              "label": {
+                "en": "Polling rate (seconds)",
+                "nl": "Pollingfrequentie (seconden)"
+              }
+            },
+            {
+              "id": "polling_info",
+              "type": "label",
+              "label": {
+                "en": "External changes, such as using the Xiaomi app or the physical knob, are detected after the next polling interval.",
+                "nl": "Externe wijzigingen, zoals via de Xiaomi-app of de fysieke knop, worden na het volgende polling-interval gedetecteerd."
+              },
+              "value": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
       "icon": "/drivers/zhimi-fan/assets/icon.svg",
       "pair": [
         {
@@ -30851,6 +31752,74 @@
       "setable": true,
       "icon": "/assets/icons/fanlevel.svg"
     },
+    "fan_dmaker_vertical_angle": {
+      "type": "enum",
+      "title": {
+        "en": "Vertical Swing Angle",
+        "nl": "Verticale draaihoek",
+        "da": "Lodret svingvinkel",
+        "de": "Vertikaler Schwenkwinkel",
+        "es": "Ángulo de giro vertical",
+        "fr": "Angle de balancement vertical",
+        "it": "Angolo di oscillazione verticale",
+        "no": "Vertikal svingvinkel",
+        "sv": "Vertikal svängvinkel",
+        "pl": "Pionowy kąt huśtania",
+        "ru": "Угол вертикального поворота",
+        "ko": "수직 스윙 각도"
+      },
+      "values": [
+        {
+          "id": "30",
+          "title": {
+            "en": "30°"
+          }
+        },
+        {
+          "id": "60",
+          "title": {
+            "en": "60°"
+          }
+        },
+        {
+          "id": "90",
+          "title": {
+            "en": "90°"
+          }
+        },
+        {
+          "id": "100",
+          "title": {
+            "en": "100°"
+          }
+        }
+      ],
+      "getable": true,
+      "setable": true,
+      "icon": "/assets/icons/oscillation-vertical.svg"
+    },
+    "fan_dmaker_vertical_swing": {
+      "type": "boolean",
+      "title": {
+        "en": "Vertical Swing",
+        "nl": "Verticale oscillatie",
+        "da": "Lodret oscillation",
+        "de": "Vertikale Oszillation",
+        "es": "Oscilación vertical",
+        "fr": "Oscillation verticale",
+        "it": "Oscillazione verticale",
+        "no": "Vertikal oscillasjon",
+        "sv": "Vertikal oscillation",
+        "pl": "Oscylacja pionowa",
+        "ru": "Вертикальное колебание",
+        "ko": "수직 진동"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "toggle",
+      "insights": false,
+      "icon": "/assets/icons/oscillation-vertical.svg"
+    },
     "fan_zhimi_angle": {
       "type": "enum",
       "title": {
@@ -31029,6 +31998,32 @@
       ],
       "getable": true,
       "setable": true,
+      "icon": "/assets/icons/fanlevel.svg"
+    },
+    "fan_zhimi_percentage_speed": {
+      "type": "number",
+      "title": {
+        "en": "Fan Speed (%)",
+        "nl": "Ventilatorsnelheid (%)",
+        "da": "Ventilatorhastighed (%)",
+        "de": "Lüftergeschwindigkeit (%)",
+        "es": "Velocidad del ventilador (%)",
+        "fr": "Vitesse du ventilateur (%)",
+        "it": "Velocità ventola (%)",
+        "no": "Viftehastighet (%)",
+        "sv": "Fläkthastighet (%)",
+        "pl": "Prędkość wentylatora (%)",
+        "ru": "Скорость вентилятора (%)",
+        "ko": "팬 속도 (%)"
+      },
+      "getable": true,
+      "setable": true,
+      "min": 1,
+      "max": 100,
+      "step": 1,
+      "units": {
+        "en": "%"
+      },
       "icon": "/assets/icons/fanlevel.svg"
     },
     "heater_zhimi_heater_target_temperature": {
@@ -34211,6 +35206,96 @@
             "pl": "Przeplyw",
             "ru": "Поток",
             "ko": "흐름"
+          }
+        }
+      ],
+      "icon": "/assets/icons/airpurifier-mode.svg"
+    },
+    "yeelight_lamp22_mode": {
+      "type": "enum",
+      "title": {
+        "en": "My modes / scenes",
+        "nl": "Mijn modi / scenes"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "picker",
+      "values": [
+        {
+          "id": "0",
+          "title": {
+            "en": "Free mode",
+            "nl": "Vrije modus"
+          }
+        },
+        {
+          "id": "1",
+          "title": {
+            "en": "My mode 1",
+            "nl": "Mijn modus 1"
+          }
+        },
+        {
+          "id": "2",
+          "title": {
+            "en": "My mode 2",
+            "nl": "Mijn modus 2"
+          }
+        },
+        {
+          "id": "3",
+          "title": {
+            "en": "My mode 3",
+            "nl": "Mijn modus 3"
+          }
+        },
+        {
+          "id": "4",
+          "title": {
+            "en": "My mode 4",
+            "nl": "Mijn modus 4"
+          }
+        },
+        {
+          "id": "5",
+          "title": {
+            "en": "Reading",
+            "nl": "Lezen"
+          }
+        },
+        {
+          "id": "6",
+          "title": {
+            "en": "Office",
+            "nl": "Kantoor"
+          }
+        },
+        {
+          "id": "7",
+          "title": {
+            "en": "Movie",
+            "nl": "Film"
+          }
+        },
+        {
+          "id": "8",
+          "title": {
+            "en": "Warm",
+            "nl": "Warm"
+          }
+        },
+        {
+          "id": "9",
+          "title": {
+            "en": "Computer",
+            "nl": "Computer"
+          }
+        },
+        {
+          "id": "10",
+          "title": {
+            "en": "Blinking",
+            "nl": "Knipperen"
           }
         }
       ],

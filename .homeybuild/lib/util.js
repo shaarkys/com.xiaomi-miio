@@ -101,6 +101,8 @@ class Util {
     'zhimi.fan.za4': 'Smartmi Standing Fan 2S',
     'zhimi.fan.za5': 'Smartmi Standing Fan 3',
     "xiaomi.fan.p45": "Xiaomi Smart Tower Fan 2",
+    'xiaomi.fan.p70': 'Xiaomi Smart Desktop Air Circulation Fan',
+    'xiaomi.fan.p76': 'Xiaomi Smart Standing Air Circulation Fan',
     'xiaomi.fan.p85': 'Mijia Smart Standing Fan Pro Slim',
 
     'zhimi.heater.mc2': 'Smart Space Heater S',
@@ -182,6 +184,7 @@ class Util {
     'xiaomi.vacuum.d101': 'Xiaomi Robot Vacuum H40',
     'xiaomi.vacuum.d101gl': 'Xiaomi Robot Vacuum H40 (CN)',
     'xiaomi.vacuum.ov51gl': 'Xiaomi Robot Vacuum H40 (EU)',
+    'xiaomi.vacuum.ov71gl': 'Xiaomi Robot Vacuum S40 Pro',
     'xiaomi.vacuum.b108gl': 'Xiaomi Robot Vacuum S20+',
     'xiaomi.vacuum.c108': 'Xiaomi Robot Vacuum E5',
 
@@ -224,6 +227,7 @@ class Util {
     'philips.light.downlight': 'Philips Down Light',
     'philips.light.strip5': 'Philips / Xiaomi Smart Lightstrip Pro',
     'yeelink.light.ceil43': 'Yeelight Arwen Ceiling Light D',
+    'yeelink.light.lamp22': 'Xiaomi Monitor Light Bar S1',
 
     'lumi.gateway.v2': 'Xiaomi Gateway v1',
     'lumi.gateway.v3': 'Xiaomi Gateway v2',
