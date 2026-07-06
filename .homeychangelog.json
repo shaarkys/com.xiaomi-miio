@@ -496,5 +496,8 @@
   },
   "3.4.87": {
     "en": "Add Xiaomi Robot Vacuum S40 Pro support and p70/p76 fan vertical swing controls"
+  },
+  "3.4.88": {
+    "en": "Added Xiaomi Smart Standing Air Circulation Fan xiaomi.fan.p76 support and vertical swing controls for compatible p70/p76 fans. Credits to @N-Bark. Re-submitted Robot Vacuum S40 Pro implementation."
   }
 }
