@@ -2890,7 +2890,7 @@
             "placeholder": {
               "en": "Select Device"
             },
-            "filter": "driver_id=fan_dmaker_advanced&capabilities=fan_dmaker_vertical_swing"
+            "filter": "driver_id=fan_dmaker_advanced"
           }
         ],
         "platforms": [
@@ -9041,7 +9041,7 @@
             "placeholder": {
               "en": "Select Device"
             },
-            "filter": "driver_id=fan_dmaker_advanced&capabilities=fan_dmaker_vertical_swing"
+            "filter": "driver_id=fan_dmaker_advanced"
           }
         ],
         "platforms": [
@@ -9133,7 +9133,7 @@
             "placeholder": {
               "en": "Select Device"
             },
-            "filter": "driver_id=fan_dmaker_advanced&capabilities=fan_dmaker_vertical_swing"
+            "filter": "driver_id=fan_dmaker_advanced"
           }
         ],
         "platforms": [
@@ -9398,7 +9398,7 @@
             "placeholder": {
               "en": "Select Device"
             },
-            "filter": "driver_id=fan_dmaker_advanced&capabilities=fan_dmaker_vertical_angle"
+            "filter": "driver_id=fan_dmaker_advanced"
           }
         ],
         "platforms": [
@@ -11009,7 +11009,7 @@
             "placeholder": {
               "en": "Select Device"
             },
-            "filter": "driver_id=fan_dmaker_advanced&capabilities=fan_dmaker_vertical_swing"
+            "filter": "driver_id=fan_dmaker_advanced"
           }
         ],
         "platforms": [
@@ -11053,7 +11053,7 @@
             "placeholder": {
               "en": "Select Device"
             },
-            "filter": "driver_id=fan_dmaker_advanced&capabilities=fan_dmaker_vertical_swing"
+            "filter": "driver_id=fan_dmaker_advanced"
           }
         ],
         "platforms": [
@@ -11097,7 +11097,7 @@
             "placeholder": {
               "en": "Select Device"
             },
-            "filter": "driver_id=fan_dmaker_advanced&capabilities=fan_dmaker_vertical_swing"
+            "filter": "driver_id=fan_dmaker_advanced"
           }
         ],
         "platforms": [
@@ -31270,19 +31270,27 @@
       "values": [
         {
           "id": "30",
-          "title": "30°"
+          "title": {
+            "en": "30°"
+          }
         },
         {
           "id": "60",
-          "title": "60°"
+          "title": {
+            "en": "60°"
+          }
         },
         {
           "id": "90",
-          "title": "90°"
+          "title": {
+            "en": "90°"
+          }
         },
         {
           "id": "100",
-          "title": "100°"
+          "title": {
+            "en": "100°"
+          }
         }
       ],
       "getable": true,
