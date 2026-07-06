@@ -436,53 +436,10 @@ class AdvancedDmakerFanMiotDevice extends Device {
                     }
                 });
 
-                // FLOW CARDS FOR VERTICAL SWING (only on models that expose it)
-                this.homey.flow.getDeviceTriggerCard('verticalSwingTurnedOn');
-                this.homey.flow.getDeviceTriggerCard('verticalSwingTurnedOff');
-
-                this.homey.flow.getActionCard('verticalSwingOn').registerRunListener(async (args, state) => {
-                    return args.device.triggerCapabilityListener('fan_dmaker_vertical_swing', true);
-                });
-
-                this.homey.flow.getActionCard('verticalSwingOff').registerRunListener(async (args, state) => {
-                    return args.device.triggerCapabilityListener('fan_dmaker_vertical_swing', false);
-                });
-
-                this.homey.flow.getActionCard('verticalSwingToggle').registerRunListener(async (args, state) => {
-                    return args.device.triggerCapabilityListener('fan_dmaker_vertical_swing', !args.device.getCapabilityValue('fan_dmaker_vertical_swing'));
-                });
-
-                this.homey.flow.getActionCard('setVerticalAngle').registerRunListener(async (args, state) => {
-                    return args.device.triggerCapabilityListener('fan_dmaker_vertical_angle', args.angle);
-                });
-
-                this.homey.flow.getConditionCard('verticalSwingIsOn').registerRunListener(async (args, state) => {
-                    return args.device.getCapabilityValue('fan_dmaker_vertical_swing') === true;
-                });
             }
 
             // FLOW TRIGGER CARDS
             this.homey.flow.getDeviceTriggerCard('triggerModeChanged');
-
-            // Register flow action for rotating left by one step
-            this.homey.flow.getActionCard('rotateLeftStep').registerRunListener(async (args, state) => {
-                return args.device.rotateFanHead('left');
-            });
-
-            // Register flow action for rotating right by one step
-            this.homey.flow.getActionCard('rotateRightStep').registerRunListener(async (args, state) => {
-                return args.device.rotateFanHead('right');
-            });
-
-            // Register flow action for rotating up by one step
-            this.homey.flow.getActionCard('rotateUpStep').registerRunListener(async (args, state) => {
-                return args.device.rotateFanHead('up');
-            });
-
-            // Register flow action for rotating down by one step
-            this.homey.flow.getActionCard('rotateDownStep').registerRunListener(async (args, state) => {
-                return args.device.rotateFanHead('down');
-            });
 
             // LISTENERS FOR UPDATING CAPABILITIES
             this.registerCapabilityListener('onoff', async (value) => {

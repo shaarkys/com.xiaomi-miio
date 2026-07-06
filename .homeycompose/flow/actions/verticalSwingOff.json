@@ -32,7 +32,7 @@
       "name": "device",
       "type": "device",
       "placeholder": { "en": "Select Device" },
-      "filter": "driver_id=fan_dmaker_advanced&capabilities=fan_dmaker_vertical_swing"
+      "filter": "driver_id=fan_dmaker_advanced"
     }
   ],
   "platforms": ["local"]
