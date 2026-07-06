@@ -493,5 +493,8 @@
   },
   "3.4.86": {
     "en": "Add percentage speed for Smartmi Fan 3"
+  },
+  "3.4.87": {
+    "en": "Add Xiaomi Robot Vacuum S40 Pro support"
   }
 }

@@ -11,6 +11,7 @@ const Util = require('../../lib/util.js');
 // https://home.miot-spec.com/spec/xiaomi.vacuum.c102gl // Xiaomi Robot Vacuum X20 / X20+
 // https://home.miot-spec.com/spec/xiaomi.vacuum.b108gl // Xiaomi Robot Vacuum S20+
 // https://home.miot-spec.com/spec/xiaomi.vacuum.ov51gl // Xiaomi Robot Vacuum H40
+// https://home.miot-spec.com/spec/xiaomi.vacuum.ov71gl // Xiaomi Robot Vacuum S40 Pro
 // https://miot-spec.org/miot-spec-v2/instance?type=urn:miot-spec-v2:device:vacuum:0000A006:xiaomi-c108:1 // Xiaomi Robot Vacuum E5
 /** ------------------------------------------------------------------
  *  Shared constants (hoisted)
@@ -110,6 +111,7 @@ const mapping = {
     'xiaomi.vacuum.d101': 'properties_d101',
     'xiaomi.vacuum.d101gl': 'properties_d101',
     'xiaomi.vacuum.ov51gl': 'properties_d101',
+    'xiaomi.vacuum.ov71gl': 'properties_d101',
     'xiaomi.vacuum.c102gl': 'properties_c102gl', // X20 / X20+ specific minimal + room action change
     'xiaomi.vacuum.b108gl': 'properties_b108gl',
     'xiaomi.vacuum.c108': 'properties_c108'
