@@ -499,5 +499,8 @@
   },
   "3.4.88": {
     "en": "Added Xiaomi Smart Standing Air Circulation Fan xiaomi.fan.p76 support and vertical swing controls for compatible p70/p76 fans. Credits to @N-Bark. Re-submitted Robot Vacuum S40 Pro implementation."
+  },
+  "3.4.89": {
+    "en": "Added Xiaomi Monitor Light Bar S1 (yeelink.light.lamp22) support with mode/scene Flow cards, contributed by @LieuweJ."
   }
 }
