@@ -1,0 +1,39 @@
+{
+  "name": {
+    "en": "Xiaomi Monitor Light Bar S1 (WiFi)",
+    "nl": "Xiaomi Monitor Light Bar S1 (WiFi)",
+    "da": "Xiaomi Monitor Light Bar S1 (WiFi)",
+    "de": "Xiaomi Monitor Light Bar S1 (WiFi)",
+    "es": "Xiaomi Monitor Light Bar S1 (WiFi)",
+    "fr": "Xiaomi Monitor Light Bar S1 (WiFi)",
+    "it": "Xiaomi Monitor Light Bar S1 (WiFi)",
+    "no": "Xiaomi Monitor Light Bar S1 (WiFi)",
+    "sv": "Xiaomi Monitor Light Bar S1 (WiFi)",
+    "pl": "Xiaomi Monitor Light Bar S1 (WiFi)",
+    "ru": "Xiaomi Monitor Light Bar S1 (WiFi)",
+    "ko": "Xiaomi Monitor Light Bar S1 (WiFi)"
+  },
+  "description": {
+    "en": "Product model: MJGJD02YL",
+    "nl": "Productmodel: MJGJD02YL"
+  },
+  "images": {
+    "large": "drivers/yeelink_light_lamp22_miot/assets/images/large.jpg",
+    "small": "drivers/yeelink_light_lamp22_miot/assets/images/small.jpg"
+  },
+  "class": "light",
+  "$extends": [
+    "defaults"
+  ],
+  "capabilities": [
+    "onoff",
+    "dim",
+    "light_temperature",
+    "yeelight_lamp22_mode"
+  ],
+  "capabilitiesOptions": {
+    "dim": {
+      "min": 0.01
+    }
+  }
+}

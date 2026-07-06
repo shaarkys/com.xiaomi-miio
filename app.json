@@ -2449,6 +2449,142 @@
         "id": "washerStarted"
       },
       {
+        "title": {
+          "en": "My mode / scene changed to",
+          "nl": "Mijn modus / scene gewijzigd naar"
+        },
+        "titleFormatted": {
+          "en": "My mode / scene changed to [[mode]]",
+          "nl": "Mijn modus / scene gewijzigd naar [[mode]]"
+        },
+        "hint": {
+          "en": "External changes are detected after the next polling interval. The polling interval can be adjusted in the device settings.",
+          "nl": "Externe wijzigingen worden na het volgende polling-interval gedetecteerd. Het polling-interval kan in de apparaatinstellingen worden aangepast."
+        },
+        "tokens": [
+          {
+            "name": "mode",
+            "type": "string",
+            "title": {
+              "en": "my mode / scene",
+              "nl": "mijn modus / scene"
+            },
+            "example": "Reading"
+          },
+          {
+            "name": "previous_mode",
+            "type": "string",
+            "title": {
+              "en": "previous my mode / scene",
+              "nl": "vorige mijn modus / scene"
+            },
+            "example": "My mode 1"
+          }
+        ],
+        "args": [
+          {
+            "name": "mode",
+            "title": {
+              "en": "My mode / scene",
+              "nl": "Mijn modus / scene"
+            },
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "0",
+                "title": {
+                  "en": "Free mode",
+                  "nl": "Vrije modus"
+                }
+              },
+              {
+                "id": "1",
+                "title": {
+                  "en": "My mode 1",
+                  "nl": "Mijn modus 1"
+                }
+              },
+              {
+                "id": "2",
+                "title": {
+                  "en": "My mode 2",
+                  "nl": "Mijn modus 2"
+                }
+              },
+              {
+                "id": "3",
+                "title": {
+                  "en": "My mode 3",
+                  "nl": "Mijn modus 3"
+                }
+              },
+              {
+                "id": "4",
+                "title": {
+                  "en": "My mode 4",
+                  "nl": "Mijn modus 4"
+                }
+              },
+              {
+                "id": "5",
+                "title": {
+                  "en": "Reading",
+                  "nl": "Lezen"
+                }
+              },
+              {
+                "id": "6",
+                "title": {
+                  "en": "Office",
+                  "nl": "Kantoor"
+                }
+              },
+              {
+                "id": "7",
+                "title": {
+                  "en": "Movie",
+                  "nl": "Film"
+                }
+              },
+              {
+                "id": "8",
+                "title": {
+                  "en": "Warm",
+                  "nl": "Warm"
+                }
+              },
+              {
+                "id": "9",
+                "title": {
+                  "en": "Computer",
+                  "nl": "Computer"
+                }
+              },
+              {
+                "id": "10",
+                "title": {
+                  "en": "Blinking",
+                  "nl": "Knipperen"
+                }
+              }
+            ]
+          },
+          {
+            "name": "device",
+            "type": "device",
+            "placeholder": {
+              "en": "Select Xiaomi Monitor Light Bar S1",
+              "nl": "Selecteer Xiaomi Monitor Light Bar S1"
+            },
+            "filter": "driver_id=yeelink_light_lamp22_miot"
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "id": "yeelightLamp22ModeChanged"
+      },
+      {
         "id": "vacuum_on_error",
         "title": {
           "en": "The vacuum encountered an error",
@@ -2897,6 +3033,118 @@
           "local"
         ],
         "id": "verticalSwingIsOn"
+      },
+      {
+        "title": {
+          "en": "My mode / scene is",
+          "nl": "Mijn modus / scene is"
+        },
+        "titleFormatted": {
+          "en": "My mode / scene is [[mode]]",
+          "nl": "Mijn modus / scene is [[mode]]"
+        },
+        "args": [
+          {
+            "name": "mode",
+            "title": {
+              "en": "My mode / scene",
+              "nl": "Mijn modus / scene"
+            },
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "0",
+                "title": {
+                  "en": "Free mode",
+                  "nl": "Vrije modus"
+                }
+              },
+              {
+                "id": "1",
+                "title": {
+                  "en": "My mode 1",
+                  "nl": "Mijn modus 1"
+                }
+              },
+              {
+                "id": "2",
+                "title": {
+                  "en": "My mode 2",
+                  "nl": "Mijn modus 2"
+                }
+              },
+              {
+                "id": "3",
+                "title": {
+                  "en": "My mode 3",
+                  "nl": "Mijn modus 3"
+                }
+              },
+              {
+                "id": "4",
+                "title": {
+                  "en": "My mode 4",
+                  "nl": "Mijn modus 4"
+                }
+              },
+              {
+                "id": "5",
+                "title": {
+                  "en": "Reading",
+                  "nl": "Lezen"
+                }
+              },
+              {
+                "id": "6",
+                "title": {
+                  "en": "Office",
+                  "nl": "Kantoor"
+                }
+              },
+              {
+                "id": "7",
+                "title": {
+                  "en": "Movie",
+                  "nl": "Film"
+                }
+              },
+              {
+                "id": "8",
+                "title": {
+                  "en": "Warm",
+                  "nl": "Warm"
+                }
+              },
+              {
+                "id": "9",
+                "title": {
+                  "en": "Computer",
+                  "nl": "Computer"
+                }
+              },
+              {
+                "id": "10",
+                "title": {
+                  "en": "Blinking",
+                  "nl": "Knipperen"
+                }
+              }
+            ]
+          },
+          {
+            "name": "device",
+            "type": "device",
+            "placeholder": {
+              "en": "Select Xiaomi Monitor Light Bar S1",
+              "nl": "Selecteer Xiaomi Monitor Light Bar S1"
+            },
+            "filter": "driver_id=yeelink_light_lamp22_miot"
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "id": "yeelightLamp22ModeIs"
       }
     ],
     "actions": [
@@ -11167,6 +11415,118 @@
           "local"
         ],
         "id": "washerStop"
+      },
+      {
+        "title": {
+          "en": "Set my mode / scene",
+          "nl": "Stel mijn modus / scene in"
+        },
+        "titleFormatted": {
+          "en": "Set my mode / scene to [[mode]]",
+          "nl": "Stel mijn modus / scene in op [[mode]]"
+        },
+        "args": [
+          {
+            "name": "mode",
+            "title": {
+              "en": "My mode / scene",
+              "nl": "Mijn modus / scene"
+            },
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "0",
+                "title": {
+                  "en": "Free mode",
+                  "nl": "Vrije modus"
+                }
+              },
+              {
+                "id": "1",
+                "title": {
+                  "en": "My mode 1",
+                  "nl": "Mijn modus 1"
+                }
+              },
+              {
+                "id": "2",
+                "title": {
+                  "en": "My mode 2",
+                  "nl": "Mijn modus 2"
+                }
+              },
+              {
+                "id": "3",
+                "title": {
+                  "en": "My mode 3",
+                  "nl": "Mijn modus 3"
+                }
+              },
+              {
+                "id": "4",
+                "title": {
+                  "en": "My mode 4",
+                  "nl": "Mijn modus 4"
+                }
+              },
+              {
+                "id": "5",
+                "title": {
+                  "en": "Reading",
+                  "nl": "Lezen"
+                }
+              },
+              {
+                "id": "6",
+                "title": {
+                  "en": "Office",
+                  "nl": "Kantoor"
+                }
+              },
+              {
+                "id": "7",
+                "title": {
+                  "en": "Movie",
+                  "nl": "Film"
+                }
+              },
+              {
+                "id": "8",
+                "title": {
+                  "en": "Warm",
+                  "nl": "Warm"
+                }
+              },
+              {
+                "id": "9",
+                "title": {
+                  "en": "Computer",
+                  "nl": "Computer"
+                }
+              },
+              {
+                "id": "10",
+                "title": {
+                  "en": "Blinking",
+                  "nl": "Knipperen"
+                }
+              }
+            ]
+          },
+          {
+            "name": "device",
+            "type": "device",
+            "placeholder": {
+              "en": "Select Xiaomi Monitor Light Bar S1",
+              "nl": "Selecteer Xiaomi Monitor Light Bar S1"
+            },
+            "filter": "driver_id=yeelink_light_lamp22_miot"
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "id": "yeelightLamp22Mode"
       },
       {
         "id": "advanced_room_cleaning",
@@ -29676,6 +30036,147 @@
       ]
     },
     {
+      "icon": "/drivers/yeelink_light_lamp22_miot/assets/icon.svg",
+      "pair": [
+        {
+          "id": "start",
+          "navigation": {
+            "next": "pair"
+          }
+        },
+        {
+          "id": "pair"
+        },
+        {
+          "id": "add_device"
+        }
+      ],
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [
+        "lan"
+      ],
+      "name": {
+        "en": "Xiaomi Monitor Light Bar S1 (WiFi)",
+        "nl": "Xiaomi Monitor Light Bar S1 (WiFi)",
+        "da": "Xiaomi Monitor Light Bar S1 (WiFi)",
+        "de": "Xiaomi Monitor Light Bar S1 (WiFi)",
+        "es": "Xiaomi Monitor Light Bar S1 (WiFi)",
+        "fr": "Xiaomi Monitor Light Bar S1 (WiFi)",
+        "it": "Xiaomi Monitor Light Bar S1 (WiFi)",
+        "no": "Xiaomi Monitor Light Bar S1 (WiFi)",
+        "sv": "Xiaomi Monitor Light Bar S1 (WiFi)",
+        "pl": "Xiaomi Monitor Light Bar S1 (WiFi)",
+        "ru": "Xiaomi Monitor Light Bar S1 (WiFi)",
+        "ko": "Xiaomi Monitor Light Bar S1 (WiFi)"
+      },
+      "description": {
+        "en": "Product model: MJGJD02YL",
+        "nl": "Productmodel: MJGJD02YL"
+      },
+      "images": {
+        "large": "drivers/yeelink_light_lamp22_miot/assets/images/large.jpg",
+        "small": "drivers/yeelink_light_lamp22_miot/assets/images/small.jpg"
+      },
+      "class": "light",
+      "capabilities": [
+        "onoff",
+        "dim",
+        "light_temperature",
+        "yeelight_lamp22_mode"
+      ],
+      "capabilitiesOptions": {
+        "dim": {
+          "min": 0.01
+        }
+      },
+      "id": "yeelink_light_lamp22_miot",
+      "settings": [
+        {
+          "type": "group",
+          "label": {
+            "en": "Device Settings",
+            "nl": "Apparaat instellingen",
+            "da": "Enhedsindstillinger",
+            "de": "Geräteeinstellungen",
+            "es": "Configuración del dispositivo",
+            "fr": "Paramètres de l'appareil",
+            "it": "Impostazioni del dispositivo",
+            "no": "Enhetsinnstillinger",
+            "sv": "Enhetsinställningar",
+            "pl": "Ustawienia urządzenia",
+            "ru": "Настройки устройства",
+            "ko": "장치 설정",
+            "ja": "デバイス設定",
+            "zh": "设备设置"
+          },
+          "children": [
+            {
+              "id": "address",
+              "type": "text",
+              "value": "0.0.0.0",
+              "label": {
+                "en": "IP Address",
+                "nl": "IP adres",
+                "da": "IP-adresse",
+                "de": "IP-Adresse",
+                "es": "Dirección IP",
+                "fr": "Adresse IP",
+                "it": "Indirizzo IP",
+                "no": "IP-adresse",
+                "sv": "IP-adress",
+                "pl": "Adres IP",
+                "ru": "IP-адрес",
+                "ko": "IP 주소"
+              }
+            },
+            {
+              "id": "token",
+              "type": "text",
+              "value": "",
+              "label": {
+                "en": "Mi Device Token",
+                "nl": "Mi Apparaat Token",
+                "da": "Mi Enheds Token",
+                "de": "Mi Gerätetoken",
+                "es": "Token del Dispositivo Mi",
+                "fr": "Jeton de l'Appareil Mi",
+                "it": "Token Dispositivo Mi",
+                "no": "Mi Enhet Token",
+                "sv": "Mi Enhetstoken",
+                "pl": "Token Urządzenia Mi",
+                "ru": "Токен Устройства Mi",
+                "ko": "Mi 기기 토큰"
+              }
+            },
+            {
+              "id": "polling",
+              "type": "number",
+              "value": 60,
+              "attr": {
+                "min": 5,
+                "max": 3600
+              },
+              "label": {
+                "en": "Polling rate (seconds)",
+                "nl": "Pollingfrequentie (seconden)"
+              }
+            },
+            {
+              "id": "polling_info",
+              "type": "label",
+              "label": {
+                "en": "External changes, such as using the Xiaomi app or the physical knob, are detected after the next polling interval.",
+                "nl": "Externe wijzigingen, zoals via de Xiaomi-app of de fysieke knop, worden na het volgende polling-interval gedetecteerd."
+              },
+              "value": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
       "icon": "/drivers/zhimi-fan/assets/icon.svg",
       "pair": [
         {
@@ -34705,6 +35206,96 @@
             "pl": "Przeplyw",
             "ru": "Поток",
             "ko": "흐름"
+          }
+        }
+      ],
+      "icon": "/assets/icons/airpurifier-mode.svg"
+    },
+    "yeelight_lamp22_mode": {
+      "type": "enum",
+      "title": {
+        "en": "My modes / scenes",
+        "nl": "Mijn modi / scenes"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "picker",
+      "values": [
+        {
+          "id": "0",
+          "title": {
+            "en": "Free mode",
+            "nl": "Vrije modus"
+          }
+        },
+        {
+          "id": "1",
+          "title": {
+            "en": "My mode 1",
+            "nl": "Mijn modus 1"
+          }
+        },
+        {
+          "id": "2",
+          "title": {
+            "en": "My mode 2",
+            "nl": "Mijn modus 2"
+          }
+        },
+        {
+          "id": "3",
+          "title": {
+            "en": "My mode 3",
+            "nl": "Mijn modus 3"
+          }
+        },
+        {
+          "id": "4",
+          "title": {
+            "en": "My mode 4",
+            "nl": "Mijn modus 4"
+          }
+        },
+        {
+          "id": "5",
+          "title": {
+            "en": "Reading",
+            "nl": "Lezen"
+          }
+        },
+        {
+          "id": "6",
+          "title": {
+            "en": "Office",
+            "nl": "Kantoor"
+          }
+        },
+        {
+          "id": "7",
+          "title": {
+            "en": "Movie",
+            "nl": "Film"
+          }
+        },
+        {
+          "id": "8",
+          "title": {
+            "en": "Warm",
+            "nl": "Warm"
+          }
+        },
+        {
+          "id": "9",
+          "title": {
+            "en": "Computer",
+            "nl": "Computer"
+          }
+        },
+        {
+          "id": "10",
+          "title": {
+            "en": "Blinking",
+            "nl": "Knipperen"
           }
         }
       ],

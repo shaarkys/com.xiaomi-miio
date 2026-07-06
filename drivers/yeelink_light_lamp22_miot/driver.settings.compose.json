@@ -1,0 +1,53 @@
+[
+  {
+    "type": "group",
+    "label": {
+      "en": "Device Settings",
+      "nl": "Apparaat instellingen",
+      "da": "Enhedsindstillinger",
+      "de": "Geräteeinstellungen",
+      "es": "Configuración del dispositivo",
+      "fr": "Paramètres de l'appareil",
+      "it": "Impostazioni del dispositivo",
+      "no": "Enhetsinnstillinger",
+      "sv": "Enhetsinställningar",
+      "pl": "Ustawienia urządzenia",
+      "ru": "Настройки устройства",
+      "ko": "장치 설정",
+      "ja": "デバイス設定",
+      "zh": "设备设置"
+    },
+    "children": [
+      {
+        "id": "address",
+        "$extends": "address"
+      },
+      {
+        "id": "token",
+        "$extends": "token"
+      },
+      {
+        "id": "polling",
+        "type": "number",
+        "value": 60,
+        "attr": {
+          "min": 5,
+          "max": 3600
+        },
+        "label": {
+          "en": "Polling rate (seconds)",
+          "nl": "Pollingfrequentie (seconden)"
+        }
+      },
+      {
+        "id": "polling_info",
+        "type": "label",
+        "label": {
+          "en": "External changes, such as using the Xiaomi app or the physical knob, are detected after the next polling interval.",
+          "nl": "Externe wijzigingen, zoals via de Xiaomi-app of de fysieke knop, worden na het volgende polling-interval gedetecteerd."
+        },
+        "value": ""
+      }
+    ]
+  }
+]
