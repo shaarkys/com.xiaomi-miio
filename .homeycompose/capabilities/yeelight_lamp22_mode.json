@@ -11,8 +11,8 @@
     {
       "id": "0",
       "title": {
-        "en": "Free mode",
-        "nl": "Vrije modus"
+        "en": "No mode",
+        "nl": "Geen modus"
       }
     },
     {
@@ -44,13 +44,6 @@
       }
     },
     {
-      "id": "5",
-      "title": {
-        "en": "Reading",
-        "nl": "Lezen"
-      }
-    },
-    {
       "id": "6",
       "title": {
         "en": "Office",
@@ -58,17 +51,17 @@
       }
     },
     {
-      "id": "7",
+      "id": "5",
       "title": {
-        "en": "Movie",
-        "nl": "Film"
+        "en": "Reading",
+        "nl": "Lezen"
       }
     },
     {
-      "id": "8",
+      "id": "7",
       "title": {
-        "en": "Warm",
-        "nl": "Warm"
+        "en": "Leisure",
+        "nl": "Ontspanning"
       }
     },
     {
@@ -76,6 +69,13 @@
       "title": {
         "en": "Computer",
         "nl": "Computer"
+      }
+    },
+    {
+      "id": "8",
+      "title": {
+        "en": "Warm",
+        "nl": "Warm"
       }
     },
     {
