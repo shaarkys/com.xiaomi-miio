@@ -54,6 +54,10 @@ $(function() {
   .mi-device-test, .mi-device-error {
 		display: none;
 	}
+  .shelly-info {
+    margin-top: 10px;
+    font-size: 12px;
+  }
   .buttons, .messages {
     padding-top: 14px;
   }
@@ -81,13 +85,15 @@ $(function() {
     <input type="text" class="form-control" id="address" placeholder="192.168.0.100">
   </div>
   <div class="form-group">
-    <label for="token" data-i18n="pair.token">Token (32 characters of numbers and letters)</label>
-    <input type="text" class="form-control" id="token" pattern="[a-zA-Z0-9]{32}" placeholder="FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF">
+  	<label for="token" data-i18n="pair.token">Token (32 characters of numbers and letters)</label>
+  	<input type="text" class="form-control" id="token" pattern="[a-zA-Z0-9]{32}" placeholder="FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF">
   </div>
   <div class="form-group">
     <label for="polling" data-i18n="pair.polling">Polling Frequency</label>
     <input type="number" class="form-control" id="polling" min="30" max="3600" placeholder="60">
   </div>
+  <input type="hidden" id="fanspeed" value="">
+  <input type="hidden" id="state" value="">
   <div class="form-group buttons">
     <button id="test-connection" class="button" data-i18n="pair.test">Test Connection</button>
     <button id="connect" class="button" data-i18n="pair.connect" disabled>Connect</button>
