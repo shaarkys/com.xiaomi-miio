@@ -12,14 +12,14 @@ const MODE_CAPABILITY = 'yeelight_lamp22_mode';
 const LEGACY_LIGHT_MODE_CAPABILITY = 'yeelight_lamp22_light_mode';
 const SCENE_MODE_VALUES = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
 const SCENE_MODE_OPTIONS = [
-  { id: '0', title: 'Free mode' },
+  { id: '0', title: 'No scene' },
   { id: '1', title: 'My mode 1' },
   { id: '2', title: 'My mode 2' },
   { id: '3', title: 'My mode 3' },
   { id: '4', title: 'My mode 4' },
   { id: '5', title: 'Reading' },
   { id: '6', title: 'Office' },
-  { id: '7', title: 'Movie' },
+  { id: '7', title: 'Leisure' },
   { id: '8', title: 'Warm' },
   { id: '9', title: 'Computer' },
   { id: '10', title: 'Blinking' }
@@ -63,7 +63,7 @@ class XiaomiMonitorLightBarS1Device extends Device {
       await this.ensureCapability(MODE_CAPABILITY);
 
       this.registerCapabilityListener('onoff', (value) => this.setMiotProperty('power', value));
-      this.registerCapabilityListener(MODE_CAPABILITY, (value) => this.setMiotProperty('scene_mode', Number(value)));
+      this.registerCapabilityListener(MODE_CAPABILITY, (value) => this.onModeCapability(value));
 
       this.registerMultipleCapabilityListener(
         ['dim', 'light_temperature'],
@@ -120,6 +120,15 @@ class XiaomiMonitorLightBarS1Device extends Device {
 
     if (typeof valueObj.light_temperature !== 'undefined') {
       await this.setMiotProperty('color_temperature', this.toMiotColorTemperature(valueObj.light_temperature));
+    }
+  }
+
+  async onModeCapability(value) {
+    const previousValue = this.getCapabilityValue(MODE_CAPABILITY);
+    await this.setMiotProperty('scene_mode', Number(value));
+
+    if (String(previousValue) !== String(value)) {
+      await this.triggerModeChanged(value, previousValue);
     }
   }
 

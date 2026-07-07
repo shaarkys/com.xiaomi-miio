@@ -2457,10 +2457,6 @@
           "en": "My mode / scene changed to [[mode]]",
           "nl": "Mijn modus / scene gewijzigd naar [[mode]]"
         },
-        "hint": {
-          "en": "External changes are detected after the next polling interval. The polling interval can be adjusted in the device settings.",
-          "nl": "Externe wijzigingen worden na het volgende polling-interval gedetecteerd. Het polling-interval kan in de apparaatinstellingen worden aangepast."
-        },
         "tokens": [
           {
             "name": "mode",
@@ -2493,8 +2489,8 @@
               {
                 "id": "0",
                 "title": {
-                  "en": "Free mode",
-                  "nl": "Vrije modus"
+                  "en": "No scene",
+                  "nl": "Geen scene"
                 }
               },
               {
@@ -2526,13 +2522,6 @@
                 }
               },
               {
-                "id": "5",
-                "title": {
-                  "en": "Reading",
-                  "nl": "Lezen"
-                }
-              },
-              {
                 "id": "6",
                 "title": {
                   "en": "Office",
@@ -2540,17 +2529,17 @@
                 }
               },
               {
-                "id": "7",
+                "id": "5",
                 "title": {
-                  "en": "Movie",
-                  "nl": "Film"
+                  "en": "Reading",
+                  "nl": "Lezen"
                 }
               },
               {
-                "id": "8",
+                "id": "7",
                 "title": {
-                  "en": "Warm",
-                  "nl": "Warm"
+                  "en": "Leisure",
+                  "nl": "Ontspanning"
                 }
               },
               {
@@ -2558,6 +2547,13 @@
                 "title": {
                   "en": "Computer",
                   "nl": "Computer"
+                }
+              },
+              {
+                "id": "8",
+                "title": {
+                  "en": "Warm",
+                  "nl": "Warm"
                 }
               },
               {
@@ -3055,8 +3051,8 @@
               {
                 "id": "0",
                 "title": {
-                  "en": "Free mode",
-                  "nl": "Vrije modus"
+                  "en": "No scene",
+                  "nl": "Geen scene"
                 }
               },
               {
@@ -3088,13 +3084,6 @@
                 }
               },
               {
-                "id": "5",
-                "title": {
-                  "en": "Reading",
-                  "nl": "Lezen"
-                }
-              },
-              {
                 "id": "6",
                 "title": {
                   "en": "Office",
@@ -3102,17 +3091,17 @@
                 }
               },
               {
-                "id": "7",
+                "id": "5",
                 "title": {
-                  "en": "Movie",
-                  "nl": "Film"
+                  "en": "Reading",
+                  "nl": "Lezen"
                 }
               },
               {
-                "id": "8",
+                "id": "7",
                 "title": {
-                  "en": "Warm",
-                  "nl": "Warm"
+                  "en": "Leisure",
+                  "nl": "Ontspanning"
                 }
               },
               {
@@ -3120,6 +3109,13 @@
                 "title": {
                   "en": "Computer",
                   "nl": "Computer"
+                }
+              },
+              {
+                "id": "8",
+                "title": {
+                  "en": "Warm",
+                  "nl": "Warm"
                 }
               },
               {
@@ -11437,8 +11433,8 @@
               {
                 "id": "0",
                 "title": {
-                  "en": "Free mode",
-                  "nl": "Vrije modus"
+                  "en": "No scene",
+                  "nl": "Geen scene"
                 }
               },
               {
@@ -11470,13 +11466,6 @@
                 }
               },
               {
-                "id": "5",
-                "title": {
-                  "en": "Reading",
-                  "nl": "Lezen"
-                }
-              },
-              {
                 "id": "6",
                 "title": {
                   "en": "Office",
@@ -11484,17 +11473,17 @@
                 }
               },
               {
-                "id": "7",
+                "id": "5",
                 "title": {
-                  "en": "Movie",
-                  "nl": "Film"
+                  "en": "Reading",
+                  "nl": "Lezen"
                 }
               },
               {
-                "id": "8",
+                "id": "7",
                 "title": {
-                  "en": "Warm",
-                  "nl": "Warm"
+                  "en": "Leisure",
+                  "nl": "Ontspanning"
                 }
               },
               {
@@ -11502,6 +11491,13 @@
                 "title": {
                   "en": "Computer",
                   "nl": "Computer"
+                }
+              },
+              {
+                "id": "8",
+                "title": {
+                  "en": "Warm",
+                  "nl": "Warm"
                 }
               },
               {
@@ -35368,8 +35364,8 @@
         {
           "id": "0",
           "title": {
-            "en": "Free mode",
-            "nl": "Vrije modus"
+            "en": "No scene",
+            "nl": "Geen scene"
           }
         },
         {
@@ -35401,13 +35397,6 @@
           }
         },
         {
-          "id": "5",
-          "title": {
-            "en": "Reading",
-            "nl": "Lezen"
-          }
-        },
-        {
           "id": "6",
           "title": {
             "en": "Office",
@@ -35415,17 +35404,17 @@
           }
         },
         {
-          "id": "7",
+          "id": "5",
           "title": {
-            "en": "Movie",
-            "nl": "Film"
+            "en": "Reading",
+            "nl": "Lezen"
           }
         },
         {
-          "id": "8",
+          "id": "7",
           "title": {
-            "en": "Warm",
-            "nl": "Warm"
+            "en": "Leisure",
+            "nl": "Ontspanning"
           }
         },
         {
@@ -35433,6 +35422,13 @@
           "title": {
             "en": "Computer",
             "nl": "Computer"
+          }
+        },
+        {
+          "id": "8",
+          "title": {
+            "en": "Warm",
+            "nl": "Warm"
           }
         },
         {
