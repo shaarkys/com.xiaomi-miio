@@ -1,0 +1,19 @@
+{
+  "id": "xiaomiHorizontalSwingTurnedOff",
+  "$filter": "capabilities=fan_xiaomi_horizontal_swing",
+  "title": {
+    "en": "Horizontal Swing turned off",
+    "nl": "Horizontale oscillatie uitgeschakeld",
+    "da": "Vandret oscillation slukket",
+    "de": "Horizontale Oszillation ausgeschaltet",
+    "es": "Oscilación horizontal desactivada",
+    "fr": "Oscillation horizontale désactivée",
+    "it": "Oscillazione orizzontale disattivata",
+    "no": "Horisontal oscillasjon slått av",
+    "sv": "Horisontell svängning avstängd",
+    "pl": "Oscylacja pozioma wyłączona",
+    "ru": "Горизонтальное колебание выключено",
+    "ko": "수평 진동 꺼짐"
+  },
+  "platforms": ["local"]
+}

@@ -1,0 +1,25 @@
+{
+  "type": "enum",
+  "title": {
+    "en": "Mode",
+    "nl": "Modus",
+    "da": "Tilstand",
+    "de": "Modus",
+    "es": "Modo",
+    "fr": "Mode",
+    "it": "Modalità",
+    "no": "Modus",
+    "sv": "Läge",
+    "pl": "Tryb",
+    "ru": "Режим",
+    "ko": "모드"
+  },
+  "values": [
+    { "id": "0", "title": { "en": "Regular Fan" } },
+    { "id": "1", "title": { "en": "Natural Wind" } },
+    { "id": "2", "title": { "en": "Sleep (Quiet)" } }
+  ],
+  "getable": true,
+  "setable": true,
+  "icon": "/assets/icons/fanlevel.svg"
+}

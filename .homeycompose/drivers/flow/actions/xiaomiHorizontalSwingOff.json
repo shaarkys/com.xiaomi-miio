@@ -1,0 +1,33 @@
+{
+  "id": "xiaomiHorizontalSwingOff",
+  "$filter": "capabilities=fan_xiaomi_horizontal_swing",
+  "title": {
+    "en": "Disable Horizontal Swing",
+    "nl": "Horizontale oscillatie uitschakelen",
+    "da": "Deaktivér vandret oscillation",
+    "de": "Horizontale Oszillation deaktivieren",
+    "es": "Desactivar oscilación horizontal",
+    "fr": "Désactiver l'oscillation horizontale",
+    "it": "Disabilita oscillazione orizzontale",
+    "no": "Deaktiver horisontal oscillasjon",
+    "sv": "Inaktivera horisontell svängning",
+    "pl": "Wyłącz oscylację poziomą",
+    "ru": "Выключить горизонтальное колебание",
+    "ko": "수평 진동 비활성화"
+  },
+  "titleFormatted": {
+    "en": "Disable Horizontal Swing",
+    "nl": "Horizontale oscillatie uitschakelen",
+    "da": "Deaktivér vandret oscillation",
+    "de": "Horizontale Oszillation deaktivieren",
+    "es": "Desactivar oscilación horizontal",
+    "fr": "Désactiver l'oscillation horizontale",
+    "it": "Disabilita oscillazione orizzontale",
+    "no": "Deaktiver horisontal oscillasjon",
+    "sv": "Inaktivera horisontell svängning",
+    "pl": "Wyłącz oscylację poziomą",
+    "ru": "Выключить горизонтальное колебание",
+    "ko": "수평 진동 비활성화"
+  },
+  "platforms": ["local"]
+}

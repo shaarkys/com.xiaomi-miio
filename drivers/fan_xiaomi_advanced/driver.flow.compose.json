@@ -1,0 +1,27 @@
+{
+  "triggers": [
+    { "$extends": ["xiaomiHorizontalSwingTurnedOn"] },
+    { "$extends": ["xiaomiHorizontalSwingTurnedOff"] },
+    { "$extends": ["xiaomiVerticalSwingTurnedOn"] },
+    { "$extends": ["xiaomiVerticalSwingTurnedOff"] }
+  ],
+  "conditions": [
+    { "$extends": ["xiaomiHorizontalSwingIsOn"] },
+    { "$extends": ["xiaomiVerticalSwingIsOn"] }
+  ],
+  "actions": [
+    { "$extends": ["xiaomiFanMode"] },
+    { "$extends": ["xiaomiHorizontalSwingOn"] },
+    { "$extends": ["xiaomiHorizontalSwingOff"] },
+    { "$extends": ["xiaomiHorizontalSwingToggle"] },
+    { "$extends": ["xiaomiSetHorizontalAngle"] },
+    { "$extends": ["xiaomiVerticalSwingOn"] },
+    { "$extends": ["xiaomiVerticalSwingOff"] },
+    { "$extends": ["xiaomiVerticalSwingToggle"] },
+    { "$extends": ["xiaomiSetVerticalAngle"] },
+    { "$extends": ["xiaomiRotateLeft"] },
+    { "$extends": ["xiaomiRotateRight"] },
+    { "$extends": ["xiaomiRotateUp"] },
+    { "$extends": ["xiaomiRotateDown"] }
+  ]
+}

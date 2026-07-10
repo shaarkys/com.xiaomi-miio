@@ -1,0 +1,22 @@
+{
+  "type": "boolean",
+  "title": {
+    "en": "Horizontal Swing",
+    "nl": "Horizontale oscillatie",
+    "da": "Vandret oscillation",
+    "de": "Horizontale Oszillation",
+    "es": "Oscilación horizontal",
+    "fr": "Oscillation horizontale",
+    "it": "Oscillazione orizzontale",
+    "no": "Horisontal oscillasjon",
+    "sv": "Horisontell svängning",
+    "pl": "Oscylacja pozioma",
+    "ru": "Горизонтальное колебание",
+    "ko": "수평 진동"
+  },
+  "getable": true,
+  "setable": true,
+  "uiComponent": "toggle",
+  "insights": false,
+  "icon": "/assets/icons/oscillation.svg"
+}

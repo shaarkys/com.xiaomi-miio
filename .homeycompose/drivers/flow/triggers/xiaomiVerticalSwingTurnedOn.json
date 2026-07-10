@@ -1,0 +1,19 @@
+{
+  "id": "xiaomiVerticalSwingTurnedOn",
+  "$filter": "capabilities=fan_xiaomi_vertical_swing",
+  "title": {
+    "en": "Vertical Swing turned on",
+    "nl": "Verticale oscillatie ingeschakeld",
+    "da": "Lodret oscillation tændt",
+    "de": "Vertikale Oszillation eingeschaltet",
+    "es": "Oscilación vertical activada",
+    "fr": "Oscillation verticale activée",
+    "it": "Oscillazione verticale attivata",
+    "no": "Vertikal oscillasjon slått på",
+    "sv": "Vertikal svängning påslagen",
+    "pl": "Oscylacja pionowa włączona",
+    "ru": "Вертикальное колебание включено",
+    "ko": "수직 진동 켜짐"
+  },
+  "platforms": ["local"]
+}

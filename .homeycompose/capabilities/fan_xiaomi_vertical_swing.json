@@ -1,0 +1,22 @@
+{
+  "type": "boolean",
+  "title": {
+    "en": "Vertical Swing",
+    "nl": "Verticale oscillatie",
+    "da": "Lodret oscillation",
+    "de": "Vertikale Oszillation",
+    "es": "Oscilación vertical",
+    "fr": "Oscillation verticale",
+    "it": "Oscillazione verticale",
+    "no": "Vertikal oscillasjon",
+    "sv": "Vertikal svängning",
+    "pl": "Oscylacja pionowa",
+    "ru": "Вертикальное колебание",
+    "ko": "수직 진동"
+  },
+  "getable": true,
+  "setable": true,
+  "uiComponent": "toggle",
+  "insights": false,
+  "icon": "/assets/icons/oscillation-vertical.svg"
+}

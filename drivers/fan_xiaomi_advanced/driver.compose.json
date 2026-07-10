@@ -1,0 +1,32 @@
+{
+  "name": {
+    "en": "Advanced Xiaomi Smart Fan MIoT (WiFi)",
+    "nl": "Geavanceerde Xiaomi Smart Fan MIoT (WiFi)",
+    "da": "Avanceret Xiaomi Smart Fan MIoT (WiFi)",
+    "de": "Erweiterter Xiaomi Smart Ventilator MIoT (WiFi)",
+    "es": "Ventilador inteligente Xiaomi avanzado MIoT (WiFi)",
+    "fr": "Ventilateur intelligent Xiaomi avancé MIoT (WiFi)",
+    "it": "Ventilatore Smart Xiaomi avanzato MIoT (WiFi)",
+    "no": "Avansert Xiaomi Smart vifte MIoT (WiFi)",
+    "sv": "Avancerad Xiaomi Smart fläkt MIoT (WiFi)",
+    "pl": "Zaawansowany inteligentny wentylator Xiaomi MIoT (WiFi)",
+    "ru": "Продвинутый умный вентилятор Xiaomi MIoT (WiFi)",
+    "ko": "고급형 Xiaomi 스마트 팬 MIoT (WiFi)"
+  },
+  "images": {
+    "large": "drivers/fan_xiaomi_advanced/assets/images/large.jpg",
+    "small": "drivers/fan_xiaomi_advanced/assets/images/small.jpg"
+  },
+  "class": "fan",
+  "$extends": [
+    "defaults"
+  ],
+  "capabilities": [
+    "onoff",
+    "fan_speed",
+    "fan_xiaomi_fanlevel",
+    "fan_xiaomi_mode",
+    "fan_xiaomi_horizontal_swing",
+    "fan_xiaomi_horizontal_angle"
+  ]
+}

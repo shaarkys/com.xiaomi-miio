@@ -1,0 +1,109 @@
+[
+  {
+    "type": "group",
+    "label": {
+      "en": "User Settings",
+      "nl": "Gebruikersinstellingem",
+      "da": "Brugerindstillinger",
+      "de": "Benutzereinstellungen",
+      "es": "Configuración de Usuario",
+      "fr": "Paramètres Utilisateur",
+      "it": "Impostazioni Utente",
+      "no": "Brukerinnstillinger",
+      "sv": "Användarinställningar",
+      "pl": "Ustawienia Użytkownika",
+      "ru": "Пользовательские настройки",
+      "ko": "사용자 설정"
+    },
+    "children": [
+      {
+        "id": "led",
+        "type": "checkbox",
+        "value": true,
+        "label": {
+          "en": "LED",
+          "nl": "LED",
+          "da": "LED",
+          "de": "LED",
+          "es": "LED",
+          "fr": "LED",
+          "it": "LED",
+          "no": "LED",
+          "sv": "LED",
+          "pl": "LED",
+          "ru": "Светодиод",
+          "ko": "LED"
+        }
+      },
+      {
+        "id": "buzzer",
+        "type": "checkbox",
+        "value": true,
+        "label": {
+          "en": "Buzzer",
+          "nl": "Buzzer",
+          "da": "Summer",
+          "de": "Summer",
+          "es": "Zumbador",
+          "fr": "Buzzer",
+          "it": "Cicalino",
+          "no": "Summer",
+          "sv": "Summer",
+          "pl": "Brzęczyk",
+          "ru": "Зуммер",
+          "ko": "버저"
+        }
+      },
+      {
+        "id": "childLock",
+        "type": "checkbox",
+        "value": true,
+        "label": {
+          "en": "Child Lock",
+          "nl": "Kinderslot",
+          "da": "Børnelås",
+          "de": "Kindersicherung",
+          "es": "Bloqueo para Niños",
+          "fr": "Verrouillage Enfant",
+          "it": "Blocco Bambino",
+          "no": "Barnesikring",
+          "sv": "Barnlås",
+          "pl": "Blokada rodzicielska",
+          "ru": "Блокировка от детей",
+          "ko": "차일드 락"
+        }
+      }
+    ]
+  },
+  {
+    "type": "group",
+    "label": {
+      "en": "Device Settings",
+      "nl": "Apparaat instellingen",
+      "da": "Enhedsindstillinger",
+      "de": "Geräteeinstellungen",
+      "es": "Configuración del Dispositivo",
+      "fr": "Paramètres de l'Appareil",
+      "it": "Impostazioni del Dispositivo",
+      "no": "Enhetsinnstillinger",
+      "sv": "Enhetsinställningar",
+      "pl": "Ustawienia Urządzenia",
+      "ru": "Настройки устройства",
+      "ko": "장치 설정"
+    },
+    "children": [
+      {
+        "id": "address",
+        "$extends": "address"
+      },
+      {
+        "id": "token",
+        "$extends": "token"
+      },
+      {
+        "id": "polling",
+        "$extends": "polling"
+      }
+    ]
+  }
+]
