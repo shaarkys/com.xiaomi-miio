@@ -1,0 +1,12 @@
+{
+  "type": "boolean",
+  "title": {
+    "en": "Repeater fault",
+    "nl": "Repeaterstoring",
+    "de": "Repeater-Störung",
+    "fr": "Défaut du répéteur"
+  },
+  "getable": true,
+  "setable": false,
+  "icon": "/assets/icons/repeater-fault.svg"
+}

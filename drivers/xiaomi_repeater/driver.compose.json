@@ -1,0 +1,31 @@
+{
+  "name": {
+    "en": "Xiaomi WiFi Range Extender",
+    "nl": "Xiaomi WiFi-bereikvergroter",
+    "da": "Xiaomi WiFi-rækkeviddeforlænger",
+    "de": "Xiaomi WLAN-Repeater",
+    "es": "Extensor de alcance WiFi Xiaomi",
+    "fr": "Répéteur Wi-Fi Xiaomi",
+    "it": "Ripetitore Wi-Fi Xiaomi",
+    "no": "Xiaomi WiFi-rekkeviddeforlenger",
+    "sv": "Xiaomi WiFi-räckviddsförlängare",
+    "pl": "Wzmacniacz zasięgu WiFi Xiaomi",
+    "ru": "Усилитель Wi-Fi Xiaomi",
+    "ko": "Xiaomi WiFi 범위 확장기"
+  },
+  "description": {
+    "en": "Supports Xiaomi Mi WiFi Repeater 2, Mi WiFi Range Extender Pro and WiFi Range Extender N300.",
+    "nl": "Ondersteunt Xiaomi Mi WiFi Repeater 2, Mi WiFi Range Extender Pro en WiFi Range Extender N300."
+  },
+  "images": {
+    "large": "drivers/xiaomi_repeater/assets/images/large.png",
+    "small": "drivers/xiaomi_repeater/assets/images/small.png"
+  },
+  "class": "sensor",
+  "$extends": [
+    "defaults"
+  ],
+  "capabilities": [
+    "measure_repeater_connected_devices"
+  ]
+}

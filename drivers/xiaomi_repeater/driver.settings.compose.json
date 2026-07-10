@@ -1,0 +1,25 @@
+[
+  {
+    "type": "group",
+    "label": {
+      "en": "Device Settings",
+      "nl": "Apparaatinstellingen",
+      "de": "Geräteeinstellungen",
+      "fr": "Paramètres de l'appareil"
+    },
+    "children": [
+      {
+        "id": "address",
+        "$extends": "address"
+      },
+      {
+        "id": "token",
+        "$extends": "token"
+      },
+      {
+        "id": "polling",
+        "$extends": "polling"
+      }
+    ]
+  }
+]

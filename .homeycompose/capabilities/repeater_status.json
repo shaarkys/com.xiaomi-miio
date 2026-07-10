@@ -1,0 +1,51 @@
+{
+  "type": "enum",
+  "title": {
+    "en": "Repeater status",
+    "nl": "Repeaterstatus",
+    "de": "Repeater-Status",
+    "fr": "État du répéteur"
+  },
+  "getable": true,
+  "setable": false,
+  "insights": false,
+  "values": [
+    {
+      "id": "idle",
+      "title": {
+        "en": "Idle",
+        "nl": "Inactief",
+        "de": "Bereit",
+        "fr": "Inactif"
+      }
+    },
+    {
+      "id": "busy",
+      "title": {
+        "en": "Busy",
+        "nl": "Bezig",
+        "de": "Beschäftigt",
+        "fr": "Occupé"
+      }
+    },
+    {
+      "id": "delay",
+      "title": {
+        "en": "Delayed",
+        "nl": "Vertraagd",
+        "de": "Verzögert",
+        "fr": "Retardé"
+      }
+    },
+    {
+      "id": "unknown",
+      "title": {
+        "en": "Unknown",
+        "nl": "Onbekend",
+        "de": "Unbekannt",
+        "fr": "Inconnu"
+      }
+    }
+  ],
+  "icon": "/assets/icons/repeater-status.svg"
+}

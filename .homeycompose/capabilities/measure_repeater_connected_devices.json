@@ -1,0 +1,16 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Connected devices",
+    "nl": "Verbonden apparaten",
+    "de": "Verbundene Geräte",
+    "fr": "Appareils connectés"
+  },
+  "getable": true,
+  "setable": false,
+  "decimals": 0,
+  "min": 0,
+  "max": 100,
+  "step": 1,
+  "icon": "/assets/icons/repeater-connected-devices.svg"
+}

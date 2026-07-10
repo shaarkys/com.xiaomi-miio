@@ -1,0 +1,18 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Upload speed",
+    "nl": "Uploadsnelheid",
+    "de": "Uploadgeschwindigkeit",
+    "fr": "Vitesse de téléversement"
+  },
+  "getable": true,
+  "setable": false,
+  "decimals": 1,
+  "min": 0,
+  "max": 100,
+  "units": {
+    "en": "Mbit/s"
+  },
+  "icon": "/assets/icons/repeater-upload.svg"
+}

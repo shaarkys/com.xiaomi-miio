@@ -29843,6 +29843,130 @@
       ]
     },
     {
+      "icon": "/drivers/xiaomi_repeater/assets/icon.svg",
+      "pair": [
+        {
+          "id": "start",
+          "navigation": {
+            "next": "pair"
+          }
+        },
+        {
+          "id": "pair"
+        },
+        {
+          "id": "add_device"
+        }
+      ],
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [
+        "lan"
+      ],
+      "name": {
+        "en": "Xiaomi WiFi Range Extender",
+        "nl": "Xiaomi WiFi-bereikvergroter",
+        "da": "Xiaomi WiFi-rækkeviddeforlænger",
+        "de": "Xiaomi WLAN-Repeater",
+        "es": "Extensor de alcance WiFi Xiaomi",
+        "fr": "Répéteur Wi-Fi Xiaomi",
+        "it": "Ripetitore Wi-Fi Xiaomi",
+        "no": "Xiaomi WiFi-rekkeviddeforlenger",
+        "sv": "Xiaomi WiFi-räckviddsförlängare",
+        "pl": "Wzmacniacz zasięgu WiFi Xiaomi",
+        "ru": "Усилитель Wi-Fi Xiaomi",
+        "ko": "Xiaomi WiFi 범위 확장기"
+      },
+      "description": {
+        "en": "Supports Xiaomi Mi WiFi Repeater 2, Mi WiFi Range Extender Pro and WiFi Range Extender N300.",
+        "nl": "Ondersteunt Xiaomi Mi WiFi Repeater 2, Mi WiFi Range Extender Pro en WiFi Range Extender N300."
+      },
+      "images": {
+        "large": "drivers/xiaomi_repeater/assets/images/large.png",
+        "small": "drivers/xiaomi_repeater/assets/images/small.png"
+      },
+      "class": "sensor",
+      "capabilities": [
+        "measure_repeater_connected_devices"
+      ],
+      "id": "xiaomi_repeater",
+      "settings": [
+        {
+          "type": "group",
+          "label": {
+            "en": "Device Settings",
+            "nl": "Apparaatinstellingen",
+            "de": "Geräteeinstellungen",
+            "fr": "Paramètres de l'appareil"
+          },
+          "children": [
+            {
+              "id": "address",
+              "type": "text",
+              "value": "0.0.0.0",
+              "label": {
+                "en": "IP Address",
+                "nl": "IP adres",
+                "da": "IP-adresse",
+                "de": "IP-Adresse",
+                "es": "Dirección IP",
+                "fr": "Adresse IP",
+                "it": "Indirizzo IP",
+                "no": "IP-adresse",
+                "sv": "IP-adress",
+                "pl": "Adres IP",
+                "ru": "IP-адрес",
+                "ko": "IP 주소"
+              }
+            },
+            {
+              "id": "token",
+              "type": "text",
+              "value": "",
+              "label": {
+                "en": "Mi Device Token",
+                "nl": "Mi Apparaat Token",
+                "da": "Mi Enheds Token",
+                "de": "Mi Gerätetoken",
+                "es": "Token del Dispositivo Mi",
+                "fr": "Jeton de l'Appareil Mi",
+                "it": "Token Dispositivo Mi",
+                "no": "Mi Enhet Token",
+                "sv": "Mi Enhetstoken",
+                "pl": "Token Urządzenia Mi",
+                "ru": "Токен Устройства Mi",
+                "ko": "Mi 기기 토큰"
+              }
+            },
+            {
+              "id": "polling",
+              "type": "number",
+              "value": 60,
+              "attr": {
+                "min": 5,
+                "max": 3600
+              },
+              "label": {
+                "en": "Polling Frequency",
+                "nl": "Polling frequentie",
+                "da": "Polling Frekvens",
+                "de": "Abfragefrequenz",
+                "es": "Frecuencia de sondeo",
+                "fr": "Fréquence de sondage",
+                "it": "Frequenza di polling",
+                "no": "Polling Frekvens",
+                "sv": "Pollingfrekvens",
+                "pl": "Częstotliwość odpytywania",
+                "ru": "Частота опроса",
+                "ko": "폴링 빈도"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
       "icon": "/drivers/yeelink_light_ceil43_miot/assets/icon.svg",
       "pair": [
         {
@@ -31533,6 +31657,18 @@
       "setable": false,
       "icon": "/assets/icons/vacuum_main_brush.svg"
     },
+    "alarm_repeater_fault": {
+      "type": "boolean",
+      "title": {
+        "en": "Repeater fault",
+        "nl": "Repeaterstoring",
+        "de": "Repeater-Störung",
+        "fr": "Défaut du répéteur"
+      },
+      "getable": true,
+      "setable": false,
+      "icon": "/assets/icons/repeater-fault.svg"
+    },
     "alarm_sensor_dirty_time": {
       "title": {
         "en": "Sensor Alert",
@@ -33071,6 +33207,76 @@
       "setable": false,
       "icon": "/assets/icons/measure_gas_density.svg"
     },
+    "measure_repeater_connected_devices": {
+      "type": "number",
+      "title": {
+        "en": "Connected devices",
+        "nl": "Verbonden apparaten",
+        "de": "Verbundene Geräte",
+        "fr": "Appareils connectés"
+      },
+      "getable": true,
+      "setable": false,
+      "decimals": 0,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "icon": "/assets/icons/repeater-connected-devices.svg"
+    },
+    "measure_repeater_download_speed": {
+      "type": "number",
+      "title": {
+        "en": "Download speed",
+        "nl": "Downloadsnelheid",
+        "de": "Downloadgeschwindigkeit",
+        "fr": "Vitesse de téléchargement"
+      },
+      "getable": true,
+      "setable": false,
+      "decimals": 1,
+      "min": 0,
+      "max": 100,
+      "units": {
+        "en": "Mbit/s"
+      },
+      "icon": "/assets/icons/repeater-download.svg"
+    },
+    "measure_repeater_signal_strength": {
+      "type": "number",
+      "title": {
+        "en": "Source signal strength",
+        "nl": "Signaalsterkte van bron",
+        "de": "Signalstärke der Quelle",
+        "fr": "Puissance du signal source"
+      },
+      "getable": true,
+      "setable": false,
+      "decimals": 0,
+      "min": -100,
+      "max": 0,
+      "units": {
+        "en": "dBm"
+      },
+      "icon": "/assets/icons/repeater-signal.svg"
+    },
+    "measure_repeater_upload_speed": {
+      "type": "number",
+      "title": {
+        "en": "Upload speed",
+        "nl": "Uploadsnelheid",
+        "de": "Uploadgeschwindigkeit",
+        "fr": "Vitesse de téléversement"
+      },
+      "getable": true,
+      "setable": false,
+      "decimals": 1,
+      "min": 0,
+      "max": 100,
+      "units": {
+        "en": "Mbit/s"
+      },
+      "icon": "/assets/icons/repeater-upload.svg"
+    },
     "measure_smoke_density": {
       "title": {
         "en": "Smoke Density",
@@ -33567,6 +33773,103 @@
       "getable": true,
       "setable": true,
       "icon": "/assets/icons/waterdispenser-mode.svg"
+    },
+    "repeater_indicator_brightness": {
+      "type": "number",
+      "title": {
+        "en": "Indicator brightness",
+        "nl": "Helderheid indicatielampje",
+        "de": "Anzeigehelligkeit",
+        "fr": "Luminosité du voyant"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "slider",
+      "decimals": 0,
+      "min": 1,
+      "max": 100,
+      "step": 1,
+      "units": {
+        "en": "%"
+      },
+      "icon": "/assets/icons/repeater-indicator-light.svg"
+    },
+    "repeater_indicator_light": {
+      "type": "boolean",
+      "title": {
+        "en": "Indicator light",
+        "nl": "Indicatielampje",
+        "de": "Anzeigeleuchte",
+        "fr": "Voyant lumineux"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "toggle",
+      "icon": "/assets/icons/repeater-indicator-light.svg"
+    },
+    "repeater_status": {
+      "type": "enum",
+      "title": {
+        "en": "Repeater status",
+        "nl": "Repeaterstatus",
+        "de": "Repeater-Status",
+        "fr": "État du répéteur"
+      },
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "values": [
+        {
+          "id": "idle",
+          "title": {
+            "en": "Idle",
+            "nl": "Inactief",
+            "de": "Bereit",
+            "fr": "Inactif"
+          }
+        },
+        {
+          "id": "busy",
+          "title": {
+            "en": "Busy",
+            "nl": "Bezig",
+            "de": "Beschäftigt",
+            "fr": "Occupé"
+          }
+        },
+        {
+          "id": "delay",
+          "title": {
+            "en": "Delayed",
+            "nl": "Vertraagd",
+            "de": "Verzögert",
+            "fr": "Retardé"
+          }
+        },
+        {
+          "id": "unknown",
+          "title": {
+            "en": "Unknown",
+            "nl": "Onbekend",
+            "de": "Unbekannt",
+            "fr": "Inconnu"
+          }
+        }
+      ],
+      "icon": "/assets/icons/repeater-status.svg"
+    },
+    "repeater_wifi_roaming": {
+      "type": "boolean",
+      "title": {
+        "en": "Wi-Fi roaming",
+        "nl": "Wi-Fi-roaming",
+        "de": "WLAN-Roaming",
+        "fr": "Itinérance Wi-Fi"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "toggle",
+      "icon": "/assets/icons/repeater-roaming.svg"
     },
     "vacuum_dreame_fanspeed": {
       "type": "enum",

@@ -1,0 +1,18 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Source signal strength",
+    "nl": "Signaalsterkte van bron",
+    "de": "Signalstärke der Quelle",
+    "fr": "Puissance du signal source"
+  },
+  "getable": true,
+  "setable": false,
+  "decimals": 0,
+  "min": -100,
+  "max": 0,
+  "units": {
+    "en": "dBm"
+  },
+  "icon": "/assets/icons/repeater-signal.svg"
+}

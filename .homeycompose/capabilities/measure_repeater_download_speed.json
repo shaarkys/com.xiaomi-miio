@@ -1,0 +1,18 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Download speed",
+    "nl": "Downloadsnelheid",
+    "de": "Downloadgeschwindigkeit",
+    "fr": "Vitesse de téléchargement"
+  },
+  "getable": true,
+  "setable": false,
+  "decimals": 1,
+  "min": 0,
+  "max": 100,
+  "units": {
+    "en": "Mbit/s"
+  },
+  "icon": "/assets/icons/repeater-download.svg"
+}

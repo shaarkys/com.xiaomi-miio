@@ -3,6 +3,10 @@
 class Util {
 
   static modelToFriendlyNameWiFi = {
+    'xiaomi.repeater.v2': 'Xiaomi Mi WiFi Repeater 2',
+    'xiaomi.repeater.v3': 'Xiaomi Mi WiFi Range Extender Pro',
+    'xiaomi.repeater.rd10m': 'Xiaomi WiFi Range Extender N300',
+
     'zhimi.airmonitor.v1': 'Mi Air Quality Monitor',
     'cgllc.airmonitor.b1': 'Mi Air Quality Monitor gen2',
     'cgllc.airmonitor.s1': 'Mi ClearGrass Air Detector',

@@ -1,0 +1,13 @@
+{
+  "type": "boolean",
+  "title": {
+    "en": "Indicator light",
+    "nl": "Indicatielampje",
+    "de": "Anzeigeleuchte",
+    "fr": "Voyant lumineux"
+  },
+  "getable": true,
+  "setable": true,
+  "uiComponent": "toggle",
+  "icon": "/assets/icons/repeater-indicator-light.svg"
+}

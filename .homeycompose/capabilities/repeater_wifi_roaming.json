@@ -1,0 +1,13 @@
+{
+  "type": "boolean",
+  "title": {
+    "en": "Wi-Fi roaming",
+    "nl": "Wi-Fi-roaming",
+    "de": "WLAN-Roaming",
+    "fr": "Itinérance Wi-Fi"
+  },
+  "getable": true,
+  "setable": true,
+  "uiComponent": "toggle",
+  "icon": "/assets/icons/repeater-roaming.svg"
+}
