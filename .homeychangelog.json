@@ -508,5 +508,8 @@
   },
   "3.4.91": {
     "en": "Fixed Xiaomi Monitor Light Bar S1 mode/scene Flow trigger behavior and refined scene labels, contributed by @LieuweJ."
+  },
+  "3.4.92": {
+    "en": "Added support for Xiaomi WiFi Repeaters v2, v3, and N300 (RD10M), including network metrics, status, and indicator controls."
   }
 }
