@@ -517,5 +517,8 @@
   },
   "3.4.94": {
     "en": "Added support for the Joyami Smart Rice Cooker S1 (chunmi.cooker.r2) with cooking programs, status, temperature and time monitoring, automatic keep-warm, fault alerts, and Flow controls."
+  },
+  "3.4.95": {
+    "en": "Added support for Xiaomi Mi Bedside Lamp 2 (yeelink.light.bslamp2 / MJCTD02YL), including power, brightness, color temperature, and RGB color controls."
   }
 }
