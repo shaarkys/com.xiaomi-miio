@@ -1,0 +1,41 @@
+{
+  "name": {
+    "en": "Xiaomi Mi Bedside Lamp 2 (WiFi)",
+    "nl": "Xiaomi Mi Bedside Lamp 2 (WiFi)",
+    "da": "Xiaomi Mi Bedside Lamp 2 (WiFi)",
+    "de": "Xiaomi Mi Bedside Lamp 2 (WiFi)",
+    "es": "Xiaomi Mi Bedside Lamp 2 (WiFi)",
+    "fr": "Xiaomi Mi Bedside Lamp 2 (WiFi)",
+    "it": "Xiaomi Mi Bedside Lamp 2 (WiFi)",
+    "no": "Xiaomi Mi Bedside Lamp 2 (WiFi)",
+    "sv": "Xiaomi Mi Bedside Lamp 2 (WiFi)",
+    "pl": "Xiaomi Mi Bedside Lamp 2 (WiFi)",
+    "ru": "Xiaomi Mi Bedside Lamp 2 (WiFi)",
+    "ko": "Xiaomi Mi Bedside Lamp 2 (WiFi)"
+  },
+  "description": {
+    "en": "Product model: MJCTD02YL",
+    "nl": "Productmodel: MJCTD02YL"
+  },
+  "images": {
+    "large": "drivers/yeelink_light_bslamp2_miot/assets/images/large.jpg",
+    "small": "drivers/yeelink_light_bslamp2_miot/assets/images/small.jpg"
+  },
+  "class": "light",
+  "$extends": [
+    "defaults"
+  ],
+  "capabilities": [
+    "onoff",
+    "dim",
+    "light_mode",
+    "light_temperature",
+    "light_hue",
+    "light_saturation"
+  ],
+  "capabilitiesOptions": {
+    "dim": {
+      "min": 0.01
+    }
+  }
+}

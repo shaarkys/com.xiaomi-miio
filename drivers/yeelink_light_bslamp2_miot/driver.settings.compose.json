@@ -1,0 +1,35 @@
+[
+  {
+    "type": "group",
+    "label": {
+      "en": "Device Settings",
+      "nl": "Apparaat instellingen",
+      "da": "Enhedsindstillinger",
+      "de": "Geräteeinstellungen",
+      "es": "Configuración del dispositivo",
+      "fr": "Paramètres de l'appareil",
+      "it": "Impostazioni del dispositivo",
+      "no": "Enhetsinnstillinger",
+      "sv": "Enhetsinställningar",
+      "pl": "Ustawienia urządzenia",
+      "ru": "Настройки устройства",
+      "ko": "장치 설정",
+      "ja": "デバイス設定",
+      "zh": "设备设置"
+    },
+    "children": [
+      {
+        "id": "address",
+        "$extends": "address"
+      },
+      {
+        "id": "token",
+        "$extends": "token"
+      },
+      {
+        "id": "polling",
+        "$extends": "polling"
+      }
+    ]
+  }
+]

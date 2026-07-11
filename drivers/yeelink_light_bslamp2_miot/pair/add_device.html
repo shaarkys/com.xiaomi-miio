@@ -1,0 +1,12 @@
+<script type="text/javascript">
+  try {
+    Homey.emit('add_device', {})
+      .then(result => {
+        Homey.createDevice(result);
+        Homey.done();
+      })
+  } catch (error) {
+    Homey.alert(error);
+    Homey.done();
+  }
+</script>

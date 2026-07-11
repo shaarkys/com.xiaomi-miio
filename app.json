@@ -30339,6 +30339,150 @@
       ]
     },
     {
+      "icon": "/drivers/yeelink_light_bslamp2_miot/assets/icon.svg",
+      "pair": [
+        {
+          "id": "start",
+          "navigation": {
+            "next": "pair"
+          }
+        },
+        {
+          "id": "pair"
+        },
+        {
+          "id": "add_device"
+        }
+      ],
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [
+        "lan"
+      ],
+      "name": {
+        "en": "Xiaomi Mi Bedside Lamp 2 (WiFi)",
+        "nl": "Xiaomi Mi Bedside Lamp 2 (WiFi)",
+        "da": "Xiaomi Mi Bedside Lamp 2 (WiFi)",
+        "de": "Xiaomi Mi Bedside Lamp 2 (WiFi)",
+        "es": "Xiaomi Mi Bedside Lamp 2 (WiFi)",
+        "fr": "Xiaomi Mi Bedside Lamp 2 (WiFi)",
+        "it": "Xiaomi Mi Bedside Lamp 2 (WiFi)",
+        "no": "Xiaomi Mi Bedside Lamp 2 (WiFi)",
+        "sv": "Xiaomi Mi Bedside Lamp 2 (WiFi)",
+        "pl": "Xiaomi Mi Bedside Lamp 2 (WiFi)",
+        "ru": "Xiaomi Mi Bedside Lamp 2 (WiFi)",
+        "ko": "Xiaomi Mi Bedside Lamp 2 (WiFi)"
+      },
+      "description": {
+        "en": "Product model: MJCTD02YL",
+        "nl": "Productmodel: MJCTD02YL"
+      },
+      "images": {
+        "large": "drivers/yeelink_light_bslamp2_miot/assets/images/large.jpg",
+        "small": "drivers/yeelink_light_bslamp2_miot/assets/images/small.jpg"
+      },
+      "class": "light",
+      "capabilities": [
+        "onoff",
+        "dim",
+        "light_mode",
+        "light_temperature",
+        "light_hue",
+        "light_saturation"
+      ],
+      "capabilitiesOptions": {
+        "dim": {
+          "min": 0.01
+        }
+      },
+      "id": "yeelink_light_bslamp2_miot",
+      "settings": [
+        {
+          "type": "group",
+          "label": {
+            "en": "Device Settings",
+            "nl": "Apparaat instellingen",
+            "da": "Enhedsindstillinger",
+            "de": "Geräteeinstellungen",
+            "es": "Configuración del dispositivo",
+            "fr": "Paramètres de l'appareil",
+            "it": "Impostazioni del dispositivo",
+            "no": "Enhetsinnstillinger",
+            "sv": "Enhetsinställningar",
+            "pl": "Ustawienia urządzenia",
+            "ru": "Настройки устройства",
+            "ko": "장치 설정",
+            "ja": "デバイス設定",
+            "zh": "设备设置"
+          },
+          "children": [
+            {
+              "id": "address",
+              "type": "text",
+              "value": "0.0.0.0",
+              "label": {
+                "en": "IP Address",
+                "nl": "IP adres",
+                "da": "IP-adresse",
+                "de": "IP-Adresse",
+                "es": "Dirección IP",
+                "fr": "Adresse IP",
+                "it": "Indirizzo IP",
+                "no": "IP-adresse",
+                "sv": "IP-adress",
+                "pl": "Adres IP",
+                "ru": "IP-адрес",
+                "ko": "IP 주소"
+              }
+            },
+            {
+              "id": "token",
+              "type": "text",
+              "value": "",
+              "label": {
+                "en": "Mi Device Token",
+                "nl": "Mi Apparaat Token",
+                "da": "Mi Enheds Token",
+                "de": "Mi Gerätetoken",
+                "es": "Token del Dispositivo Mi",
+                "fr": "Jeton de l'Appareil Mi",
+                "it": "Token Dispositivo Mi",
+                "no": "Mi Enhet Token",
+                "sv": "Mi Enhetstoken",
+                "pl": "Token Urządzenia Mi",
+                "ru": "Токен Устройства Mi",
+                "ko": "Mi 기기 토큰"
+              }
+            },
+            {
+              "id": "polling",
+              "type": "number",
+              "value": 60,
+              "attr": {
+                "min": 5,
+                "max": 3600
+              },
+              "label": {
+                "en": "Polling Frequency",
+                "nl": "Polling frequentie",
+                "da": "Polling Frekvens",
+                "de": "Abfragefrequenz",
+                "es": "Frecuencia de sondeo",
+                "fr": "Fréquence de sondage",
+                "it": "Frequenza di polling",
+                "no": "Polling Frekvens",
+                "sv": "Pollingfrekvens",
+                "pl": "Częstotliwość odpytywania",
+                "ru": "Частота опроса",
+                "ko": "폴링 빈도"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
       "icon": "/drivers/yeelink_light_ceil43_miot/assets/icon.svg",
       "pair": [
         {
