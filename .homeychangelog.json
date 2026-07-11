@@ -514,5 +514,8 @@
   },
   "3.4.93": {
     "en": "Added support for the Joyami Smart Rice Cooker S1 (chunmi.cooker.r2) with cooking programs, status, temperature and time monitoring, automatic keep-warm, fault alerts, and Flow controls."
+  },
+  "3.4.94": {
+    "en": "Added support for the Joyami Smart Rice Cooker S1 (chunmi.cooker.r2) with cooking programs, status, temperature and time monitoring, automatic keep-warm, fault alerts, and Flow controls."
   }
 }
