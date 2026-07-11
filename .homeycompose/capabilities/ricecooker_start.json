@@ -1,0 +1,11 @@
+{
+  "type": "boolean",
+  "title": {
+    "en": "Start cooking",
+    "nl": "Koken starten"
+  },
+  "getable": false,
+  "setable": true,
+  "uiComponent": "button",
+  "icon": "/assets/icons/start.svg"
+}

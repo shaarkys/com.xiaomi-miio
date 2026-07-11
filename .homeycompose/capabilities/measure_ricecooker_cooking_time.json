@@ -1,0 +1,17 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Cooking time",
+    "nl": "Kooktijd"
+  },
+  "getable": true,
+  "setable": false,
+  "decimals": 0,
+  "min": 0,
+  "max": 1440,
+  "units": {
+    "en": "min",
+    "nl": "min"
+  },
+  "icon": "/assets/icons/ricecooker-time.svg"
+}

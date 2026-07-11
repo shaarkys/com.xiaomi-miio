@@ -1,0 +1,49 @@
+{
+  "type": "enum",
+  "title": {
+    "en": "Cooking status",
+    "nl": "Kookstatus"
+  },
+  "getable": true,
+  "setable": false,
+  "insights": false,
+  "uiComponent": "sensor",
+  "values": [
+    {
+      "id": "standby",
+      "title": {
+        "en": "Standby",
+        "nl": "Stand-by"
+      }
+    },
+    {
+      "id": "cooking",
+      "title": {
+        "en": "Cooking",
+        "nl": "Koken"
+      }
+    },
+    {
+      "id": "keep_warm",
+      "title": {
+        "en": "Keep warm",
+        "nl": "Warmhouden"
+      }
+    },
+    {
+      "id": "scheduled",
+      "title": {
+        "en": "Scheduled",
+        "nl": "Gepland"
+      }
+    },
+    {
+      "id": "unknown",
+      "title": {
+        "en": "Unknown",
+        "nl": "Onbekend"
+      }
+    }
+  ],
+  "icon": "/assets/icons/ricecooker-status.svg"
+}

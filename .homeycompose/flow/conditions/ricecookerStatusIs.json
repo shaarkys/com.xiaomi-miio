@@ -1,0 +1,58 @@
+{
+  "title": {
+    "en": "Cooking status is",
+    "nl": "Kookstatus is"
+  },
+  "titleFormatted": {
+    "en": "Cooking status is [[status]]",
+    "nl": "Kookstatus is [[status]]"
+  },
+  "args": [
+    {
+      "name": "status",
+      "title": {
+        "en": "Status",
+        "nl": "Status"
+      },
+      "type": "dropdown",
+      "values": [
+        {
+          "id": "standby",
+          "title": {
+            "en": "Standby",
+            "nl": "Stand-by"
+          }
+        },
+        {
+          "id": "cooking",
+          "title": {
+            "en": "Cooking",
+            "nl": "Koken"
+          }
+        },
+        {
+          "id": "keep_warm",
+          "title": {
+            "en": "Keep warm",
+            "nl": "Warmhouden"
+          }
+        },
+        {
+          "id": "scheduled",
+          "title": {
+            "en": "Scheduled",
+            "nl": "Gepland"
+          }
+        }
+      ]
+    },
+    {
+      "name": "device",
+      "type": "device",
+      "filter": "driver_id=ricecooker_chunmi_cooker_r2"
+    }
+  ],
+  "platforms": [
+    "local"
+  ]
+}

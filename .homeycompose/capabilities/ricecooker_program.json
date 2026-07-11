@@ -1,0 +1,41 @@
+{
+  "type": "enum",
+  "title": {
+    "en": "Cooking program",
+    "nl": "Kookprogramma"
+  },
+  "getable": true,
+  "setable": true,
+  "uiComponent": "picker",
+  "values": [
+    {
+      "id": "1",
+      "title": {
+        "en": "Fine cook",
+        "nl": "Fijn koken"
+      }
+    },
+    {
+      "id": "2",
+      "title": {
+        "en": "Quick cook",
+        "nl": "Snel koken"
+      }
+    },
+    {
+      "id": "3",
+      "title": {
+        "en": "Congee",
+        "nl": "Rijstpap"
+      }
+    },
+    {
+      "id": "4",
+      "title": {
+        "en": "Keep warm",
+        "nl": "Warmhouden"
+      }
+    }
+  ],
+  "icon": "/assets/icons/ricecooker-program.svg"
+}

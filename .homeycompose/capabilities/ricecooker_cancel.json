@@ -1,0 +1,11 @@
+{
+  "type": "boolean",
+  "title": {
+    "en": "Cancel cooking",
+    "nl": "Koken annuleren"
+  },
+  "getable": false,
+  "setable": true,
+  "uiComponent": "button",
+  "icon": "/assets/icons/stop.svg"
+}

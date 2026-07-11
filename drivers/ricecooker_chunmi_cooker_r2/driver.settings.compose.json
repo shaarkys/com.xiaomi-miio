@@ -1,0 +1,41 @@
+[
+  {
+    "type": "group",
+    "label": {
+      "en": "Device data",
+      "nl": "Apparaatgegevens"
+    },
+    "children": [
+      {
+        "id": "error",
+        "type": "label",
+        "label": {
+          "en": "Fault",
+          "nl": "Storing"
+        },
+        "value": "No fault"
+      }
+    ]
+  },
+  {
+    "type": "group",
+    "label": {
+      "en": "Device settings",
+      "nl": "Apparaatinstellingen"
+    },
+    "children": [
+      {
+        "id": "address",
+        "$extends": "address"
+      },
+      {
+        "id": "token",
+        "$extends": "token"
+      },
+      {
+        "id": "polling",
+        "$extends": "polling"
+      }
+    ]
+  }
+]

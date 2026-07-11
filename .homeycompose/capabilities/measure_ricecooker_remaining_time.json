@@ -1,0 +1,17 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Remaining time",
+    "nl": "Resterende tijd"
+  },
+  "getable": true,
+  "setable": false,
+  "decimals": 0,
+  "min": 0,
+  "max": 4294967295,
+  "units": {
+    "en": "min",
+    "nl": "min"
+  },
+  "icon": "/assets/icons/ricecooker-time.svg"
+}

@@ -1,0 +1,42 @@
+{
+  "name": {
+    "en": "Joyami Smart Rice Cooker S1",
+    "nl": "Joyami Smart Rice Cooker S1",
+    "da": "Joyami Smart Rice Cooker S1",
+    "de": "Joyami Smart Rice Cooker S1",
+    "es": "Joyami Smart Rice Cooker S1",
+    "fr": "Joyami Smart Rice Cooker S1",
+    "it": "Joyami Smart Rice Cooker S1",
+    "no": "Joyami Smart Rice Cooker S1",
+    "sv": "Joyami Smart Rice Cooker S1",
+    "pl": "Joyami Smart Rice Cooker S1",
+    "ru": "Joyami Smart Rice Cooker S1",
+    "ko": "Joyami Smart Rice Cooker S1"
+  },
+  "description": {
+    "en": "Monitor cooking progress and control the Joyami Smart Rice Cooker S1.",
+    "nl": "Volg de kookvoortgang en bedien de Joyami Smart Rice Cooker S1."
+  },
+  "images": {
+    "small": "drivers/ricecooker_chunmi_cooker_r2/assets/images/small.png",
+    "large": "drivers/ricecooker_chunmi_cooker_r2/assets/images/large.png",
+    "xlarge": "drivers/ricecooker_chunmi_cooker_r2/assets/images/xlarge.png"
+  },
+  "class": "multicooker",
+  "$extends": [
+    "defaults"
+  ],
+  "capabilities": [
+    "ricecooker_status",
+    "ricecooker_program",
+    "ricecooker_start",
+    "ricecooker_cancel",
+    "ricecooker_auto_keep_warm",
+    "measure_temperature",
+    "measure_ricecooker_remaining_time",
+    "measure_ricecooker_cooking_time",
+    "measure_ricecooker_keep_warm_time",
+    "alarm_ricecooker_fault"
+  ],
+  "statusIndicator": "measure_ricecooker_remaining_time"
+}

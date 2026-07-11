@@ -3,6 +3,8 @@
 class Util {
 
   static modelToFriendlyNameWiFi = {
+    'chunmi.cooker.r2': 'Joyami Smart Rice Cooker S1',
+
     'xiaomi.repeater.v2': 'Xiaomi Mi WiFi Repeater 2',
     'xiaomi.repeater.v3': 'Xiaomi Mi WiFi Range Extender Pro',
     'xiaomi.repeater.rd10m': 'Xiaomi WiFi Range Extender N300',

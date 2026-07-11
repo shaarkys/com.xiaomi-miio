@@ -1,0 +1,20 @@
+{
+  "title": {
+    "en": "A fault occurred",
+    "nl": "Er is een storing opgetreden"
+  },
+  "tokens": [
+    {
+      "name": "fault",
+      "type": "string",
+      "title": {
+        "en": "Fault",
+        "nl": "Storing"
+      },
+      "example": "Bottom temperature sensor fault"
+    }
+  ],
+  "platforms": [
+    "local"
+  ]
+}

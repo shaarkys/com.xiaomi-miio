@@ -66,6 +66,39 @@ class XiaomiMiioApp extends Homey.App {
         return args.mode === state.mode;
       });
 
+    // RICE COOKER
+    this.homey.flow.getActionCard('ricecookerStartProgram')
+      .registerRunListener(async (args) => {
+        try {
+          return await args.device.startCooking(args.program);
+        } catch (error) {
+          return Promise.reject(error.message);
+        }
+      });
+
+    this.homey.flow.getActionCard('ricecookerCancelCooking')
+      .registerRunListener(async (args) => {
+        try {
+          return await args.device.cancelCooking();
+        } catch (error) {
+          return Promise.reject(error.message);
+        }
+      });
+
+    this.homey.flow.getActionCard('ricecookerSetAutoKeepWarm')
+      .registerRunListener(async (args) => {
+        try {
+          return await args.device.setAutoKeepWarm(Number(args.enabled) === 1);
+        } catch (error) {
+          return Promise.reject(error.message);
+        }
+      });
+
+    this.homey.flow.getConditionCard('ricecookerStatusIs')
+      .registerRunListener(async (args) => {
+        return args.device.getCapabilityValue('ricecooker_status') === args.status;
+      });
+
     // VACUUMS
     this.homey.flow.getActionCard('findVacuum')
       .registerRunListener(async (args) => {

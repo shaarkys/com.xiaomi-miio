@@ -1,0 +1,58 @@
+{
+  "title": {
+    "en": "Start cooking",
+    "nl": "Koken starten"
+  },
+  "titleFormatted": {
+    "en": "Start [[program]]",
+    "nl": "Start [[program]]"
+  },
+  "args": [
+    {
+      "name": "program",
+      "title": {
+        "en": "Program",
+        "nl": "Programma"
+      },
+      "type": "dropdown",
+      "values": [
+        {
+          "id": "1",
+          "title": {
+            "en": "Fine cook",
+            "nl": "Fijn koken"
+          }
+        },
+        {
+          "id": "2",
+          "title": {
+            "en": "Quick cook",
+            "nl": "Snel koken"
+          }
+        },
+        {
+          "id": "3",
+          "title": {
+            "en": "Congee",
+            "nl": "Rijstpap"
+          }
+        },
+        {
+          "id": "4",
+          "title": {
+            "en": "Keep warm",
+            "nl": "Warmhouden"
+          }
+        }
+      ]
+    },
+    {
+      "name": "device",
+      "type": "device",
+      "filter": "driver_id=ricecooker_chunmi_cooker_r2"
+    }
+  ],
+  "platforms": [
+    "local"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "type": "boolean",
+  "title": {
+    "en": "Automatic keep warm",
+    "nl": "Automatisch warmhouden"
+  },
+  "getable": true,
+  "setable": true,
+  "uiComponent": "toggle",
+  "icon": "/assets/icons/ricecooker-keep-warm.svg"
+}

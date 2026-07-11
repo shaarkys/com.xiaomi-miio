@@ -1,0 +1,10 @@
+{
+  "type": "boolean",
+  "title": {
+    "en": "Rice cooker fault",
+    "nl": "Rijstkokerstoring"
+  },
+  "getable": true,
+  "setable": false,
+  "icon": "/assets/icons/ricecooker-fault.svg"
+}

@@ -1,0 +1,44 @@
+{
+  "title": {
+    "en": "Set automatic keep warm",
+    "nl": "Automatisch warmhouden instellen"
+  },
+  "titleFormatted": {
+    "en": "Turn automatic keep warm [[enabled]]",
+    "nl": "Automatisch warmhouden [[enabled]]"
+  },
+  "args": [
+    {
+      "name": "enabled",
+      "title": {
+        "en": "State",
+        "nl": "Status"
+      },
+      "type": "dropdown",
+      "values": [
+        {
+          "id": "1",
+          "title": {
+            "en": "On",
+            "nl": "Aan"
+          }
+        },
+        {
+          "id": "0",
+          "title": {
+            "en": "Off",
+            "nl": "Uit"
+          }
+        }
+      ]
+    },
+    {
+      "name": "device",
+      "type": "device",
+      "filter": "driver_id=ricecooker_chunmi_cooker_r2"
+    }
+  ],
+  "platforms": [
+    "local"
+  ]
+}
