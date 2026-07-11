@@ -187,7 +187,7 @@
       "게이트웨이"
     ]
   },
-  "version": "3.4.92",
+  "version": "3.4.93",
   "compatibility": ">=12.2.0",
   "platforms": [
     "local"
@@ -1755,6 +1755,47 @@
         ]
       },
       {
+        "title": {
+          "en": "A fault occurred",
+          "nl": "Er is een storing opgetreden"
+        },
+        "tokens": [
+          {
+            "name": "fault",
+            "type": "string",
+            "title": {
+              "en": "Fault",
+              "nl": "Storing"
+            },
+            "example": "Bottom temperature sensor fault"
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "id": "ricecookerFault"
+      },
+      {
+        "title": {
+          "en": "Cooking finished",
+          "nl": "Koken is voltooid"
+        },
+        "platforms": [
+          "local"
+        ],
+        "id": "ricecookerFinished"
+      },
+      {
+        "title": {
+          "en": "Cooking started",
+          "nl": "Koken is gestart"
+        },
+        "platforms": [
+          "local"
+        ],
+        "id": "ricecookerStarted"
+      },
+      {
         "id": "rightSwitchOff",
         "title": {
           "en": "Right Switch Off",
@@ -2958,6 +2999,65 @@
         "platforms": [
           "local"
         ]
+      },
+      {
+        "title": {
+          "en": "Cooking status is",
+          "nl": "Kookstatus is"
+        },
+        "titleFormatted": {
+          "en": "Cooking status is [[status]]",
+          "nl": "Kookstatus is [[status]]"
+        },
+        "args": [
+          {
+            "name": "status",
+            "title": {
+              "en": "Status",
+              "nl": "Status"
+            },
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "standby",
+                "title": {
+                  "en": "Standby",
+                  "nl": "Stand-by"
+                }
+              },
+              {
+                "id": "cooking",
+                "title": {
+                  "en": "Cooking",
+                  "nl": "Koken"
+                }
+              },
+              {
+                "id": "keep_warm",
+                "title": {
+                  "en": "Keep warm",
+                  "nl": "Warmhouden"
+                }
+              },
+              {
+                "id": "scheduled",
+                "title": {
+                  "en": "Scheduled",
+                  "nl": "Gepland"
+                }
+              }
+            ]
+          },
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=ricecooker_chunmi_cooker_r2"
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "id": "ricecookerStatusIs"
       },
       {
         "id": "rightSwitch",
@@ -9125,6 +9225,127 @@
           }
         ],
         "id": "remote_send_ir_code"
+      },
+      {
+        "title": {
+          "en": "Cancel cooking",
+          "nl": "Koken annuleren"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=ricecooker_chunmi_cooker_r2"
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "id": "ricecookerCancelCooking"
+      },
+      {
+        "title": {
+          "en": "Set automatic keep warm",
+          "nl": "Automatisch warmhouden instellen"
+        },
+        "titleFormatted": {
+          "en": "Turn automatic keep warm [[enabled]]",
+          "nl": "Automatisch warmhouden [[enabled]]"
+        },
+        "args": [
+          {
+            "name": "enabled",
+            "title": {
+              "en": "State",
+              "nl": "Status"
+            },
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "1",
+                "title": {
+                  "en": "On",
+                  "nl": "Aan"
+                }
+              },
+              {
+                "id": "0",
+                "title": {
+                  "en": "Off",
+                  "nl": "Uit"
+                }
+              }
+            ]
+          },
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=ricecooker_chunmi_cooker_r2"
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "id": "ricecookerSetAutoKeepWarm"
+      },
+      {
+        "title": {
+          "en": "Start cooking",
+          "nl": "Koken starten"
+        },
+        "titleFormatted": {
+          "en": "Start [[program]]",
+          "nl": "Start [[program]]"
+        },
+        "args": [
+          {
+            "name": "program",
+            "title": {
+              "en": "Program",
+              "nl": "Programma"
+            },
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "1",
+                "title": {
+                  "en": "Fine cook",
+                  "nl": "Fijn koken"
+                }
+              },
+              {
+                "id": "2",
+                "title": {
+                  "en": "Quick cook",
+                  "nl": "Snel koken"
+                }
+              },
+              {
+                "id": "3",
+                "title": {
+                  "en": "Congee",
+                  "nl": "Rijstpap"
+                }
+              },
+              {
+                "id": "4",
+                "title": {
+                  "en": "Keep warm",
+                  "nl": "Warmhouden"
+                }
+              }
+            ]
+          },
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=ricecooker_chunmi_cooker_r2"
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "id": "ricecookerStartProgram"
       },
       {
         "id": "rightSwitchOff",
@@ -26659,6 +26880,157 @@
       ]
     },
     {
+      "icon": "/drivers/ricecooker_chunmi_cooker_r2/assets/icon.svg",
+      "pair": [
+        {
+          "id": "start",
+          "navigation": {
+            "next": "pair"
+          }
+        },
+        {
+          "id": "pair"
+        },
+        {
+          "id": "add_device"
+        }
+      ],
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [
+        "lan"
+      ],
+      "name": {
+        "en": "Joyami Smart Rice Cooker S1",
+        "nl": "Joyami Smart Rice Cooker S1",
+        "da": "Joyami Smart Rice Cooker S1",
+        "de": "Joyami Smart Rice Cooker S1",
+        "es": "Joyami Smart Rice Cooker S1",
+        "fr": "Joyami Smart Rice Cooker S1",
+        "it": "Joyami Smart Rice Cooker S1",
+        "no": "Joyami Smart Rice Cooker S1",
+        "sv": "Joyami Smart Rice Cooker S1",
+        "pl": "Joyami Smart Rice Cooker S1",
+        "ru": "Joyami Smart Rice Cooker S1",
+        "ko": "Joyami Smart Rice Cooker S1"
+      },
+      "description": {
+        "en": "Monitor cooking progress and control the Joyami Smart Rice Cooker S1.",
+        "nl": "Volg de kookvoortgang en bedien de Joyami Smart Rice Cooker S1."
+      },
+      "images": {
+        "small": "drivers/ricecooker_chunmi_cooker_r2/assets/images/small.png",
+        "large": "drivers/ricecooker_chunmi_cooker_r2/assets/images/large.png",
+        "xlarge": "drivers/ricecooker_chunmi_cooker_r2/assets/images/xlarge.png"
+      },
+      "class": "multicooker",
+      "capabilities": [
+        "ricecooker_status",
+        "ricecooker_program",
+        "ricecooker_start",
+        "ricecooker_cancel",
+        "ricecooker_auto_keep_warm",
+        "measure_temperature",
+        "measure_ricecooker_remaining_time",
+        "measure_ricecooker_cooking_time",
+        "measure_ricecooker_keep_warm_time",
+        "alarm_ricecooker_fault"
+      ],
+      "statusIndicator": "measure_ricecooker_remaining_time",
+      "id": "ricecooker_chunmi_cooker_r2",
+      "settings": [
+        {
+          "type": "group",
+          "label": {
+            "en": "Device data",
+            "nl": "Apparaatgegevens"
+          },
+          "children": [
+            {
+              "id": "error",
+              "type": "label",
+              "label": {
+                "en": "Fault",
+                "nl": "Storing"
+              },
+              "value": "No fault"
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Device settings",
+            "nl": "Apparaatinstellingen"
+          },
+          "children": [
+            {
+              "id": "address",
+              "type": "text",
+              "value": "0.0.0.0",
+              "label": {
+                "en": "IP Address",
+                "nl": "IP adres",
+                "da": "IP-adresse",
+                "de": "IP-Adresse",
+                "es": "Dirección IP",
+                "fr": "Adresse IP",
+                "it": "Indirizzo IP",
+                "no": "IP-adresse",
+                "sv": "IP-adress",
+                "pl": "Adres IP",
+                "ru": "IP-адрес",
+                "ko": "IP 주소"
+              }
+            },
+            {
+              "id": "token",
+              "type": "text",
+              "value": "",
+              "label": {
+                "en": "Mi Device Token",
+                "nl": "Mi Apparaat Token",
+                "da": "Mi Enheds Token",
+                "de": "Mi Gerätetoken",
+                "es": "Token del Dispositivo Mi",
+                "fr": "Jeton de l'Appareil Mi",
+                "it": "Token Dispositivo Mi",
+                "no": "Mi Enhet Token",
+                "sv": "Mi Enhetstoken",
+                "pl": "Token Urządzenia Mi",
+                "ru": "Токен Устройства Mi",
+                "ko": "Mi 기기 토큰"
+              }
+            },
+            {
+              "id": "polling",
+              "type": "number",
+              "value": 60,
+              "attr": {
+                "min": 5,
+                "max": 3600
+              },
+              "label": {
+                "en": "Polling Frequency",
+                "nl": "Polling frequentie",
+                "da": "Polling Frekvens",
+                "de": "Abfragefrequenz",
+                "es": "Frecuencia de sondeo",
+                "fr": "Fréquence de sondage",
+                "it": "Frequenza di polling",
+                "no": "Polling Frekvens",
+                "sv": "Pollingfrekvens",
+                "pl": "Częstotliwość odpytywania",
+                "ru": "Частота опроса",
+                "ko": "폴링 빈도"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
       "icon": "/drivers/smoke_sensor/assets/icon.svg",
       "pair": [
         {
@@ -31669,6 +32041,16 @@
       "setable": false,
       "icon": "/assets/icons/repeater-fault.svg"
     },
+    "alarm_ricecooker_fault": {
+      "type": "boolean",
+      "title": {
+        "en": "Rice cooker fault",
+        "nl": "Rijstkokerstoring"
+      },
+      "getable": true,
+      "setable": false,
+      "icon": "/assets/icons/ricecooker-fault.svg"
+    },
     "alarm_sensor_dirty_time": {
       "title": {
         "en": "Sensor Alert",
@@ -33277,6 +33659,57 @@
       },
       "icon": "/assets/icons/repeater-upload.svg"
     },
+    "measure_ricecooker_cooking_time": {
+      "type": "number",
+      "title": {
+        "en": "Cooking time",
+        "nl": "Kooktijd"
+      },
+      "getable": true,
+      "setable": false,
+      "decimals": 0,
+      "min": 0,
+      "max": 1440,
+      "units": {
+        "en": "min",
+        "nl": "min"
+      },
+      "icon": "/assets/icons/ricecooker-time.svg"
+    },
+    "measure_ricecooker_keep_warm_time": {
+      "type": "number",
+      "title": {
+        "en": "Keep-warm time",
+        "nl": "Warmhoudtijd"
+      },
+      "getable": true,
+      "setable": false,
+      "decimals": 0,
+      "min": 0,
+      "max": 1440,
+      "units": {
+        "en": "min",
+        "nl": "min"
+      },
+      "icon": "/assets/icons/ricecooker-keep-warm.svg"
+    },
+    "measure_ricecooker_remaining_time": {
+      "type": "number",
+      "title": {
+        "en": "Remaining time",
+        "nl": "Resterende tijd"
+      },
+      "getable": true,
+      "setable": false,
+      "decimals": 0,
+      "min": 0,
+      "max": 4294967295,
+      "units": {
+        "en": "min",
+        "nl": "min"
+      },
+      "icon": "/assets/icons/ricecooker-time.svg"
+    },
     "measure_smoke_density": {
       "title": {
         "en": "Smoke Density",
@@ -33870,6 +34303,129 @@
       "setable": true,
       "uiComponent": "toggle",
       "icon": "/assets/icons/repeater-roaming.svg"
+    },
+    "ricecooker_auto_keep_warm": {
+      "type": "boolean",
+      "title": {
+        "en": "Automatic keep warm",
+        "nl": "Automatisch warmhouden"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "toggle",
+      "icon": "/assets/icons/ricecooker-keep-warm.svg"
+    },
+    "ricecooker_cancel": {
+      "type": "boolean",
+      "title": {
+        "en": "Cancel cooking",
+        "nl": "Koken annuleren"
+      },
+      "getable": false,
+      "setable": true,
+      "uiComponent": "button",
+      "icon": "/assets/icons/stop.svg"
+    },
+    "ricecooker_program": {
+      "type": "enum",
+      "title": {
+        "en": "Cooking program",
+        "nl": "Kookprogramma"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "picker",
+      "values": [
+        {
+          "id": "1",
+          "title": {
+            "en": "Fine cook",
+            "nl": "Fijn koken"
+          }
+        },
+        {
+          "id": "2",
+          "title": {
+            "en": "Quick cook",
+            "nl": "Snel koken"
+          }
+        },
+        {
+          "id": "3",
+          "title": {
+            "en": "Congee",
+            "nl": "Rijstpap"
+          }
+        },
+        {
+          "id": "4",
+          "title": {
+            "en": "Keep warm",
+            "nl": "Warmhouden"
+          }
+        }
+      ],
+      "icon": "/assets/icons/ricecooker-program.svg"
+    },
+    "ricecooker_start": {
+      "type": "boolean",
+      "title": {
+        "en": "Start cooking",
+        "nl": "Koken starten"
+      },
+      "getable": false,
+      "setable": true,
+      "uiComponent": "button",
+      "icon": "/assets/icons/start.svg"
+    },
+    "ricecooker_status": {
+      "type": "enum",
+      "title": {
+        "en": "Cooking status",
+        "nl": "Kookstatus"
+      },
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "uiComponent": "sensor",
+      "values": [
+        {
+          "id": "standby",
+          "title": {
+            "en": "Standby",
+            "nl": "Stand-by"
+          }
+        },
+        {
+          "id": "cooking",
+          "title": {
+            "en": "Cooking",
+            "nl": "Koken"
+          }
+        },
+        {
+          "id": "keep_warm",
+          "title": {
+            "en": "Keep warm",
+            "nl": "Warmhouden"
+          }
+        },
+        {
+          "id": "scheduled",
+          "title": {
+            "en": "Scheduled",
+            "nl": "Gepland"
+          }
+        },
+        {
+          "id": "unknown",
+          "title": {
+            "en": "Unknown",
+            "nl": "Onbekend"
+          }
+        }
+      ],
+      "icon": "/assets/icons/ricecooker-status.svg"
     },
     "vacuum_dreame_fanspeed": {
       "type": "enum",

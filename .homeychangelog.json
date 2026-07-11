@@ -511,5 +511,8 @@
   },
   "3.4.92": {
     "en": "Added support for Xiaomi WiFi Repeaters v2, v3, and N300 (RD10M), including network metrics, status, and indicator controls."
+  },
+  "3.4.93": {
+    "en": "Added support for the Joyami Smart Rice Cooker S1 (chunmi.cooker.r2) with cooking programs, status, temperature and time monitoring, automatic keep-warm, fault alerts, and Flow controls."
   }
 }
