@@ -6,5 +6,6 @@
   "units": { "en": "days" },
   "decimals": 0,
   "min": 0,
-  "uiComponent": "sensor"
+  "uiComponent": "sensor",
+  "icon": "/assets/icons/filter_left.svg"
 }

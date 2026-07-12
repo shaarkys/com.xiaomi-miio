@@ -24700,17 +24700,16 @@
       "class": "petfeeder",
       "capabilities": [
         "petfeeder_foodlevel",
-        "petfeeder_eaten_food_today",
         "petfeeder_food_out_status",
+        "petfeeder_food_stuck_status",
         "petfeeder_food_out_progress",
         "petfeeder_heap_status",
         "petfeeder_status_mode",
         "petfeeder_busy",
-        "petfeeder_food_in_bowl",
-        "petfeeder_schedule_progress",
-        "measure_desiccant",
-        "measure_desiccant_time",
-        "alarm_desiccant_low"
+        "petfeeder_bowl_level",
+        "petfeeder_eaten_food_today",
+        "petfeeder_eaten_food_daily",
+        "petfeeder_schedule_progress"
       ],
       "id": "petfeeder_mmgg_miot",
       "settings": [
@@ -32131,7 +32130,8 @@
       },
       "getable": true,
       "setable": false,
-      "uiComponent": "sensor"
+      "uiComponent": "sensor",
+      "icon": "/assets/icons/alarm_generic.svg"
     },
     "alarm_filter_work_time": {
       "title": {
@@ -33631,7 +33631,8 @@
       "decimals": 0,
       "min": 0,
       "max": 100,
-      "uiComponent": "sensor"
+      "uiComponent": "sensor",
+      "icon": "/assets/icons/filter_left.svg"
     },
     "measure_desiccant_time": {
       "type": "number",
@@ -33645,7 +33646,8 @@
       },
       "decimals": 0,
       "min": 0,
-      "uiComponent": "sensor"
+      "uiComponent": "sensor",
+      "icon": "/assets/icons/filter_left.svg"
     },
     "measure_filter_days_left": {
       "type": "number",
@@ -33993,6 +33995,41 @@
       },
       "insights": true
     },
+    "petfeeder_bowl_level": {
+      "type": "enum",
+      "title": {
+        "en": "Food level in bowl"
+      },
+      "values": [
+        {
+          "id": "empty",
+          "title": {
+            "en": "Empty"
+          }
+        },
+        {
+          "id": "low",
+          "title": {
+            "en": "Low"
+          }
+        },
+        {
+          "id": "normal",
+          "title": {
+            "en": "Normal"
+          }
+        },
+        {
+          "id": "unknown",
+          "title": {
+            "en": "Unknown"
+          }
+        }
+      ],
+      "getable": true,
+      "setable": false,
+      "icon": "/assets/icons/petfeeder_foodlevel.svg"
+    },
     "petfeeder_busy": {
       "type": "boolean",
       "title": {
@@ -34007,7 +34044,30 @@
       },
       "insightsTitleFalse": {
         "en": "Idle"
-      }
+      },
+      "icon": "/assets/icons/start.svg"
+    },
+    "petfeeder_eaten_food_daily": {
+      "type": "number",
+      "title": {
+        "en": "Food consumed previous day"
+      },
+      "desc": {
+        "en": "Final locally calculated food consumption for the previous day"
+      },
+      "getable": true,
+      "setable": false,
+      "units": {
+        "en": "g"
+      },
+      "decimals": 0,
+      "min": 0,
+      "uiComponent": "sensor",
+      "insights": true,
+      "insightsTitle": {
+        "en": "Daily food consumption"
+      },
+      "icon": "/assets/icons/food-quantity.svg"
     },
     "petfeeder_eaten_food_today": {
       "type": "number",
@@ -34015,7 +34075,7 @@
         "en": "Eaten Food Today"
       },
       "desc": {
-        "en": "Food eaten since midnight"
+        "en": "Food consumed since midnight, calculated locally from small decreases in feeder weight"
       },
       "getable": true,
       "setable": false,
@@ -34028,7 +34088,8 @@
       "insights": true,
       "insightsTitle": {
         "en": "Food eaten today"
-      }
+      },
+      "icon": "/assets/icons/food-quantity.svg"
     },
     "petfeeder_eaten_food_total": {
       "type": "number",
@@ -34063,7 +34124,8 @@
       "insightsTitle": {
         "en": "Food in bowl"
       },
-      "uiComponent": "sensor"
+      "uiComponent": "sensor",
+      "icon": "/assets/icons/petfeeder_foodlevel.svg"
     },
     "petfeeder_food_out_progress": {
       "type": "number",
@@ -34078,7 +34140,8 @@
       "min": 0,
       "max": 100,
       "decimals": 0,
-      "uiComponent": "sensor"
+      "uiComponent": "sensor",
+      "icon": "/assets/icons/food-quantity.svg"
     },
     "petfeeder_food_out_status": {
       "type": "enum",
@@ -34101,7 +34164,37 @@
           }
         }
       ],
-      "uiComponent": "picker"
+      "uiComponent": "picker",
+      "icon": "/assets/icons/alarm_generic.svg"
+    },
+    "petfeeder_food_stuck_status": {
+      "type": "enum",
+      "title": {
+        "en": "Food stuck status"
+      },
+      "getable": true,
+      "setable": false,
+      "values": [
+        {
+          "id": "ok",
+          "title": {
+            "en": "OK"
+          }
+        },
+        {
+          "id": "stuck",
+          "title": {
+            "en": "Food stuck"
+          }
+        },
+        {
+          "id": "unknown",
+          "title": {
+            "en": "Unknown"
+          }
+        }
+      ],
+      "icon": "/assets/icons/alarm_generic.svg"
     },
     "petfeeder_foodlevel": {
       "type": "enum",
@@ -34164,7 +34257,8 @@
           }
         }
       ],
-      "uiComponent": "picker"
+      "uiComponent": "picker",
+      "icon": "/assets/icons/alarm_generic.svg"
     },
     "petfeeder_schedule_progress": {
       "type": "number",
@@ -34179,7 +34273,8 @@
       "max": 100,
       "getable": true,
       "setable": false,
-      "uiComponent": "sensor"
+      "uiComponent": "sensor",
+      "icon": "/assets/icons/target_time.svg"
     },
     "petfeeder_status_mode": {
       "type": "enum",
@@ -34220,7 +34315,8 @@
           }
         }
       ],
-      "uiComponent": "picker"
+      "uiComponent": "picker",
+      "icon": "/assets/icons/start.svg"
     },
     "petwaterdispenser_mmgg_mode": {
       "type": "enum",

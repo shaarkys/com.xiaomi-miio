@@ -1,0 +1,35 @@
+{
+  "type": "enum",
+  "title": {
+    "en": "Food level in bowl"
+  },
+  "values": [
+    {
+      "id": "empty",
+      "title": {
+        "en": "Empty"
+      }
+    },
+    {
+      "id": "low",
+      "title": {
+        "en": "Low"
+      }
+    },
+    {
+      "id": "normal",
+      "title": {
+        "en": "Normal"
+      }
+    },
+    {
+      "id": "unknown",
+      "title": {
+        "en": "Unknown"
+      }
+    }
+  ],
+  "getable": true,
+  "setable": false,
+  "icon": "/assets/icons/petfeeder_foodlevel.svg"
+}

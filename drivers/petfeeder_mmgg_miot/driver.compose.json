@@ -9,16 +9,15 @@
   "$extends": ["defaults"],
   "capabilities": [
     "petfeeder_foodlevel",
-    "petfeeder_eaten_food_today",
     "petfeeder_food_out_status",
+    "petfeeder_food_stuck_status",
     "petfeeder_food_out_progress",
     "petfeeder_heap_status",
     "petfeeder_status_mode",
     "petfeeder_busy",
-    "petfeeder_food_in_bowl",
-    "petfeeder_schedule_progress",
-    "measure_desiccant",
-    "measure_desiccant_time",
-    "alarm_desiccant_low"
+    "petfeeder_bowl_level",
+    "petfeeder_eaten_food_today",
+    "petfeeder_eaten_food_daily",
+    "petfeeder_schedule_progress"
   ]
 }

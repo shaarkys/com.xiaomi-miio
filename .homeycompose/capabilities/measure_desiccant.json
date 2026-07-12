@@ -7,5 +7,6 @@
   "decimals": 0,
   "min": 0,
   "max": 100,
-  "uiComponent": "sensor"
+  "uiComponent": "sensor",
+  "icon": "/assets/icons/filter_left.svg"
 }

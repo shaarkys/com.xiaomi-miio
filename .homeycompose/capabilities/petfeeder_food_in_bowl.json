@@ -14,5 +14,6 @@
   "insightsTitle": {
     "en": "Food in bowl"
   },
-  "uiComponent": "sensor"
+  "uiComponent": "sensor",
+  "icon": "/assets/icons/petfeeder_foodlevel.svg"
 }

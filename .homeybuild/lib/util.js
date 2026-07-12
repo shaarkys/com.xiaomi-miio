@@ -233,6 +233,7 @@ class Util {
     'philips.light.downlight': 'Philips Down Light',
     'philips.light.strip5': 'Philips / Xiaomi Smart Lightstrip Pro',
     'yeelink.light.color1': 'Yeelight Color Bulb',
+    'yeelink.light.bslamp2': 'Xiaomi Mi Bedside Lamp 2',
     'yeelink.light.ceil43': 'Yeelight Arwen Ceiling Light D',
     'yeelink.light.lamp22': 'Xiaomi Monitor Light Bar S1',
 
@@ -253,7 +254,7 @@ class Util {
     'mmgg.feeder.inland': 'Xiaomi Smart Pet Food Feeder',
     'mmgg.feeder.spec': 'Xiaowan Smart Pet Feeder',
     'xiaomi.feeder.pi2001': 'Xiaomi Smart Pet Food Feeder 2',
-    'xiaomi.feeder.iv2001': 'Mi Smart Pet Feeder 2 CN',
+    'xiaomi.feeder.iv2001': 'Xiaomi Smart Pet Food Feeder 2',
 
     'careli.fryer.maf05a': 'Xiaomi Smart Air Fryer Pro 4L',
     'careli.fryer.ybaf04': 'KitchenMi Smart Air Fryer 6007WAB',

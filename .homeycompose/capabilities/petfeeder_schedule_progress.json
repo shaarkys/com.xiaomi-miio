@@ -11,5 +11,6 @@
   "max": 100,
   "getable": true,
   "setable": false,
-  "uiComponent": "sensor"
+  "uiComponent": "sensor",
+  "icon": "/assets/icons/target_time.svg"
 }

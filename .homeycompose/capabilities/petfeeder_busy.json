@@ -12,5 +12,6 @@
   },
   "insightsTitleFalse": {
     "en": "Idle"
-  }
+  },
+  "icon": "/assets/icons/start.svg"
 }

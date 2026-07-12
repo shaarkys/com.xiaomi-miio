@@ -11,5 +11,6 @@
   "min": 0,
   "max": 100,
   "decimals": 0,
-  "uiComponent": "sensor"
+  "uiComponent": "sensor",
+  "icon": "/assets/icons/food-quantity.svg"
 }

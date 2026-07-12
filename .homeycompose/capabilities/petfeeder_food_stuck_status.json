@@ -1,0 +1,29 @@
+{
+  "type": "enum",
+  "title": {
+    "en": "Food stuck status"
+  },
+  "getable": true,
+  "setable": false,
+  "values": [
+    {
+      "id": "ok",
+      "title": {
+        "en": "OK"
+      }
+    },
+    {
+      "id": "stuck",
+      "title": {
+        "en": "Food stuck"
+      }
+    },
+    {
+      "id": "unknown",
+      "title": {
+        "en": "Unknown"
+      }
+    }
+  ],
+  "icon": "/assets/icons/alarm_generic.svg"
+}

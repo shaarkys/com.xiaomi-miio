@@ -1,10 +1,10 @@
 {
   "type": "number",
   "title": {
-    "en": "Eaten Food Today"
+    "en": "Food consumed previous day"
   },
   "desc": {
-    "en": "Food consumed since midnight, calculated locally from small decreases in feeder weight"
+    "en": "Final locally calculated food consumption for the previous day"
   },
   "getable": true,
   "setable": false,
@@ -16,7 +16,7 @@
   "uiComponent": "sensor",
   "insights": true,
   "insightsTitle": {
-    "en": "Food eaten today"
+    "en": "Daily food consumption"
   },
   "icon": "/assets/icons/food-quantity.svg"
 }
