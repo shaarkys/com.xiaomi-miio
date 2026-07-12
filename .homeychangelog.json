@@ -520,5 +520,8 @@
   },
   "3.4.95": {
     "en": "Added support for Xiaomi Mi Bedside Lamp 2 (yeelink.light.bslamp2 / MJCTD02YL), including power, brightness, color temperature, and RGB color controls."
+  },
+  "3.4.96": {
+    "en": "Added reliable local telemetry, capability icons, bowl and feeder status sensors, and locally calculated daily food consumption statistics for Xiaomi Smart Pet Food Feeder 2."
   }
 }
