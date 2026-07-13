@@ -187,7 +187,7 @@
       "게이트웨이"
     ]
   },
-  "version": "3.4.96",
+  "version": "3.4.97",
   "compatibility": ">=12.2.0",
   "platforms": [
     "local"
@@ -34199,18 +34199,18 @@
     "petfeeder_foodlevel": {
       "type": "enum",
       "title": {
-        "en": "Foodlevel",
-        "nl": "Voedselniveau",
-        "da": "Madniveau",
-        "de": "Futterstand",
-        "es": "Nivel de comida",
-        "fr": "Niveau de nourriture",
-        "it": "Livello di cibo",
-        "no": "Matenivå",
-        "sv": "Matnivå",
-        "pl": "Poziom jedzenia",
-        "ru": "Уровень еды",
-        "ko": "음식 수준"
+        "en": "Container food level",
+        "nl": "Voedselniveau reservoir",
+        "da": "Foderniveau i beholder",
+        "de": "Füllstand im Futterbehälter",
+        "es": "Nivel de comida del depósito",
+        "fr": "Niveau du réservoir de nourriture",
+        "it": "Livello cibo nel contenitore",
+        "no": "Fôrnivå i beholder",
+        "sv": "Matnivå i behållaren",
+        "pl": "Poziom karmy w pojemniku",
+        "ru": "Уровень корма в контейнере",
+        "ko": "사료통 음식 수준"
       },
       "values": [
         {

@@ -265,6 +265,8 @@ class PetFeederMiotDevice extends DeviceBase {
                 lastDesiccantBranchLogged: undefined,
                 lastDesiccantPct: undefined,
                 lastDesiccantDays: undefined,
+                lastDiagnosticSignature: undefined,
+                lastDiagnosticLogAt: 0,
                 lastTimeline: { excerpt: undefined, at: 0 }
             };
 
@@ -402,12 +404,16 @@ class PetFeederMiotDevice extends DeviceBase {
 
             // Short one-time debug of available default props
             if (!this._state.once.has('debug_dump_defaults')) {
-                this._state.once.add('debug_dump_defaults');
                 const summary = Object.entries(got)
                     .filter(([, r]) => r && r.code === 0)
                     .map(([k, r]) => `${k}@${r.siid}/${r.piid}=${JSON.stringify(r.value)}`);
-                this.log('[DEBUG] available defaults:', summary.join(', ') || 'none');
+                if (summary.length > 0) {
+                    this._state.once.add('debug_dump_defaults');
+                    this.log('[DEBUG] available defaults:', summary.join(', '));
+                }
             }
+
+            this._logIv2001Diagnostics(got);
 
             // Publish values
             await this._updateFaultAndFoodLevel(got);
@@ -863,8 +869,13 @@ class PetFeederMiotDevice extends DeviceBase {
             // Use small batches to avoid timeouts or rate limits
             const CHUNK_SIZE = 14;
             const results = [];
+            const batchCount = Math.ceil(requestArray.length / CHUNK_SIZE);
             for (let i = 0; i < requestArray.length; i += CHUNK_SIZE) {
                 const batch = requestArray.slice(i, i + CHUNK_SIZE);
+                const batchNumber = Math.floor(i / CHUNK_SIZE) + 1;
+                const batchLabel = batch
+                    .map((entry) => `${entry.did || 'property'}@${entry.siid}/${entry.piid}`)
+                    .join(', ');
                 try {
                     const res = await this._callMiio('get_properties', batch, { retries: 1 }, 5000);
                     if (Array.isArray(res)) {
@@ -875,7 +886,10 @@ class PetFeederMiotDevice extends DeviceBase {
                         for (let k = 0; k < batch.length; k++) results.push({});
                     }
                 } catch (e) {
-                    this._warn('[MIOT] get_properties error (chunk):', e?.message);
+                    this._warn(
+                        `[MIOT] get_properties batch ${batchNumber}/${batchCount} failed [${batchLabel}]:`,
+                        e?.message
+                    );
                     for (let k = 0; k < batch.length; k++) results.push({});
                 }
             }
@@ -927,6 +941,32 @@ class PetFeederMiotDevice extends DeviceBase {
             this._warn('[FEED] manual feed error:', message);
             throw err;
         }
+    }
+
+    _logIv2001Diagnostics(g) {
+        if (this._presetId !== 'iv2001' || !this._state) return;
+
+        const diagnostics = [
+            ['container_food_level', g.foodlevel],
+            ['bowl_weight_sample', g.bowl_weight_sample],
+            ['bowl_level', g.bowl_level_status],
+            ['low_food_intake_threshold', g.setting_low_food_intake_threshold],
+            ['feeding_status', g.feeding_status]
+        ];
+        const summary = diagnostics.map(([name, entry]) => {
+            if (!entry) return `${name}=missing`;
+            return `${name}@${entry.siid}/${entry.piid}{code=${entry.code},value=${JSON.stringify(entry.value)}}`;
+        });
+        const signature = summary.join('|');
+        const now = Date.now();
+        const shouldLog =
+            signature !== this._state.lastDiagnosticSignature ||
+            now - (this._state.lastDiagnosticLogAt || 0) >= 60 * 60 * 1000;
+        if (!shouldLog) return;
+
+        this.log('[DIAG] feeder local values:', summary.join(', '));
+        this._state.lastDiagnosticSignature = signature;
+        this._state.lastDiagnosticLogAt = now;
     }
 
     async _updateIv2001Consumption(sample, dispenserIdle) {
