@@ -1086,9 +1086,6 @@ class PetFeederMiotDevice extends DeviceBase {
                 {}
             );
             this.log('[EATEN] trigger:', { today_g: todayValue, delta_g: deltaValue });
-            if (deltaValue > 0) {
-                await this._timeline(`Pet ate ${deltaValue} g (today ${todayValue} g)`);
-            }
         } catch (e) {
             this._warn('[EATEN] trigger error:', e?.message);
         }
