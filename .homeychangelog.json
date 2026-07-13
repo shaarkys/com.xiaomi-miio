@@ -535,5 +535,8 @@
   },
   "3.4.100": {
     "en": "Add new Advanced Xiaomi Smart Fan MIoT driver with model-specific controls for Xiaomi fan models, without changing existing paired devices."
+  },
+  "3.5.0": {
+    "en": "Add new Advanced Xiaomi Smart Fan MIoT driver with model-specific controls for Xiaomi fan models, without changing existing paired devices."
   }
 }
