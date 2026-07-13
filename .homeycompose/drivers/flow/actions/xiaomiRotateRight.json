@@ -1,0 +1,32 @@
+{
+  "id": "xiaomiRotateRight",
+  "title": {
+    "en": "Rotate fan to the right",
+    "nl": "Draai ventilator naar rechts",
+    "da": "Drej ventilator til højre",
+    "de": "Lüfter nach rechts drehen",
+    "es": "Girar ventilador hacia la derecha",
+    "fr": "Tourner le ventilateur vers la droite",
+    "it": "Ruota il ventilatore verso destra",
+    "no": "Drei viften til høyre",
+    "sv": "Vrid fläkten åt höger",
+    "pl": "Obróć wentylator w prawo",
+    "ru": "Повернуть вентилятор вправо",
+    "ko": "선풍기를 오른쪽으로 회전"
+  },
+  "titleFormatted": {
+    "en": "Rotate fan to the right",
+    "nl": "Draai ventilator naar rechts",
+    "da": "Drej ventilator til højre",
+    "de": "Lüfter nach rechts drehen",
+    "es": "Girar ventilador hacia la derecha",
+    "fr": "Tourner le ventilateur vers la droite",
+    "it": "Ruota il ventilatore verso destra",
+    "no": "Drei viften til høyre",
+    "sv": "Vrid fläkten åt höger",
+    "pl": "Obróć wentylator w prawo",
+    "ru": "Повернуть вентилятор вправо",
+    "ko": "선풍기를 오른쪽으로 회전"
+  },
+  "platforms": ["local"]
+}

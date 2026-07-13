@@ -1,0 +1,53 @@
+{
+  "id": "xiaomiSetHorizontalAngle",
+  "$filter": "capabilities=fan_xiaomi_horizontal_angle",
+  "title": {
+    "en": "Change Horizontal Swing Angle",
+    "nl": "Horizontale draaihoek wijzigen",
+    "da": "Skift vandret svingvinkel",
+    "de": "Horizontalen Schwenkwinkel ändern",
+    "es": "Cambiar ángulo de giro horizontal",
+    "fr": "Changer l'angle de balancement horizontal",
+    "it": "Cambia angolo di oscillazione orizzontale",
+    "no": "Endre horisontal svingvinkel",
+    "sv": "Ändra horisontell svängvinkel",
+    "pl": "Zmień poziomy kąt huśtania",
+    "ru": "Изменить угол горизонтального поворота",
+    "ko": "수평 스윙 각도 변경"
+  },
+  "titleFormatted": {
+    "en": "Change horizontal swing angle to [[angle]]",
+    "nl": "Horizontale draaihoek wijzigen naar [[angle]]",
+    "da": "Skift vandret svingvinkel til [[angle]]",
+    "de": "Horizontalen Schwenkwinkel ändern zu [[angle]]",
+    "es": "Cambiar ángulo de giro horizontal a [[angle]]",
+    "fr": "Changer l'angle de balancement horizontal en [[angle]]",
+    "it": "Cambia angolo di oscillazione orizzontale a [[angle]]",
+    "no": "Endre horisontal svingvinkel til [[angle]]",
+    "sv": "Ändra horisontell svängvinkel till [[angle]]",
+    "pl": "Zmień poziomy kąt huśtania na [[angle]]",
+    "ru": "Изменить угол горизонтального поворота на [[angle]]",
+    "ko": "수평 스윙 각도를 [[angle]]로 변경"
+  },
+  "args": [
+    {
+      "name": "angle",
+      "title": {
+        "en": "Angle",
+        "nl": "Hoek",
+        "da": "Vinkel",
+        "de": "Winkel",
+        "es": "Ángulo",
+        "fr": "Angle",
+        "it": "Angolo",
+        "no": "Vinkel",
+        "sv": "Vinkel",
+        "pl": "Kąt",
+        "ru": "Угол",
+        "ko": "각도"
+      },
+      "type": "autocomplete"
+    }
+  ],
+  "platforms": ["local"]
+}

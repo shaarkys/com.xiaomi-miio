@@ -1,0 +1,33 @@
+{
+  "id": "xiaomiVerticalSwingOn",
+  "$filter": "capabilities=fan_xiaomi_vertical_swing",
+  "title": {
+    "en": "Enable Vertical Swing",
+    "nl": "Verticale oscillatie inschakelen",
+    "da": "Aktivér lodret oscillation",
+    "de": "Vertikale Oszillation aktivieren",
+    "es": "Activar oscilación vertical",
+    "fr": "Activer l'oscillation verticale",
+    "it": "Abilita oscillazione verticale",
+    "no": "Aktiver vertikal oscillasjon",
+    "sv": "Aktivera vertikal svängning",
+    "pl": "Włącz oscylację pionową",
+    "ru": "Включить вертикальное колебание",
+    "ko": "수직 진동 활성화"
+  },
+  "titleFormatted": {
+    "en": "Enable Vertical Swing",
+    "nl": "Verticale oscillatie inschakelen",
+    "da": "Aktivér lodret oscillation",
+    "de": "Vertikale Oszillation aktivieren",
+    "es": "Activar oscilación vertical",
+    "fr": "Activer l'oscillation verticale",
+    "it": "Abilita oscillazione verticale",
+    "no": "Aktiver vertikal oscillasjon",
+    "sv": "Aktivera vertikal svängning",
+    "pl": "Włącz oscylację pionową",
+    "ru": "Включить вертикальное колебание",
+    "ko": "수직 진동 활성화"
+  },
+  "platforms": ["local"]
+}

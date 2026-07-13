@@ -529,5 +529,8 @@
   },
   "3.4.98": {
     "en": "Xiaomi Smart Pet Food Feeder 2 - renamed FoodLevel to Container food level"
+  },
+  "3.4.99": {
+    "en": "Add Advanced Xiaomi Smart Fan MIoT driver for more Xiaomi fan models and improved swing/angle controls."
   }
 }

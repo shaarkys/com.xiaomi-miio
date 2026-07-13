@@ -1,0 +1,33 @@
+{
+  "id": "xiaomiRotateUp",
+  "$filter": "capabilities=fan_xiaomi_vertical_swing",
+  "title": {
+    "en": "Rotate fan upward",
+    "nl": "Draai ventilator omhoog",
+    "da": "Drej ventilator opad",
+    "de": "Lüfter nach oben drehen",
+    "es": "Girar ventilador hacia arriba",
+    "fr": "Tourner le ventilateur vers le haut",
+    "it": "Ruota il ventilatore verso l'alto",
+    "no": "Drei viften oppover",
+    "sv": "Vrid fläkten uppåt",
+    "pl": "Obróć wentylator w górę",
+    "ru": "Повернуть вентилятор вверх",
+    "ko": "선풍기를 위로 회전"
+  },
+  "titleFormatted": {
+    "en": "Rotate fan upward",
+    "nl": "Draai ventilator omhoog",
+    "da": "Drej ventilator opad",
+    "de": "Lüfter nach oben drehen",
+    "es": "Girar ventilador hacia arriba",
+    "fr": "Tourner le ventilateur vers le haut",
+    "it": "Ruota il ventilatore verso l'alto",
+    "no": "Drei viften oppover",
+    "sv": "Vrid fläkten uppåt",
+    "pl": "Obróć wentylator w górę",
+    "ru": "Повернуть вентилятор вверх",
+    "ko": "선풍기를 위로 회전"
+  },
+  "platforms": ["local"]
+}

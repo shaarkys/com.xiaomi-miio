@@ -1,0 +1,26 @@
+{
+  "type": "enum",
+  "title": {
+    "en": "Fanlevel",
+    "nl": "Ventilator niveau",
+    "da": "Fan niveau",
+    "de": "Ventilatorebene",
+    "es": "Nivel de ventilador",
+    "fr": "Niveau de ventilateur",
+    "it": "Livello del ventilatore",
+    "no": "Viftenivå",
+    "sv": "Fläktnivå",
+    "pl": "Poziom wentylatora",
+    "ru": "Уровень вентилятора",
+    "ko": "팬 레벨"
+  },
+  "values": [
+    { "id": "1", "title": { "en": "1" } },
+    { "id": "2", "title": { "en": "2" } },
+    { "id": "3", "title": { "en": "3" } },
+    { "id": "4", "title": { "en": "4" } }
+  ],
+  "getable": true,
+  "setable": true,
+  "icon": "/assets/icons/fanlevel.svg"
+}

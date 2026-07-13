@@ -1,0 +1,106 @@
+<script type="text/javascript">
+
+Homey.setTitle( __('pair.title') );
+
+$(function() {
+  $('#test-connection').click(function() {
+    $('.mi-device-test').hide();
+    $('.mi-device-error').hide();
+    $('.mi-device-ok').hide();
+
+		let inputaddress = $('#address').val();
+		let inputtoken = $('#token').val();
+    let inputpolling = Number($('#polling').val()) || 60;
+
+    if( inputaddress != '' && inputtoken != '' && inputpolling != '') {
+      let device_data = {
+        address: inputaddress,
+        token: inputtoken,
+        polling: inputpolling
+      };
+
+      Homey.emit('test_connection', device_data)
+        .then(result => {
+          $('.mi-device-test').show();
+          $('#connect').prop('disabled', false);
+        }).catch(error => {
+          $('.mi-device-error').show();
+          $('.mi-device-error-msg').html(error.message || error.toString());
+        });
+
+    } else {
+      $('.mi-device-error').show();
+      $('.mi-device-error-msg').html( __('pair.nosettings') );
+    }
+
+	});
+
+  $('#connect').click(function() {
+    Homey.showView('add_device');
+	});
+
+})
+</script>
+
+<style type="text/css">
+  .form-group {
+    width: 100%;
+    display: block;
+    margin-bottom: 12px;
+  }
+  .form-group label {
+    display: block;
+  }
+  .mi-device-test, .mi-device-error {
+		display: none;
+	}
+  .shelly-info {
+    margin-top: 10px;
+    font-size: 12px;
+  }
+  .buttons, .messages {
+    padding-top: 14px;
+  }
+  .button {
+    font-weight: 700;
+  }
+  .button:disabled {
+    color: #ccc;
+  }
+  .button:enabled {
+    color: #fff !important;
+  }
+  #test-connection:enabled {
+    background-color: #1875cf !important;
+  }
+  #connect:enabled {
+    background-color: #00c139 !important;
+  }
+</style>
+
+<p data-i18n="pair.intro">Enter the details of your Mi Home device.</p>
+<div class="mi-device-pairing">
+  <div class="form-group">
+    <label for="address" data-i18n="pair.address">IP address</label>
+    <input type="text" class="form-control" id="address" placeholder="192.168.0.100">
+  </div>
+  <div class="form-group">
+  	<label for="token" data-i18n="pair.token">Token (32 characters of numbers and letters)</label>
+  	<input type="text" class="form-control" id="token" pattern="[a-zA-Z0-9]{32}" placeholder="FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF">
+  </div>
+  <div class="form-group">
+    <label for="polling" data-i18n="pair.polling">Polling Frequency</label>
+    <input type="number" class="form-control" id="polling" min="30" max="3600" placeholder="60">
+  </div>
+  <input type="hidden" id="fanspeed" value="">
+  <input type="hidden" id="state" value="">
+  <div class="form-group buttons">
+    <button id="test-connection" class="button" data-i18n="pair.test">Test Connection</button>
+    <button id="connect" class="button" data-i18n="pair.connect" disabled>Connect</button>
+  </div>
+</div>
+
+<div class="messages">
+  <p class="mi-device-status mi-device-test" style="color: #008C23;"><i class="fa fa-check"></i> <span data-i18n="pair.testResult">Connection test successful, you can now connect the device with Homey.</span></p>
+  <p class="mi-device-status mi-device-error" style="color: #ff6300;"><i class="fa fa-times"></i> <span class="mi-device-error-msg"></span></p>
+</div>

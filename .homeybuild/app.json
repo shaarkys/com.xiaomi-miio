@@ -187,7 +187,7 @@
       "게이트웨이"
     ]
   },
-  "version": "3.4.97",
+  "version": "3.4.99",
   "compatibility": ">=12.2.0",
   "platforms": [
     "local"
@@ -2622,6 +2622,114 @@
         "id": "yeelightLamp22ModeChanged"
       },
       {
+        "id": "xiaomiHorizontalSwingTurnedOn",
+        "title": {
+          "en": "Horizontal Swing turned on",
+          "nl": "Horizontale oscillatie ingeschakeld",
+          "da": "Vandret oscillation tændt",
+          "de": "Horizontale Oszillation eingeschaltet",
+          "es": "Oscilación horizontal activada",
+          "fr": "Oscillation horizontale activée",
+          "it": "Oscillazione orizzontale attivata",
+          "no": "Horisontal oscillasjon slått på",
+          "sv": "Horisontell svängning påslagen",
+          "pl": "Oscylacja pozioma włączona",
+          "ru": "Горизонтальное колебание включено",
+          "ko": "수평 진동 켜짐"
+        },
+        "platforms": [
+          "local"
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=fan_xiaomi_advanced&capabilities=fan_xiaomi_horizontal_swing"
+          }
+        ]
+      },
+      {
+        "id": "xiaomiHorizontalSwingTurnedOff",
+        "title": {
+          "en": "Horizontal Swing turned off",
+          "nl": "Horizontale oscillatie uitgeschakeld",
+          "da": "Vandret oscillation slukket",
+          "de": "Horizontale Oszillation ausgeschaltet",
+          "es": "Oscilación horizontal desactivada",
+          "fr": "Oscillation horizontale désactivée",
+          "it": "Oscillazione orizzontale disattivata",
+          "no": "Horisontal oscillasjon slått av",
+          "sv": "Horisontell svängning avstängd",
+          "pl": "Oscylacja pozioma wyłączona",
+          "ru": "Горизонтальное колебание выключено",
+          "ko": "수평 진동 꺼짐"
+        },
+        "platforms": [
+          "local"
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=fan_xiaomi_advanced&capabilities=fan_xiaomi_horizontal_swing"
+          }
+        ]
+      },
+      {
+        "id": "xiaomiVerticalSwingTurnedOn",
+        "title": {
+          "en": "Vertical Swing turned on",
+          "nl": "Verticale oscillatie ingeschakeld",
+          "da": "Lodret oscillation tændt",
+          "de": "Vertikale Oszillation eingeschaltet",
+          "es": "Oscilación vertical activada",
+          "fr": "Oscillation verticale activée",
+          "it": "Oscillazione verticale attivata",
+          "no": "Vertikal oscillasjon slått på",
+          "sv": "Vertikal svängning påslagen",
+          "pl": "Oscylacja pionowa włączona",
+          "ru": "Вертикальное колебание включено",
+          "ko": "수직 진동 켜짐"
+        },
+        "platforms": [
+          "local"
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=fan_xiaomi_advanced&capabilities=fan_xiaomi_vertical_swing"
+          }
+        ]
+      },
+      {
+        "id": "xiaomiVerticalSwingTurnedOff",
+        "title": {
+          "en": "Vertical Swing turned off",
+          "nl": "Verticale oscillatie uitgeschakeld",
+          "da": "Lodret oscillation slukket",
+          "de": "Vertikale Oszillation ausgeschaltet",
+          "es": "Oscilación vertical desactivada",
+          "fr": "Oscillation verticale désactivée",
+          "it": "Oscillazione verticale disattivata",
+          "no": "Vertikal oscillasjon slått av",
+          "sv": "Vertikal svängning avstängd",
+          "pl": "Oscylacja pionowa wyłączona",
+          "ru": "Вертикальное колебание выключено",
+          "ko": "수직 진동 꺼짐"
+        },
+        "platforms": [
+          "local"
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=fan_xiaomi_advanced&capabilities=fan_xiaomi_vertical_swing"
+          }
+        ]
+      },
+      {
         "id": "vacuum_on_error",
         "title": {
           "en": "The vacuum encountered an error",
@@ -3241,6 +3349,60 @@
           "local"
         ],
         "id": "yeelightLamp22ModeIs"
+      },
+      {
+        "id": "xiaomiHorizontalSwingIsOn",
+        "title": {
+          "en": "Horizontal Swing is !{{on|off}}",
+          "nl": "Horizontale oscillatie is !{{aan|uit}}",
+          "da": "Vandret oscillation er !{{tændt|slukket}}",
+          "de": "Horizontale Oszillation ist !{{an|aus}}",
+          "es": "La oscilación horizontal está !{{activada|desactivada}}",
+          "fr": "L'oscillation horizontale est !{{activée|désactivée}}",
+          "it": "L'oscillazione orizzontale è !{{attiva|disattiva}}",
+          "no": "Horisontal oscillasjon er !{{på|av}}",
+          "sv": "Horisontell svängning är !{{på|av}}",
+          "pl": "Oscylacja pozioma jest !{{włączona|wyłączona}}",
+          "ru": "Горизонтальное колебание !{{включено|выключено}}",
+          "ko": "수평 진동이 !{{켜짐|꺼짐}}"
+        },
+        "platforms": [
+          "local"
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=fan_xiaomi_advanced&capabilities=fan_xiaomi_horizontal_swing"
+          }
+        ]
+      },
+      {
+        "id": "xiaomiVerticalSwingIsOn",
+        "title": {
+          "en": "Vertical Swing is !{{on|off}}",
+          "nl": "Verticale oscillatie is !{{aan|uit}}",
+          "da": "Lodret oscillation er !{{tændt|slukket}}",
+          "de": "Vertikale Oszillation ist !{{an|aus}}",
+          "es": "La oscilación vertical está !{{activada|desactivada}}",
+          "fr": "L'oscillation verticale est !{{activée|désactivée}}",
+          "it": "L'oscillazione verticale è !{{attiva|disattiva}}",
+          "no": "Vertikal oscillasjon er !{{på|av}}",
+          "sv": "Vertikal svängning är !{{på|av}}",
+          "pl": "Oscylacja pionowa jest !{{włączona|wyłączona}}",
+          "ru": "Вертикальное колебание !{{включено|выключено}}",
+          "ko": "수직 진동이 !{{켜짐|꺼짐}}"
+        },
+        "platforms": [
+          "local"
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=fan_xiaomi_advanced&capabilities=fan_xiaomi_vertical_swing"
+          }
+        ]
       }
     ],
     "actions": [
@@ -11746,6 +11908,593 @@
         "id": "yeelightLamp22Mode"
       },
       {
+        "id": "xiaomiFanMode",
+        "title": {
+          "en": "Set Mode",
+          "nl": "Stel modus in",
+          "da": "Indstil tilstand",
+          "de": "Modus einstellen",
+          "es": "Configurar modo",
+          "fr": "Définir le mode",
+          "it": "Imposta modalità",
+          "no": "Sett modus",
+          "sv": "Ställ in läge",
+          "pl": "Ustaw tryb",
+          "ru": "Установить режим",
+          "ko": "모드 설정"
+        },
+        "titleFormatted": {
+          "en": "Set mode to [[mode]]",
+          "nl": "Stel modus in op [[mode]]",
+          "da": "Indstil tilstand til [[mode]]",
+          "de": "Modus auf [[mode]] einstellen",
+          "es": "Configurar modo en [[mode]]",
+          "fr": "Définir le mode sur [[mode]]",
+          "it": "Imposta modalità su [[mode]]",
+          "no": "Sett modus til [[mode]]",
+          "sv": "Ställ in läge till [[mode]]",
+          "pl": "Ustaw tryb na [[mode]]",
+          "ru": "Установить режим на [[mode]]",
+          "ko": "[[mode]]으로 설정"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=fan_xiaomi_advanced"
+          },
+          {
+            "name": "mode",
+            "title": {
+              "en": "Mode",
+              "nl": "Modus",
+              "da": "Tilstand",
+              "de": "Modus",
+              "es": "Modo",
+              "fr": "Mode",
+              "it": "Modalità",
+              "no": "Modus",
+              "sv": "Läge",
+              "pl": "Tryb",
+              "ru": "Режим",
+              "ko": "모드"
+            },
+            "type": "autocomplete"
+          }
+        ],
+        "platforms": [
+          "local"
+        ]
+      },
+      {
+        "id": "xiaomiHorizontalSwingOn",
+        "title": {
+          "en": "Enable Horizontal Swing",
+          "nl": "Horizontale oscillatie inschakelen",
+          "da": "Aktivér vandret oscillation",
+          "de": "Horizontale Oszillation aktivieren",
+          "es": "Activar oscilación horizontal",
+          "fr": "Activer l'oscillation horizontale",
+          "it": "Abilita oscillazione orizzontale",
+          "no": "Aktiver horisontal oscillasjon",
+          "sv": "Aktivera horisontell svängning",
+          "pl": "Włącz oscylację poziomą",
+          "ru": "Включить горизонтальное колебание",
+          "ko": "수평 진동 활성화"
+        },
+        "titleFormatted": {
+          "en": "Enable Horizontal Swing",
+          "nl": "Horizontale oscillatie inschakelen",
+          "da": "Aktivér vandret oscillation",
+          "de": "Horizontale Oszillation aktivieren",
+          "es": "Activar oscilación horizontal",
+          "fr": "Activer l'oscillation horizontale",
+          "it": "Abilita oscillazione orizzontale",
+          "no": "Aktiver horisontal oscillasjon",
+          "sv": "Aktivera horisontell svängning",
+          "pl": "Włącz oscylację poziomą",
+          "ru": "Включить горизонтальное колебание",
+          "ko": "수평 진동 활성화"
+        },
+        "platforms": [
+          "local"
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=fan_xiaomi_advanced&capabilities=fan_xiaomi_horizontal_swing"
+          }
+        ]
+      },
+      {
+        "id": "xiaomiHorizontalSwingOff",
+        "title": {
+          "en": "Disable Horizontal Swing",
+          "nl": "Horizontale oscillatie uitschakelen",
+          "da": "Deaktivér vandret oscillation",
+          "de": "Horizontale Oszillation deaktivieren",
+          "es": "Desactivar oscilación horizontal",
+          "fr": "Désactiver l'oscillation horizontale",
+          "it": "Disabilita oscillazione orizzontale",
+          "no": "Deaktiver horisontal oscillasjon",
+          "sv": "Inaktivera horisontell svängning",
+          "pl": "Wyłącz oscylację poziomą",
+          "ru": "Выключить горизонтальное колебание",
+          "ko": "수평 진동 비활성화"
+        },
+        "titleFormatted": {
+          "en": "Disable Horizontal Swing",
+          "nl": "Horizontale oscillatie uitschakelen",
+          "da": "Deaktivér vandret oscillation",
+          "de": "Horizontale Oszillation deaktivieren",
+          "es": "Desactivar oscilación horizontal",
+          "fr": "Désactiver l'oscillation horizontale",
+          "it": "Disabilita oscillazione orizzontale",
+          "no": "Deaktiver horisontal oscillasjon",
+          "sv": "Inaktivera horisontell svängning",
+          "pl": "Wyłącz oscylację poziomą",
+          "ru": "Выключить горизонтальное колебание",
+          "ko": "수평 진동 비활성화"
+        },
+        "platforms": [
+          "local"
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=fan_xiaomi_advanced&capabilities=fan_xiaomi_horizontal_swing"
+          }
+        ]
+      },
+      {
+        "id": "xiaomiHorizontalSwingToggle",
+        "title": {
+          "en": "Toggle Horizontal Swing",
+          "nl": "Horizontale oscillatie omschakelen",
+          "da": "Skift vandret oscillation",
+          "de": "Horizontale Oszillation umschalten",
+          "es": "Alternar oscilación horizontal",
+          "fr": "Basculer l'oscillation horizontale",
+          "it": "Commuta oscillazione orizzontale",
+          "no": "Veksle horisontal oscillasjon",
+          "sv": "Växla horisontell svängning",
+          "pl": "Przełącz oscylację poziomą",
+          "ru": "Переключить горизонтальное колебание",
+          "ko": "수평 진동 전환"
+        },
+        "titleFormatted": {
+          "en": "Toggle Horizontal Swing",
+          "nl": "Horizontale oscillatie omschakelen",
+          "da": "Skift vandret oscillation",
+          "de": "Horizontale Oszillation umschalten",
+          "es": "Alternar oscilación horizontal",
+          "fr": "Basculer l'oscillation horizontale",
+          "it": "Commuta oscillazione orizzontale",
+          "no": "Veksle horisontal oscillasjon",
+          "sv": "Växla horisontell svängning",
+          "pl": "Przełącz oscylację poziomą",
+          "ru": "Переключить горизонтальное колебание",
+          "ko": "수평 진동 전환"
+        },
+        "platforms": [
+          "local"
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=fan_xiaomi_advanced&capabilities=fan_xiaomi_horizontal_swing"
+          }
+        ]
+      },
+      {
+        "id": "xiaomiSetHorizontalAngle",
+        "title": {
+          "en": "Change Horizontal Swing Angle",
+          "nl": "Horizontale draaihoek wijzigen",
+          "da": "Skift vandret svingvinkel",
+          "de": "Horizontalen Schwenkwinkel ändern",
+          "es": "Cambiar ángulo de giro horizontal",
+          "fr": "Changer l'angle de balancement horizontal",
+          "it": "Cambia angolo di oscillazione orizzontale",
+          "no": "Endre horisontal svingvinkel",
+          "sv": "Ändra horisontell svängvinkel",
+          "pl": "Zmień poziomy kąt huśtania",
+          "ru": "Изменить угол горизонтального поворота",
+          "ko": "수평 스윙 각도 변경"
+        },
+        "titleFormatted": {
+          "en": "Change horizontal swing angle to [[angle]]",
+          "nl": "Horizontale draaihoek wijzigen naar [[angle]]",
+          "da": "Skift vandret svingvinkel til [[angle]]",
+          "de": "Horizontalen Schwenkwinkel ändern zu [[angle]]",
+          "es": "Cambiar ángulo de giro horizontal a [[angle]]",
+          "fr": "Changer l'angle de balancement horizontal en [[angle]]",
+          "it": "Cambia angolo di oscillazione orizzontale a [[angle]]",
+          "no": "Endre horisontal svingvinkel til [[angle]]",
+          "sv": "Ändra horisontell svängvinkel till [[angle]]",
+          "pl": "Zmień poziomy kąt huśtania na [[angle]]",
+          "ru": "Изменить угол горизонтального поворота на [[angle]]",
+          "ko": "수평 스윙 각도를 [[angle]]로 변경"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=fan_xiaomi_advanced&capabilities=fan_xiaomi_horizontal_angle"
+          },
+          {
+            "name": "angle",
+            "title": {
+              "en": "Angle",
+              "nl": "Hoek",
+              "da": "Vinkel",
+              "de": "Winkel",
+              "es": "Ángulo",
+              "fr": "Angle",
+              "it": "Angolo",
+              "no": "Vinkel",
+              "sv": "Vinkel",
+              "pl": "Kąt",
+              "ru": "Угол",
+              "ko": "각도"
+            },
+            "type": "autocomplete"
+          }
+        ],
+        "platforms": [
+          "local"
+        ]
+      },
+      {
+        "id": "xiaomiVerticalSwingOn",
+        "title": {
+          "en": "Enable Vertical Swing",
+          "nl": "Verticale oscillatie inschakelen",
+          "da": "Aktivér lodret oscillation",
+          "de": "Vertikale Oszillation aktivieren",
+          "es": "Activar oscilación vertical",
+          "fr": "Activer l'oscillation verticale",
+          "it": "Abilita oscillazione verticale",
+          "no": "Aktiver vertikal oscillasjon",
+          "sv": "Aktivera vertikal svängning",
+          "pl": "Włącz oscylację pionową",
+          "ru": "Включить вертикальное колебание",
+          "ko": "수직 진동 활성화"
+        },
+        "titleFormatted": {
+          "en": "Enable Vertical Swing",
+          "nl": "Verticale oscillatie inschakelen",
+          "da": "Aktivér lodret oscillation",
+          "de": "Vertikale Oszillation aktivieren",
+          "es": "Activar oscilación vertical",
+          "fr": "Activer l'oscillation verticale",
+          "it": "Abilita oscillazione verticale",
+          "no": "Aktiver vertikal oscillasjon",
+          "sv": "Aktivera vertikal svängning",
+          "pl": "Włącz oscylację pionową",
+          "ru": "Включить вертикальное колебание",
+          "ko": "수직 진동 활성화"
+        },
+        "platforms": [
+          "local"
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=fan_xiaomi_advanced&capabilities=fan_xiaomi_vertical_swing"
+          }
+        ]
+      },
+      {
+        "id": "xiaomiVerticalSwingOff",
+        "title": {
+          "en": "Disable Vertical Swing",
+          "nl": "Verticale oscillatie uitschakelen",
+          "da": "Deaktivér lodret oscillation",
+          "de": "Vertikale Oszillation deaktivieren",
+          "es": "Desactivar oscilación vertical",
+          "fr": "Désactiver l'oscillation verticale",
+          "it": "Disabilita oscillazione verticale",
+          "no": "Deaktiver vertikal oscillasjon",
+          "sv": "Inaktivera vertikal svängning",
+          "pl": "Wyłącz oscylację pionową",
+          "ru": "Выключить вертикальное колебание",
+          "ko": "수직 진동 비활성화"
+        },
+        "titleFormatted": {
+          "en": "Disable Vertical Swing",
+          "nl": "Verticale oscillatie uitschakelen",
+          "da": "Deaktivér lodret oscillation",
+          "de": "Vertikale Oszillation deaktivieren",
+          "es": "Desactivar oscilación vertical",
+          "fr": "Désactiver l'oscillation verticale",
+          "it": "Disabilita oscillazione verticale",
+          "no": "Deaktiver vertikal oscillasjon",
+          "sv": "Inaktivera vertikal svängning",
+          "pl": "Wyłącz oscylację pionową",
+          "ru": "Выключить вертикальное колебание",
+          "ko": "수직 진동 비활성화"
+        },
+        "platforms": [
+          "local"
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=fan_xiaomi_advanced&capabilities=fan_xiaomi_vertical_swing"
+          }
+        ]
+      },
+      {
+        "id": "xiaomiVerticalSwingToggle",
+        "title": {
+          "en": "Toggle Vertical Swing",
+          "nl": "Verticale oscillatie omschakelen",
+          "da": "Skift lodret oscillation",
+          "de": "Vertikale Oszillation umschalten",
+          "es": "Alternar oscilación vertical",
+          "fr": "Basculer l'oscillation verticale",
+          "it": "Commuta oscillazione verticale",
+          "no": "Veksle vertikal oscillasjon",
+          "sv": "Växla vertikal svängning",
+          "pl": "Przełącz oscylację pionową",
+          "ru": "Переключить вертикальное колебание",
+          "ko": "수직 진동 전환"
+        },
+        "titleFormatted": {
+          "en": "Toggle Vertical Swing",
+          "nl": "Verticale oscillatie omschakelen",
+          "da": "Skift lodret oscillation",
+          "de": "Vertikale Oszillation umschalten",
+          "es": "Alternar oscilación vertical",
+          "fr": "Basculer l'oscillation verticale",
+          "it": "Commuta oscillazione verticale",
+          "no": "Veksle vertikal oscillasjon",
+          "sv": "Växla vertikal svängning",
+          "pl": "Przełącz oscylację pionową",
+          "ru": "Переключить вертикальное колебание",
+          "ko": "수직 진동 전환"
+        },
+        "platforms": [
+          "local"
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=fan_xiaomi_advanced&capabilities=fan_xiaomi_vertical_swing"
+          }
+        ]
+      },
+      {
+        "id": "xiaomiSetVerticalAngle",
+        "title": {
+          "en": "Change Vertical Swing Angle",
+          "nl": "Verticale draaihoek wijzigen",
+          "da": "Skift lodret svingvinkel",
+          "de": "Vertikalen Schwenkwinkel ändern",
+          "es": "Cambiar ángulo de giro vertical",
+          "fr": "Changer l'angle de balancement vertical",
+          "it": "Cambia angolo di oscillazione verticale",
+          "no": "Endre vertikal svingvinkel",
+          "sv": "Ändra vertikal svängvinkel",
+          "pl": "Zmień pionowy kąt huśtania",
+          "ru": "Изменить угол вертикального поворота",
+          "ko": "수직 스윙 각도 변경"
+        },
+        "titleFormatted": {
+          "en": "Change vertical swing angle to [[angle]]",
+          "nl": "Verticale draaihoek wijzigen naar [[angle]]",
+          "da": "Skift lodret svingvinkel til [[angle]]",
+          "de": "Vertikalen Schwenkwinkel ändern zu [[angle]]",
+          "es": "Cambiar ángulo de giro vertical a [[angle]]",
+          "fr": "Changer l'angle de balancement vertical en [[angle]]",
+          "it": "Cambia angolo di oscillazione verticale a [[angle]]",
+          "no": "Endre vertikal svingvinkel til [[angle]]",
+          "sv": "Ändra vertikal svängvinkel till [[angle]]",
+          "pl": "Zmień pionowy kąt huśtania na [[angle]]",
+          "ru": "Изменить угол вертикального поворота на [[angle]]",
+          "ko": "수직 스윙 각도를 [[angle]]로 변경"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=fan_xiaomi_advanced&capabilities=fan_xiaomi_vertical_angle"
+          },
+          {
+            "name": "angle",
+            "title": {
+              "en": "Angle",
+              "nl": "Hoek",
+              "da": "Vinkel",
+              "de": "Winkel",
+              "es": "Ángulo",
+              "fr": "Angle",
+              "it": "Angolo",
+              "no": "Vinkel",
+              "sv": "Vinkel",
+              "pl": "Kąt",
+              "ru": "Угол",
+              "ko": "각도"
+            },
+            "type": "autocomplete"
+          }
+        ],
+        "platforms": [
+          "local"
+        ]
+      },
+      {
+        "id": "xiaomiRotateLeft",
+        "title": {
+          "en": "Rotate fan to the left",
+          "nl": "Draai ventilator naar links",
+          "da": "Drej ventilator til venstre",
+          "de": "Lüfter nach links drehen",
+          "es": "Girar ventilador hacia la izquierda",
+          "fr": "Tourner le ventilateur vers la gauche",
+          "it": "Ruota il ventilatore verso sinistra",
+          "no": "Drei viften til venstre",
+          "sv": "Vrid fläkten åt vänster",
+          "pl": "Obróć wentylator w lewo",
+          "ru": "Повернуть вентилятор влево",
+          "ko": "선풍기를 왼쪽으로 회전"
+        },
+        "titleFormatted": {
+          "en": "Rotate fan to the left",
+          "nl": "Draai ventilator naar links",
+          "da": "Drej ventilator til venstre",
+          "de": "Lüfter nach links drehen",
+          "es": "Girar ventilador hacia la izquierda",
+          "fr": "Tourner le ventilateur vers la gauche",
+          "it": "Ruota il ventilatore verso sinistra",
+          "no": "Drei viften til venstre",
+          "sv": "Vrid fläkten åt vänster",
+          "pl": "Obróć wentylator w lewo",
+          "ru": "Повернуть вентилятор влево",
+          "ko": "선풍기를 왼쪽으로 회전"
+        },
+        "platforms": [
+          "local"
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=fan_xiaomi_advanced"
+          }
+        ]
+      },
+      {
+        "id": "xiaomiRotateRight",
+        "title": {
+          "en": "Rotate fan to the right",
+          "nl": "Draai ventilator naar rechts",
+          "da": "Drej ventilator til højre",
+          "de": "Lüfter nach rechts drehen",
+          "es": "Girar ventilador hacia la derecha",
+          "fr": "Tourner le ventilateur vers la droite",
+          "it": "Ruota il ventilatore verso destra",
+          "no": "Drei viften til høyre",
+          "sv": "Vrid fläkten åt höger",
+          "pl": "Obróć wentylator w prawo",
+          "ru": "Повернуть вентилятор вправо",
+          "ko": "선풍기를 오른쪽으로 회전"
+        },
+        "titleFormatted": {
+          "en": "Rotate fan to the right",
+          "nl": "Draai ventilator naar rechts",
+          "da": "Drej ventilator til højre",
+          "de": "Lüfter nach rechts drehen",
+          "es": "Girar ventilador hacia la derecha",
+          "fr": "Tourner le ventilateur vers la droite",
+          "it": "Ruota il ventilatore verso destra",
+          "no": "Drei viften til høyre",
+          "sv": "Vrid fläkten åt höger",
+          "pl": "Obróć wentylator w prawo",
+          "ru": "Повернуть вентилятор вправо",
+          "ko": "선풍기를 오른쪽으로 회전"
+        },
+        "platforms": [
+          "local"
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=fan_xiaomi_advanced"
+          }
+        ]
+      },
+      {
+        "id": "xiaomiRotateUp",
+        "title": {
+          "en": "Rotate fan upward",
+          "nl": "Draai ventilator omhoog",
+          "da": "Drej ventilator opad",
+          "de": "Lüfter nach oben drehen",
+          "es": "Girar ventilador hacia arriba",
+          "fr": "Tourner le ventilateur vers le haut",
+          "it": "Ruota il ventilatore verso l'alto",
+          "no": "Drei viften oppover",
+          "sv": "Vrid fläkten uppåt",
+          "pl": "Obróć wentylator w górę",
+          "ru": "Повернуть вентилятор вверх",
+          "ko": "선풍기를 위로 회전"
+        },
+        "titleFormatted": {
+          "en": "Rotate fan upward",
+          "nl": "Draai ventilator omhoog",
+          "da": "Drej ventilator opad",
+          "de": "Lüfter nach oben drehen",
+          "es": "Girar ventilador hacia arriba",
+          "fr": "Tourner le ventilateur vers le haut",
+          "it": "Ruota il ventilatore verso l'alto",
+          "no": "Drei viften oppover",
+          "sv": "Vrid fläkten uppåt",
+          "pl": "Obróć wentylator w górę",
+          "ru": "Повернуть вентилятор вверх",
+          "ko": "선풍기를 위로 회전"
+        },
+        "platforms": [
+          "local"
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=fan_xiaomi_advanced&capabilities=fan_xiaomi_vertical_swing"
+          }
+        ]
+      },
+      {
+        "id": "xiaomiRotateDown",
+        "title": {
+          "en": "Rotate fan downward",
+          "nl": "Draai ventilator omlaag",
+          "da": "Drej ventilator nedad",
+          "de": "Lüfter nach unten drehen",
+          "es": "Girar ventilador hacia abajo",
+          "fr": "Tourner le ventilateur vers le bas",
+          "it": "Ruota il ventilatore verso il basso",
+          "no": "Drei viften nedover",
+          "sv": "Vrid fläkten nedåt",
+          "pl": "Obróć wentylator w dół",
+          "ru": "Повернуть вентилятор вниз",
+          "ko": "선풍기를 아래로 회전"
+        },
+        "titleFormatted": {
+          "en": "Rotate fan downward",
+          "nl": "Draai ventilator omlaag",
+          "da": "Drej ventilator nedad",
+          "de": "Lüfter nach unten drehen",
+          "es": "Girar ventilador hacia abajo",
+          "fr": "Tourner le ventilateur vers le bas",
+          "it": "Ruota il ventilatore verso il basso",
+          "no": "Drei viften nedover",
+          "sv": "Vrid fläkten nedåt",
+          "pl": "Obróć wentylator w dół",
+          "ru": "Повернуть вентилятор вниз",
+          "ko": "선풍기를 아래로 회전"
+        },
+        "platforms": [
+          "local"
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=fan_xiaomi_advanced&capabilities=fan_xiaomi_vertical_swing"
+          }
+        ]
+      },
+      {
         "id": "advanced_room_cleaning",
         "title": {
           "en": "advanced cleaning",
@@ -18324,6 +19073,215 @@
         }
       },
       "id": "fan_dmaker_advanced",
+      "settings": [
+        {
+          "type": "group",
+          "label": {
+            "en": "User Settings",
+            "nl": "Gebruikersinstellingem",
+            "da": "Brugerindstillinger",
+            "de": "Benutzereinstellungen",
+            "es": "Configuración de Usuario",
+            "fr": "Paramètres Utilisateur",
+            "it": "Impostazioni Utente",
+            "no": "Brukerinnstillinger",
+            "sv": "Användarinställningar",
+            "pl": "Ustawienia Użytkownika",
+            "ru": "Пользовательские настройки",
+            "ko": "사용자 설정"
+          },
+          "children": [
+            {
+              "id": "led",
+              "type": "checkbox",
+              "value": true,
+              "label": {
+                "en": "LED",
+                "nl": "LED",
+                "da": "LED",
+                "de": "LED",
+                "es": "LED",
+                "fr": "LED",
+                "it": "LED",
+                "no": "LED",
+                "sv": "LED",
+                "pl": "LED",
+                "ru": "Светодиод",
+                "ko": "LED"
+              }
+            },
+            {
+              "id": "buzzer",
+              "type": "checkbox",
+              "value": true,
+              "label": {
+                "en": "Buzzer",
+                "nl": "Buzzer",
+                "da": "Summer",
+                "de": "Summer",
+                "es": "Zumbador",
+                "fr": "Buzzer",
+                "it": "Cicalino",
+                "no": "Summer",
+                "sv": "Summer",
+                "pl": "Brzęczyk",
+                "ru": "Зуммер",
+                "ko": "버저"
+              }
+            },
+            {
+              "id": "childLock",
+              "type": "checkbox",
+              "value": true,
+              "label": {
+                "en": "Child Lock",
+                "nl": "Kinderslot",
+                "da": "Børnelås",
+                "de": "Kindersicherung",
+                "es": "Bloqueo para Niños",
+                "fr": "Verrouillage Enfant",
+                "it": "Blocco Bambino",
+                "no": "Barnesikring",
+                "sv": "Barnlås",
+                "pl": "Blokada rodzicielska",
+                "ru": "Блокировка от детей",
+                "ko": "차일드 락"
+              }
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Device Settings",
+            "nl": "Apparaat instellingen",
+            "da": "Enhedsindstillinger",
+            "de": "Geräteeinstellungen",
+            "es": "Configuración del Dispositivo",
+            "fr": "Paramètres de l'Appareil",
+            "it": "Impostazioni del Dispositivo",
+            "no": "Enhetsinnstillinger",
+            "sv": "Enhetsinställningar",
+            "pl": "Ustawienia Urządzenia",
+            "ru": "Настройки устройства",
+            "ko": "장치 설정"
+          },
+          "children": [
+            {
+              "id": "address",
+              "type": "text",
+              "value": "0.0.0.0",
+              "label": {
+                "en": "IP Address",
+                "nl": "IP adres",
+                "da": "IP-adresse",
+                "de": "IP-Adresse",
+                "es": "Dirección IP",
+                "fr": "Adresse IP",
+                "it": "Indirizzo IP",
+                "no": "IP-adresse",
+                "sv": "IP-adress",
+                "pl": "Adres IP",
+                "ru": "IP-адрес",
+                "ko": "IP 주소"
+              }
+            },
+            {
+              "id": "token",
+              "type": "text",
+              "value": "",
+              "label": {
+                "en": "Mi Device Token",
+                "nl": "Mi Apparaat Token",
+                "da": "Mi Enheds Token",
+                "de": "Mi Gerätetoken",
+                "es": "Token del Dispositivo Mi",
+                "fr": "Jeton de l'Appareil Mi",
+                "it": "Token Dispositivo Mi",
+                "no": "Mi Enhet Token",
+                "sv": "Mi Enhetstoken",
+                "pl": "Token Urządzenia Mi",
+                "ru": "Токен Устройства Mi",
+                "ko": "Mi 기기 토큰"
+              }
+            },
+            {
+              "id": "polling",
+              "type": "number",
+              "value": 60,
+              "attr": {
+                "min": 5,
+                "max": 3600
+              },
+              "label": {
+                "en": "Polling Frequency",
+                "nl": "Polling frequentie",
+                "da": "Polling Frekvens",
+                "de": "Abfragefrequenz",
+                "es": "Frecuencia de sondeo",
+                "fr": "Fréquence de sondage",
+                "it": "Frequenza di polling",
+                "no": "Polling Frekvens",
+                "sv": "Pollingfrekvens",
+                "pl": "Częstotliwość odpytywania",
+                "ru": "Частота опроса",
+                "ko": "폴링 빈도"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "icon": "/drivers/fan_xiaomi_advanced/assets/icon.svg",
+      "pair": [
+        {
+          "id": "start",
+          "navigation": {
+            "next": "pair"
+          }
+        },
+        {
+          "id": "pair"
+        },
+        {
+          "id": "add_device"
+        }
+      ],
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [
+        "lan"
+      ],
+      "name": {
+        "en": "Advanced Xiaomi Smart Fan MIoT (WiFi)",
+        "nl": "Geavanceerde Xiaomi Smart Fan MIoT (WiFi)",
+        "da": "Avanceret Xiaomi Smart Fan MIoT (WiFi)",
+        "de": "Erweiterter Xiaomi Smart Ventilator MIoT (WiFi)",
+        "es": "Ventilador inteligente Xiaomi avanzado MIoT (WiFi)",
+        "fr": "Ventilateur intelligent Xiaomi avancé MIoT (WiFi)",
+        "it": "Ventilatore Smart Xiaomi avanzato MIoT (WiFi)",
+        "no": "Avansert Xiaomi Smart vifte MIoT (WiFi)",
+        "sv": "Avancerad Xiaomi Smart fläkt MIoT (WiFi)",
+        "pl": "Zaawansowany inteligentny wentylator Xiaomi MIoT (WiFi)",
+        "ru": "Продвинутый умный вентилятор Xiaomi MIoT (WiFi)",
+        "ko": "고급형 Xiaomi 스마트 팬 MIoT (WiFi)"
+      },
+      "images": {
+        "large": "drivers/fan_xiaomi_advanced/assets/images/large.jpg",
+        "small": "drivers/fan_xiaomi_advanced/assets/images/small.jpg"
+      },
+      "class": "fan",
+      "capabilities": [
+        "onoff",
+        "fan_speed",
+        "fan_xiaomi_fanlevel",
+        "fan_xiaomi_mode",
+        "fan_xiaomi_horizontal_swing",
+        "fan_xiaomi_horizontal_angle"
+      ],
+      "id": "fan_xiaomi_advanced",
       "settings": [
         {
           "type": "group",
@@ -32612,6 +33570,396 @@
         "it": "Oscillazione verticale",
         "no": "Vertikal oscillasjon",
         "sv": "Vertikal oscillation",
+        "pl": "Oscylacja pionowa",
+        "ru": "Вертикальное колебание",
+        "ko": "수직 진동"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "toggle",
+      "insights": false,
+      "icon": "/assets/icons/oscillation-vertical.svg"
+    },
+    "fan_xiaomi_fanlevel": {
+      "type": "enum",
+      "title": {
+        "en": "Fanlevel",
+        "nl": "Ventilator niveau",
+        "da": "Fan niveau",
+        "de": "Ventilatorebene",
+        "es": "Nivel de ventilador",
+        "fr": "Niveau de ventilateur",
+        "it": "Livello del ventilatore",
+        "no": "Viftenivå",
+        "sv": "Fläktnivå",
+        "pl": "Poziom wentylatora",
+        "ru": "Уровень вентилятора",
+        "ko": "팬 레벨"
+      },
+      "values": [
+        {
+          "id": "1",
+          "title": {
+            "en": "1"
+          }
+        },
+        {
+          "id": "2",
+          "title": {
+            "en": "2"
+          }
+        },
+        {
+          "id": "3",
+          "title": {
+            "en": "3"
+          }
+        },
+        {
+          "id": "4",
+          "title": {
+            "en": "4"
+          }
+        }
+      ],
+      "getable": true,
+      "setable": true,
+      "icon": "/assets/icons/fanlevel.svg"
+    },
+    "fan_xiaomi_horizontal_angle": {
+      "type": "enum",
+      "title": {
+        "en": "Horizontal Swing Angle",
+        "nl": "Horizontale draaihoek",
+        "da": "Vandret svingvinkel",
+        "de": "Horizontaler Schwenkwinkel",
+        "es": "Ángulo de giro horizontal",
+        "fr": "Angle de balancement horizontal",
+        "it": "Angolo di oscillazione orizzontale",
+        "no": "Horisontal svingvinkel",
+        "sv": "Horisontell svängvinkel",
+        "pl": "Poziomy kąt huśtania",
+        "ru": "Угол горизонтального поворота",
+        "ko": "수평 스윙 각도"
+      },
+      "values": [
+        {
+          "id": "10",
+          "title": {
+            "en": "10°"
+          }
+        },
+        {
+          "id": "20",
+          "title": {
+            "en": "20°"
+          }
+        },
+        {
+          "id": "30",
+          "title": {
+            "en": "30°"
+          }
+        },
+        {
+          "id": "40",
+          "title": {
+            "en": "40°"
+          }
+        },
+        {
+          "id": "50",
+          "title": {
+            "en": "50°"
+          }
+        },
+        {
+          "id": "60",
+          "title": {
+            "en": "60°"
+          }
+        },
+        {
+          "id": "70",
+          "title": {
+            "en": "70°"
+          }
+        },
+        {
+          "id": "80",
+          "title": {
+            "en": "80°"
+          }
+        },
+        {
+          "id": "90",
+          "title": {
+            "en": "90°"
+          }
+        },
+        {
+          "id": "100",
+          "title": {
+            "en": "100°"
+          }
+        },
+        {
+          "id": "110",
+          "title": {
+            "en": "110°"
+          }
+        },
+        {
+          "id": "120",
+          "title": {
+            "en": "120°"
+          }
+        },
+        {
+          "id": "130",
+          "title": {
+            "en": "130°"
+          }
+        },
+        {
+          "id": "140",
+          "title": {
+            "en": "140°"
+          }
+        },
+        {
+          "id": "150",
+          "title": {
+            "en": "150°"
+          }
+        },
+        {
+          "id": "160",
+          "title": {
+            "en": "160°"
+          }
+        },
+        {
+          "id": "170",
+          "title": {
+            "en": "170°"
+          }
+        },
+        {
+          "id": "180",
+          "title": {
+            "en": "180°"
+          }
+        }
+      ],
+      "getable": true,
+      "setable": true,
+      "icon": "/assets/icons/oscillation.svg"
+    },
+    "fan_xiaomi_horizontal_swing": {
+      "type": "boolean",
+      "title": {
+        "en": "Horizontal Swing",
+        "nl": "Horizontale oscillatie",
+        "da": "Vandret oscillation",
+        "de": "Horizontale Oszillation",
+        "es": "Oscilación horizontal",
+        "fr": "Oscillation horizontale",
+        "it": "Oscillazione orizzontale",
+        "no": "Horisontal oscillasjon",
+        "sv": "Horisontell svängning",
+        "pl": "Oscylacja pozioma",
+        "ru": "Горизонтальное колебание",
+        "ko": "수평 진동"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "toggle",
+      "insights": false,
+      "icon": "/assets/icons/oscillation.svg"
+    },
+    "fan_xiaomi_mode": {
+      "type": "enum",
+      "title": {
+        "en": "Mode",
+        "nl": "Modus",
+        "da": "Tilstand",
+        "de": "Modus",
+        "es": "Modo",
+        "fr": "Mode",
+        "it": "Modalità",
+        "no": "Modus",
+        "sv": "Läge",
+        "pl": "Tryb",
+        "ru": "Режим",
+        "ko": "모드"
+      },
+      "values": [
+        {
+          "id": "0",
+          "title": {
+            "en": "Regular Fan"
+          }
+        },
+        {
+          "id": "1",
+          "title": {
+            "en": "Natural Wind"
+          }
+        },
+        {
+          "id": "2",
+          "title": {
+            "en": "Sleep (Quiet)"
+          }
+        }
+      ],
+      "getable": true,
+      "setable": true,
+      "icon": "/assets/icons/fanlevel.svg"
+    },
+    "fan_xiaomi_vertical_angle": {
+      "type": "enum",
+      "title": {
+        "en": "Vertical Swing Angle",
+        "nl": "Verticale draaihoek",
+        "da": "Lodret svingvinkel",
+        "de": "Vertikaler Schwenkwinkel",
+        "es": "Ángulo de giro vertical",
+        "fr": "Angle de balancement vertical",
+        "it": "Angolo di oscillazione verticale",
+        "no": "Vertikal svingvinkel",
+        "sv": "Vertikal svängvinkel",
+        "pl": "Pionowy kąt huśtania",
+        "ru": "Угол вертикального поворота",
+        "ko": "수직 스윙 각도"
+      },
+      "values": [
+        {
+          "id": "10",
+          "title": {
+            "en": "10°"
+          }
+        },
+        {
+          "id": "20",
+          "title": {
+            "en": "20°"
+          }
+        },
+        {
+          "id": "30",
+          "title": {
+            "en": "30°"
+          }
+        },
+        {
+          "id": "40",
+          "title": {
+            "en": "40°"
+          }
+        },
+        {
+          "id": "50",
+          "title": {
+            "en": "50°"
+          }
+        },
+        {
+          "id": "60",
+          "title": {
+            "en": "60°"
+          }
+        },
+        {
+          "id": "70",
+          "title": {
+            "en": "70°"
+          }
+        },
+        {
+          "id": "80",
+          "title": {
+            "en": "80°"
+          }
+        },
+        {
+          "id": "90",
+          "title": {
+            "en": "90°"
+          }
+        },
+        {
+          "id": "100",
+          "title": {
+            "en": "100°"
+          }
+        },
+        {
+          "id": "110",
+          "title": {
+            "en": "110°"
+          }
+        },
+        {
+          "id": "120",
+          "title": {
+            "en": "120°"
+          }
+        },
+        {
+          "id": "130",
+          "title": {
+            "en": "130°"
+          }
+        },
+        {
+          "id": "140",
+          "title": {
+            "en": "140°"
+          }
+        },
+        {
+          "id": "150",
+          "title": {
+            "en": "150°"
+          }
+        },
+        {
+          "id": "160",
+          "title": {
+            "en": "160°"
+          }
+        },
+        {
+          "id": "170",
+          "title": {
+            "en": "170°"
+          }
+        },
+        {
+          "id": "180",
+          "title": {
+            "en": "180°"
+          }
+        }
+      ],
+      "getable": true,
+      "setable": true,
+      "icon": "/assets/icons/oscillation-vertical.svg"
+    },
+    "fan_xiaomi_vertical_swing": {
+      "type": "boolean",
+      "title": {
+        "en": "Vertical Swing",
+        "nl": "Verticale oscillatie",
+        "da": "Lodret oscillation",
+        "de": "Vertikale Oszillation",
+        "es": "Oscilación vertical",
+        "fr": "Oscillation verticale",
+        "it": "Oscillazione verticale",
+        "no": "Vertikal oscillasjon",
+        "sv": "Vertikal svängning",
         "pl": "Oscylacja pionowa",
         "ru": "Вертикальное колебание",
         "ko": "수직 진동"

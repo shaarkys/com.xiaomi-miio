@@ -1,0 +1,40 @@
+{
+  "type": "enum",
+  "title": {
+    "en": "Horizontal Swing Angle",
+    "nl": "Horizontale draaihoek",
+    "da": "Vandret svingvinkel",
+    "de": "Horizontaler Schwenkwinkel",
+    "es": "Ángulo de giro horizontal",
+    "fr": "Angle de balancement horizontal",
+    "it": "Angolo di oscillazione orizzontale",
+    "no": "Horisontal svingvinkel",
+    "sv": "Horisontell svängvinkel",
+    "pl": "Poziomy kąt huśtania",
+    "ru": "Угол горизонтального поворота",
+    "ko": "수평 스윙 각도"
+  },
+  "values": [
+    { "id": "10", "title": { "en": "10°" } },
+    { "id": "20", "title": { "en": "20°" } },
+    { "id": "30", "title": { "en": "30°" } },
+    { "id": "40", "title": { "en": "40°" } },
+    { "id": "50", "title": { "en": "50°" } },
+    { "id": "60", "title": { "en": "60°" } },
+    { "id": "70", "title": { "en": "70°" } },
+    { "id": "80", "title": { "en": "80°" } },
+    { "id": "90", "title": { "en": "90°" } },
+    { "id": "100", "title": { "en": "100°" } },
+    { "id": "110", "title": { "en": "110°" } },
+    { "id": "120", "title": { "en": "120°" } },
+    { "id": "130", "title": { "en": "130°" } },
+    { "id": "140", "title": { "en": "140°" } },
+    { "id": "150", "title": { "en": "150°" } },
+    { "id": "160", "title": { "en": "160°" } },
+    { "id": "170", "title": { "en": "170°" } },
+    { "id": "180", "title": { "en": "180°" } }
+  ],
+  "getable": true,
+  "setable": true,
+  "icon": "/assets/icons/oscillation.svg"
+}
