@@ -526,5 +526,8 @@
   },
   "3.4.97": {
     "en": "Xiaomi Smart Pet Food Feeder 2 timeline entry removal"
+  },
+  "3.4.98": {
+    "en": "Xiaomi Smart Pet Food Feeder 2 - renamed FoodLevel to Container food level"
   }
 }
