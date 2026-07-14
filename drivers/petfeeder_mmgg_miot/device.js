@@ -115,6 +115,7 @@ const STORE_KEYS = {
 const BOWL_DELTA_THRESHOLD = 0.5; // grams, ignore noise smaller than this
 const PROGRESS_COMPLETE_THRESHOLD = 99.5; // treat >=99.5% as completed dispensing
 const IV2001_MAX_CONSUMPTION_DELTA = 15; // ignore refills/removals and other large sample jumps
+const DEFAULT_BOWL_LOW_THRESHOLD = 10;
 
 
 // Human-readable mode mapping (conservative)
@@ -217,6 +218,7 @@ class PetFeederMiotDevice extends DeviceBase {
             const s = this.getSettings() || {};
             const patch = {};
             if (typeof s.desiccant_alarm_threshold !== 'number') patch.desiccant_alarm_threshold = 20;
+            if (typeof s.bowl_low_threshold !== 'number') patch.bowl_low_threshold = DEFAULT_BOWL_LOW_THRESHOLD;
             if (Object.keys(patch).length) {
                 await this.setSettings(patch).catch((e) => this._warn('[SETTINGS] default patch failed:', e?.message));
             }
@@ -270,6 +272,9 @@ class PetFeederMiotDevice extends DeviceBase {
                 lastTimeline: { excerpt: undefined, at: 0 }
             };
 
+            if (this.hasCapability('petfeeder_serve_food')) {
+                this.registerCapabilityListener('petfeeder_serve_food', async () => this.servePortions(1));
+            }
 
             await this._syncEatenSetting(trackerSnapshot.value);
 
@@ -286,10 +291,7 @@ class PetFeederMiotDevice extends DeviceBase {
 
             // Start our own guarded poller.
             const pollSeconds = Math.max(5, Number(this.getSettings().polling) || 15);
-            this._pollMs = pollSeconds * 1000;
-            if (this._pollTimer) this.homey.clearInterval(this._pollTimer);
-            this._pollTimer = this.homey.setInterval(() => this._pollOnce(), this._pollMs);
-            this.homey.setTimeout(() => this._pollOnce(), 1000);
+            this._restartPolling(pollSeconds, 1000);
         } catch (err) {
             this.error('[IV2001] onInit error:', err?.message || err);
         }
@@ -298,6 +300,8 @@ class PetFeederMiotDevice extends DeviceBase {
     async onUninit() {
         try {
             if (this._pollTimer) this.homey.clearInterval(this._pollTimer);
+            if (this._initialPollTimer) this.homey.clearTimeout(this._initialPollTimer);
+            this._pollGeneration = (this._pollGeneration || 0) + 1;
         } catch (_) {}
         if (super.onUninit) return super.onUninit();
     }
@@ -310,8 +314,7 @@ class PetFeederMiotDevice extends DeviceBase {
                 if (this._pollTimer) this.homey.clearInterval(this._pollTimer);
                 await this._initMiio();
                 const pollSeconds = Math.max(5, Number(newSettings.polling) || Number(this.getSettings().polling) || 15);
-                this._pollMs = pollSeconds * 1000;
-                this._pollTimer = this.homey.setInterval(() => this._pollOnce(), this._pollMs);
+                this._restartPolling(pollSeconds, 1000);
             }
 
             for (const key of changedKeys) {
@@ -337,6 +340,10 @@ class PetFeederMiotDevice extends DeviceBase {
                 }
             }
 
+            if (changedKeys.includes('bowl_low_threshold')) {
+                this.homey.setTimeout(() => this._pollOnce(), 0);
+            }
+
         } catch (e) {
             this._warn('[IV2001] onSettings error:', e?.message);
         } finally {
@@ -348,6 +355,25 @@ class PetFeederMiotDevice extends DeviceBase {
     // ───────────────────────────────────────────────────────────────────────────
     // Polling
     // ───────────────────────────────────────────────────────────────────────────
+
+    _restartPolling(pollSeconds, initialDelayMs) {
+        if (this._pollTimer) this.homey.clearInterval(this._pollTimer);
+        if (this._initialPollTimer) this.homey.clearTimeout(this._initialPollTimer);
+
+        const normalizedSeconds = Math.max(5, Number(pollSeconds) || 15);
+        this._pollMs = normalizedSeconds * 1000;
+        this._pollGeneration = (this._pollGeneration || 0) + 1;
+        const generation = this._pollGeneration;
+        const poll = () => {
+            if (generation !== this._pollGeneration) return;
+            this._pollOnce();
+        };
+
+        this._pollTimer = this.homey.setInterval(poll, this._pollMs);
+        if (Number.isFinite(initialDelayMs)) {
+            this._initialPollTimer = this.homey.setTimeout(poll, Math.max(0, initialDelayMs));
+        }
+    }
 
     async _pollOnce() {
         if (this._polling) return;
@@ -923,7 +949,12 @@ class PetFeederMiotDevice extends DeviceBase {
             const grams = count * gramsPerPortion;
             let result;
             if (this._presetId === 'iv2001') {
-                const actionPayload = { siid: 2, aiid: 1, in: [grams] };
+                const actionPayload = {
+                    did: 'call-2-1',
+                    siid: 2,
+                    aiid: 1,
+                    in: [{ piid: 8, value: grams }]
+                };
                 result = await this._callMiio('action', actionPayload, { retries: 1 }, 12000);
             } else {
                 const propertyPayload = [
@@ -949,14 +980,15 @@ class PetFeederMiotDevice extends DeviceBase {
         const diagnostics = [
             ['container_food_level', g.foodlevel],
             ['bowl_weight_sample', g.bowl_weight_sample],
-            ['bowl_level', g.bowl_level_status],
-            ['low_food_intake_threshold', g.setting_low_food_intake_threshold],
+            ['device_bowl_level', g.bowl_level_status],
+            ['device_low_food_intake_threshold', g.setting_low_food_intake_threshold],
             ['feeding_status', g.feeding_status]
         ];
         const summary = diagnostics.map(([name, entry]) => {
             if (!entry) return `${name}=missing`;
             return `${name}@${entry.siid}/${entry.piid}{code=${entry.code},value=${JSON.stringify(entry.value)}}`;
         });
+        summary.push(`local_bowl_low_threshold=${this._getBowlLowThreshold()}g`);
         const signature = summary.join('|');
         const now = Date.now();
         const shouldLog =
@@ -1025,15 +1057,30 @@ class PetFeederMiotDevice extends DeviceBase {
 
     async _updateBowlAndStuck(g) {
         if (this.hasCapability('petfeeder_bowl_level')) {
-            const bowl = g.bowl_level_status;
-            if (bowl && bowl.code === 0 && typeof bowl.value !== 'undefined') {
-                const mapped = BOWL_LEVEL_LABELS.get(String(bowl.value)) || 'unknown';
-                if (mapped === 'unknown') {
-                    this._onceWarn(`[BOWL] unexpected value: ${JSON.stringify(bowl.value)}`);
-                }
+            const weightSample = g.bowl_weight_sample;
+            const weight = weightSample?.code === 0 ? toNumber(weightSample.value) : undefined;
+            if (Number.isFinite(weight) && weight >= 0) {
+                const normalizedWeight = Math.round(weight * 10) / 10;
+                const threshold = this._getBowlLowThreshold();
+                const mapped = normalizedWeight <= 0 ? 'empty' : normalizedWeight < threshold ? 'low' : 'normal';
+                await this._setCap('petfeeder_food_in_bowl', normalizedWeight);
                 await this._setCap('petfeeder_bowl_level', mapped);
-            } else if (bowl && bowl.code === -4001) {
-                this._onceWarn('[BOWL] level unsupported (-4001)');
+            } else {
+                const bowl = g.bowl_level_status;
+                if (bowl && bowl.code === 0 && typeof bowl.value !== 'undefined') {
+                    const mapped = BOWL_LEVEL_LABELS.get(String(bowl.value)) || 'unknown';
+                    if (mapped === 'unknown') {
+                        this._onceWarn(`[BOWL] unexpected value: ${JSON.stringify(bowl.value)}`);
+                    }
+                    await this._setCap('petfeeder_bowl_level', mapped);
+                } else if (bowl && bowl.code === -4001) {
+                    this._onceWarn('[BOWL] level unsupported (-4001)');
+                }
+            }
+            if (weightSample && weightSample.code === -4001) {
+                this._onceWarn('[BOWL] weight sample unsupported (-4001)');
+            } else if (weightSample && weightSample.code === 0 && !Number.isFinite(weight)) {
+                this._onceWarn(`[BOWL] unexpected weight: ${JSON.stringify(weightSample.value)}`);
             }
         }
 
@@ -1048,6 +1095,11 @@ class PetFeederMiotDevice extends DeviceBase {
                 this._onceWarn('[STUCK] unsupported (-4001)');
             }
         }
+    }
+
+    _getBowlLowThreshold() {
+        const configured = toNumber(this.getSetting('bowl_low_threshold'));
+        return Number.isFinite(configured) ? clampNumber(configured, 1, 150) : DEFAULT_BOWL_LOW_THRESHOLD;
     }
 
     async calibrateScale() {
@@ -1217,6 +1269,7 @@ class PetFeederMiotDevice extends DeviceBase {
 
     async _ensureCapabilities() {
         const required = [
+            'petfeeder_serve_food',
             'petfeeder_foodlevel',
             'petfeeder_food_out_status',
             'petfeeder_food_out_progress',
@@ -1229,6 +1282,7 @@ class PetFeederMiotDevice extends DeviceBase {
             required.push(
                 'petfeeder_bowl_level',
                 'petfeeder_food_stuck_status',
+                'petfeeder_food_in_bowl',
                 'petfeeder_eaten_food_today',
                 'petfeeder_eaten_food_daily'
             );
@@ -1254,7 +1308,6 @@ class PetFeederMiotDevice extends DeviceBase {
 
         if (this._presetId === 'iv2001') {
             for (const id of [
-                'petfeeder_food_in_bowl',
                 'measure_desiccant',
                 'measure_desiccant_time',
                 'alarm_desiccant_low'

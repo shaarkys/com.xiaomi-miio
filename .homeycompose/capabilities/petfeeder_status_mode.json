@@ -10,6 +10,6 @@
     { "id": "paused", "title": { "en": "Paused" } },
     { "id": "fault", "title": { "en": "Fault" } }
   ],
-  "uiComponent": "picker",
+  "uiComponent": "sensor",
   "icon": "/assets/icons/start.svg"
 }

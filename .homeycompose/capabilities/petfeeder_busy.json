@@ -5,7 +5,7 @@
   },
   "getable": true,
   "setable": false,
-  "uiComponent": "toggle",
+  "uiComponent": "sensor",
   "insights": true,
   "insightsTitleTrue": {
     "en": "Feeding"

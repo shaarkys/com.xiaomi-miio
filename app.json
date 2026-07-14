@@ -25657,6 +25657,7 @@
       },
       "class": "petfeeder",
       "capabilities": [
+        "petfeeder_serve_food",
         "petfeeder_foodlevel",
         "petfeeder_food_out_status",
         "petfeeder_food_stuck_status",
@@ -25665,6 +25666,7 @@
         "petfeeder_status_mode",
         "petfeeder_busy",
         "petfeeder_bowl_level",
+        "petfeeder_food_in_bowl",
         "petfeeder_eaten_food_today",
         "petfeeder_eaten_food_daily",
         "petfeeder_schedule_progress"
@@ -25719,6 +25721,20 @@
               "label": {
                 "en": "Low food consumption notification"
               }
+            },
+            {
+              "id": "bowl_low_threshold",
+              "type": "number",
+              "label": {
+                "en": "Bowl low threshold (g)"
+              },
+              "hint": {
+                "en": "The bowl is Low below this weight and Normal at or above it."
+              },
+              "min": 1,
+              "max": 150,
+              "step": 1,
+              "value": 10
             },
             {
               "id": "empty_food_bowl_duration",
@@ -35376,6 +35392,7 @@
       ],
       "getable": true,
       "setable": false,
+      "uiComponent": "sensor",
       "icon": "/assets/icons/petfeeder_foodlevel.svg"
     },
     "petfeeder_busy": {
@@ -35385,7 +35402,7 @@
       },
       "getable": true,
       "setable": false,
-      "uiComponent": "toggle",
+      "uiComponent": "sensor",
       "insights": true,
       "insightsTitleTrue": {
         "en": "Feeding"
@@ -35512,7 +35529,7 @@
           }
         }
       ],
-      "uiComponent": "picker",
+      "uiComponent": "sensor",
       "icon": "/assets/icons/alarm_generic.svg"
     },
     "petfeeder_food_stuck_status": {
@@ -35522,6 +35539,7 @@
       },
       "getable": true,
       "setable": false,
+      "uiComponent": "sensor",
       "values": [
         {
           "id": "ok",
@@ -35582,6 +35600,7 @@
       ],
       "getable": true,
       "setable": false,
+      "uiComponent": "sensor",
       "icon": "/assets/icons/petfeeder_foodlevel.svg"
     },
     "petfeeder_heap_status": {
@@ -35605,8 +35624,18 @@
           }
         }
       ],
-      "uiComponent": "picker",
+      "uiComponent": "sensor",
       "icon": "/assets/icons/alarm_generic.svg"
+    },
+    "petfeeder_serve_food": {
+      "type": "boolean",
+      "title": {
+        "en": "Serve one portion"
+      },
+      "getable": false,
+      "setable": true,
+      "uiComponent": "button",
+      "icon": "/assets/icons/start.svg"
     },
     "petfeeder_schedule_progress": {
       "type": "number",
@@ -35663,7 +35692,7 @@
           }
         }
       ],
-      "uiComponent": "picker",
+      "uiComponent": "sensor",
       "icon": "/assets/icons/start.svg"
     },
     "petwaterdispenser_mmgg_mode": {

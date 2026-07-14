@@ -8,6 +8,7 @@
   "class": "petfeeder",
   "$extends": ["defaults"],
   "capabilities": [
+    "petfeeder_serve_food",
     "petfeeder_foodlevel",
     "petfeeder_food_out_status",
     "petfeeder_food_stuck_status",
@@ -16,6 +17,7 @@
     "petfeeder_status_mode",
     "petfeeder_busy",
     "petfeeder_bowl_level",
+    "petfeeder_food_in_bowl",
     "petfeeder_eaten_food_today",
     "petfeeder_eaten_food_daily",
     "petfeeder_schedule_progress"

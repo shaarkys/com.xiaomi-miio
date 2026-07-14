@@ -36,5 +36,6 @@
   ],
   "getable": true,
   "setable": false,
+  "uiComponent": "sensor",
   "icon": "/assets/icons/petfeeder_foodlevel.svg"
 }

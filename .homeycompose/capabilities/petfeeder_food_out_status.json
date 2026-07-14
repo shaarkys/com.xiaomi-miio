@@ -7,6 +7,6 @@
     { "id": "ok", "title": { "en": "OK" } },
     { "id": "food_out", "title": { "en": "Food Out" } }
   ],
-  "uiComponent": "picker",
+  "uiComponent": "sensor",
   "icon": "/assets/icons/alarm_generic.svg"
 }
