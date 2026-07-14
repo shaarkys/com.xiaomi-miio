@@ -25669,7 +25669,18 @@
         "petfeeder_food_in_bowl",
         "petfeeder_eaten_food_today",
         "petfeeder_eaten_food_daily",
-        "petfeeder_schedule_progress"
+        "petfeeder_schedule_progress",
+        "measure_petfeeder_food_in_bowl",
+        "measure_petfeeder_eaten_food_today",
+        "measure_petfeeder_eaten_food_daily",
+        "measure_petfeeder_food_out_progress",
+        "measure_petfeeder_schedule_progress",
+        "alarm_petfeeder_container_food_low",
+        "alarm_petfeeder_food_out",
+        "alarm_petfeeder_food_stuck",
+        "alarm_petfeeder_heap",
+        "alarm_petfeeder_bowl_food_low",
+        "alarm_petfeeder_fault"
       ],
       "id": "petfeeder_mmgg_miot",
       "settings": [
@@ -33147,6 +33158,72 @@
       "setable": false,
       "icon": "/assets/icons/vacuum_main_brush.svg"
     },
+    "alarm_petfeeder_bowl_food_low": {
+      "type": "boolean",
+      "title": {
+        "en": "Bowl food low"
+      },
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "uiComponent": null,
+      "icon": "/assets/icons/petfeeder_foodlevel.svg"
+    },
+    "alarm_petfeeder_container_food_low": {
+      "type": "boolean",
+      "title": {
+        "en": "Container food low"
+      },
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "uiComponent": null,
+      "icon": "/assets/icons/petfeeder_foodlevel.svg"
+    },
+    "alarm_petfeeder_fault": {
+      "type": "boolean",
+      "title": {
+        "en": "Feeder fault"
+      },
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "uiComponent": null,
+      "icon": "/assets/icons/alarm_generic.svg"
+    },
+    "alarm_petfeeder_food_out": {
+      "type": "boolean",
+      "title": {
+        "en": "Food out"
+      },
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "uiComponent": null,
+      "icon": "/assets/icons/alarm_generic.svg"
+    },
+    "alarm_petfeeder_food_stuck": {
+      "type": "boolean",
+      "title": {
+        "en": "Food stuck"
+      },
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "uiComponent": null,
+      "icon": "/assets/icons/alarm_generic.svg"
+    },
+    "alarm_petfeeder_heap": {
+      "type": "boolean",
+      "title": {
+        "en": "Food heap detected"
+      },
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "uiComponent": null,
+      "icon": "/assets/icons/alarm_generic.svg"
+    },
     "alarm_repeater_fault": {
       "type": "boolean",
       "title": {
@@ -35098,6 +35175,88 @@
       "getable": true,
       "setable": false,
       "icon": "/assets/icons/measure_gas_density.svg"
+    },
+    "measure_petfeeder_eaten_food_daily": {
+      "type": "number",
+      "title": {
+        "en": "Food consumed previous day"
+      },
+      "units": {
+        "en": "g"
+      },
+      "decimals": 0,
+      "min": 0,
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "uiComponent": null,
+      "icon": "/assets/icons/food-quantity.svg"
+    },
+    "measure_petfeeder_eaten_food_today": {
+      "type": "number",
+      "title": {
+        "en": "Eaten food today"
+      },
+      "units": {
+        "en": "g"
+      },
+      "decimals": 0,
+      "min": 0,
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "uiComponent": null,
+      "icon": "/assets/icons/food-quantity.svg"
+    },
+    "measure_petfeeder_food_in_bowl": {
+      "type": "number",
+      "title": {
+        "en": "Food left in bowl"
+      },
+      "units": {
+        "en": "g"
+      },
+      "decimals": 1,
+      "min": 0,
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "uiComponent": null,
+      "icon": "/assets/icons/petfeeder_foodlevel.svg"
+    },
+    "measure_petfeeder_food_out_progress": {
+      "type": "number",
+      "title": {
+        "en": "Food out progress"
+      },
+      "units": {
+        "en": "%"
+      },
+      "decimals": 0,
+      "min": 0,
+      "max": 100,
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "uiComponent": null,
+      "icon": "/assets/icons/food-quantity.svg"
+    },
+    "measure_petfeeder_schedule_progress": {
+      "type": "number",
+      "title": {
+        "en": "Schedule progress"
+      },
+      "units": {
+        "en": "%"
+      },
+      "decimals": 0,
+      "min": 0,
+      "max": 100,
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "uiComponent": null,
+      "icon": "/assets/icons/target_time.svg"
     },
     "measure_repeater_connected_devices": {
       "type": "number",

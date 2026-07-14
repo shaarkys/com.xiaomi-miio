@@ -1,0 +1,9 @@
+{
+  "type": "boolean",
+  "title": { "en": "Food stuck" },
+  "getable": true,
+  "setable": false,
+  "insights": false,
+  "uiComponent": null,
+  "icon": "/assets/icons/alarm_generic.svg"
+}

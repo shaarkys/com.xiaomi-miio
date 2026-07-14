@@ -1,0 +1,13 @@
+{
+  "type": "number",
+  "title": { "en": "Food out progress" },
+  "units": { "en": "%" },
+  "decimals": 0,
+  "min": 0,
+  "max": 100,
+  "getable": true,
+  "setable": false,
+  "insights": false,
+  "uiComponent": null,
+  "icon": "/assets/icons/food-quantity.svg"
+}

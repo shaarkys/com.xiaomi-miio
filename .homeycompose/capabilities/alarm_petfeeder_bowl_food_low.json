@@ -1,0 +1,9 @@
+{
+  "type": "boolean",
+  "title": { "en": "Bowl food low" },
+  "getable": true,
+  "setable": false,
+  "insights": false,
+  "uiComponent": null,
+  "icon": "/assets/icons/petfeeder_foodlevel.svg"
+}

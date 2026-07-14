@@ -20,6 +20,17 @@
     "petfeeder_food_in_bowl",
     "petfeeder_eaten_food_today",
     "petfeeder_eaten_food_daily",
-    "petfeeder_schedule_progress"
+    "petfeeder_schedule_progress",
+    "measure_petfeeder_food_in_bowl",
+    "measure_petfeeder_eaten_food_today",
+    "measure_petfeeder_eaten_food_daily",
+    "measure_petfeeder_food_out_progress",
+    "measure_petfeeder_schedule_progress",
+    "alarm_petfeeder_container_food_low",
+    "alarm_petfeeder_food_out",
+    "alarm_petfeeder_food_stuck",
+    "alarm_petfeeder_heap",
+    "alarm_petfeeder_bowl_food_low",
+    "alarm_petfeeder_fault"
   ]
 }

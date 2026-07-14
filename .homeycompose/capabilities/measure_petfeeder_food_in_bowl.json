@@ -1,0 +1,12 @@
+{
+  "type": "number",
+  "title": { "en": "Food left in bowl" },
+  "units": { "en": "g" },
+  "decimals": 1,
+  "min": 0,
+  "getable": true,
+  "setable": false,
+  "insights": false,
+  "uiComponent": null,
+  "icon": "/assets/icons/petfeeder_foodlevel.svg"
+}

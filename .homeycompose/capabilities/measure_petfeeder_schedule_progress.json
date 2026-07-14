@@ -1,0 +1,13 @@
+{
+  "type": "number",
+  "title": { "en": "Schedule progress" },
+  "units": { "en": "%" },
+  "decimals": 0,
+  "min": 0,
+  "max": 100,
+  "getable": true,
+  "setable": false,
+  "insights": false,
+  "uiComponent": null,
+  "icon": "/assets/icons/target_time.svg"
+}

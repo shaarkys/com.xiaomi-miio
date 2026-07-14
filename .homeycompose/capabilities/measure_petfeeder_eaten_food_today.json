@@ -1,0 +1,12 @@
+{
+  "type": "number",
+  "title": { "en": "Eaten food today" },
+  "units": { "en": "g" },
+  "decimals": 0,
+  "min": 0,
+  "getable": true,
+  "setable": false,
+  "insights": false,
+  "uiComponent": null,
+  "icon": "/assets/icons/food-quantity.svg"
+}
