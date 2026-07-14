@@ -23,6 +23,12 @@ if [ -z "$MODEL" ]; then
 fi
 MODEL="$(printf '%s' "$MODEL" | tr -d '[:space:]')"
 [ -n "$MODEL" ] || { echo "error: no model given" >&2; exit 1; }
+case "$MODEL" in
+  *[!A-Za-z0-9._-]*)
+    echo "error: model may only contain letters, numbers, dots, underscores, and hyphens" >&2
+    exit 1
+    ;;
+esac
 
 echo "Looking up URN for $MODEL ..." >&2
 URN="$(curl -fsS "$API/instances?status=all" \
