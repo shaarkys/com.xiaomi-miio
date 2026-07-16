@@ -1,0 +1,53 @@
+{
+  "id": "xiaomiHorizontalAngleEquals",
+  "$filter": "capabilities=fan_xiaomi_horizontal_angle",
+  "title": {
+    "en": "Horizontal angle !{{is|is not}}",
+    "nl": "Horizontale hoek !{{is|is niet}}",
+    "da": "Vandret vinkel !{{er|er ikke}}",
+    "de": "Horizontaler Winkel !{{ist|ist nicht}}",
+    "es": "El ángulo horizontal !{{es|no es}}",
+    "fr": "L'angle horizontal !{{est|n'est pas}}",
+    "it": "L'angolo orizzontale !{{è|non è}}",
+    "no": "Horisontal vinkel !{{er|er ikke}}",
+    "sv": "Horisontell vinkel !{{är|är inte}}",
+    "pl": "Kąt poziomy !{{jest|nie jest}}",
+    "ru": "Горизонтальный угол !{{равен|не равен}}",
+    "ko": "수평 각도가 !{{임|아님}}"
+  },
+  "titleFormatted": {
+    "en": "Horizontal angle !{{is|is not}} [[angle]]",
+    "nl": "Horizontale hoek !{{is|is niet}} [[angle]]",
+    "da": "Vandret vinkel !{{er|er ikke}} [[angle]]",
+    "de": "Horizontaler Winkel !{{ist|ist nicht}} [[angle]]",
+    "es": "El ángulo horizontal !{{es|no es}} [[angle]]",
+    "fr": "L'angle horizontal !{{est|n'est pas}} [[angle]]",
+    "it": "L'angolo orizzontale !{{è|non è}} [[angle]]",
+    "no": "Horisontal vinkel !{{er|er ikke}} [[angle]]",
+    "sv": "Horisontell vinkel !{{är|är inte}} [[angle]]",
+    "pl": "Kąt poziomy !{{jest|nie jest}} [[angle]]",
+    "ru": "Горизонтальный угол !{{равен|не равен}} [[angle]]",
+    "ko": "수평 각도가 [[angle]] !{{임|아님}}"
+  },
+  "args": [
+    {
+      "name": "angle",
+      "title": {
+        "en": "Angle",
+        "nl": "Hoek",
+        "da": "Vinkel",
+        "de": "Winkel",
+        "es": "Ángulo",
+        "fr": "Angle",
+        "it": "Angolo",
+        "no": "Vinkel",
+        "sv": "Vinkel",
+        "pl": "Kąt",
+        "ru": "Угол",
+        "ko": "각도"
+      },
+      "type": "autocomplete"
+    }
+  ],
+  "platforms": ["local"]
+}

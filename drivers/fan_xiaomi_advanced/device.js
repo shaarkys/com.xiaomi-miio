@@ -25,7 +25,7 @@ class AdvancedXiaomiFanMiotDevice extends Device {
             await engine.applyCapabilityOptions(this, this.descriptor);
 
             // FLOW TRIGGER CARDS
-            this.homey.flow.getDeviceTriggerCard('triggerModeChanged');
+            this.homey.flow.getDeviceTriggerCard('xiaomiModeChanged');
 
             // LISTENERS FOR UPDATING CAPABILITIES
             engine.registerListeners(this, this.descriptor);
@@ -46,15 +46,7 @@ class AdvancedXiaomiFanMiotDevice extends Device {
 
         const descriptor = this.getDescriptor();
 
-        if (changedKeys.includes('led')) {
-            await engine.writeSetting(this, descriptor, 'light', 'light', newSettings.led);
-        }
-        if (changedKeys.includes('buzzer')) {
-            await engine.writeSetting(this, descriptor, 'buzzer', 'buzzer', newSettings.buzzer);
-        }
-        if (changedKeys.includes('childLock')) {
-            await engine.writeSetting(this, descriptor, 'child_lock', 'child_lock', newSettings.childLock);
-        }
+        await engine.writeChangedSettings(this, descriptor, newSettings, changedKeys);
 
         return Promise.resolve(true);
     }

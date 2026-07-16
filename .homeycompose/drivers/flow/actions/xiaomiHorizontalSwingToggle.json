@@ -2,7 +2,7 @@
   "id": "xiaomiHorizontalSwingToggle",
   "$filter": "capabilities=fan_xiaomi_horizontal_swing",
   "title": {
-    "en": "Toggle Horizontal Swing",
+    "en": "Toggle horizontal swing",
     "nl": "Horizontale oscillatie omschakelen",
     "da": "Skift vandret oscillation",
     "de": "Horizontale Oszillation umschalten",
@@ -16,7 +16,7 @@
     "ko": "수평 진동 전환"
   },
   "titleFormatted": {
-    "en": "Toggle Horizontal Swing",
+    "en": "Toggle horizontal swing",
     "nl": "Horizontale oscillatie omschakelen",
     "da": "Skift vandret oscillation",
     "de": "Horizontale Oszillation umschalten",

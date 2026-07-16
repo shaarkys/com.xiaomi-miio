@@ -1,0 +1,53 @@
+{
+  "id": "xiaomiFanLevelSet",
+  "$filter": "capabilities=fan_xiaomi_fanlevel",
+  "title": {
+    "en": "Set fan level",
+    "nl": "Stel ventilatorniveau in",
+    "da": "Indstil ventilatorniveau",
+    "de": "Ventilatorstufe einstellen",
+    "es": "Configurar nivel del ventilador",
+    "fr": "Définir le niveau du ventilateur",
+    "it": "Imposta livello del ventilatore",
+    "no": "Sett viftenivå",
+    "sv": "Ställ in fläktnivå",
+    "pl": "Ustaw poziom wentylatora",
+    "ru": "Установить уровень вентилятора",
+    "ko": "팬 레벨 설정"
+  },
+  "titleFormatted": {
+    "en": "Set fan level to [[level]]",
+    "nl": "Stel ventilatorniveau in op [[level]]",
+    "da": "Indstil ventilatorniveau til [[level]]",
+    "de": "Ventilatorstufe auf [[level]] einstellen",
+    "es": "Configurar nivel del ventilador en [[level]]",
+    "fr": "Définir le niveau du ventilateur sur [[level]]",
+    "it": "Imposta livello del ventilatore su [[level]]",
+    "no": "Sett viftenivå til [[level]]",
+    "sv": "Ställ in fläktnivå till [[level]]",
+    "pl": "Ustaw poziom wentylatora na [[level]]",
+    "ru": "Установить уровень вентилятора на [[level]]",
+    "ko": "팬 레벨을 [[level]](으)로 설정"
+  },
+  "args": [
+    {
+      "name": "level",
+      "title": {
+        "en": "Fan level",
+        "nl": "Ventilatorniveau",
+        "da": "Ventilatorniveau",
+        "de": "Ventilatorstufe",
+        "es": "Nivel del ventilador",
+        "fr": "Niveau du ventilateur",
+        "it": "Livello del ventilatore",
+        "no": "Viftenivå",
+        "sv": "Fläktnivå",
+        "pl": "Poziom wentylatora",
+        "ru": "Уровень вентилятора",
+        "ko": "팬 레벨"
+      },
+      "type": "autocomplete"
+    }
+  ],
+  "platforms": ["local"]
+}

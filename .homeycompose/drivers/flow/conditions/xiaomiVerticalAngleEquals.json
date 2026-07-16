@@ -1,0 +1,53 @@
+{
+  "id": "xiaomiVerticalAngleEquals",
+  "$filter": "capabilities=fan_xiaomi_vertical_angle",
+  "title": {
+    "en": "Vertical angle !{{is|is not}}",
+    "nl": "Verticale hoek !{{is|is niet}}",
+    "da": "Lodret vinkel !{{er|er ikke}}",
+    "de": "Vertikaler Winkel !{{ist|ist nicht}}",
+    "es": "El ángulo vertical !{{es|no es}}",
+    "fr": "L'angle vertical !{{est|n'est pas}}",
+    "it": "L'angolo verticale !{{è|non è}}",
+    "no": "Vertikal vinkel !{{er|er ikke}}",
+    "sv": "Vertikal vinkel !{{är|är inte}}",
+    "pl": "Kąt pionowy !{{jest|nie jest}}",
+    "ru": "Вертикальный угол !{{равен|не равен}}",
+    "ko": "수직 각도가 !{{임|아님}}"
+  },
+  "titleFormatted": {
+    "en": "Vertical angle !{{is|is not}} [[angle]]",
+    "nl": "Verticale hoek !{{is|is niet}} [[angle]]",
+    "da": "Lodret vinkel !{{er|er ikke}} [[angle]]",
+    "de": "Vertikaler Winkel !{{ist|ist nicht}} [[angle]]",
+    "es": "El ángulo vertical !{{es|no es}} [[angle]]",
+    "fr": "L'angle vertical !{{est|n'est pas}} [[angle]]",
+    "it": "L'angolo verticale !{{è|non è}} [[angle]]",
+    "no": "Vertikal vinkel !{{er|er ikke}} [[angle]]",
+    "sv": "Vertikal vinkel !{{är|är inte}} [[angle]]",
+    "pl": "Kąt pionowy !{{jest|nie jest}} [[angle]]",
+    "ru": "Вертикальный угол !{{равен|не равен}} [[angle]]",
+    "ko": "수직 각도가 [[angle]] !{{임|아님}}"
+  },
+  "args": [
+    {
+      "name": "angle",
+      "title": {
+        "en": "Angle",
+        "nl": "Hoek",
+        "da": "Vinkel",
+        "de": "Winkel",
+        "es": "Ángulo",
+        "fr": "Angle",
+        "it": "Angolo",
+        "no": "Vinkel",
+        "sv": "Vinkel",
+        "pl": "Kąt",
+        "ru": "Угол",
+        "ko": "각도"
+      },
+      "type": "autocomplete"
+    }
+  ],
+  "platforms": ["local"]
+}

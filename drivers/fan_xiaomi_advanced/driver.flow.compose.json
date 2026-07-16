@@ -1,15 +1,24 @@
 {
   "triggers": [
+    { "$extends": ["xiaomiFanLevelChanged"] },
+    { "$extends": ["xiaomiModeChanged"] },
     { "$extends": ["xiaomiHorizontalSwingTurnedOn"] },
     { "$extends": ["xiaomiHorizontalSwingTurnedOff"] },
     { "$extends": ["xiaomiVerticalSwingTurnedOn"] },
-    { "$extends": ["xiaomiVerticalSwingTurnedOff"] }
+    { "$extends": ["xiaomiVerticalSwingTurnedOff"] },
+    { "$extends": ["xiaomiHorizontalAngleChanged"] },
+    { "$extends": ["xiaomiVerticalAngleChanged"] }
   ],
   "conditions": [
     { "$extends": ["xiaomiHorizontalSwingIsOn"] },
-    { "$extends": ["xiaomiVerticalSwingIsOn"] }
+    { "$extends": ["xiaomiVerticalSwingIsOn"] },
+    { "$extends": ["xiaomiModeEquals"] },
+    { "$extends": ["xiaomiFanLevelEquals"] },
+    { "$extends": ["xiaomiHorizontalAngleEquals"] },
+    { "$extends": ["xiaomiVerticalAngleEquals"] }
   ],
   "actions": [
+    { "$extends": ["xiaomiFanLevelSet"] },
     { "$extends": ["xiaomiFanMode"] },
     { "$extends": ["xiaomiHorizontalSwingOn"] },
     { "$extends": ["xiaomiHorizontalSwingOff"] },

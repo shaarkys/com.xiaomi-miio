@@ -2,7 +2,7 @@
   "id": "xiaomiSetVerticalAngle",
   "$filter": "capabilities=fan_xiaomi_vertical_angle",
   "title": {
-    "en": "Change Vertical Swing Angle",
+    "en": "Change vertical swing angle",
     "nl": "Verticale draaihoek wijzigen",
     "da": "Skift lodret svingvinkel",
     "de": "Vertikalen Schwenkwinkel ändern",
