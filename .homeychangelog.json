@@ -544,5 +544,8 @@
   },
   "3.5.2": {
     "en": "Additional Xiaomi Smart Pet Feeder 2 improvements"
+  },
+  "3.5.3": {
+    "en": "Improved Advanced Xiaomi Fan MIoT support with new mode, fan-level and swing-angle Flow cards, plus faster and more reliable state updates."
   }
 }
