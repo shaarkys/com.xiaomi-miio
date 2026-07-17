@@ -18,7 +18,7 @@
     { "$extends": ["xiaomiVerticalAngleEquals"] }
   ],
   "actions": [
-    { "$extends": ["xiaomiFanLevelSet"] },
+    { "$extends": ["xiaomiSetFanLevel"] },
     { "$extends": ["xiaomiFanMode"] },
     { "$extends": ["xiaomiHorizontalSwingOn"] },
     { "$extends": ["xiaomiHorizontalSwingOff"] },

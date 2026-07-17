@@ -1,7 +1,7 @@
 {
   "type": "enum",
   "title": {
-    "en": "Fanlevel",
+    "en": "Fan level",
     "nl": "Ventilator niveau",
     "da": "Fan niveau",
     "de": "Ventilatorebene",

@@ -18,41 +18,41 @@
   "tokens": [
     {
       "name": "new_angle",
-      "type": "string",
+      "type": "number",
       "title": {
-        "en": "new angle",
-        "nl": "nieuwe hoek",
-        "da": "ny vinkel",
-        "de": "neuer Winkel",
-        "es": "nuevo ángulo",
-        "fr": "nouvel angle",
-        "it": "nuovo angolo",
-        "no": "ny vinkel",
-        "sv": "ny vinkel",
-        "pl": "nowy kąt",
-        "ru": "новый угол",
-        "ko": "새 각도"
+        "en": "new angle (°)",
+        "nl": "nieuwe hoek (°)",
+        "da": "ny vinkel (°)",
+        "de": "neuer Winkel (°)",
+        "es": "nuevo ángulo (°)",
+        "fr": "nouvel angle (°)",
+        "it": "nuovo angolo (°)",
+        "no": "ny vinkel (°)",
+        "sv": "ny vinkel (°)",
+        "pl": "nowy kąt (°)",
+        "ru": "новый угол (°)",
+        "ko": "새 각도 (°)"
       },
-      "example": "90°"
+      "example": 90
     },
     {
       "name": "previous_angle",
-      "type": "string",
+      "type": "number",
       "title": {
-        "en": "previous angle",
-        "nl": "vorige hoek",
-        "da": "forrige vinkel",
-        "de": "vorheriger Winkel",
-        "es": "ángulo anterior",
-        "fr": "angle précédent",
-        "it": "angolo precedente",
-        "no": "forrige vinkel",
-        "sv": "föregående vinkel",
-        "pl": "poprzedni kąt",
-        "ru": "предыдущий угол",
-        "ko": "이전 각도"
+        "en": "previous angle (°)",
+        "nl": "vorige hoek (°)",
+        "da": "forrige vinkel (°)",
+        "de": "vorheriger Winkel (°)",
+        "es": "ángulo anterior (°)",
+        "fr": "angle précédent (°)",
+        "it": "angolo precedente (°)",
+        "no": "forrige vinkel (°)",
+        "sv": "föregående vinkel (°)",
+        "pl": "poprzedni kąt (°)",
+        "ru": "предыдущий угол (°)",
+        "ko": "이전 각도 (°)"
       },
-      "example": "60°"
+      "example": 60
     }
   ],
   "platforms": ["local"]

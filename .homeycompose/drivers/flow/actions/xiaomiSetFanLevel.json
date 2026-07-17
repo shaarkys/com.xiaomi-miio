@@ -1,5 +1,5 @@
 {
-  "id": "xiaomiFanLevelSet",
+  "id": "xiaomiSetFanLevel",
   "$filter": "capabilities=fan_xiaomi_fanlevel",
   "title": {
     "en": "Set fan level",
