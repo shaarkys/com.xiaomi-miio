@@ -547,5 +547,8 @@
   },
   "3.5.3": {
     "en": "Improved Advanced Xiaomi Fan MIoT support with new mode, fan-level and swing-angle Flow cards, plus faster and more reliable state updates."
+  },
+  "3.5.4": {
+    "en": "Add supported translations for new light drivers (credit @LieuweJ)"
   }
 }
