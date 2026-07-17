@@ -14,8 +14,7 @@
       "pl": "Ustawienia urządzenia",
       "ru": "Настройки устройства",
       "ko": "장치 설정",
-      "ja": "デバイス設定",
-      "zh": "设备设置"
+      "ar": "إعدادات الجهاز"
     },
     "children": [
       {
@@ -36,7 +35,18 @@
         },
         "label": {
           "en": "Polling rate (seconds)",
-          "nl": "Pollingfrequentie (seconden)"
+          "nl": "Pollingfrequentie (seconden)",
+          "da": "Pollinginterval (sekunder)",
+          "de": "Abfrageintervall (Sekunden)",
+          "es": "Frecuencia de sondeo (segundos)",
+          "fr": "Intervalle d’interrogation (secondes)",
+          "it": "Intervallo di polling (secondi)",
+          "no": "Pollingintervall (sekunder)",
+          "sv": "Pollningsintervall (sekunder)",
+          "pl": "Interwał odpytywania (sekundy)",
+          "ru": "Интервал опроса (секунды)",
+          "ko": "폴링 간격(초)",
+          "ar": "معدل الاستطلاع (بالثواني)"
         }
       },
       {
@@ -44,7 +54,18 @@
         "type": "label",
         "label": {
           "en": "External changes, such as using the Xiaomi app or the physical knob, are detected after the next polling interval.",
-          "nl": "Externe wijzigingen, zoals via de Xiaomi-app of de fysieke knop, worden na het volgende polling-interval gedetecteerd."
+          "nl": "Externe wijzigingen, zoals via de Xiaomi-app of de fysieke knop, worden na het volgende polling-interval gedetecteerd.",
+          "da": "Eksterne ændringer, f.eks. via Xiaomi-appen eller den fysiske drejeknap, registreres efter næste pollinginterval.",
+          "de": "Externe Änderungen, z. B. über die Xiaomi-App oder den physischen Drehknopf, werden nach dem nächsten Abfrageintervall erkannt.",
+          "es": "Los cambios externos, como usar la app de Xiaomi o el mando físico, se detectan después del siguiente intervalo de sondeo.",
+          "fr": "Les changements externes, comme l’utilisation de l’application Xiaomi ou du bouton physique, sont détectés après le prochain intervalle d’interrogation.",
+          "it": "Le modifiche esterne, ad esempio tramite l’app Xiaomi o la manopola fisica, vengono rilevate dopo il successivo intervallo di polling.",
+          "no": "Eksterne endringer, for eksempel via Xiaomi-appen eller den fysiske knotten, oppdages etter neste pollingintervall.",
+          "sv": "Externa ändringar, till exempel via Xiaomi-appen eller den fysiska ratten, upptäcks efter nästa pollningsintervall.",
+          "pl": "Zmiany zewnętrzne, takie jak użycie aplikacji Xiaomi lub fizycznego pokrętła, są wykrywane po następnym interwale odpytywania.",
+          "ru": "Внешние изменения, например через приложение Xiaomi или физическую ручку, обнаруживаются после следующего интервала опроса.",
+          "ko": "Xiaomi 앱이나 물리적 노브를 통한 외부 변경은 다음 폴링 간격 이후에 감지됩니다.",
+          "ar": "يتم اكتشاف التغييرات الخارجية، مثل استخدام تطبيق Xiaomi أو المقبض الفعلي، بعد فترة الاستطلاع التالية."
         },
         "value": ""
       }

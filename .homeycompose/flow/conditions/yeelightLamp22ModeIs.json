@@ -1,18 +1,51 @@
 {
   "title": {
     "en": "My mode / scene is",
-    "nl": "Mijn modus / scene is"
+    "nl": "Mijn modus / scene is",
+    "da": "Min tilstand / scene er",
+    "de": "Mein Modus / meine Szene ist",
+    "es": "Mi modo / escena es",
+    "fr": "Mon mode / ma scène est",
+    "it": "La mia modalità / scena è",
+    "no": "Min modus / scene er",
+    "sv": "Mitt läge / min scen är",
+    "pl": "Mój tryb / scena to",
+    "ru": "Мой режим / сцена",
+    "ko": "내 모드 / 장면 상태",
+    "ar": "وضعي / المشهد هو"
   },
   "titleFormatted": {
     "en": "My mode / scene is [[mode]]",
-    "nl": "Mijn modus / scene is [[mode]]"
+    "nl": "Mijn modus / scene is [[mode]]",
+    "da": "Min tilstand / scene er [[mode]]",
+    "de": "Mein Modus / meine Szene ist [[mode]]",
+    "es": "Mi modo / escena es [[mode]]",
+    "fr": "Mon mode / ma scène est [[mode]]",
+    "it": "La mia modalità / scena è [[mode]]",
+    "no": "Min modus / scene er [[mode]]",
+    "sv": "Mitt läge / min scen är [[mode]]",
+    "pl": "Mój tryb / scena to [[mode]]",
+    "ru": "Мой режим / сцена: [[mode]]",
+    "ko": "내 모드 / 장면이 [[mode]]임",
+    "ar": "وضعي / المشهد هو [[mode]]"
   },
   "args": [
     {
       "name": "mode",
       "title": {
         "en": "My mode / scene",
-        "nl": "Mijn modus / scene"
+        "nl": "Mijn modus / scene",
+        "da": "Min tilstand / scene",
+        "de": "Mein Modus / meine Szene",
+        "es": "Mi modo / escena",
+        "fr": "Mon mode / ma scène",
+        "it": "La mia modalità / scena",
+        "no": "Min modus / scene",
+        "sv": "Mitt läge / min scen",
+        "pl": "Mój tryb / scena",
+        "ru": "Мой режим / сцена",
+        "ko": "내 모드 / 장면",
+        "ar": "وضعي / المشهد"
       },
       "type": "dropdown",
       "values": [
@@ -20,77 +53,198 @@
           "id": "0",
           "title": {
             "en": "No scene",
-            "nl": "Geen scene"
+            "nl": "Geen scene",
+            "da": "Ingen scene",
+            "de": "Keine Szene",
+            "es": "Sin escena",
+            "fr": "Aucune scène",
+            "it": "Nessuna scena",
+            "no": "Ingen scene",
+            "sv": "Ingen scen",
+            "pl": "Brak sceny",
+            "ru": "Нет сцены",
+            "ko": "장면 없음",
+            "ar": "بدون وضع"
           }
         },
         {
           "id": "1",
           "title": {
             "en": "My mode 1",
-            "nl": "Mijn modus 1"
+            "nl": "Mijn modus 1",
+            "da": "Min tilstand 1",
+            "de": "Mein Modus 1",
+            "es": "Mi modo 1",
+            "fr": "Mon mode 1",
+            "it": "La mia modalità 1",
+            "no": "Min modus 1",
+            "sv": "Mitt läge 1",
+            "pl": "Mój tryb 1",
+            "ru": "Мой режим 1",
+            "ko": "내 모드 1",
+            "ar": "وضعي 1"
           }
         },
         {
           "id": "2",
           "title": {
             "en": "My mode 2",
-            "nl": "Mijn modus 2"
+            "nl": "Mijn modus 2",
+            "da": "Min tilstand 2",
+            "de": "Mein Modus 2",
+            "es": "Mi modo 2",
+            "fr": "Mon mode 2",
+            "it": "La mia modalità 2",
+            "no": "Min modus 2",
+            "sv": "Mitt läge 2",
+            "pl": "Mój tryb 2",
+            "ru": "Мой режим 2",
+            "ko": "내 모드 2",
+            "ar": "وضعي 2"
           }
         },
         {
           "id": "3",
           "title": {
             "en": "My mode 3",
-            "nl": "Mijn modus 3"
+            "nl": "Mijn modus 3",
+            "da": "Min tilstand 3",
+            "de": "Mein Modus 3",
+            "es": "Mi modo 3",
+            "fr": "Mon mode 3",
+            "it": "La mia modalità 3",
+            "no": "Min modus 3",
+            "sv": "Mitt läge 3",
+            "pl": "Mój tryb 3",
+            "ru": "Мой режим 3",
+            "ko": "내 모드 3",
+            "ar": "وضعي 3"
           }
         },
         {
           "id": "4",
           "title": {
             "en": "My mode 4",
-            "nl": "Mijn modus 4"
+            "nl": "Mijn modus 4",
+            "da": "Min tilstand 4",
+            "de": "Mein Modus 4",
+            "es": "Mi modo 4",
+            "fr": "Mon mode 4",
+            "it": "La mia modalità 4",
+            "no": "Min modus 4",
+            "sv": "Mitt läge 4",
+            "pl": "Mój tryb 4",
+            "ru": "Мой режим 4",
+            "ko": "내 모드 4",
+            "ar": "وضعي 4"
           }
         },
         {
           "id": "6",
           "title": {
             "en": "Office",
-            "nl": "Kantoor"
+            "nl": "Kantoor",
+            "da": "Kontor",
+            "de": "Büro",
+            "es": "Oficina",
+            "fr": "Bureau",
+            "it": "Ufficio",
+            "no": "Kontor",
+            "sv": "Kontor",
+            "pl": "Biuro",
+            "ru": "Офис",
+            "ko": "사무실",
+            "ar": "المكتب"
           }
         },
         {
           "id": "5",
           "title": {
             "en": "Reading",
-            "nl": "Lezen"
+            "nl": "Lezen",
+            "da": "Læsning",
+            "de": "Lesen",
+            "es": "Lectura",
+            "fr": "Lecture",
+            "it": "Lettura",
+            "no": "Lesing",
+            "sv": "Läsning",
+            "pl": "Czytanie",
+            "ru": "Чтение",
+            "ko": "독서",
+            "ar": "القراءة"
           }
         },
         {
           "id": "7",
           "title": {
             "en": "Leisure",
-            "nl": "Ontspanning"
+            "nl": "Ontspanning",
+            "da": "Fritid",
+            "de": "Freizeit",
+            "es": "Ocio",
+            "fr": "Loisir",
+            "it": "Tempo libero",
+            "no": "Fritid",
+            "sv": "Fritid",
+            "pl": "Wypoczynek",
+            "ru": "Отдых",
+            "ko": "여가",
+            "ar": "الاسترخاء"
           }
         },
         {
           "id": "9",
           "title": {
             "en": "Computer",
-            "nl": "Computer"
+            "nl": "Computer",
+            "da": "Computer",
+            "de": "Computer",
+            "es": "Ordenador",
+            "fr": "Ordinateur",
+            "it": "Computer",
+            "no": "Datamaskin",
+            "sv": "Dator",
+            "pl": "Komputer",
+            "ru": "Компьютер",
+            "ko": "컴퓨터",
+            "ar": "الكمبيوتر"
           }
         },
         {
           "id": "8",
           "title": {
             "en": "Warm",
-            "nl": "Warm"
+            "nl": "Warm",
+            "da": "Varm",
+            "de": "Warm",
+            "es": "Cálido",
+            "fr": "Chaud",
+            "it": "Calda",
+            "no": "Varm",
+            "sv": "Varm",
+            "pl": "Ciepły",
+            "ru": "Тёплый",
+            "ko": "따뜻함",
+            "ar": "دافئ"
           }
         },
         {
           "id": "10",
           "title": {
             "en": "Blinking",
-            "nl": "Knipperen"
+            "nl": "Knipperen",
+            "da": "Blinkende",
+            "de": "Blinken",
+            "es": "Parpadeo",
+            "fr": "Clignotement",
+            "it": "Lampeggiante",
+            "no": "Blinkende",
+            "sv": "Blinkande",
+            "pl": "Miganie",
+            "ru": "Мигание",
+            "ko": "깜박임",
+            "ar": "وميض"
           }
         }
       ]
@@ -100,7 +254,18 @@
       "type": "device",
       "placeholder": {
         "en": "Select Xiaomi Monitor Light Bar S1",
-        "nl": "Selecteer Xiaomi Monitor Light Bar S1"
+        "nl": "Selecteer Xiaomi Monitor Light Bar S1",
+        "da": "Vælg Xiaomi Monitor Light Bar S1",
+        "de": "Xiaomi Monitor Light Bar S1 auswählen",
+        "es": "Selecciona Xiaomi Monitor Light Bar S1",
+        "fr": "Sélectionnez Xiaomi Monitor Light Bar S1",
+        "it": "Seleziona Xiaomi Monitor Light Bar S1",
+        "no": "Velg Xiaomi Monitor Light Bar S1",
+        "sv": "Välj Xiaomi Monitor Light Bar S1",
+        "pl": "Wybierz Xiaomi Monitor Light Bar S1",
+        "ru": "Выберите Xiaomi Monitor Light Bar S1",
+        "ko": "Xiaomi Monitor Light Bar S1 선택",
+        "ar": "اختر Xiaomi Monitor Light Bar S1"
       },
       "filter": "driver_id=yeelink_light_lamp22_miot"
     }

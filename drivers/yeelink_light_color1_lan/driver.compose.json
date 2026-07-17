@@ -11,11 +11,23 @@
     "sv": "Yeelight Color Bulb (legacy LAN) (WiFi)",
     "pl": "Yeelight Color Bulb (legacy LAN) (WiFi)",
     "ru": "Yeelight Color Bulb (legacy LAN) (WiFi)",
-    "ko": "Yeelight Color Bulb (legacy LAN) (WiFi)"
+    "ko": "Yeelight Color Bulb (legacy LAN) (WiFi)",
+    "ar": "Yeelight Color Bulb (legacy LAN) (WiFi)"
   },
   "description": {
     "en": "Product model: YLDP02YL. Uses the legacy Yeelight LAN API.",
-    "nl": "Productmodel: YLDP02YL. Gebruikt de legacy Yeelight LAN API."
+    "nl": "Productmodel: YLDP02YL. Gebruikt de legacy Yeelight LAN API.",
+    "da": "Produktmodel: YLDP02YL. Bruger den ældre Yeelight LAN API.",
+    "de": "Produktmodell: YLDP02YL. Verwendet die ältere Yeelight LAN-API.",
+    "es": "Modelo del producto: YLDP02YL. Usa la API LAN heredada de Yeelight.",
+    "fr": "Modèle du produit : YLDP02YL. Utilise l’ancienne API LAN Yeelight.",
+    "it": "Modello prodotto: YLDP02YL. Usa l’API LAN legacy di Yeelight.",
+    "no": "Produktmodell: YLDP02YL. Bruker den eldre Yeelight LAN-API-en.",
+    "sv": "Produktmodell: YLDP02YL. Använder det äldre Yeelight LAN-API:t.",
+    "pl": "Model produktu: YLDP02YL. Używa starszego API LAN Yeelight.",
+    "ru": "Модель продукта: YLDP02YL. Использует устаревший LAN API Yeelight.",
+    "ko": "제품 모델: YLDP02YL. 레거시 Yeelight LAN API를 사용합니다.",
+    "ar": "طراز المنتج: YLDP02YL. يستخدم واجهة Yeelight LAN API القديمة."
   },
   "images": {
     "large": "drivers/yeelink_light_color1_lan/assets/images/large.jpg",
