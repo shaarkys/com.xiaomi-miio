@@ -54,12 +54,10 @@ class AdvancedXiaomiFanMiotDevice extends Device {
     async retrieveDeviceData() {
         try {
             const descriptor = this.getDescriptor();
-            const result = await this.miio.call('get_properties', engine.buildGetProperties(descriptor), { retries: 1 });
+            await engine.poll(this, descriptor);
             if (!this.getAvailable()) {
                 await this.setAvailable();
             }
-
-            await engine.pollAndUpdate(this, descriptor, result);
         } catch (error) {
             this.homey.clearInterval(this.pollingInterval);
 
