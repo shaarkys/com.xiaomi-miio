@@ -2,7 +2,7 @@
   "id": "xiaomiVerticalSwingTurnedOff",
   "$filter": "capabilities=fan_xiaomi_vertical_swing",
   "title": {
-    "en": "Vertical Swing turned off",
+    "en": "Vertical swing turned off",
     "nl": "Verticale oscillatie uitgeschakeld",
     "da": "Lodret oscillation slukket",
     "de": "Vertikale Oszillation ausgeschaltet",

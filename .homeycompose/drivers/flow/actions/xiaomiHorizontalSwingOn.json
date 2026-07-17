@@ -2,7 +2,7 @@
   "id": "xiaomiHorizontalSwingOn",
   "$filter": "capabilities=fan_xiaomi_horizontal_swing",
   "title": {
-    "en": "Enable Horizontal Swing",
+    "en": "Enable horizontal swing",
     "nl": "Horizontale oscillatie inschakelen",
     "da": "Aktivér vandret oscillation",
     "de": "Horizontale Oszillation aktivieren",
@@ -16,7 +16,7 @@
     "ko": "수평 진동 활성화"
   },
   "titleFormatted": {
-    "en": "Enable Horizontal Swing",
+    "en": "Enable horizontal swing",
     "nl": "Horizontale oscillatie inschakelen",
     "da": "Aktivér vandret oscillation",
     "de": "Horizontale Oszillation aktivieren",

@@ -1,0 +1,59 @@
+{
+  "id": "xiaomiModeChanged",
+  "$filter": "capabilities=fan_xiaomi_mode",
+  "title": {
+    "en": "Mode has changed",
+    "nl": "Modus gewijzigd",
+    "de": "Modus hat sich geändert",
+    "da": "Tilstand er ændret",
+    "es": "El modo ha cambiado",
+    "fr": "Le mode a changé",
+    "it": "La modalità è cambiata",
+    "no": "Modus er endret",
+    "sv": "Läget har ändrats",
+    "pl": "Tryb został zmieniony",
+    "ru": "Режим изменился",
+    "ko": "모드가 변경되었습니다"
+  },
+  "tokens": [
+    {
+      "name": "new_mode",
+      "type": "string",
+      "title": {
+        "en": "new mode",
+        "nl": "nieuwe modus",
+        "de": "neue modus",
+        "da": "ny tilstand",
+        "es": "nuevo modo",
+        "fr": "nouveau mode",
+        "it": "nuova modalità",
+        "no": "ny modus",
+        "sv": "nytt läge",
+        "pl": "nowy tryb",
+        "ru": "новый режим",
+        "ko": "새로운 모드"
+      },
+      "example": "Regular Fan"
+    },
+    {
+      "name": "previous_mode",
+      "type": "string",
+      "title": {
+        "en": "previous mode",
+        "nl": "vorige modus",
+        "de": "bisherige modus",
+        "da": "forrige tilstand",
+        "es": "modo anterior",
+        "fr": "mode précédent",
+        "it": "modalità precedente",
+        "no": "forrige modus",
+        "sv": "föregående läge",
+        "pl": "poprzedni tryb",
+        "ru": "предыдущий режим",
+        "ko": "이전 모드"
+      },
+      "example": "Natural Wind"
+    }
+  ],
+  "platforms": ["local"]
+}

@@ -14,6 +14,11 @@ class AdvancedXiaomiFanMiotDriver extends Driver {
     engine.registerFlowCards(this);
   }
 
+  // Pairing hook: create the device with the capabilities its model supports.
+  getPairingCapabilities(model) {
+    return engine.desiredCapabilities(engine.resolve(model));
+  }
+
 }
 
 module.exports = AdvancedXiaomiFanMiotDriver;

@@ -1,0 +1,53 @@
+{
+  "id": "xiaomiModeEquals",
+  "$filter": "capabilities=fan_xiaomi_mode",
+  "title": {
+    "en": "Mode !{{is|is not}}",
+    "nl": "Modus !{{is|is niet}}",
+    "da": "Tilstand !{{er|er ikke}}",
+    "de": "Modus !{{ist|ist nicht}}",
+    "es": "El modo !{{es|no es}}",
+    "fr": "Le mode !{{est|n'est pas}}",
+    "it": "La modalità !{{è|non è}}",
+    "no": "Modus !{{er|er ikke}}",
+    "sv": "Läge !{{är|är inte}}",
+    "pl": "Tryb !{{jest|nie jest}}",
+    "ru": "Режим !{{равен|не равен}}",
+    "ko": "모드가 !{{임|아님}}"
+  },
+  "titleFormatted": {
+    "en": "Mode !{{is|is not}} [[mode]]",
+    "nl": "Modus !{{is|is niet}} [[mode]]",
+    "da": "Tilstand !{{er|er ikke}} [[mode]]",
+    "de": "Modus !{{ist|ist nicht}} [[mode]]",
+    "es": "El modo !{{es|no es}} [[mode]]",
+    "fr": "Le mode !{{est|n'est pas}} [[mode]]",
+    "it": "La modalità !{{è|non è}} [[mode]]",
+    "no": "Modus !{{er|er ikke}} [[mode]]",
+    "sv": "Läge !{{är|är inte}} [[mode]]",
+    "pl": "Tryb !{{jest|nie jest}} [[mode]]",
+    "ru": "Режим !{{равен|не равен}} [[mode]]",
+    "ko": "모드가 [[mode]] !{{임|아님}}"
+  },
+  "args": [
+    {
+      "name": "mode",
+      "title": {
+        "en": "Mode",
+        "nl": "Modus",
+        "da": "Tilstand",
+        "de": "Modus",
+        "es": "Modo",
+        "fr": "Mode",
+        "it": "Modalità",
+        "no": "Modus",
+        "sv": "Läge",
+        "pl": "Tryb",
+        "ru": "Режим",
+        "ko": "모드"
+      },
+      "type": "autocomplete"
+    }
+  ],
+  "platforms": ["local"]
+}

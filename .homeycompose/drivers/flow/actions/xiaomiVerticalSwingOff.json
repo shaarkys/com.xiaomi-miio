@@ -2,7 +2,7 @@
   "id": "xiaomiVerticalSwingOff",
   "$filter": "capabilities=fan_xiaomi_vertical_swing",
   "title": {
-    "en": "Disable Vertical Swing",
+    "en": "Disable vertical swing",
     "nl": "Verticale oscillatie uitschakelen",
     "da": "Deaktivér lodret oscillation",
     "de": "Vertikale Oszillation deaktivieren",
@@ -16,7 +16,7 @@
     "ko": "수직 진동 비활성화"
   },
   "titleFormatted": {
-    "en": "Disable Vertical Swing",
+    "en": "Disable vertical swing",
     "nl": "Verticale oscillatie uitschakelen",
     "da": "Deaktivér lodret oscillation",
     "de": "Vertikale Oszillation deaktivieren",

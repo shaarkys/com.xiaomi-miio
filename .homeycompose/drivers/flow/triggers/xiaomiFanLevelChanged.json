@@ -1,0 +1,59 @@
+{
+  "id": "xiaomiFanLevelChanged",
+  "$filter": "capabilities=fan_xiaomi_fanlevel",
+  "title": {
+    "en": "Fan level changed",
+    "nl": "Ventilatorniveau gewijzigd",
+    "da": "Ventilatorniveau ændret",
+    "de": "Ventilatorstufe geändert",
+    "es": "Nivel del ventilador cambiado",
+    "fr": "Niveau du ventilateur modifié",
+    "it": "Livello del ventilatore cambiato",
+    "no": "Viftenivå endret",
+    "sv": "Fläktnivå ändrad",
+    "pl": "Poziom wentylatora zmieniony",
+    "ru": "Уровень вентилятора изменился",
+    "ko": "팬 레벨 변경됨"
+  },
+  "tokens": [
+    {
+      "name": "new_level",
+      "type": "number",
+      "title": {
+        "en": "new level",
+        "nl": "nieuw niveau",
+        "da": "nyt niveau",
+        "de": "neue Stufe",
+        "es": "nuevo nivel",
+        "fr": "nouveau niveau",
+        "it": "nuovo livello",
+        "no": "nytt nivå",
+        "sv": "ny nivå",
+        "pl": "nowy poziom",
+        "ru": "новый уровень",
+        "ko": "새 레벨"
+      },
+      "example": 3
+    },
+    {
+      "name": "previous_level",
+      "type": "number",
+      "title": {
+        "en": "previous level",
+        "nl": "vorig niveau",
+        "da": "forrige niveau",
+        "de": "vorherige Stufe",
+        "es": "nivel anterior",
+        "fr": "niveau précédent",
+        "it": "livello precedente",
+        "no": "forrige nivå",
+        "sv": "föregående nivå",
+        "pl": "poprzedni poziom",
+        "ru": "предыдущий уровень",
+        "ko": "이전 레벨"
+      },
+      "example": 2
+    }
+  ],
+  "platforms": ["local"]
+}

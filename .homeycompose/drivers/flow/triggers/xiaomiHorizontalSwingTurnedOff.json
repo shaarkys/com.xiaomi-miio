@@ -2,7 +2,7 @@
   "id": "xiaomiHorizontalSwingTurnedOff",
   "$filter": "capabilities=fan_xiaomi_horizontal_swing",
   "title": {
-    "en": "Horizontal Swing turned off",
+    "en": "Horizontal swing turned off",
     "nl": "Horizontale oscillatie uitgeschakeld",
     "da": "Vandret oscillation slukket",
     "de": "Horizontale Oszillation ausgeschaltet",

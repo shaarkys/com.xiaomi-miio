@@ -2,7 +2,7 @@
   "id": "xiaomiSetHorizontalAngle",
   "$filter": "capabilities=fan_xiaomi_horizontal_angle",
   "title": {
-    "en": "Change Horizontal Swing Angle",
+    "en": "Change horizontal swing angle",
     "nl": "Horizontale draaihoek wijzigen",
     "da": "Skift vandret svingvinkel",
     "de": "Horizontalen Schwenkwinkel ändern",
