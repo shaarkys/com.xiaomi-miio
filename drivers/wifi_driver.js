@@ -21,6 +21,10 @@ class MiHomeWifiDriver extends Homey.Driver {
         const name = await this.util.getFriendlyNameWiFi(model) || 'Unknown model';
         const device_name = name + ' ('+ model +')';
 
+        // Optional hook: a driver may return a model-specific capability list to create the device with.
+        // When omitted (undefined), the device keeps the capabilities declared in its driver.compose.json.
+        const capabilities = this.getPairingCapabilities?.(model);
+
         deviceObject = {
           name: device_name,
           data: {
@@ -33,7 +37,8 @@ class MiHomeWifiDriver extends Homey.Driver {
           },
           store: {
             model: model
-          }
+          },
+          ...(capabilities ? { capabilities } : {})
         }
         return Promise.resolve(deviceObject);
       } catch (error) {
