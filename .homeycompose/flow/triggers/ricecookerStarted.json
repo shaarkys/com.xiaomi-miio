@@ -3,6 +3,13 @@
     "en": "Cooking started",
     "nl": "Koken is gestart"
   },
+  "args": [
+    {
+      "name": "device",
+      "type": "device",
+      "filter": "driver_id=ricecooker_chunmi_cooker_r2"
+    }
+  ],
   "platforms": [
     "local"
   ]
