@@ -550,5 +550,8 @@
   },
   "3.5.4": {
     "en": "Add supported translations for new light drivers (credit @LieuweJ)"
+  },
+  "3.5.5": {
+    "en": "Added/fixed displayed-data controls for Xiaomi Smart Pet Feeder 2, scoped ricecooker and washer trigger cards to device level (credits @N-Bark)"
   }
 }
