@@ -553,5 +553,8 @@
   },
   "3.5.5": {
     "en": "Added/fixed displayed-data controls for Xiaomi Smart Pet Feeder 2, scoped ricecooker and washer trigger cards to device level (credits @N-Bark)"
+  },
+  "3.5.6": {
+    "en": "Added display control actions for Xiaomi Smart Pet Feeder 2"
   }
 }

@@ -187,7 +187,7 @@
       "게이트웨이"
     ]
   },
-  "version": "3.5.5",
+  "version": "3.5.6",
   "compatibility": ">=12.2.0",
   "platforms": [
     "local"
@@ -9832,26 +9832,41 @@
       },
       {
         "title": {
-          "en": "Set display schedule progress"
+          "en": "Set screen display"
         },
         "titleFormatted": {
-          "en": "Display progress [[enabled]]"
+          "en": "Set screen display to [[mode]]"
         },
         "args": [
           {
-            "name": "enabled",
+            "name": "mode",
+            "title": {
+              "en": "Display mode"
+            },
             "type": "dropdown",
             "values": [
               {
-                "id": "true",
-                "label": {
-                  "en": "On"
+                "id": "off",
+                "title": {
+                  "en": "Off"
                 }
               },
               {
-                "id": "false",
-                "label": {
-                  "en": "Off"
+                "id": "left_grams",
+                "title": {
+                  "en": "Left grams"
+                }
+              },
+              {
+                "id": "eaten_grams",
+                "title": {
+                  "en": "Eaten grams"
+                }
+              },
+              {
+                "id": "percentage",
+                "title": {
+                  "en": "Percentage"
                 }
               }
             ]
@@ -9862,13 +9877,13 @@
             "placeholder": {
               "en": "Select device"
             },
-            "filter": "driver_id=petfeeder_mmgg_miot"
+            "filter": "driver_id=petfeeder_mmgg_miot&capabilities=petfeeder_screen_display_mode"
           }
         ],
         "platforms": [
           "local"
         ],
-        "id": "petfeederDisplaySchedule"
+        "id": "petfeederScreenDisplayMode"
       },
       {
         "title": {
