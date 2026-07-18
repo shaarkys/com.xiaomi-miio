@@ -1,0 +1,54 @@
+{
+  "title": {
+    "en": "Set screen display"
+  },
+  "titleFormatted": {
+    "en": "Set screen display to [[mode]]"
+  },
+  "args": [
+    {
+      "name": "mode",
+      "title": {
+        "en": "Display mode"
+      },
+      "type": "dropdown",
+      "values": [
+        {
+          "id": "off",
+          "title": {
+            "en": "Off"
+          }
+        },
+        {
+          "id": "left_grams",
+          "title": {
+            "en": "Left grams"
+          }
+        },
+        {
+          "id": "eaten_grams",
+          "title": {
+            "en": "Eaten grams"
+          }
+        },
+        {
+          "id": "percentage",
+          "title": {
+            "en": "Percentage"
+          }
+        }
+      ]
+    },
+    {
+      "name": "device",
+      "type": "device",
+      "placeholder": {
+        "en": "Select device"
+      },
+      "filter": "driver_id=petfeeder_mmgg_miot&capabilities=petfeeder_screen_display_mode"
+    }
+  ],
+  "platforms": [
+    "local"
+  ]
+}
