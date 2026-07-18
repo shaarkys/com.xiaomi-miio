@@ -9,6 +9,7 @@
   "$extends": ["defaults"],
   "capabilities": [
     "petfeeder_serve_food",
+    "petfeeder_screen_display_mode",
     "petfeeder_foodlevel",
     "petfeeder_food_out_status",
     "petfeeder_food_stuck_status",

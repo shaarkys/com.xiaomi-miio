@@ -1,0 +1,28 @@
+{
+  "type": "enum",
+  "title": {
+    "en": "Screen display"
+  },
+  "values": [
+    {
+      "id": "off",
+      "title": { "en": "Off" }
+    },
+    {
+      "id": "left_grams",
+      "title": { "en": "Left grams" }
+    },
+    {
+      "id": "eaten_grams",
+      "title": { "en": "Eaten grams" }
+    },
+    {
+      "id": "percentage",
+      "title": { "en": "Percentage" }
+    }
+  ],
+  "getable": true,
+  "setable": true,
+  "uiComponent": "picker",
+  "icon": "/assets/icons/petfeeder_foodlevel.svg"
+}

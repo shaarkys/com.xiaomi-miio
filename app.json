@@ -26738,6 +26738,9 @@
       "class": "petfeeder",
       "capabilities": [
         "petfeeder_serve_food",
+        "petfeeder_screen_power",
+        "petfeeder_screen_content",
+        "petfeeder_screen_display_mode",
         "petfeeder_foodlevel",
         "petfeeder_food_out_status",
         "petfeeder_food_stuck_status",
@@ -36946,6 +36949,96 @@
       ],
       "uiComponent": "sensor",
       "icon": "/assets/icons/alarm_generic.svg"
+    },
+    "petfeeder_screen_content": {
+      "type": "enum",
+      "title": {
+        "en": "Displayed data"
+      },
+      "values": [
+        {
+          "id": "left_grams",
+          "title": {
+            "en": "Left grams"
+          }
+        },
+        {
+          "id": "eaten_grams",
+          "title": {
+            "en": "Eaten grams"
+          }
+        },
+        {
+          "id": "percentage",
+          "title": {
+            "en": "Percentage"
+          }
+        }
+      ],
+      "getable": true,
+      "setable": true,
+      "uiComponent": "picker",
+      "icon": "/assets/icons/petfeeder_foodlevel.svg"
+    },
+    "petfeeder_screen_display_mode": {
+      "type": "enum",
+      "title": {
+        "en": "Screen display"
+      },
+      "values": [
+        {
+          "id": "off",
+          "title": {
+            "en": "Off"
+          }
+        },
+        {
+          "id": "left_grams",
+          "title": {
+            "en": "Left grams"
+          }
+        },
+        {
+          "id": "eaten_grams",
+          "title": {
+            "en": "Eaten grams"
+          }
+        },
+        {
+          "id": "percentage",
+          "title": {
+            "en": "Percentage"
+          }
+        }
+      ],
+      "getable": true,
+      "setable": true,
+      "uiComponent": null,
+      "icon": "/assets/icons/petfeeder_foodlevel.svg"
+    },
+    "petfeeder_screen_power": {
+      "type": "enum",
+      "title": {
+        "en": "Display"
+      },
+      "values": [
+        {
+          "id": "off",
+          "title": {
+            "en": "Off"
+          }
+        },
+        {
+          "id": "on",
+          "title": {
+            "en": "On"
+          }
+        }
+      ],
+      "getable": true,
+      "setable": true,
+      "uiComponent": "picker",
+      "icon": "/assets/icons/petfeeder_foodlevel.svg"
     },
     "petfeeder_serve_food": {
       "type": "boolean",

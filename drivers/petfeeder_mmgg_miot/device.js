@@ -91,6 +91,7 @@ const LEGACY_SETTING_PROPS = {
 
 const IV2001_SETTING_PROPS = {
     child_lock: { siid: 3, piid: 1, type: 'bool' }, // physical-controls-locked
+    auto_screen_off: { siid: 3, piid: 3, type: 'uint8_bool' }, // screen mode off/on
     display_schedule_progress: { siid: 5, piid: 4, type: 'bool' }, // plan-process-display
     low_food_intake_threshold: { siid: 5, piid: 5, type: 'number', range: [10, 90] }, // food-intake-rate
     low_food_consumption_notify: { siid: 5, piid: 6, type: 'bool' }, // food-intake-state
@@ -116,6 +117,14 @@ const BOWL_DELTA_THRESHOLD = 0.5; // grams, ignore noise smaller than this
 const PROGRESS_COMPLETE_THRESHOLD = 99.5; // treat >=99.5% as completed dispensing
 const IV2001_MAX_CONSUMPTION_DELTA = 15; // ignore refills/removals and other large sample jumps
 const DEFAULT_BOWL_LOW_THRESHOLD = 10;
+const SCREEN_DISPLAY_MODE_TO_VALUE = {
+    left_grams: 0,
+    eaten_grams: 1,
+    percentage: 2
+};
+const SCREEN_DISPLAY_VALUE_TO_MODE = new Map(
+    Object.entries(SCREEN_DISPLAY_MODE_TO_VALUE).map(([mode, value]) => [String(value), mode])
+);
 
 const STATUS_INDICATOR_MIRRORS = {
     petfeeder_food_in_bowl: ['measure_petfeeder_food_in_bowl', (value) => value],
@@ -288,6 +297,12 @@ class PetFeederMiotDevice extends DeviceBase {
 
             if (this.hasCapability('petfeeder_serve_food')) {
                 this.registerCapabilityListener('petfeeder_serve_food', async () => this.servePortions(1));
+            }
+            if (this.hasCapability('petfeeder_screen_display_mode')) {
+                this.registerCapabilityListener(
+                    'petfeeder_screen_display_mode',
+                    async (value) => this.setScreenDisplayMode(value)
+                );
             }
 
             await this._syncEatenSetting(trackerSnapshot.value);
@@ -462,6 +477,7 @@ class PetFeederMiotDevice extends DeviceBase {
             await this._updateFoodOutAndHeap(got);
             await this._updateStatusMode(got);
             await this._updateTargetFeedingMeasure(got);
+            await this._updateScreenDisplay(got);
             await this._updateDesiccant(got);
             await this._syncSettingsFromMiot(got);
 
@@ -774,6 +790,32 @@ class PetFeederMiotDevice extends DeviceBase {
         }
     }
 
+    async _updateScreenDisplay(g) {
+        if (this._presetId !== 'iv2001' || !this.hasCapability('petfeeder_screen_display_mode')) return;
+
+        const powerEntry = g.setting_auto_screen_off;
+        const displayEntry = g.screen_display_mode;
+        const power = powerEntry?.code === 0 ? toNumber(powerEntry.value) : undefined;
+        const displayMode = displayEntry?.code === 0
+            ? SCREEN_DISPLAY_VALUE_TO_MODE.get(String(displayEntry.value))
+            : undefined;
+
+        if (power === 1) {
+            await this._setCap('petfeeder_screen_display_mode', 'off');
+            return;
+        }
+        if (power === 0 && displayMode) {
+            await this._setCap('petfeeder_screen_display_mode', displayMode);
+            return;
+        }
+        if (Number.isFinite(power) && power !== 0 && power !== 1) {
+            this._onceWarn(`[SCREEN] unexpected power value: ${JSON.stringify(powerEntry.value)}`);
+        }
+        if (displayEntry?.code === 0 && !displayMode) {
+            this._onceWarn(`[SCREEN] unexpected display value: ${JSON.stringify(displayEntry.value)}`);
+        }
+    }
+
     async _syncSettingsFromMiot(g) {
         const patch = {};
         const settingProps = this._settingProps || LEGACY_SETTING_PROPS;
@@ -952,6 +994,38 @@ class PetFeederMiotDevice extends DeviceBase {
         return true;
     }
 
+    async setScreenDisplayMode(mode) {
+        if (!this.miio) throw new Error('miio not ready');
+        if (this._presetId !== 'iv2001') throw new Error('Screen display control is not supported by this device');
+
+        const normalizedMode = String(mode);
+        const autoScreenOff = normalizedMode === 'off';
+        const displayValue = SCREEN_DISPLAY_MODE_TO_VALUE[normalizedMode];
+        if (!autoScreenOff && !Number.isInteger(displayValue)) throw new Error('Invalid screen display mode');
+
+        const properties = [
+            { did: 'set-3-3', siid: 3, piid: 3, value: autoScreenOff ? 1 : 0 }
+        ];
+        if (!autoScreenOff) {
+            properties.push({ did: 'set-5-18', siid: 5, piid: 18, value: displayValue });
+        }
+
+        const result = await this._callMiio('set_properties', properties, { retries: 1 }, 8000);
+        const failed = Array.isArray(result)
+            ? result.find((entry) => typeof entry?.code === 'number' && entry.code !== 0)
+            : undefined;
+        if (failed) throw new Error(`Screen display write failed (${failed.code})`);
+        try {
+            this._state.suppressSettingApply = true;
+            await this.updateSettingValue('auto_screen_off', autoScreenOff);
+        } finally {
+            this._state.suppressSettingApply = false;
+        }
+        await this._setCap('petfeeder_screen_display_mode', normalizedMode);
+        this.log('[SCREEN] display mode set to', normalizedMode);
+        return true;
+    }
+
     async servePortions(portionCount) {
         try {
             if (!this.miio) {
@@ -996,7 +1070,9 @@ class PetFeederMiotDevice extends DeviceBase {
             ['bowl_weight_sample', g.bowl_weight_sample],
             ['device_bowl_level', g.bowl_level_status],
             ['device_low_food_intake_threshold', g.setting_low_food_intake_threshold],
-            ['feeding_status', g.feeding_status]
+            ['feeding_status', g.feeding_status],
+            ['screen_power', g.setting_auto_screen_off],
+            ['screen_display_mode', g.screen_display_mode]
         ];
         const summary = diagnostics.map(([name, entry]) => {
             if (!entry) return `${name}=missing`;
@@ -1308,6 +1384,7 @@ class PetFeederMiotDevice extends DeviceBase {
         ];
         if (this._presetId === 'iv2001') {
             required.push(
+                'petfeeder_screen_display_mode',
                 'petfeeder_bowl_level',
                 'petfeeder_food_stuck_status',
                 'petfeeder_food_in_bowl',
@@ -1354,6 +1431,7 @@ class PetFeederMiotDevice extends DeviceBase {
             }
         } else {
             for (const id of [
+                'petfeeder_screen_display_mode',
                 'petfeeder_bowl_level',
                 'petfeeder_food_stuck_status',
                 'petfeeder_eaten_food_daily',

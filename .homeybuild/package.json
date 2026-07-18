@@ -2,7 +2,9 @@
   "name": "com.xiaomi-miio",
   "version": "3.3.0",
   "main": "app.js",
-  "scripts": {},
+  "scripts": {
+    "test": "node --test"
+  },
   "devDependencies": {
     "@tsconfig/node12": "^12.1.5",
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.12",

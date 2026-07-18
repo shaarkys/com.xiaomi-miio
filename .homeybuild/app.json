@@ -187,7 +187,7 @@
       "게이트웨이"
     ]
   },
-  "version": "3.5.1",
+  "version": "3.5.4",
   "compatibility": ">=12.2.0",
   "platforms": [
     "local"
@@ -2492,11 +2492,33 @@
       {
         "title": {
           "en": "My mode / scene changed to",
-          "nl": "Mijn modus / scene gewijzigd naar"
+          "nl": "Mijn modus / scene gewijzigd naar",
+          "da": "Min tilstand / scene ændret til",
+          "de": "Mein Modus / meine Szene geändert zu",
+          "es": "Mi modo / escena cambió a",
+          "fr": "Mon mode / ma scène a changé en",
+          "it": "La mia modalità / scena è cambiata in",
+          "no": "Min modus / scene endret til",
+          "sv": "Mitt läge / min scen ändrades till",
+          "pl": "Mój tryb / scena zmienił(a) się na",
+          "ru": "Мой режим / сцена изменился на",
+          "ko": "내 모드 / 장면 변경됨",
+          "ar": "تغير وضعي / المشهد إلى"
         },
         "titleFormatted": {
           "en": "My mode / scene changed to [[mode]]",
-          "nl": "Mijn modus / scene gewijzigd naar [[mode]]"
+          "nl": "Mijn modus / scene gewijzigd naar [[mode]]",
+          "da": "Min tilstand / scene ændret til [[mode]]",
+          "de": "Mein Modus / meine Szene geändert zu [[mode]]",
+          "es": "Mi modo / escena cambió a [[mode]]",
+          "fr": "Mon mode / ma scène a changé en [[mode]]",
+          "it": "La mia modalità / scena è cambiata in [[mode]]",
+          "no": "Min modus / scene endret til [[mode]]",
+          "sv": "Mitt läge / min scen ändrades till [[mode]]",
+          "pl": "Mój tryb / scena zmienił(a) się na [[mode]]",
+          "ru": "Мой режим / сцена изменился на [[mode]]",
+          "ko": "내 모드 / 장면이 [[mode]](으)로 변경됨",
+          "ar": "تغير وضعي / المشهد إلى [[mode]]"
         },
         "tokens": [
           {
@@ -2504,7 +2526,18 @@
             "type": "string",
             "title": {
               "en": "my mode / scene",
-              "nl": "mijn modus / scene"
+              "nl": "mijn modus / scene",
+              "da": "min tilstand / scene",
+              "de": "mein Modus / meine Szene",
+              "es": "mi modo / escena",
+              "fr": "mon mode / ma scène",
+              "it": "la mia modalità / scena",
+              "no": "min modus / scene",
+              "sv": "mitt läge / min scen",
+              "pl": "mój tryb / scena",
+              "ru": "мой режим / сцена",
+              "ko": "내 모드 / 장면",
+              "ar": "وضعي / المشهد"
             },
             "example": "Reading"
           },
@@ -2513,7 +2546,18 @@
             "type": "string",
             "title": {
               "en": "previous my mode / scene",
-              "nl": "vorige mijn modus / scene"
+              "nl": "vorige mijn modus / scene",
+              "da": "forrige min tilstand / scene",
+              "de": "vorheriger Modus / vorherige Szene",
+              "es": "mi modo / escena anterior",
+              "fr": "mode / scène précédent",
+              "it": "modalità / scena precedente",
+              "no": "forrige min modus / scene",
+              "sv": "föregående läge / scen",
+              "pl": "poprzedni mój tryb / scena",
+              "ru": "предыдущий режим / сцена",
+              "ko": "이전 내 모드 / 장면",
+              "ar": "وضعي / المشهد السابق"
             },
             "example": "My mode 1"
           }
@@ -2523,7 +2567,18 @@
             "name": "mode",
             "title": {
               "en": "My mode / scene",
-              "nl": "Mijn modus / scene"
+              "nl": "Mijn modus / scene",
+              "da": "Min tilstand / scene",
+              "de": "Mein Modus / meine Szene",
+              "es": "Mi modo / escena",
+              "fr": "Mon mode / ma scène",
+              "it": "La mia modalità / scena",
+              "no": "Min modus / scene",
+              "sv": "Mitt läge / min scen",
+              "pl": "Mój tryb / scena",
+              "ru": "Мой режим / сцена",
+              "ko": "내 모드 / 장면",
+              "ar": "وضعي / المشهد"
             },
             "type": "dropdown",
             "values": [
@@ -2531,77 +2586,198 @@
                 "id": "0",
                 "title": {
                   "en": "No scene",
-                  "nl": "Geen scene"
+                  "nl": "Geen scene",
+                  "da": "Ingen scene",
+                  "de": "Keine Szene",
+                  "es": "Sin escena",
+                  "fr": "Aucune scène",
+                  "it": "Nessuna scena",
+                  "no": "Ingen scene",
+                  "sv": "Ingen scen",
+                  "pl": "Brak sceny",
+                  "ru": "Нет сцены",
+                  "ko": "장면 없음",
+                  "ar": "بدون وضع"
                 }
               },
               {
                 "id": "1",
                 "title": {
                   "en": "My mode 1",
-                  "nl": "Mijn modus 1"
+                  "nl": "Mijn modus 1",
+                  "da": "Min tilstand 1",
+                  "de": "Mein Modus 1",
+                  "es": "Mi modo 1",
+                  "fr": "Mon mode 1",
+                  "it": "La mia modalità 1",
+                  "no": "Min modus 1",
+                  "sv": "Mitt läge 1",
+                  "pl": "Mój tryb 1",
+                  "ru": "Мой режим 1",
+                  "ko": "내 모드 1",
+                  "ar": "وضعي 1"
                 }
               },
               {
                 "id": "2",
                 "title": {
                   "en": "My mode 2",
-                  "nl": "Mijn modus 2"
+                  "nl": "Mijn modus 2",
+                  "da": "Min tilstand 2",
+                  "de": "Mein Modus 2",
+                  "es": "Mi modo 2",
+                  "fr": "Mon mode 2",
+                  "it": "La mia modalità 2",
+                  "no": "Min modus 2",
+                  "sv": "Mitt läge 2",
+                  "pl": "Mój tryb 2",
+                  "ru": "Мой режим 2",
+                  "ko": "내 모드 2",
+                  "ar": "وضعي 2"
                 }
               },
               {
                 "id": "3",
                 "title": {
                   "en": "My mode 3",
-                  "nl": "Mijn modus 3"
+                  "nl": "Mijn modus 3",
+                  "da": "Min tilstand 3",
+                  "de": "Mein Modus 3",
+                  "es": "Mi modo 3",
+                  "fr": "Mon mode 3",
+                  "it": "La mia modalità 3",
+                  "no": "Min modus 3",
+                  "sv": "Mitt läge 3",
+                  "pl": "Mój tryb 3",
+                  "ru": "Мой режим 3",
+                  "ko": "내 모드 3",
+                  "ar": "وضعي 3"
                 }
               },
               {
                 "id": "4",
                 "title": {
                   "en": "My mode 4",
-                  "nl": "Mijn modus 4"
+                  "nl": "Mijn modus 4",
+                  "da": "Min tilstand 4",
+                  "de": "Mein Modus 4",
+                  "es": "Mi modo 4",
+                  "fr": "Mon mode 4",
+                  "it": "La mia modalità 4",
+                  "no": "Min modus 4",
+                  "sv": "Mitt läge 4",
+                  "pl": "Mój tryb 4",
+                  "ru": "Мой режим 4",
+                  "ko": "내 모드 4",
+                  "ar": "وضعي 4"
                 }
               },
               {
                 "id": "6",
                 "title": {
                   "en": "Office",
-                  "nl": "Kantoor"
+                  "nl": "Kantoor",
+                  "da": "Kontor",
+                  "de": "Büro",
+                  "es": "Oficina",
+                  "fr": "Bureau",
+                  "it": "Ufficio",
+                  "no": "Kontor",
+                  "sv": "Kontor",
+                  "pl": "Biuro",
+                  "ru": "Офис",
+                  "ko": "사무실",
+                  "ar": "المكتب"
                 }
               },
               {
                 "id": "5",
                 "title": {
                   "en": "Reading",
-                  "nl": "Lezen"
+                  "nl": "Lezen",
+                  "da": "Læsning",
+                  "de": "Lesen",
+                  "es": "Lectura",
+                  "fr": "Lecture",
+                  "it": "Lettura",
+                  "no": "Lesing",
+                  "sv": "Läsning",
+                  "pl": "Czytanie",
+                  "ru": "Чтение",
+                  "ko": "독서",
+                  "ar": "القراءة"
                 }
               },
               {
                 "id": "7",
                 "title": {
                   "en": "Leisure",
-                  "nl": "Ontspanning"
+                  "nl": "Ontspanning",
+                  "da": "Fritid",
+                  "de": "Freizeit",
+                  "es": "Ocio",
+                  "fr": "Loisir",
+                  "it": "Tempo libero",
+                  "no": "Fritid",
+                  "sv": "Fritid",
+                  "pl": "Wypoczynek",
+                  "ru": "Отдых",
+                  "ko": "여가",
+                  "ar": "الاسترخاء"
                 }
               },
               {
                 "id": "9",
                 "title": {
                   "en": "Computer",
-                  "nl": "Computer"
+                  "nl": "Computer",
+                  "da": "Computer",
+                  "de": "Computer",
+                  "es": "Ordenador",
+                  "fr": "Ordinateur",
+                  "it": "Computer",
+                  "no": "Datamaskin",
+                  "sv": "Dator",
+                  "pl": "Komputer",
+                  "ru": "Компьютер",
+                  "ko": "컴퓨터",
+                  "ar": "الكمبيوتر"
                 }
               },
               {
                 "id": "8",
                 "title": {
                   "en": "Warm",
-                  "nl": "Warm"
+                  "nl": "Warm",
+                  "da": "Varm",
+                  "de": "Warm",
+                  "es": "Cálido",
+                  "fr": "Chaud",
+                  "it": "Calda",
+                  "no": "Varm",
+                  "sv": "Varm",
+                  "pl": "Ciepły",
+                  "ru": "Тёплый",
+                  "ko": "따뜻함",
+                  "ar": "دافئ"
                 }
               },
               {
                 "id": "10",
                 "title": {
                   "en": "Blinking",
-                  "nl": "Knipperen"
+                  "nl": "Knipperen",
+                  "da": "Blinkende",
+                  "de": "Blinken",
+                  "es": "Parpadeo",
+                  "fr": "Clignotement",
+                  "it": "Lampeggiante",
+                  "no": "Blinkende",
+                  "sv": "Blinkande",
+                  "pl": "Miganie",
+                  "ru": "Мигание",
+                  "ko": "깜박임",
+                  "ar": "وميض"
                 }
               }
             ]
@@ -2611,7 +2787,18 @@
             "type": "device",
             "placeholder": {
               "en": "Select Xiaomi Monitor Light Bar S1",
-              "nl": "Selecteer Xiaomi Monitor Light Bar S1"
+              "nl": "Selecteer Xiaomi Monitor Light Bar S1",
+              "da": "Vælg Xiaomi Monitor Light Bar S1",
+              "de": "Xiaomi Monitor Light Bar S1 auswählen",
+              "es": "Selecciona Xiaomi Monitor Light Bar S1",
+              "fr": "Sélectionnez Xiaomi Monitor Light Bar S1",
+              "it": "Seleziona Xiaomi Monitor Light Bar S1",
+              "no": "Velg Xiaomi Monitor Light Bar S1",
+              "sv": "Välj Xiaomi Monitor Light Bar S1",
+              "pl": "Wybierz Xiaomi Monitor Light Bar S1",
+              "ru": "Выберите Xiaomi Monitor Light Bar S1",
+              "ko": "Xiaomi Monitor Light Bar S1 선택",
+              "ar": "اختر Xiaomi Monitor Light Bar S1"
             },
             "filter": "driver_id=yeelink_light_lamp22_miot"
           }
@@ -2622,9 +2809,143 @@
         "id": "yeelightLamp22ModeChanged"
       },
       {
+        "id": "xiaomiFanLevelChanged",
+        "title": {
+          "en": "Fan level changed",
+          "nl": "Ventilatorniveau gewijzigd",
+          "da": "Ventilatorniveau ændret",
+          "de": "Ventilatorstufe geändert",
+          "es": "Nivel del ventilador cambiado",
+          "fr": "Niveau du ventilateur modifié",
+          "it": "Livello del ventilatore cambiato",
+          "no": "Viftenivå endret",
+          "sv": "Fläktnivå ändrad",
+          "pl": "Poziom wentylatora zmieniony",
+          "ru": "Уровень вентилятора изменился",
+          "ko": "팬 레벨 변경됨"
+        },
+        "tokens": [
+          {
+            "name": "new_level",
+            "type": "number",
+            "title": {
+              "en": "new level",
+              "nl": "nieuw niveau",
+              "da": "nyt niveau",
+              "de": "neue Stufe",
+              "es": "nuevo nivel",
+              "fr": "nouveau niveau",
+              "it": "nuovo livello",
+              "no": "nytt nivå",
+              "sv": "ny nivå",
+              "pl": "nowy poziom",
+              "ru": "новый уровень",
+              "ko": "새 레벨"
+            },
+            "example": 3
+          },
+          {
+            "name": "previous_level",
+            "type": "number",
+            "title": {
+              "en": "previous level",
+              "nl": "vorig niveau",
+              "da": "forrige niveau",
+              "de": "vorherige Stufe",
+              "es": "nivel anterior",
+              "fr": "niveau précédent",
+              "it": "livello precedente",
+              "no": "forrige nivå",
+              "sv": "föregående nivå",
+              "pl": "poprzedni poziom",
+              "ru": "предыдущий уровень",
+              "ko": "이전 레벨"
+            },
+            "example": 2
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=fan_xiaomi_advanced&capabilities=fan_xiaomi_fanlevel"
+          }
+        ]
+      },
+      {
+        "id": "xiaomiModeChanged",
+        "title": {
+          "en": "Mode has changed",
+          "nl": "Modus gewijzigd",
+          "de": "Modus hat sich geändert",
+          "da": "Tilstand er ændret",
+          "es": "El modo ha cambiado",
+          "fr": "Le mode a changé",
+          "it": "La modalità è cambiata",
+          "no": "Modus er endret",
+          "sv": "Läget har ändrats",
+          "pl": "Tryb został zmieniony",
+          "ru": "Режим изменился",
+          "ko": "모드가 변경되었습니다"
+        },
+        "tokens": [
+          {
+            "name": "new_mode",
+            "type": "string",
+            "title": {
+              "en": "new mode",
+              "nl": "nieuwe modus",
+              "de": "neue modus",
+              "da": "ny tilstand",
+              "es": "nuevo modo",
+              "fr": "nouveau mode",
+              "it": "nuova modalità",
+              "no": "ny modus",
+              "sv": "nytt läge",
+              "pl": "nowy tryb",
+              "ru": "новый режим",
+              "ko": "새로운 모드"
+            },
+            "example": "Regular Fan"
+          },
+          {
+            "name": "previous_mode",
+            "type": "string",
+            "title": {
+              "en": "previous mode",
+              "nl": "vorige modus",
+              "de": "bisherige modus",
+              "da": "forrige tilstand",
+              "es": "modo anterior",
+              "fr": "mode précédent",
+              "it": "modalità precedente",
+              "no": "forrige modus",
+              "sv": "föregående läge",
+              "pl": "poprzedni tryb",
+              "ru": "предыдущий режим",
+              "ko": "이전 모드"
+            },
+            "example": "Natural Wind"
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=fan_xiaomi_advanced&capabilities=fan_xiaomi_mode"
+          }
+        ]
+      },
+      {
         "id": "xiaomiHorizontalSwingTurnedOn",
         "title": {
-          "en": "Horizontal Swing turned on",
+          "en": "Horizontal swing turned on",
           "nl": "Horizontale oscillatie ingeschakeld",
           "da": "Vandret oscillation tændt",
           "de": "Horizontale Oszillation eingeschaltet",
@@ -2651,7 +2972,7 @@
       {
         "id": "xiaomiHorizontalSwingTurnedOff",
         "title": {
-          "en": "Horizontal Swing turned off",
+          "en": "Horizontal swing turned off",
           "nl": "Horizontale oscillatie uitgeschakeld",
           "da": "Vandret oscillation slukket",
           "de": "Horizontale Oszillation ausgeschaltet",
@@ -2678,7 +2999,7 @@
       {
         "id": "xiaomiVerticalSwingTurnedOn",
         "title": {
-          "en": "Vertical Swing turned on",
+          "en": "Vertical swing turned on",
           "nl": "Verticale oscillatie ingeschakeld",
           "da": "Lodret oscillation tændt",
           "de": "Vertikale Oszillation eingeschaltet",
@@ -2705,7 +3026,7 @@
       {
         "id": "xiaomiVerticalSwingTurnedOff",
         "title": {
-          "en": "Vertical Swing turned off",
+          "en": "Vertical swing turned off",
           "nl": "Verticale oscillatie uitgeschakeld",
           "da": "Lodret oscillation slukket",
           "de": "Vertikale Oszillation ausgeschaltet",
@@ -2726,6 +3047,140 @@
             "type": "device",
             "name": "device",
             "filter": "driver_id=fan_xiaomi_advanced&capabilities=fan_xiaomi_vertical_swing"
+          }
+        ]
+      },
+      {
+        "id": "xiaomiHorizontalAngleChanged",
+        "title": {
+          "en": "Horizontal swing angle changed",
+          "nl": "Horizontale draaihoek gewijzigd",
+          "da": "Vandret svingvinkel ændret",
+          "de": "Horizontaler Schwenkwinkel geändert",
+          "es": "Ángulo de giro horizontal cambiado",
+          "fr": "Angle de balancement horizontal modifié",
+          "it": "Angolo di oscillazione orizzontale cambiato",
+          "no": "Horisontal svingvinkel endret",
+          "sv": "Horisontell svängvinkel ändrad",
+          "pl": "Poziomy kąt huśtania zmieniony",
+          "ru": "Угол горизонтального поворота изменился",
+          "ko": "수평 스윙 각도 변경됨"
+        },
+        "tokens": [
+          {
+            "name": "new_angle",
+            "type": "number",
+            "title": {
+              "en": "new angle (°)",
+              "nl": "nieuwe hoek (°)",
+              "da": "ny vinkel (°)",
+              "de": "neuer Winkel (°)",
+              "es": "nuevo ángulo (°)",
+              "fr": "nouvel angle (°)",
+              "it": "nuovo angolo (°)",
+              "no": "ny vinkel (°)",
+              "sv": "ny vinkel (°)",
+              "pl": "nowy kąt (°)",
+              "ru": "новый угол (°)",
+              "ko": "새 각도 (°)"
+            },
+            "example": 90
+          },
+          {
+            "name": "previous_angle",
+            "type": "number",
+            "title": {
+              "en": "previous angle (°)",
+              "nl": "vorige hoek (°)",
+              "da": "forrige vinkel (°)",
+              "de": "vorheriger Winkel (°)",
+              "es": "ángulo anterior (°)",
+              "fr": "angle précédent (°)",
+              "it": "angolo precedente (°)",
+              "no": "forrige vinkel (°)",
+              "sv": "föregående vinkel (°)",
+              "pl": "poprzedni kąt (°)",
+              "ru": "предыдущий угол (°)",
+              "ko": "이전 각도 (°)"
+            },
+            "example": 60
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=fan_xiaomi_advanced&capabilities=fan_xiaomi_horizontal_angle"
+          }
+        ]
+      },
+      {
+        "id": "xiaomiVerticalAngleChanged",
+        "title": {
+          "en": "Vertical swing angle changed",
+          "nl": "Verticale draaihoek gewijzigd",
+          "da": "Lodret svingvinkel ændret",
+          "de": "Vertikaler Schwenkwinkel geändert",
+          "es": "Ángulo de giro vertical cambiado",
+          "fr": "Angle de balancement vertical modifié",
+          "it": "Angolo di oscillazione verticale cambiato",
+          "no": "Vertikal svingvinkel endret",
+          "sv": "Vertikal svängvinkel ändrad",
+          "pl": "Pionowy kąt huśtania zmieniony",
+          "ru": "Угол вертикального поворота изменился",
+          "ko": "수직 스윙 각도 변경됨"
+        },
+        "tokens": [
+          {
+            "name": "new_angle",
+            "type": "number",
+            "title": {
+              "en": "new angle (°)",
+              "nl": "nieuwe hoek (°)",
+              "da": "ny vinkel (°)",
+              "de": "neuer Winkel (°)",
+              "es": "nuevo ángulo (°)",
+              "fr": "nouvel angle (°)",
+              "it": "nuovo angolo (°)",
+              "no": "ny vinkel (°)",
+              "sv": "ny vinkel (°)",
+              "pl": "nowy kąt (°)",
+              "ru": "новый угол (°)",
+              "ko": "새 각도 (°)"
+            },
+            "example": 90
+          },
+          {
+            "name": "previous_angle",
+            "type": "number",
+            "title": {
+              "en": "previous angle (°)",
+              "nl": "vorige hoek (°)",
+              "da": "forrige vinkel (°)",
+              "de": "vorheriger Winkel (°)",
+              "es": "ángulo anterior (°)",
+              "fr": "angle précédent (°)",
+              "it": "angolo precedente (°)",
+              "no": "forrige vinkel (°)",
+              "sv": "föregående vinkel (°)",
+              "pl": "poprzedni kąt (°)",
+              "ru": "предыдущий угол (°)",
+              "ko": "이전 각도 (°)"
+            },
+            "example": 60
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=fan_xiaomi_advanced&capabilities=fan_xiaomi_vertical_angle"
           }
         ]
       },
@@ -3241,18 +3696,51 @@
       {
         "title": {
           "en": "My mode / scene is",
-          "nl": "Mijn modus / scene is"
+          "nl": "Mijn modus / scene is",
+          "da": "Min tilstand / scene er",
+          "de": "Mein Modus / meine Szene ist",
+          "es": "Mi modo / escena es",
+          "fr": "Mon mode / ma scène est",
+          "it": "La mia modalità / scena è",
+          "no": "Min modus / scene er",
+          "sv": "Mitt läge / min scen är",
+          "pl": "Mój tryb / scena to",
+          "ru": "Мой режим / сцена",
+          "ko": "내 모드 / 장면 상태",
+          "ar": "وضعي / المشهد هو"
         },
         "titleFormatted": {
           "en": "My mode / scene is [[mode]]",
-          "nl": "Mijn modus / scene is [[mode]]"
+          "nl": "Mijn modus / scene is [[mode]]",
+          "da": "Min tilstand / scene er [[mode]]",
+          "de": "Mein Modus / meine Szene ist [[mode]]",
+          "es": "Mi modo / escena es [[mode]]",
+          "fr": "Mon mode / ma scène est [[mode]]",
+          "it": "La mia modalità / scena è [[mode]]",
+          "no": "Min modus / scene er [[mode]]",
+          "sv": "Mitt läge / min scen är [[mode]]",
+          "pl": "Mój tryb / scena to [[mode]]",
+          "ru": "Мой режим / сцена: [[mode]]",
+          "ko": "내 모드 / 장면이 [[mode]]임",
+          "ar": "وضعي / المشهد هو [[mode]]"
         },
         "args": [
           {
             "name": "mode",
             "title": {
               "en": "My mode / scene",
-              "nl": "Mijn modus / scene"
+              "nl": "Mijn modus / scene",
+              "da": "Min tilstand / scene",
+              "de": "Mein Modus / meine Szene",
+              "es": "Mi modo / escena",
+              "fr": "Mon mode / ma scène",
+              "it": "La mia modalità / scena",
+              "no": "Min modus / scene",
+              "sv": "Mitt läge / min scen",
+              "pl": "Mój tryb / scena",
+              "ru": "Мой режим / сцена",
+              "ko": "내 모드 / 장면",
+              "ar": "وضعي / المشهد"
             },
             "type": "dropdown",
             "values": [
@@ -3260,77 +3748,198 @@
                 "id": "0",
                 "title": {
                   "en": "No scene",
-                  "nl": "Geen scene"
+                  "nl": "Geen scene",
+                  "da": "Ingen scene",
+                  "de": "Keine Szene",
+                  "es": "Sin escena",
+                  "fr": "Aucune scène",
+                  "it": "Nessuna scena",
+                  "no": "Ingen scene",
+                  "sv": "Ingen scen",
+                  "pl": "Brak sceny",
+                  "ru": "Нет сцены",
+                  "ko": "장면 없음",
+                  "ar": "بدون وضع"
                 }
               },
               {
                 "id": "1",
                 "title": {
                   "en": "My mode 1",
-                  "nl": "Mijn modus 1"
+                  "nl": "Mijn modus 1",
+                  "da": "Min tilstand 1",
+                  "de": "Mein Modus 1",
+                  "es": "Mi modo 1",
+                  "fr": "Mon mode 1",
+                  "it": "La mia modalità 1",
+                  "no": "Min modus 1",
+                  "sv": "Mitt läge 1",
+                  "pl": "Mój tryb 1",
+                  "ru": "Мой режим 1",
+                  "ko": "내 모드 1",
+                  "ar": "وضعي 1"
                 }
               },
               {
                 "id": "2",
                 "title": {
                   "en": "My mode 2",
-                  "nl": "Mijn modus 2"
+                  "nl": "Mijn modus 2",
+                  "da": "Min tilstand 2",
+                  "de": "Mein Modus 2",
+                  "es": "Mi modo 2",
+                  "fr": "Mon mode 2",
+                  "it": "La mia modalità 2",
+                  "no": "Min modus 2",
+                  "sv": "Mitt läge 2",
+                  "pl": "Mój tryb 2",
+                  "ru": "Мой режим 2",
+                  "ko": "내 모드 2",
+                  "ar": "وضعي 2"
                 }
               },
               {
                 "id": "3",
                 "title": {
                   "en": "My mode 3",
-                  "nl": "Mijn modus 3"
+                  "nl": "Mijn modus 3",
+                  "da": "Min tilstand 3",
+                  "de": "Mein Modus 3",
+                  "es": "Mi modo 3",
+                  "fr": "Mon mode 3",
+                  "it": "La mia modalità 3",
+                  "no": "Min modus 3",
+                  "sv": "Mitt läge 3",
+                  "pl": "Mój tryb 3",
+                  "ru": "Мой режим 3",
+                  "ko": "내 모드 3",
+                  "ar": "وضعي 3"
                 }
               },
               {
                 "id": "4",
                 "title": {
                   "en": "My mode 4",
-                  "nl": "Mijn modus 4"
+                  "nl": "Mijn modus 4",
+                  "da": "Min tilstand 4",
+                  "de": "Mein Modus 4",
+                  "es": "Mi modo 4",
+                  "fr": "Mon mode 4",
+                  "it": "La mia modalità 4",
+                  "no": "Min modus 4",
+                  "sv": "Mitt läge 4",
+                  "pl": "Mój tryb 4",
+                  "ru": "Мой режим 4",
+                  "ko": "내 모드 4",
+                  "ar": "وضعي 4"
                 }
               },
               {
                 "id": "6",
                 "title": {
                   "en": "Office",
-                  "nl": "Kantoor"
+                  "nl": "Kantoor",
+                  "da": "Kontor",
+                  "de": "Büro",
+                  "es": "Oficina",
+                  "fr": "Bureau",
+                  "it": "Ufficio",
+                  "no": "Kontor",
+                  "sv": "Kontor",
+                  "pl": "Biuro",
+                  "ru": "Офис",
+                  "ko": "사무실",
+                  "ar": "المكتب"
                 }
               },
               {
                 "id": "5",
                 "title": {
                   "en": "Reading",
-                  "nl": "Lezen"
+                  "nl": "Lezen",
+                  "da": "Læsning",
+                  "de": "Lesen",
+                  "es": "Lectura",
+                  "fr": "Lecture",
+                  "it": "Lettura",
+                  "no": "Lesing",
+                  "sv": "Läsning",
+                  "pl": "Czytanie",
+                  "ru": "Чтение",
+                  "ko": "독서",
+                  "ar": "القراءة"
                 }
               },
               {
                 "id": "7",
                 "title": {
                   "en": "Leisure",
-                  "nl": "Ontspanning"
+                  "nl": "Ontspanning",
+                  "da": "Fritid",
+                  "de": "Freizeit",
+                  "es": "Ocio",
+                  "fr": "Loisir",
+                  "it": "Tempo libero",
+                  "no": "Fritid",
+                  "sv": "Fritid",
+                  "pl": "Wypoczynek",
+                  "ru": "Отдых",
+                  "ko": "여가",
+                  "ar": "الاسترخاء"
                 }
               },
               {
                 "id": "9",
                 "title": {
                   "en": "Computer",
-                  "nl": "Computer"
+                  "nl": "Computer",
+                  "da": "Computer",
+                  "de": "Computer",
+                  "es": "Ordenador",
+                  "fr": "Ordinateur",
+                  "it": "Computer",
+                  "no": "Datamaskin",
+                  "sv": "Dator",
+                  "pl": "Komputer",
+                  "ru": "Компьютер",
+                  "ko": "컴퓨터",
+                  "ar": "الكمبيوتر"
                 }
               },
               {
                 "id": "8",
                 "title": {
                   "en": "Warm",
-                  "nl": "Warm"
+                  "nl": "Warm",
+                  "da": "Varm",
+                  "de": "Warm",
+                  "es": "Cálido",
+                  "fr": "Chaud",
+                  "it": "Calda",
+                  "no": "Varm",
+                  "sv": "Varm",
+                  "pl": "Ciepły",
+                  "ru": "Тёплый",
+                  "ko": "따뜻함",
+                  "ar": "دافئ"
                 }
               },
               {
                 "id": "10",
                 "title": {
                   "en": "Blinking",
-                  "nl": "Knipperen"
+                  "nl": "Knipperen",
+                  "da": "Blinkende",
+                  "de": "Blinken",
+                  "es": "Parpadeo",
+                  "fr": "Clignotement",
+                  "it": "Lampeggiante",
+                  "no": "Blinkende",
+                  "sv": "Blinkande",
+                  "pl": "Miganie",
+                  "ru": "Мигание",
+                  "ko": "깜박임",
+                  "ar": "وميض"
                 }
               }
             ]
@@ -3340,7 +3949,18 @@
             "type": "device",
             "placeholder": {
               "en": "Select Xiaomi Monitor Light Bar S1",
-              "nl": "Selecteer Xiaomi Monitor Light Bar S1"
+              "nl": "Selecteer Xiaomi Monitor Light Bar S1",
+              "da": "Vælg Xiaomi Monitor Light Bar S1",
+              "de": "Xiaomi Monitor Light Bar S1 auswählen",
+              "es": "Selecciona Xiaomi Monitor Light Bar S1",
+              "fr": "Sélectionnez Xiaomi Monitor Light Bar S1",
+              "it": "Seleziona Xiaomi Monitor Light Bar S1",
+              "no": "Velg Xiaomi Monitor Light Bar S1",
+              "sv": "Välj Xiaomi Monitor Light Bar S1",
+              "pl": "Wybierz Xiaomi Monitor Light Bar S1",
+              "ru": "Выберите Xiaomi Monitor Light Bar S1",
+              "ko": "Xiaomi Monitor Light Bar S1 선택",
+              "ar": "اختر Xiaomi Monitor Light Bar S1"
             },
             "filter": "driver_id=yeelink_light_lamp22_miot"
           }
@@ -3353,7 +3973,7 @@
       {
         "id": "xiaomiHorizontalSwingIsOn",
         "title": {
-          "en": "Horizontal Swing is !{{on|off}}",
+          "en": "Horizontal swing is !{{on|off}}",
           "nl": "Horizontale oscillatie is !{{aan|uit}}",
           "da": "Vandret oscillation er !{{tændt|slukket}}",
           "de": "Horizontale Oszillation ist !{{an|aus}}",
@@ -3380,7 +4000,7 @@
       {
         "id": "xiaomiVerticalSwingIsOn",
         "title": {
-          "en": "Vertical Swing is !{{on|off}}",
+          "en": "Vertical swing is !{{on|off}}",
           "nl": "Verticale oscillatie is !{{aan|uit}}",
           "da": "Lodret oscillation er !{{tændt|slukket}}",
           "de": "Vertikale Oszillation ist !{{an|aus}}",
@@ -3402,6 +4022,242 @@
             "name": "device",
             "filter": "driver_id=fan_xiaomi_advanced&capabilities=fan_xiaomi_vertical_swing"
           }
+        ]
+      },
+      {
+        "id": "xiaomiModeEquals",
+        "title": {
+          "en": "Mode !{{is|is not}}",
+          "nl": "Modus !{{is|is niet}}",
+          "da": "Tilstand !{{er|er ikke}}",
+          "de": "Modus !{{ist|ist nicht}}",
+          "es": "El modo !{{es|no es}}",
+          "fr": "Le mode !{{est|n'est pas}}",
+          "it": "La modalità !{{è|non è}}",
+          "no": "Modus !{{er|er ikke}}",
+          "sv": "Läge !{{är|är inte}}",
+          "pl": "Tryb !{{jest|nie jest}}",
+          "ru": "Режим !{{равен|не равен}}",
+          "ko": "모드가 !{{임|아님}}"
+        },
+        "titleFormatted": {
+          "en": "Mode !{{is|is not}} [[mode]]",
+          "nl": "Modus !{{is|is niet}} [[mode]]",
+          "da": "Tilstand !{{er|er ikke}} [[mode]]",
+          "de": "Modus !{{ist|ist nicht}} [[mode]]",
+          "es": "El modo !{{es|no es}} [[mode]]",
+          "fr": "Le mode !{{est|n'est pas}} [[mode]]",
+          "it": "La modalità !{{è|non è}} [[mode]]",
+          "no": "Modus !{{er|er ikke}} [[mode]]",
+          "sv": "Läge !{{är|är inte}} [[mode]]",
+          "pl": "Tryb !{{jest|nie jest}} [[mode]]",
+          "ru": "Режим !{{равен|не равен}} [[mode]]",
+          "ko": "모드가 [[mode]] !{{임|아님}}"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=fan_xiaomi_advanced&capabilities=fan_xiaomi_mode"
+          },
+          {
+            "name": "mode",
+            "title": {
+              "en": "Mode",
+              "nl": "Modus",
+              "da": "Tilstand",
+              "de": "Modus",
+              "es": "Modo",
+              "fr": "Mode",
+              "it": "Modalità",
+              "no": "Modus",
+              "sv": "Läge",
+              "pl": "Tryb",
+              "ru": "Режим",
+              "ko": "모드"
+            },
+            "type": "autocomplete"
+          }
+        ],
+        "platforms": [
+          "local"
+        ]
+      },
+      {
+        "id": "xiaomiFanLevelEquals",
+        "title": {
+          "en": "Fan level !{{is|is not}}",
+          "nl": "Ventilatorniveau !{{is|is niet}}",
+          "da": "Ventilatorniveau !{{er|er ikke}}",
+          "de": "Ventilatorstufe !{{ist|ist nicht}}",
+          "es": "El nivel del ventilador !{{es|no es}}",
+          "fr": "Le niveau du ventilateur !{{est|n'est pas}}",
+          "it": "Il livello del ventilatore !{{è|non è}}",
+          "no": "Viftenivå !{{er|er ikke}}",
+          "sv": "Fläktnivå !{{är|är inte}}",
+          "pl": "Poziom wentylatora !{{jest|nie jest}}",
+          "ru": "Уровень вентилятора !{{равен|не равен}}",
+          "ko": "팬 레벨이 !{{임|아님}}"
+        },
+        "titleFormatted": {
+          "en": "Fan level !{{is|is not}} [[level]]",
+          "nl": "Ventilatorniveau !{{is|is niet}} [[level]]",
+          "da": "Ventilatorniveau !{{er|er ikke}} [[level]]",
+          "de": "Ventilatorstufe !{{ist|ist nicht}} [[level]]",
+          "es": "El nivel del ventilador !{{es|no es}} [[level]]",
+          "fr": "Le niveau du ventilateur !{{est|n'est pas}} [[level]]",
+          "it": "Il livello del ventilatore !{{è|non è}} [[level]]",
+          "no": "Viftenivå !{{er|er ikke}} [[level]]",
+          "sv": "Fläktnivå !{{är|är inte}} [[level]]",
+          "pl": "Poziom wentylatora !{{jest|nie jest}} [[level]]",
+          "ru": "Уровень вентилятора !{{равен|не равен}} [[level]]",
+          "ko": "팬 레벨이 [[level]] !{{임|아님}}"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=fan_xiaomi_advanced&capabilities=fan_xiaomi_fanlevel"
+          },
+          {
+            "name": "level",
+            "title": {
+              "en": "Fan level",
+              "nl": "Ventilatorniveau",
+              "da": "Ventilatorniveau",
+              "de": "Ventilatorstufe",
+              "es": "Nivel del ventilador",
+              "fr": "Niveau du ventilateur",
+              "it": "Livello del ventilatore",
+              "no": "Viftenivå",
+              "sv": "Fläktnivå",
+              "pl": "Poziom wentylatora",
+              "ru": "Уровень вентилятора",
+              "ko": "팬 레벨"
+            },
+            "type": "autocomplete"
+          }
+        ],
+        "platforms": [
+          "local"
+        ]
+      },
+      {
+        "id": "xiaomiHorizontalAngleEquals",
+        "title": {
+          "en": "Horizontal angle !{{is|is not}}",
+          "nl": "Horizontale hoek !{{is|is niet}}",
+          "da": "Vandret vinkel !{{er|er ikke}}",
+          "de": "Horizontaler Winkel !{{ist|ist nicht}}",
+          "es": "El ángulo horizontal !{{es|no es}}",
+          "fr": "L'angle horizontal !{{est|n'est pas}}",
+          "it": "L'angolo orizzontale !{{è|non è}}",
+          "no": "Horisontal vinkel !{{er|er ikke}}",
+          "sv": "Horisontell vinkel !{{är|är inte}}",
+          "pl": "Kąt poziomy !{{jest|nie jest}}",
+          "ru": "Горизонтальный угол !{{равен|не равен}}",
+          "ko": "수평 각도가 !{{임|아님}}"
+        },
+        "titleFormatted": {
+          "en": "Horizontal angle !{{is|is not}} [[angle]]",
+          "nl": "Horizontale hoek !{{is|is niet}} [[angle]]",
+          "da": "Vandret vinkel !{{er|er ikke}} [[angle]]",
+          "de": "Horizontaler Winkel !{{ist|ist nicht}} [[angle]]",
+          "es": "El ángulo horizontal !{{es|no es}} [[angle]]",
+          "fr": "L'angle horizontal !{{est|n'est pas}} [[angle]]",
+          "it": "L'angolo orizzontale !{{è|non è}} [[angle]]",
+          "no": "Horisontal vinkel !{{er|er ikke}} [[angle]]",
+          "sv": "Horisontell vinkel !{{är|är inte}} [[angle]]",
+          "pl": "Kąt poziomy !{{jest|nie jest}} [[angle]]",
+          "ru": "Горизонтальный угол !{{равен|не равен}} [[angle]]",
+          "ko": "수평 각도가 [[angle]] !{{임|아님}}"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=fan_xiaomi_advanced&capabilities=fan_xiaomi_horizontal_angle"
+          },
+          {
+            "name": "angle",
+            "title": {
+              "en": "Angle",
+              "nl": "Hoek",
+              "da": "Vinkel",
+              "de": "Winkel",
+              "es": "Ángulo",
+              "fr": "Angle",
+              "it": "Angolo",
+              "no": "Vinkel",
+              "sv": "Vinkel",
+              "pl": "Kąt",
+              "ru": "Угол",
+              "ko": "각도"
+            },
+            "type": "autocomplete"
+          }
+        ],
+        "platforms": [
+          "local"
+        ]
+      },
+      {
+        "id": "xiaomiVerticalAngleEquals",
+        "title": {
+          "en": "Vertical angle !{{is|is not}}",
+          "nl": "Verticale hoek !{{is|is niet}}",
+          "da": "Lodret vinkel !{{er|er ikke}}",
+          "de": "Vertikaler Winkel !{{ist|ist nicht}}",
+          "es": "El ángulo vertical !{{es|no es}}",
+          "fr": "L'angle vertical !{{est|n'est pas}}",
+          "it": "L'angolo verticale !{{è|non è}}",
+          "no": "Vertikal vinkel !{{er|er ikke}}",
+          "sv": "Vertikal vinkel !{{är|är inte}}",
+          "pl": "Kąt pionowy !{{jest|nie jest}}",
+          "ru": "Вертикальный угол !{{равен|не равен}}",
+          "ko": "수직 각도가 !{{임|아님}}"
+        },
+        "titleFormatted": {
+          "en": "Vertical angle !{{is|is not}} [[angle]]",
+          "nl": "Verticale hoek !{{is|is niet}} [[angle]]",
+          "da": "Lodret vinkel !{{er|er ikke}} [[angle]]",
+          "de": "Vertikaler Winkel !{{ist|ist nicht}} [[angle]]",
+          "es": "El ángulo vertical !{{es|no es}} [[angle]]",
+          "fr": "L'angle vertical !{{est|n'est pas}} [[angle]]",
+          "it": "L'angolo verticale !{{è|non è}} [[angle]]",
+          "no": "Vertikal vinkel !{{er|er ikke}} [[angle]]",
+          "sv": "Vertikal vinkel !{{är|är inte}} [[angle]]",
+          "pl": "Kąt pionowy !{{jest|nie jest}} [[angle]]",
+          "ru": "Вертикальный угол !{{равен|не равен}} [[angle]]",
+          "ko": "수직 각도가 [[angle]] !{{임|아님}}"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=fan_xiaomi_advanced&capabilities=fan_xiaomi_vertical_angle"
+          },
+          {
+            "name": "angle",
+            "title": {
+              "en": "Angle",
+              "nl": "Hoek",
+              "da": "Vinkel",
+              "de": "Winkel",
+              "es": "Ángulo",
+              "fr": "Angle",
+              "it": "Angolo",
+              "no": "Vinkel",
+              "sv": "Vinkel",
+              "pl": "Kąt",
+              "ru": "Угол",
+              "ko": "각도"
+            },
+            "type": "autocomplete"
+          }
+        ],
+        "platforms": [
+          "local"
         ]
       }
     ],
@@ -11798,18 +12654,51 @@
       {
         "title": {
           "en": "Set my mode / scene",
-          "nl": "Stel mijn modus / scene in"
+          "nl": "Stel mijn modus / scene in",
+          "da": "Indstil min tilstand / scene",
+          "de": "Meinen Modus / meine Szene einstellen",
+          "es": "Establecer mi modo / escena",
+          "fr": "Définir mon mode / ma scène",
+          "it": "Imposta la mia modalità / scena",
+          "no": "Sett min modus / scene",
+          "sv": "Ställ in mitt läge / min scen",
+          "pl": "Ustaw mój tryb / scenę",
+          "ru": "Установить мой режим / сцену",
+          "ko": "내 모드 / 장면 설정",
+          "ar": "تعيين وضعي / المشهد"
         },
         "titleFormatted": {
           "en": "Set my mode / scene to [[mode]]",
-          "nl": "Stel mijn modus / scene in op [[mode]]"
+          "nl": "Stel mijn modus / scene in op [[mode]]",
+          "da": "Indstil min tilstand / scene til [[mode]]",
+          "de": "Meinen Modus / meine Szene auf [[mode]] einstellen",
+          "es": "Establecer mi modo / escena en [[mode]]",
+          "fr": "Définir mon mode / ma scène sur [[mode]]",
+          "it": "Imposta la mia modalità / scena su [[mode]]",
+          "no": "Sett min modus / scene til [[mode]]",
+          "sv": "Ställ in mitt läge / min scen till [[mode]]",
+          "pl": "Ustaw mój tryb / scenę na [[mode]]",
+          "ru": "Установить мой режим / сцену: [[mode]]",
+          "ko": "내 모드 / 장면을 [[mode]](으)로 설정",
+          "ar": "تعيين وضعي / المشهد إلى [[mode]]"
         },
         "args": [
           {
             "name": "mode",
             "title": {
               "en": "My mode / scene",
-              "nl": "Mijn modus / scene"
+              "nl": "Mijn modus / scene",
+              "da": "Min tilstand / scene",
+              "de": "Mein Modus / meine Szene",
+              "es": "Mi modo / escena",
+              "fr": "Mon mode / ma scène",
+              "it": "La mia modalità / scena",
+              "no": "Min modus / scene",
+              "sv": "Mitt läge / min scen",
+              "pl": "Mój tryb / scena",
+              "ru": "Мой режим / сцена",
+              "ko": "내 모드 / 장면",
+              "ar": "وضعي / المشهد"
             },
             "type": "dropdown",
             "values": [
@@ -11817,77 +12706,198 @@
                 "id": "0",
                 "title": {
                   "en": "No scene",
-                  "nl": "Geen scene"
+                  "nl": "Geen scene",
+                  "da": "Ingen scene",
+                  "de": "Keine Szene",
+                  "es": "Sin escena",
+                  "fr": "Aucune scène",
+                  "it": "Nessuna scena",
+                  "no": "Ingen scene",
+                  "sv": "Ingen scen",
+                  "pl": "Brak sceny",
+                  "ru": "Нет сцены",
+                  "ko": "장면 없음",
+                  "ar": "بدون وضع"
                 }
               },
               {
                 "id": "1",
                 "title": {
                   "en": "My mode 1",
-                  "nl": "Mijn modus 1"
+                  "nl": "Mijn modus 1",
+                  "da": "Min tilstand 1",
+                  "de": "Mein Modus 1",
+                  "es": "Mi modo 1",
+                  "fr": "Mon mode 1",
+                  "it": "La mia modalità 1",
+                  "no": "Min modus 1",
+                  "sv": "Mitt läge 1",
+                  "pl": "Mój tryb 1",
+                  "ru": "Мой режим 1",
+                  "ko": "내 모드 1",
+                  "ar": "وضعي 1"
                 }
               },
               {
                 "id": "2",
                 "title": {
                   "en": "My mode 2",
-                  "nl": "Mijn modus 2"
+                  "nl": "Mijn modus 2",
+                  "da": "Min tilstand 2",
+                  "de": "Mein Modus 2",
+                  "es": "Mi modo 2",
+                  "fr": "Mon mode 2",
+                  "it": "La mia modalità 2",
+                  "no": "Min modus 2",
+                  "sv": "Mitt läge 2",
+                  "pl": "Mój tryb 2",
+                  "ru": "Мой режим 2",
+                  "ko": "내 모드 2",
+                  "ar": "وضعي 2"
                 }
               },
               {
                 "id": "3",
                 "title": {
                   "en": "My mode 3",
-                  "nl": "Mijn modus 3"
+                  "nl": "Mijn modus 3",
+                  "da": "Min tilstand 3",
+                  "de": "Mein Modus 3",
+                  "es": "Mi modo 3",
+                  "fr": "Mon mode 3",
+                  "it": "La mia modalità 3",
+                  "no": "Min modus 3",
+                  "sv": "Mitt läge 3",
+                  "pl": "Mój tryb 3",
+                  "ru": "Мой режим 3",
+                  "ko": "내 모드 3",
+                  "ar": "وضعي 3"
                 }
               },
               {
                 "id": "4",
                 "title": {
                   "en": "My mode 4",
-                  "nl": "Mijn modus 4"
+                  "nl": "Mijn modus 4",
+                  "da": "Min tilstand 4",
+                  "de": "Mein Modus 4",
+                  "es": "Mi modo 4",
+                  "fr": "Mon mode 4",
+                  "it": "La mia modalità 4",
+                  "no": "Min modus 4",
+                  "sv": "Mitt läge 4",
+                  "pl": "Mój tryb 4",
+                  "ru": "Мой режим 4",
+                  "ko": "내 모드 4",
+                  "ar": "وضعي 4"
                 }
               },
               {
                 "id": "6",
                 "title": {
                   "en": "Office",
-                  "nl": "Kantoor"
+                  "nl": "Kantoor",
+                  "da": "Kontor",
+                  "de": "Büro",
+                  "es": "Oficina",
+                  "fr": "Bureau",
+                  "it": "Ufficio",
+                  "no": "Kontor",
+                  "sv": "Kontor",
+                  "pl": "Biuro",
+                  "ru": "Офис",
+                  "ko": "사무실",
+                  "ar": "المكتب"
                 }
               },
               {
                 "id": "5",
                 "title": {
                   "en": "Reading",
-                  "nl": "Lezen"
+                  "nl": "Lezen",
+                  "da": "Læsning",
+                  "de": "Lesen",
+                  "es": "Lectura",
+                  "fr": "Lecture",
+                  "it": "Lettura",
+                  "no": "Lesing",
+                  "sv": "Läsning",
+                  "pl": "Czytanie",
+                  "ru": "Чтение",
+                  "ko": "독서",
+                  "ar": "القراءة"
                 }
               },
               {
                 "id": "7",
                 "title": {
                   "en": "Leisure",
-                  "nl": "Ontspanning"
+                  "nl": "Ontspanning",
+                  "da": "Fritid",
+                  "de": "Freizeit",
+                  "es": "Ocio",
+                  "fr": "Loisir",
+                  "it": "Tempo libero",
+                  "no": "Fritid",
+                  "sv": "Fritid",
+                  "pl": "Wypoczynek",
+                  "ru": "Отдых",
+                  "ko": "여가",
+                  "ar": "الاسترخاء"
                 }
               },
               {
                 "id": "9",
                 "title": {
                   "en": "Computer",
-                  "nl": "Computer"
+                  "nl": "Computer",
+                  "da": "Computer",
+                  "de": "Computer",
+                  "es": "Ordenador",
+                  "fr": "Ordinateur",
+                  "it": "Computer",
+                  "no": "Datamaskin",
+                  "sv": "Dator",
+                  "pl": "Komputer",
+                  "ru": "Компьютер",
+                  "ko": "컴퓨터",
+                  "ar": "الكمبيوتر"
                 }
               },
               {
                 "id": "8",
                 "title": {
                   "en": "Warm",
-                  "nl": "Warm"
+                  "nl": "Warm",
+                  "da": "Varm",
+                  "de": "Warm",
+                  "es": "Cálido",
+                  "fr": "Chaud",
+                  "it": "Calda",
+                  "no": "Varm",
+                  "sv": "Varm",
+                  "pl": "Ciepły",
+                  "ru": "Тёплый",
+                  "ko": "따뜻함",
+                  "ar": "دافئ"
                 }
               },
               {
                 "id": "10",
                 "title": {
                   "en": "Blinking",
-                  "nl": "Knipperen"
+                  "nl": "Knipperen",
+                  "da": "Blinkende",
+                  "de": "Blinken",
+                  "es": "Parpadeo",
+                  "fr": "Clignotement",
+                  "it": "Lampeggiante",
+                  "no": "Blinkende",
+                  "sv": "Blinkande",
+                  "pl": "Miganie",
+                  "ru": "Мигание",
+                  "ko": "깜박임",
+                  "ar": "وميض"
                 }
               }
             ]
@@ -11897,7 +12907,18 @@
             "type": "device",
             "placeholder": {
               "en": "Select Xiaomi Monitor Light Bar S1",
-              "nl": "Selecteer Xiaomi Monitor Light Bar S1"
+              "nl": "Selecteer Xiaomi Monitor Light Bar S1",
+              "da": "Vælg Xiaomi Monitor Light Bar S1",
+              "de": "Xiaomi Monitor Light Bar S1 auswählen",
+              "es": "Selecciona Xiaomi Monitor Light Bar S1",
+              "fr": "Sélectionnez Xiaomi Monitor Light Bar S1",
+              "it": "Seleziona Xiaomi Monitor Light Bar S1",
+              "no": "Velg Xiaomi Monitor Light Bar S1",
+              "sv": "Välj Xiaomi Monitor Light Bar S1",
+              "pl": "Wybierz Xiaomi Monitor Light Bar S1",
+              "ru": "Выберите Xiaomi Monitor Light Bar S1",
+              "ko": "Xiaomi Monitor Light Bar S1 선택",
+              "ar": "اختر Xiaomi Monitor Light Bar S1"
             },
             "filter": "driver_id=yeelink_light_lamp22_miot"
           }
@@ -11908,9 +12929,68 @@
         "id": "yeelightLamp22Mode"
       },
       {
+        "id": "xiaomiSetFanLevel",
+        "title": {
+          "en": "Set fan level",
+          "nl": "Stel ventilatorniveau in",
+          "da": "Indstil ventilatorniveau",
+          "de": "Ventilatorstufe einstellen",
+          "es": "Configurar nivel del ventilador",
+          "fr": "Définir le niveau du ventilateur",
+          "it": "Imposta livello del ventilatore",
+          "no": "Sett viftenivå",
+          "sv": "Ställ in fläktnivå",
+          "pl": "Ustaw poziom wentylatora",
+          "ru": "Установить уровень вентилятора",
+          "ko": "팬 레벨 설정"
+        },
+        "titleFormatted": {
+          "en": "Set fan level to [[level]]",
+          "nl": "Stel ventilatorniveau in op [[level]]",
+          "da": "Indstil ventilatorniveau til [[level]]",
+          "de": "Ventilatorstufe auf [[level]] einstellen",
+          "es": "Configurar nivel del ventilador en [[level]]",
+          "fr": "Définir le niveau du ventilateur sur [[level]]",
+          "it": "Imposta livello del ventilatore su [[level]]",
+          "no": "Sett viftenivå til [[level]]",
+          "sv": "Ställ in fläktnivå till [[level]]",
+          "pl": "Ustaw poziom wentylatora na [[level]]",
+          "ru": "Установить уровень вентилятора на [[level]]",
+          "ko": "팬 레벨을 [[level]](으)로 설정"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=fan_xiaomi_advanced&capabilities=fan_xiaomi_fanlevel"
+          },
+          {
+            "name": "level",
+            "title": {
+              "en": "Fan level",
+              "nl": "Ventilatorniveau",
+              "da": "Ventilatorniveau",
+              "de": "Ventilatorstufe",
+              "es": "Nivel del ventilador",
+              "fr": "Niveau du ventilateur",
+              "it": "Livello del ventilatore",
+              "no": "Viftenivå",
+              "sv": "Fläktnivå",
+              "pl": "Poziom wentylatora",
+              "ru": "Уровень вентилятора",
+              "ko": "팬 레벨"
+            },
+            "type": "autocomplete"
+          }
+        ],
+        "platforms": [
+          "local"
+        ]
+      },
+      {
         "id": "xiaomiFanMode",
         "title": {
-          "en": "Set Mode",
+          "en": "Set mode",
           "nl": "Stel modus in",
           "da": "Indstil tilstand",
           "de": "Modus einstellen",
@@ -11969,7 +13049,7 @@
       {
         "id": "xiaomiHorizontalSwingOn",
         "title": {
-          "en": "Enable Horizontal Swing",
+          "en": "Enable horizontal swing",
           "nl": "Horizontale oscillatie inschakelen",
           "da": "Aktivér vandret oscillation",
           "de": "Horizontale Oszillation aktivieren",
@@ -11983,7 +13063,7 @@
           "ko": "수평 진동 활성화"
         },
         "titleFormatted": {
-          "en": "Enable Horizontal Swing",
+          "en": "Enable horizontal swing",
           "nl": "Horizontale oscillatie inschakelen",
           "da": "Aktivér vandret oscillation",
           "de": "Horizontale Oszillation aktivieren",
@@ -12010,7 +13090,7 @@
       {
         "id": "xiaomiHorizontalSwingOff",
         "title": {
-          "en": "Disable Horizontal Swing",
+          "en": "Disable horizontal swing",
           "nl": "Horizontale oscillatie uitschakelen",
           "da": "Deaktivér vandret oscillation",
           "de": "Horizontale Oszillation deaktivieren",
@@ -12024,7 +13104,7 @@
           "ko": "수평 진동 비활성화"
         },
         "titleFormatted": {
-          "en": "Disable Horizontal Swing",
+          "en": "Disable horizontal swing",
           "nl": "Horizontale oscillatie uitschakelen",
           "da": "Deaktivér vandret oscillation",
           "de": "Horizontale Oszillation deaktivieren",
@@ -12051,7 +13131,7 @@
       {
         "id": "xiaomiHorizontalSwingToggle",
         "title": {
-          "en": "Toggle Horizontal Swing",
+          "en": "Toggle horizontal swing",
           "nl": "Horizontale oscillatie omschakelen",
           "da": "Skift vandret oscillation",
           "de": "Horizontale Oszillation umschalten",
@@ -12065,7 +13145,7 @@
           "ko": "수평 진동 전환"
         },
         "titleFormatted": {
-          "en": "Toggle Horizontal Swing",
+          "en": "Toggle horizontal swing",
           "nl": "Horizontale oscillatie omschakelen",
           "da": "Skift vandret oscillation",
           "de": "Horizontale Oszillation umschalten",
@@ -12092,7 +13172,7 @@
       {
         "id": "xiaomiSetHorizontalAngle",
         "title": {
-          "en": "Change Horizontal Swing Angle",
+          "en": "Change horizontal swing angle",
           "nl": "Horizontale draaihoek wijzigen",
           "da": "Skift vandret svingvinkel",
           "de": "Horizontalen Schwenkwinkel ändern",
@@ -12151,7 +13231,7 @@
       {
         "id": "xiaomiVerticalSwingOn",
         "title": {
-          "en": "Enable Vertical Swing",
+          "en": "Enable vertical swing",
           "nl": "Verticale oscillatie inschakelen",
           "da": "Aktivér lodret oscillation",
           "de": "Vertikale Oszillation aktivieren",
@@ -12165,7 +13245,7 @@
           "ko": "수직 진동 활성화"
         },
         "titleFormatted": {
-          "en": "Enable Vertical Swing",
+          "en": "Enable vertical swing",
           "nl": "Verticale oscillatie inschakelen",
           "da": "Aktivér lodret oscillation",
           "de": "Vertikale Oszillation aktivieren",
@@ -12192,7 +13272,7 @@
       {
         "id": "xiaomiVerticalSwingOff",
         "title": {
-          "en": "Disable Vertical Swing",
+          "en": "Disable vertical swing",
           "nl": "Verticale oscillatie uitschakelen",
           "da": "Deaktivér lodret oscillation",
           "de": "Vertikale Oszillation deaktivieren",
@@ -12206,7 +13286,7 @@
           "ko": "수직 진동 비활성화"
         },
         "titleFormatted": {
-          "en": "Disable Vertical Swing",
+          "en": "Disable vertical swing",
           "nl": "Verticale oscillatie uitschakelen",
           "da": "Deaktivér lodret oscillation",
           "de": "Vertikale Oszillation deaktivieren",
@@ -12233,7 +13313,7 @@
       {
         "id": "xiaomiVerticalSwingToggle",
         "title": {
-          "en": "Toggle Vertical Swing",
+          "en": "Toggle vertical swing",
           "nl": "Verticale oscillatie omschakelen",
           "da": "Skift lodret oscillation",
           "de": "Vertikale Oszillation umschalten",
@@ -12247,7 +13327,7 @@
           "ko": "수직 진동 전환"
         },
         "titleFormatted": {
-          "en": "Toggle Vertical Swing",
+          "en": "Toggle vertical swing",
           "nl": "Verticale oscillatie omschakelen",
           "da": "Skift lodret oscillation",
           "de": "Vertikale Oszillation umschalten",
@@ -12274,7 +13354,7 @@
       {
         "id": "xiaomiSetVerticalAngle",
         "title": {
-          "en": "Change Vertical Swing Angle",
+          "en": "Change vertical swing angle",
           "nl": "Verticale draaihoek wijzigen",
           "da": "Skift lodret svingvinkel",
           "de": "Vertikalen Schwenkwinkel ändern",
@@ -25658,6 +26738,9 @@
       "class": "petfeeder",
       "capabilities": [
         "petfeeder_serve_food",
+        "petfeeder_screen_power",
+        "petfeeder_screen_content",
+        "petfeeder_screen_display_mode",
         "petfeeder_foodlevel",
         "petfeeder_food_out_status",
         "petfeeder_food_stuck_status",
@@ -31689,11 +32772,23 @@
         "sv": "Yeelight Color Bulb (legacy LAN) (WiFi)",
         "pl": "Yeelight Color Bulb (legacy LAN) (WiFi)",
         "ru": "Yeelight Color Bulb (legacy LAN) (WiFi)",
-        "ko": "Yeelight Color Bulb (legacy LAN) (WiFi)"
+        "ko": "Yeelight Color Bulb (legacy LAN) (WiFi)",
+        "ar": "Yeelight Color Bulb (legacy LAN) (WiFi)"
       },
       "description": {
         "en": "Product model: YLDP02YL. Uses the legacy Yeelight LAN API.",
-        "nl": "Productmodel: YLDP02YL. Gebruikt de legacy Yeelight LAN API."
+        "nl": "Productmodel: YLDP02YL. Gebruikt de legacy Yeelight LAN API.",
+        "da": "Produktmodel: YLDP02YL. Bruger den ældre Yeelight LAN API.",
+        "de": "Produktmodell: YLDP02YL. Verwendet die ältere Yeelight LAN-API.",
+        "es": "Modelo del producto: YLDP02YL. Usa la API LAN heredada de Yeelight.",
+        "fr": "Modèle du produit : YLDP02YL. Utilise l’ancienne API LAN Yeelight.",
+        "it": "Modello prodotto: YLDP02YL. Usa l’API LAN legacy di Yeelight.",
+        "no": "Produktmodell: YLDP02YL. Bruker den eldre Yeelight LAN-API-en.",
+        "sv": "Produktmodell: YLDP02YL. Använder det äldre Yeelight LAN-API:t.",
+        "pl": "Model produktu: YLDP02YL. Używa starszego API LAN Yeelight.",
+        "ru": "Модель продукта: YLDP02YL. Использует устаревший LAN API Yeelight.",
+        "ko": "제품 모델: YLDP02YL. 레거시 Yeelight LAN API를 사용합니다.",
+        "ar": "طراز المنتج: YLDP02YL. يستخدم واجهة Yeelight LAN API القديمة."
       },
       "images": {
         "large": "drivers/yeelink_light_color1_lan/assets/images/large.jpg",
@@ -31833,11 +32928,23 @@
         "sv": "Xiaomi Monitor Light Bar S1 (WiFi)",
         "pl": "Xiaomi Monitor Light Bar S1 (WiFi)",
         "ru": "Xiaomi Monitor Light Bar S1 (WiFi)",
-        "ko": "Xiaomi Monitor Light Bar S1 (WiFi)"
+        "ko": "Xiaomi Monitor Light Bar S1 (WiFi)",
+        "ar": "Xiaomi Monitor Light Bar S1 (WiFi)"
       },
       "description": {
         "en": "Product model: MJGJD02YL",
-        "nl": "Productmodel: MJGJD02YL"
+        "nl": "Productmodel: MJGJD02YL",
+        "da": "Produktmodel: MJGJD02YL",
+        "de": "Produktmodell: MJGJD02YL",
+        "es": "Modelo del producto: MJGJD02YL",
+        "fr": "Modèle du produit : MJGJD02YL",
+        "it": "Modello prodotto: MJGJD02YL",
+        "no": "Produktmodell: MJGJD02YL",
+        "sv": "Produktmodell: MJGJD02YL",
+        "pl": "Model produktu: MJGJD02YL",
+        "ru": "Модель продукта: MJGJD02YL",
+        "ko": "제품 모델: MJGJD02YL",
+        "ar": "طراز المنتج: MJGJD02YL"
       },
       "images": {
         "large": "drivers/yeelink_light_lamp22_miot/assets/images/large.jpg",
@@ -31872,8 +32979,7 @@
             "pl": "Ustawienia urządzenia",
             "ru": "Настройки устройства",
             "ko": "장치 설정",
-            "ja": "デバイス設定",
-            "zh": "设备设置"
+            "ar": "إعدادات الجهاز"
           },
           "children": [
             {
@@ -31924,7 +33030,18 @@
               },
               "label": {
                 "en": "Polling rate (seconds)",
-                "nl": "Pollingfrequentie (seconden)"
+                "nl": "Pollingfrequentie (seconden)",
+                "da": "Pollinginterval (sekunder)",
+                "de": "Abfrageintervall (Sekunden)",
+                "es": "Frecuencia de sondeo (segundos)",
+                "fr": "Intervalle d’interrogation (secondes)",
+                "it": "Intervallo di polling (secondi)",
+                "no": "Pollingintervall (sekunder)",
+                "sv": "Pollningsintervall (sekunder)",
+                "pl": "Interwał odpytywania (sekundy)",
+                "ru": "Интервал опроса (секунды)",
+                "ko": "폴링 간격(초)",
+                "ar": "معدل الاستطلاع (بالثواني)"
               }
             },
             {
@@ -31932,7 +33049,18 @@
               "type": "label",
               "label": {
                 "en": "External changes, such as using the Xiaomi app or the physical knob, are detected after the next polling interval.",
-                "nl": "Externe wijzigingen, zoals via de Xiaomi-app of de fysieke knop, worden na het volgende polling-interval gedetecteerd."
+                "nl": "Externe wijzigingen, zoals via de Xiaomi-app of de fysieke knop, worden na het volgende polling-interval gedetecteerd.",
+                "da": "Eksterne ændringer, f.eks. via Xiaomi-appen eller den fysiske drejeknap, registreres efter næste pollinginterval.",
+                "de": "Externe Änderungen, z. B. über die Xiaomi-App oder den physischen Drehknopf, werden nach dem nächsten Abfrageintervall erkannt.",
+                "es": "Los cambios externos, como usar la app de Xiaomi o el mando físico, se detectan después del siguiente intervalo de sondeo.",
+                "fr": "Les changements externes, comme l’utilisation de l’application Xiaomi ou du bouton physique, sont détectés après le prochain intervalle d’interrogation.",
+                "it": "Le modifiche esterne, ad esempio tramite l’app Xiaomi o la manopola fisica, vengono rilevate dopo il successivo intervallo di polling.",
+                "no": "Eksterne endringer, for eksempel via Xiaomi-appen eller den fysiske knotten, oppdages etter neste pollingintervall.",
+                "sv": "Externa ändringar, till exempel via Xiaomi-appen eller den fysiska ratten, upptäcks efter nästa pollningsintervall.",
+                "pl": "Zmiany zewnętrzne, takie jak użycie aplikacji Xiaomi lub fizycznego pokrętła, są wykrywane po następnym interwale odpytywania.",
+                "ru": "Внешние изменения, например через приложение Xiaomi или физическую ручку, обнаруживаются после следующего интервала опроса.",
+                "ko": "Xiaomi 앱이나 물리적 노브를 통한 외부 변경은 다음 폴링 간격 이후에 감지됩니다.",
+                "ar": "يتم اكتشاف التغييرات الخارجية، مثل استخدام تطبيق Xiaomi أو المقبض الفعلي، بعد فترة الاستطلاع التالية."
               },
               "value": ""
             }
@@ -33676,7 +34804,7 @@
     "fan_xiaomi_fanlevel": {
       "type": "enum",
       "title": {
-        "en": "Fanlevel",
+        "en": "Fan level",
         "nl": "Ventilator niveau",
         "da": "Fan niveau",
         "de": "Ventilatorebene",
@@ -33712,6 +34840,42 @@
           "id": "4",
           "title": {
             "en": "4"
+          }
+        },
+        {
+          "id": "5",
+          "title": {
+            "en": "5"
+          }
+        },
+        {
+          "id": "6",
+          "title": {
+            "en": "6"
+          }
+        },
+        {
+          "id": "7",
+          "title": {
+            "en": "7"
+          }
+        },
+        {
+          "id": "8",
+          "title": {
+            "en": "8"
+          }
+        },
+        {
+          "id": "9",
+          "title": {
+            "en": "9"
+          }
+        },
+        {
+          "id": "10",
+          "title": {
+            "en": "10"
           }
         }
       ],
@@ -35785,6 +36949,96 @@
       ],
       "uiComponent": "sensor",
       "icon": "/assets/icons/alarm_generic.svg"
+    },
+    "petfeeder_screen_content": {
+      "type": "enum",
+      "title": {
+        "en": "Displayed data"
+      },
+      "values": [
+        {
+          "id": "left_grams",
+          "title": {
+            "en": "Left grams"
+          }
+        },
+        {
+          "id": "eaten_grams",
+          "title": {
+            "en": "Eaten grams"
+          }
+        },
+        {
+          "id": "percentage",
+          "title": {
+            "en": "Percentage"
+          }
+        }
+      ],
+      "getable": true,
+      "setable": true,
+      "uiComponent": "picker",
+      "icon": "/assets/icons/petfeeder_foodlevel.svg"
+    },
+    "petfeeder_screen_display_mode": {
+      "type": "enum",
+      "title": {
+        "en": "Screen display"
+      },
+      "values": [
+        {
+          "id": "off",
+          "title": {
+            "en": "Off"
+          }
+        },
+        {
+          "id": "left_grams",
+          "title": {
+            "en": "Left grams"
+          }
+        },
+        {
+          "id": "eaten_grams",
+          "title": {
+            "en": "Eaten grams"
+          }
+        },
+        {
+          "id": "percentage",
+          "title": {
+            "en": "Percentage"
+          }
+        }
+      ],
+      "getable": true,
+      "setable": true,
+      "uiComponent": null,
+      "icon": "/assets/icons/petfeeder_foodlevel.svg"
+    },
+    "petfeeder_screen_power": {
+      "type": "enum",
+      "title": {
+        "en": "Display"
+      },
+      "values": [
+        {
+          "id": "off",
+          "title": {
+            "en": "Off"
+          }
+        },
+        {
+          "id": "on",
+          "title": {
+            "en": "On"
+          }
+        }
+      ],
+      "getable": true,
+      "setable": true,
+      "uiComponent": "picker",
+      "icon": "/assets/icons/petfeeder_foodlevel.svg"
     },
     "petfeeder_serve_food": {
       "type": "boolean",
@@ -37990,7 +39244,18 @@
       "type": "enum",
       "title": {
         "en": "My modes / scenes",
-        "nl": "Mijn modi / scenes"
+        "nl": "Mijn modi / scenes",
+        "da": "Mine tilstande / scener",
+        "de": "Meine Modi / Szenen",
+        "es": "Mis modos / escenas",
+        "fr": "Mes modes / scènes",
+        "it": "Le mie modalità / scene",
+        "no": "Mine moduser / scener",
+        "sv": "Mina lägen / scener",
+        "pl": "Moje tryby / sceny",
+        "ru": "Мои режимы / сцены",
+        "ko": "내 모드 / 장면",
+        "ar": "أوضاعي / المشاهد"
       },
       "getable": true,
       "setable": true,
@@ -38000,81 +39265,201 @@
           "id": "0",
           "title": {
             "en": "No scene",
-            "nl": "Geen scene"
+            "nl": "Geen scene",
+            "da": "Ingen scene",
+            "de": "Keine Szene",
+            "es": "Sin escena",
+            "fr": "Aucune scène",
+            "it": "Nessuna scena",
+            "no": "Ingen scene",
+            "sv": "Ingen scen",
+            "pl": "Brak sceny",
+            "ru": "Нет сцены",
+            "ko": "장면 없음",
+            "ar": "بدون وضع"
           }
         },
         {
           "id": "1",
           "title": {
             "en": "My mode 1",
-            "nl": "Mijn modus 1"
+            "nl": "Mijn modus 1",
+            "da": "Min tilstand 1",
+            "de": "Mein Modus 1",
+            "es": "Mi modo 1",
+            "fr": "Mon mode 1",
+            "it": "La mia modalità 1",
+            "no": "Min modus 1",
+            "sv": "Mitt läge 1",
+            "pl": "Mój tryb 1",
+            "ru": "Мой режим 1",
+            "ko": "내 모드 1",
+            "ar": "وضعي 1"
           }
         },
         {
           "id": "2",
           "title": {
             "en": "My mode 2",
-            "nl": "Mijn modus 2"
+            "nl": "Mijn modus 2",
+            "da": "Min tilstand 2",
+            "de": "Mein Modus 2",
+            "es": "Mi modo 2",
+            "fr": "Mon mode 2",
+            "it": "La mia modalità 2",
+            "no": "Min modus 2",
+            "sv": "Mitt läge 2",
+            "pl": "Mój tryb 2",
+            "ru": "Мой режим 2",
+            "ko": "내 모드 2",
+            "ar": "وضعي 2"
           }
         },
         {
           "id": "3",
           "title": {
             "en": "My mode 3",
-            "nl": "Mijn modus 3"
+            "nl": "Mijn modus 3",
+            "da": "Min tilstand 3",
+            "de": "Mein Modus 3",
+            "es": "Mi modo 3",
+            "fr": "Mon mode 3",
+            "it": "La mia modalità 3",
+            "no": "Min modus 3",
+            "sv": "Mitt läge 3",
+            "pl": "Mój tryb 3",
+            "ru": "Мой режим 3",
+            "ko": "내 모드 3",
+            "ar": "وضعي 3"
           }
         },
         {
           "id": "4",
           "title": {
             "en": "My mode 4",
-            "nl": "Mijn modus 4"
+            "nl": "Mijn modus 4",
+            "da": "Min tilstand 4",
+            "de": "Mein Modus 4",
+            "es": "Mi modo 4",
+            "fr": "Mon mode 4",
+            "it": "La mia modalità 4",
+            "no": "Min modus 4",
+            "sv": "Mitt läge 4",
+            "pl": "Mój tryb 4",
+            "ru": "Мой режим 4",
+            "ko": "내 모드 4",
+            "ar": "وضعي 4"
           }
         },
         {
           "id": "6",
           "title": {
             "en": "Office",
-            "nl": "Kantoor"
+            "nl": "Kantoor",
+            "da": "Kontor",
+            "de": "Büro",
+            "es": "Oficina",
+            "fr": "Bureau",
+            "it": "Ufficio",
+            "no": "Kontor",
+            "sv": "Kontor",
+            "pl": "Biuro",
+            "ru": "Офис",
+            "ko": "사무실",
+            "ar": "المكتب"
           }
         },
         {
           "id": "5",
           "title": {
             "en": "Reading",
-            "nl": "Lezen"
+            "nl": "Lezen",
+            "da": "Læsning",
+            "de": "Lesen",
+            "es": "Lectura",
+            "fr": "Lecture",
+            "it": "Lettura",
+            "no": "Lesing",
+            "sv": "Läsning",
+            "pl": "Czytanie",
+            "ru": "Чтение",
+            "ko": "독서",
+            "ar": "القراءة"
           }
         },
         {
           "id": "7",
           "title": {
             "en": "Leisure",
-            "nl": "Ontspanning"
+            "nl": "Ontspanning",
+            "da": "Fritid",
+            "de": "Freizeit",
+            "es": "Ocio",
+            "fr": "Loisir",
+            "it": "Tempo libero",
+            "no": "Fritid",
+            "sv": "Fritid",
+            "pl": "Wypoczynek",
+            "ru": "Отдых",
+            "ko": "여가",
+            "ar": "الاسترخاء"
           }
         },
         {
           "id": "9",
           "title": {
             "en": "Computer",
-            "nl": "Computer"
+            "nl": "Computer",
+            "da": "Computer",
+            "de": "Computer",
+            "es": "Ordenador",
+            "fr": "Ordinateur",
+            "it": "Computer",
+            "no": "Datamaskin",
+            "sv": "Dator",
+            "pl": "Komputer",
+            "ru": "Компьютер",
+            "ko": "컴퓨터",
+            "ar": "الكمبيوتر"
           }
         },
         {
           "id": "8",
           "title": {
             "en": "Warm",
-            "nl": "Warm"
+            "nl": "Warm",
+            "da": "Varm",
+            "de": "Warm",
+            "es": "Cálido",
+            "fr": "Chaud",
+            "it": "Calda",
+            "no": "Varm",
+            "sv": "Varm",
+            "pl": "Ciepły",
+            "ru": "Тёплый",
+            "ko": "따뜻함",
+            "ar": "دافئ"
           }
         },
         {
           "id": "10",
           "title": {
             "en": "Blinking",
-            "nl": "Knipperen"
+            "nl": "Knipperen",
+            "da": "Blinkende",
+            "de": "Blinken",
+            "es": "Parpadeo",
+            "fr": "Clignotement",
+            "it": "Lampeggiante",
+            "no": "Blinkende",
+            "sv": "Blinkande",
+            "pl": "Miganie",
+            "ru": "Мигание",
+            "ko": "깜박임",
+            "ar": "وميض"
           }
         }
-      ],
-      "icon": "/assets/icons/airpurifier-mode.svg"
+      ]
     }
   }
 }
