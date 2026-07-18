@@ -3,6 +3,13 @@
     "en": "Washing program started",
     "nl": "Wasprogramma is gestart"
   },
+  "args": [
+    {
+      "name": "device",
+      "type": "device",
+      "filter": "driver_id=washer"
+    }
+  ],
   "platforms": [
     "local"
   ]
