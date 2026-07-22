@@ -3,6 +3,9 @@
 const Homey = require('homey');
 const Device = require('../wifi_device.js');
 const Util = require('../../lib/util.js');
+const AirPurifierMiot = require('../../lib/airpurifier-zhimi-miot.js');
+
+const xiaomiMb5Profile = AirPurifierMiot.getModelProfile('xiaomi.airp.mb5');
 
 /* supported devices */
 // https://home.miot-spec.com/spec/zhimi.airpurifier.ma4 // Airpurifier 3
@@ -24,6 +27,7 @@ const Util = require('../../lib/util.js');
 // https://home.miot-spec.com/spec/zhimi.airp.meb1 // Xiaomi Smart Air Purifier Elite
 // https://home.miot-spec.com/spec/xiaomi.airp.cpa4 // Xiaomi Smart Air Purifier 4 Compact
 // https://home.miot-spec.com/spec/zhimi.airp.cpa4 // Xiaomi Smart Air Purifier 4 Compact
+// https://miot-spec.org/miot-spec-v2/instance?type=urn:miot-spec-v2:device:air-purifier:0000A007:xiaomi-mb5:1:0000D050 // Mijia Smart Air Purifier 6
 
 const mapping = {
   "zhimi.airpurifier.ma4": "mapping_default", 
@@ -45,6 +49,7 @@ const mapping = {
   "zhimi.airp.meb1": "mapping_airp_meb1",
   "xiaomi.airp.cpa4": "mapping_cpa4",
   "zhimi.airp.cpa4": "mapping_cpa4",
+  "xiaomi.airp.mb5": xiaomiMb5Profile.mapping,
   "zhimi.airpurifier.*": "mapping_default",
 };
 
@@ -303,6 +308,7 @@ const properties = {
       "light": { "min": 0, "max": 2 }
     }
   },
+  [xiaomiMb5Profile.mapping]: xiaomiMb5Profile.properties
 }
 
 const modes = {
@@ -317,20 +323,24 @@ class AdvancedMiAirPurifierMiotDevice extends Device {
   async onInit() {
     try {
       if (!this.util) this.util = new Util({homey: this.homey});
-      
-      // GENERIC DEVICE INIT ACTIONS
-      this.bootSequence();
-
-      // ADD DEVICES DEPENDANT CAPABILITIES
-      if (cpa4Models.includes(this.getStoreValue('model')) && this.hasCapability('airpurifier_zhimi_fanlevel')) {
-        this.removeCapability('airpurifier_zhimi_fanlevel');
-      }
-      if (cpa4Models.includes(this.getStoreValue('model')) && !this.hasCapability('airpurifier_xiaomi_fanlevel')) {
-        this.addCapability('airpurifier_xiaomi_fanlevel');
-      }
 
       // DEVICE VARIABLES
-      this.deviceProperties = properties[mapping[this.getStoreValue('model')]] !== undefined ? properties[mapping[this.getStoreValue('model')]] : properties[mapping['zhimi.airpurifier.*']];
+      const model = this.getStoreValue('model');
+      this.modelProfile = AirPurifierMiot.getModelProfile(model);
+      const mappingId = this.modelProfile?.mapping || mapping[model] || mapping['zhimi.airpurifier.*'];
+      this.deviceProperties = properties[mappingId];
+
+      // ADD DEVICES DEPENDANT CAPABILITIES
+      if (cpa4Models.includes(model) && this.hasCapability('airpurifier_zhimi_fanlevel')) {
+        await this.removeCapability('airpurifier_zhimi_fanlevel');
+      }
+      if (cpa4Models.includes(model) && !this.hasCapability('airpurifier_xiaomi_fanlevel')) {
+        await this.addCapability('airpurifier_xiaomi_fanlevel');
+      }
+      await this.addOptionalCapabilities();
+
+      // GENERIC DEVICE INIT ACTIONS
+      this.bootSequence();
 
       // FLOW TRIGGER CARDS
       this.homey.flow.getDeviceTriggerCard('triggerModeChanged');
@@ -351,25 +361,14 @@ class AdvancedMiAirPurifierMiotDevice extends Device {
         }
       });
 
-      this.registerCapabilityListener('onoff.ion', async (value) => {
-        try {
-          if (this.miio) {
-            return await this.miio.call("set_properties", [{ siid: this.deviceProperties.set_properties.ion.siid, piid: this.deviceProperties.set_properties.power.ion, value: value }], { retries: 1 });
-          } else {
-            this.setUnavailable(this.homey.__('unreachable')).catch(error => { this.error(error) });
-            this.createDevice();
-            return Promise.reject('Device unreachable, please try again ...');
-          }
-        } catch (error) {
-          this.error(error);
-          return Promise.reject(error);
-        }
-      });
+      this.registerOptionalBooleanCapabilityListener('onoff.ion', 'ion');
+      this.registerOptionalBooleanCapabilityListener('onoff.uv', 'uv');
 
       this.registerCapabilityListener('airpurifier_zhimi_fanlevel', async (value) => {
         try {
           if (this.miio) {
-            return await this.miio.call("set_properties", [{ siid: this.deviceProperties.set_properties.fanlevel.siid, piid: this.deviceProperties.set_properties.fanlevel.piid, value: +value }], { retries: 1 });
+            const deviceValue = AirPurifierMiot.encodeValue(this.modelProfile, 'fanlevel', value);
+            return await this.miio.call("set_properties", [{ siid: this.deviceProperties.set_properties.fanlevel.siid, piid: this.deviceProperties.set_properties.fanlevel.piid, value: deviceValue }], { retries: 1 });
           } else {
             this.setUnavailable(this.homey.__('unreachable')).catch(error => { this.error(error) });
             this.createDevice();
@@ -384,7 +383,8 @@ class AdvancedMiAirPurifierMiotDevice extends Device {
       this.registerCapabilityListener('airpurifier_xiaomi_fanlevel', async (value) => {
         try {
           if (this.miio) {
-            return await this.miio.call("set_properties", [{ siid: this.deviceProperties.set_properties.fanlevel.siid, piid: this.deviceProperties.set_properties.fanlevel.piid, value: +value }], { retries: 1 });
+            const deviceValue = AirPurifierMiot.encodeValue(this.modelProfile, 'fanlevel', value);
+            return await this.miio.call("set_properties", [{ siid: this.deviceProperties.set_properties.fanlevel.siid, piid: this.deviceProperties.set_properties.fanlevel.piid, value: deviceValue }], { retries: 1 });
           } else {
             this.setUnavailable(this.homey.__('unreachable')).catch(error => { this.error(error) });
             this.createDevice();
@@ -399,8 +399,8 @@ class AdvancedMiAirPurifierMiotDevice extends Device {
       this.registerCapabilityListener('airpurifier_zhimi_mode', async (value) => {
         try {
           if (this.miio) {
-            const mode = modes[value];
-            return await this.miio.call("set_properties", [{ siid: this.deviceProperties.set_properties.mode.siid, piid: this.deviceProperties.set_properties.mode.piid, value: +value }], { retries: 1 });
+            const deviceValue = AirPurifierMiot.encodeValue(this.modelProfile, 'mode', value);
+            return await this.miio.call("set_properties", [{ siid: this.deviceProperties.set_properties.mode.siid, piid: this.deviceProperties.set_properties.mode.piid, value: deviceValue }], { retries: 1 });
           } else {
             this.setUnavailable(this.homey.__('unreachable')).catch(error => { this.error(error) });
             this.createDevice();
@@ -415,6 +415,34 @@ class AdvancedMiAirPurifierMiotDevice extends Device {
     } catch (error) {
       this.error(error);
     }
+  }
+
+  async addOptionalCapabilities() {
+    for (const optionalCapability of AirPurifierMiot.getOptionalCapabilities(this.deviceProperties)) {
+      if (!this.hasCapability(optionalCapability.capability)) {
+        await this.addCapability(optionalCapability.capability);
+      }
+    }
+  }
+
+  registerOptionalBooleanCapabilityListener(capability, property) {
+    const propertyDefinition = this.deviceProperties.set_properties[property];
+    if (!propertyDefinition || !this.hasCapability(capability)) return;
+
+    this.registerCapabilityListener(capability, async (value) => {
+      try {
+        if (this.miio) {
+          return await this.miio.call("set_properties", [{ siid: propertyDefinition.siid, piid: propertyDefinition.piid, value }], { retries: 1 });
+        }
+
+        this.setUnavailable(this.homey.__('unreachable')).catch(error => { this.error(error) });
+        this.createDevice();
+        return Promise.reject('Device unreachable, please try again ...');
+      } catch (error) {
+        this.error(error);
+        return Promise.reject(error);
+      }
+    });
   }
 
   async onSettings({ oldSettings, newSettings, changedKeys }) {
@@ -449,7 +477,8 @@ class AdvancedMiAirPurifierMiotDevice extends Device {
       const measure_humidity = result.find(obj => obj.did === 'humidity');
       const measure_temperature = result.find(obj => obj.did === 'temperature');
       const measure_pm25 = result.find(obj => obj.did === 'aqi');
-      const onoff_ion = result.find(obj => obj.did === 'anion');
+      const onoff_ion = AirPurifierMiot.findValidResult(result, 'anion');
+      const onoff_uv = AirPurifierMiot.findValidResult(result, 'uv');
 
       const buzzer = result.find(obj => obj.did === 'buzzer');
       const child_lock = result.find(obj => obj.did === 'child_lock');
@@ -471,6 +500,9 @@ class AdvancedMiAirPurifierMiotDevice extends Device {
       if (onoff_ion !== undefined) {
         await this.updateCapabilityValue("onoff.ion", onoff_ion.value);
       }
+      if (onoff_uv !== undefined) {
+        await this.updateCapabilityValue("onoff.uv", onoff_uv.value);
+      }
 
       /* settings */
       await this.updateSettingValue("led", led.value === this.deviceProperties.device_properties.light.min ? false : true);
@@ -485,18 +517,22 @@ class AdvancedMiAirPurifierMiotDevice extends Device {
       }
 
       /* mode capability */
-      const mode = result.find(obj => obj.did === 'mode');
-      if (this.getCapabilityValue('airpurifier_zhimi_mode') !== mode.value.toString()) {
+      const mode = AirPurifierMiot.findValidResult(result, 'mode');
+      const homeyMode = mode === undefined ? undefined : AirPurifierMiot.decodeValue(this.modelProfile, 'mode', mode.value);
+      if (homeyMode !== undefined && this.getCapabilityValue('airpurifier_zhimi_mode') !== homeyMode) {
         const previous_mode = this.getCapabilityValue('airpurifier_zhimi_mode');
-        await this.setCapabilityValue('airpurifier_zhimi_mode', mode.value.toString());
-        await this.homey.flow.getDeviceTriggerCard('triggerModeChanged').trigger(this, {"new_mode": modes[mode.value], "previous_mode": modes[+previous_mode] }).catch(error => { this.error(error) });
+        await this.setCapabilityValue('airpurifier_zhimi_mode', homeyMode);
+        await this.homey.flow.getDeviceTriggerCard('triggerModeChanged').trigger(this, {"new_mode": modes[+homeyMode], "previous_mode": modes[+previous_mode] }).catch(error => { this.error(error) });
       }
 
       /* device specific settings */
       if (cpa4Models.includes(this.getStoreValue('model')) && fanlevel !== undefined) {
         await this.updateCapabilityValue("airpurifier_xiaomi_fanlevel", Number(fanlevel.value));
       } else if (fanlevel !== undefined) {
-        await this.updateCapabilityValue("airpurifier_zhimi_fanlevel", fanlevel.value.toString());
+        const homeyFanlevel = AirPurifierMiot.decodeValue(this.modelProfile, 'fanlevel', fanlevel.value);
+        if (homeyFanlevel !== undefined) {
+          await this.updateCapabilityValue("airpurifier_zhimi_fanlevel", homeyFanlevel);
+        }
       }
 
     } catch (error) {
