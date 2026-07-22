@@ -187,7 +187,7 @@
       "게이트웨이"
     ]
   },
-  "version": "3.5.4",
+  "version": "3.5.6",
   "compatibility": ">=12.2.0",
   "platforms": [
     "local"
@@ -1770,6 +1770,13 @@
             "example": "Bottom temperature sensor fault"
           }
         ],
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=ricecooker_chunmi_cooker_r2"
+          }
+        ],
         "platforms": [
           "local"
         ],
@@ -1780,6 +1787,13 @@
           "en": "Cooking finished",
           "nl": "Koken is voltooid"
         },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=ricecooker_chunmi_cooker_r2"
+          }
+        ],
         "platforms": [
           "local"
         ],
@@ -1790,6 +1804,13 @@
           "en": "Cooking started",
           "nl": "Koken is gestart"
         },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=ricecooker_chunmi_cooker_r2"
+          }
+        ],
         "platforms": [
           "local"
         ],
@@ -2474,6 +2495,13 @@
           "en": "Washing program finished",
           "nl": "Wasprogramma is klaar"
         },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=washer"
+          }
+        ],
         "platforms": [
           "local"
         ],
@@ -2484,6 +2512,13 @@
           "en": "Washing program started",
           "nl": "Wasprogramma is gestart"
         },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=washer"
+          }
+        ],
         "platforms": [
           "local"
         ],
@@ -9797,26 +9832,41 @@
       },
       {
         "title": {
-          "en": "Set display schedule progress"
+          "en": "Set screen display"
         },
         "titleFormatted": {
-          "en": "Display progress [[enabled]]"
+          "en": "Set screen display to [[mode]]"
         },
         "args": [
           {
-            "name": "enabled",
+            "name": "mode",
+            "title": {
+              "en": "Display mode"
+            },
             "type": "dropdown",
             "values": [
               {
-                "id": "true",
-                "label": {
-                  "en": "On"
+                "id": "off",
+                "title": {
+                  "en": "Off"
                 }
               },
               {
-                "id": "false",
-                "label": {
-                  "en": "Off"
+                "id": "left_grams",
+                "title": {
+                  "en": "Left grams"
+                }
+              },
+              {
+                "id": "eaten_grams",
+                "title": {
+                  "en": "Eaten grams"
+                }
+              },
+              {
+                "id": "percentage",
+                "title": {
+                  "en": "Percentage"
                 }
               }
             ]
@@ -9827,13 +9877,13 @@
             "placeholder": {
               "en": "Select device"
             },
-            "filter": "driver_id=petfeeder_mmgg_miot"
+            "filter": "driver_id=petfeeder_mmgg_miot&capabilities=petfeeder_screen_display_mode"
           }
         ],
         "platforms": [
           "local"
         ],
-        "id": "petfeederDisplaySchedule"
+        "id": "petfeederScreenDisplayMode"
       },
       {
         "title": {
@@ -26738,8 +26788,6 @@
       "class": "petfeeder",
       "capabilities": [
         "petfeeder_serve_food",
-        "petfeeder_screen_power",
-        "petfeeder_screen_content",
         "petfeeder_screen_display_mode",
         "petfeeder_foodlevel",
         "petfeeder_food_out_status",
@@ -36950,36 +36998,6 @@
       "uiComponent": "sensor",
       "icon": "/assets/icons/alarm_generic.svg"
     },
-    "petfeeder_screen_content": {
-      "type": "enum",
-      "title": {
-        "en": "Displayed data"
-      },
-      "values": [
-        {
-          "id": "left_grams",
-          "title": {
-            "en": "Left grams"
-          }
-        },
-        {
-          "id": "eaten_grams",
-          "title": {
-            "en": "Eaten grams"
-          }
-        },
-        {
-          "id": "percentage",
-          "title": {
-            "en": "Percentage"
-          }
-        }
-      ],
-      "getable": true,
-      "setable": true,
-      "uiComponent": "picker",
-      "icon": "/assets/icons/petfeeder_foodlevel.svg"
-    },
     "petfeeder_screen_display_mode": {
       "type": "enum",
       "title": {
@@ -37008,30 +37026,6 @@
           "id": "percentage",
           "title": {
             "en": "Percentage"
-          }
-        }
-      ],
-      "getable": true,
-      "setable": true,
-      "uiComponent": null,
-      "icon": "/assets/icons/petfeeder_foodlevel.svg"
-    },
-    "petfeeder_screen_power": {
-      "type": "enum",
-      "title": {
-        "en": "Display"
-      },
-      "values": [
-        {
-          "id": "off",
-          "title": {
-            "en": "Off"
-          }
-        },
-        {
-          "id": "on",
-          "title": {
-            "en": "On"
           }
         }
       ],

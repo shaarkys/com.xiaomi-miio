@@ -5,7 +5,7 @@ You must always respect Homey SDK 3 - https://apps.developer.homey.app/ and APP 
 
 ## Project Structure for Homey App Navigation
 
-- `/app.js`: Homey App class entrypoint
+- `/app.js` or `/app.ts`: Homey App class source entrypoint; TypeScript is compiled to `/app.js` in the build output
 - `/api.js`: optional Web API or app API helpers
 - `/app.json`: app manifest; if `.homeycompose/` exists treat this as generated output
 - `/.homeycompose`: source-of-truth manifest parts (app, drivers, capabilities, flows)
@@ -13,7 +13,7 @@ You must always respect Homey SDK 3 - https://apps.developer.homey.app/ and APP 
   - `/drivers`
   - `/capabilities`
   - `/flow`
-- `/.homeybuild`: generated build output; do not edit, no need to analyse as this is serving code prior to the Homey app instalation
+- `/.homeybuild`: generated build output; never edit it by hand, but inspect relevant compiled files when module exports, entrypoints, packaging, or runtime behavior changes
 - `/drivers/<driver_id>`: driver and device code plus pairing views
   - `driver.js`, `device.js`, `assets/`, `pair/`
 - `/lib`: shared modules and helpers
@@ -23,7 +23,6 @@ You must always respect Homey SDK 3 - https://apps.developer.homey.app/ and APP 
 - `/docs`, `/scripts`: project docs and helper scripts
 - `/tests`: test files if present
 - `/node_modules`: third-party dependencies; never edit
-- `/settings`: Homey App dependent settings
 
 ## Coding Conventions for Homey Apps
 
@@ -45,16 +44,54 @@ You must always respect Homey SDK 3 - https://apps.developer.homey.app/ and APP 
 
 OpenAI Codex may run safe local verification commands after changes:
 - `node --check` on modified JavaScript files
+- the configured build and unit tests
+- `npm audit --omit=dev`
 - `homey app validate`
 - configured lint commands on changed files
 
 OpenAI Codex must not run integration tests, device communication tests, or destructive commands unless explicitly requested.
 
+### Static Validation Boundary
+
+- Never describe a Homey change as runtime-verified from compilation, unit tests, or `homey app validate` alone. Homey validation checks the package and manifest, but it does not prove that the app can start, settings can initialize, authenticated Manager API calls work, or devices can be controlled.
+- When TypeScript entrypoints or module settings change, build the app and inspect `.homeybuild/app.js`. The entry module must directly export the class extending `Homey.App` (for CommonJS builds, `module.exports = AppClass`), not only `exports.default`.
+- Add a regression test for the compiled entrypoint export whenever the entrypoint or TypeScript module configuration is changed.
+- Changes involving app startup, settings pages, authentication/session handling, Manager API access, realtime listeners, timers, or device capability writes require a Homey runtime smoke test before completion can be claimed.
+- Run `homey app run --remote` or an installed-app/device test only when explicitly authorized. Without that authorization, give the user exact smoke-test steps, mark runtime behavior as unverified, and wait for their result before declaring the work complete.
+
+### Minimum Runtime Smoke Test
+
+For runtime-sensitive changes, verify the affected subset of the following:
+
+- the app starts without an entrypoint or SDK class error;
+- the settings page calls the global `onHomeyReady(Homey)` lifecycle callback, calls `Homey.ready()` immediately, loads without browser-console errors, and can read/write settings;
+- authenticated device enumeration and capability writes work in the actual app context;
+- a short timer starts, is visible in logs/settings, expires, and applies or restores the expected capability state;
+- an active timer survives an app restart and later expires correctly;
+- manual capability changes cancel the relevant timer;
+- timer replacement options and the `timer_finished` Flow trigger behave as defined.
+
+### Homey API and Settings Rules
+
+- Do not assume `this.homey.api.getApi(uri)` provides an authenticated REST session. It creates an API endpoint primarily for realtime events; prove REST calls in the actual Homey app context.
+- Cross-device REST access must use a supported authenticated owner session, such as `getOwnerApiToken()` with `getLocalUrl()` or a Node-runtime-compatible official Homey API client. Handle session expiry and test an HTTP 401 refresh path.
+- Keep settings lifecycle code safe when Homey invokes the global callback early. Avoid top-level lexical dependencies that can be in the temporal dead zone when `onHomeyReady` runs, load controller code after the required DOM, and call `Homey.ready()` before optional UI/API work.
+- Log timer requests as started, replaced, skipped, or failed. Failure logs must include the underlying API or capability error so runtime defects are diagnosable from CLI output.
+
+### Dependency Upgrade Rules
+
+- "Latest" means the newest mutually compatible versions for Homey's supported Node.js runtime, not blindly the highest published versions.
+- Check npm `engines` and peer dependencies before upgrading Node.js types, Homey CLI, TypeScript, ESLint, or runtime libraries.
+- Report intentionally held versions and remaining development-only audit findings separately from production dependencies.
+
 ## Pull Request Guidelines for OpenAI Codex
 
-OpenAI Codex should not submit any pull request or make GitHub modifications unless explicitely requested.
+OpenAI Codex should not submit any pull request or make GitHub modifications unless explicitly requested.
 
 ## Programmatic Checks for OpenAI Codex
 
-You can validate app integrity after changes by running :
-homey app validate
+You can validate static app integrity after changes by running:
+
+`homey app validate`
+
+This command is required where relevant, but it is not a substitute for the runtime smoke tests above.

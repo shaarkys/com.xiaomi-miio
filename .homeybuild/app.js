@@ -459,18 +459,13 @@ class XiaomiMiioApp extends Homey.App {
         }
       });
 
-    this.homey.flow.getActionCard('petfeederDisplaySchedule')
+    this.homey.flow.getActionCard('petfeederScreenDisplayMode')
       .registerRunListener(async (args) => {
         try {
-          if (typeof args.device?.setDisplaySchedule !== 'function') {
-            throw new Error('Display control not supported by this device');
+          if (typeof args.device?.setScreenDisplayMode !== 'function') {
+            throw new Error('Screen display control not supported by this device');
           }
-          const enabled =
-            args.enabled === true ||
-            args.enabled === 'true' ||
-            args.enabled === 1 ||
-            args.enabled === '1';
-          await args.device.setDisplaySchedule(enabled);
+          await args.device.setScreenDisplayMode(args.mode);
           return true;
         } catch (error) {
           return Promise.reject(error.message || error);
