@@ -16423,6 +16423,24 @@
             "ja": "イオンを有効にする",
             "zh": "启用离子"
           }
+        },
+        "onoff.uv": {
+          "title": {
+            "en": "Enable UV lamp",
+            "nl": "UV-lamp inschakelen",
+            "da": "Aktiver UV-lampe",
+            "de": "UV-Lampe aktivieren",
+            "es": "Activar lámpara UV",
+            "fr": "Activer la lampe UV",
+            "it": "Attiva lampada UV",
+            "no": "Aktiver UV-lampe",
+            "sv": "Aktivera UV-lampa",
+            "pl": "Włącz lampę UV",
+            "ru": "Включить УФ-лампу",
+            "ko": "UV 램프 활성화",
+            "ja": "UVランプを有効にする",
+            "zh": "启用紫外线灯"
+          }
         }
       },
       "id": "airpurifier_zhimi_advanced_miot",
