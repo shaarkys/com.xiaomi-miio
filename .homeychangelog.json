@@ -556,5 +556,8 @@
   },
   "3.5.6": {
     "en": "Added display control actions for Xiaomi Smart Pet Feeder 2"
+  },
+  "3.5.7": {
+    "en": "Added Test support for the Mijia Smart Air Purifier 6 (xiaomi.airp.mb5), including corrected modes, fan levels, sensors, ion and UV controls."
   }
 }
