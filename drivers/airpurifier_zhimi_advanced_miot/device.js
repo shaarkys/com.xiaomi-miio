@@ -36,6 +36,8 @@ const mapping = {
 	"zhimi.airp.mb4a": "mapping_mb4",
 	"zhimi.airp.mb5": "mapping_va2",
   "zhimi.airp.mb5a": "mapping_va2",
+  "xiaomi.airp.mb5": "mapping_va2",
+  "xiaomi.airp.mb5a": "mapping_va2",
 	"zhimi.airp.va2": "mapping_va2",
   "zhimi.airp.vb4": "mapping_vb4",
   "zhimi.airpurifier.rma1": "mapping_rma1",
