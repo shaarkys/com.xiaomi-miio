@@ -19,6 +19,7 @@
   },
   "device": {
     "unreachable": "Appareil injoignable : ",
-    "noupdates": "L'appareil n'a pas encore reçu de mises à jour"
+    "noupdates": "L'appareil n'a pas encore reçu de mises à jour",
+    "restarting": "La passerelle redémarre"
   }
 }

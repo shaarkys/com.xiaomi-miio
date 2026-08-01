@@ -808,6 +808,11 @@ class XiaomiMiioApp extends Homey.App {
         }
       });
 
+    this.homey.flow.getActionCard('gateway_reboot')
+      .registerRunListener(async (args) => {
+        return args.device.rebootGateway();
+      });
+
     // REMOTE
     this.homey.flow.getActionCard('remote_send_ir_code')
       .registerRunListener(async (args) => {

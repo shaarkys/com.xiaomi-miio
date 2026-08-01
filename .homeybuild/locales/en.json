@@ -19,6 +19,7 @@
   },
   "device": {
     "unreachable": "Device is unreachable: ",
-    "noupdates": "Device has not received any updates yet"
+    "noupdates": "Device has not received any updates yet",
+    "restarting": "Gateway is restarting"
   }
 }

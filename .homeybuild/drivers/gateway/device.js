@@ -285,6 +285,52 @@ class GatewayDevice extends Device {
         return Promise.resolve(true);
     }
 
+    async rebootGateway() {
+        if (this.getStoreValue('model') !== 'lumi.gateway.v3') {
+            throw new Error('Gateway restart is only supported for lumi.gateway.v3.');
+        }
+
+        if (!this.miio) {
+            throw new Error('Gateway is not connected.');
+        }
+
+        const gateway = this.miio;
+        await gateway.call('miIO.info', [], { retries: 1 });
+
+        this.homey.clearInterval(this.pollingInterval);
+
+        try {
+            await gateway.call('miIO.reboot', [], { retries: 1 });
+        } catch (error) {
+            if (error.code !== 'timeout') {
+                await this.pollDevice();
+                throw error;
+            }
+
+            this.log('Gateway reboot command sent; the expected timeout occurred while the gateway restarted.');
+        }
+
+        try {
+            await this.setUnavailable(this.homey.__('device.restarting'));
+        } catch (error) {
+            this.error(error);
+        }
+
+        try {
+            gateway.destroy();
+        } catch (error) {
+            this.error(error);
+        }
+        this.miio = null;
+
+        this.homey.clearTimeout(this.recreateTimeout);
+        this.recreateTimeout = this.homey.setTimeout(() => {
+            this.createDevice();
+        }, 15000);
+
+        return true;
+    }
+
     async retrieveDeviceData() {
         try {
             /* onoff */

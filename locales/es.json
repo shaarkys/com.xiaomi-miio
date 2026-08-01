@@ -19,6 +19,7 @@
   },
   "device": {
     "unreachable": "El dispositivo está inaccesible: ",
-    "noupdates": "El dispositivo aún no ha recibido ninguna actualización"
+    "noupdates": "El dispositivo aún no ha recibido ninguna actualización",
+    "restarting": "La puerta de enlace se está reiniciando"
   }
 }

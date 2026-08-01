@@ -19,6 +19,7 @@
   },
   "device": {
     "unreachable": "Apparaat is onbereikbaar: ",
-    "noupdates": "Apparaat heeft nog geen updates ontvangen"
+    "noupdates": "Apparaat heeft nog geen updates ontvangen",
+    "restarting": "Gateway wordt opnieuw opgestart"
   }
 }

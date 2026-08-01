@@ -19,6 +19,7 @@
   },
   "device": {
     "unreachable": "Urządzenie jest niedostępne: ",
-    "noupdates": "Urządzenie nie otrzymało jeszcze żadnych aktualizacji"
+    "noupdates": "Urządzenie nie otrzymało jeszcze żadnych aktualizacji",
+    "restarting": "Brama jest ponownie uruchamiana"
   }
 }

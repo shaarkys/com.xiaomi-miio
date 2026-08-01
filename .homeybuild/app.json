@@ -187,7 +187,7 @@
       "게이트웨이"
     ]
   },
-  "version": "3.5.6",
+  "version": "3.5.7",
   "compatibility": ">=12.2.0",
   "platforms": [
     "local"
@@ -7020,6 +7020,61 @@
           }
         ],
         "id": "gateway_play_radio"
+      },
+      {
+        "title": {
+          "en": "Restart gateway",
+          "nl": "Gateway herstarten",
+          "da": "Genstart gateway",
+          "de": "Gateway neu starten",
+          "es": "Reiniciar gateway",
+          "fr": "Redémarrer la passerelle",
+          "it": "Riavvia gateway",
+          "no": "Start gatewayen på nytt",
+          "sv": "Starta om gateway",
+          "pl": "Uruchom ponownie bramę",
+          "ru": "Перезапустить шлюз",
+          "ko": "게이트웨이 다시 시작"
+        },
+        "titleFormatted": {
+          "en": "Restart [[device]]",
+          "nl": "Herstart [[device]]",
+          "da": "Genstart [[device]]",
+          "de": "[[device]] neu starten",
+          "es": "Reiniciar [[device]]",
+          "fr": "Redémarrer [[device]]",
+          "it": "Riavvia [[device]]",
+          "no": "Start [[device]] på nytt",
+          "sv": "Starta om [[device]]",
+          "pl": "Uruchom ponownie [[device]]",
+          "ru": "Перезапустить [[device]]",
+          "ko": "[[device]] 다시 시작"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "placeholder": {
+              "en": "Select Gateway",
+              "nl": "Selecteer Gateway",
+              "da": "Vælg Gateway",
+              "de": "Gateway auswählen",
+              "es": "Seleccionar Gateway",
+              "fr": "Sélectionner Gateway",
+              "it": "Seleziona Gateway",
+              "no": "Velg Gateway",
+              "sv": "Välj Gateway",
+              "pl": "Wybierz Gateway",
+              "ru": "Выберите Gateway",
+              "ko": "게이트웨이 선택"
+            },
+            "filter": "driver_id=gateway"
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "id": "gateway_reboot"
       },
       {
         "title": {
@@ -16422,6 +16477,24 @@
             "ko": "이온 활성화",
             "ja": "イオンを有効にする",
             "zh": "启用离子"
+          }
+        },
+        "onoff.uv": {
+          "title": {
+            "en": "Enable UV lamp",
+            "nl": "UV-lamp inschakelen",
+            "da": "Aktiver UV-lampe",
+            "de": "UV-Lampe aktivieren",
+            "es": "Activar lámpara UV",
+            "fr": "Activer la lampe UV",
+            "it": "Attiva lampada UV",
+            "no": "Aktiver UV-lampe",
+            "sv": "Aktivera UV-lampa",
+            "pl": "Włącz lampę UV",
+            "ru": "Включить УФ-лампу",
+            "ko": "UV 램프 활성화",
+            "ja": "UVランプを有効にする",
+            "zh": "启用紫外线灯"
           }
         }
       },

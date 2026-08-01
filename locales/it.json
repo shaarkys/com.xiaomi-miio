@@ -19,6 +19,7 @@
   },
   "device": {
     "unreachable": "Dispositivo non raggiungibile: ",
-    "noupdates": "Il dispositivo non ha ancora ricevuto aggiornamenti"
+    "noupdates": "Il dispositivo non ha ancora ricevuto aggiornamenti",
+    "restarting": "Il gateway si sta riavviando"
   }
 }

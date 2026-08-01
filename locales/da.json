@@ -19,6 +19,7 @@
   },
   "device": {
     "unreachable": "Enheden er utilgængelig: ",
-    "noupdates": "Enheden har endnu ikke modtaget nogen opdateringer"
+    "noupdates": "Enheden har endnu ikke modtaget nogen opdateringer",
+    "restarting": "Gatewayen genstarter"
   }
 }

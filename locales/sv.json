@@ -19,6 +19,7 @@
   },
   "device": {
     "unreachable": "Enheten är oåtkomlig: ",
-    "noupdates": "Enheten har ännu inte fått några uppdateringar"
+    "noupdates": "Enheten har ännu inte fått några uppdateringar",
+    "restarting": "Gatewayen startar om"
   }
 }
