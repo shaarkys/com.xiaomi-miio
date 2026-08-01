@@ -559,5 +559,8 @@
   },
   "3.5.7": {
     "en": "Added Test support for the Mijia Smart Air Purifier 6 (xiaomi.airp.mb5), including corrected modes, fan levels, sensors, ion and UV controls."
+  },
+  "3.5.8": {
+    "en": "Added a Flow action to safely restart Xiaomi Gateway v2 (lumi.gateway.v3)"
   }
 }
