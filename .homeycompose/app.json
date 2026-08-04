@@ -224,18 +224,18 @@
   },
   "category": "appliances",
   "description": {
-    "en": "Control Xiaomi Mi Home devices using Homey",
-    "nl": "Bedien Xiaomi Mi Home apparaten via Homey",
-    "da": "Styr Xiaomi Mi Home enheder med Homey",
-    "de": "Steuere Xiaomi Mi Home Geräte mit Homey",
-    "es": "Controla dispositivos Xiaomi Mi Home con Homey",
-    "fr": "Contrôlez les appareils Xiaomi Mi Home avec Homey",
-    "it": "Controlla i dispositivi Xiaomi Mi Home con Homey",
-    "no": "Kontroller Xiaomi Mi Home-enheter med Homey",
-    "sv": "Styr Xiaomi Mi Home-enheter med Homey",
-    "pl": "Steruj urządzeniami Xiaomi Mi Home za pomocą Homey",
-    "ru": "Управляйте устройствами Xiaomi Mi Home с Homey",
-    "ko": "Homey를 사용하여 Xiaomi Mi Home 장치를 제어하세요"
+    "en": "Your whole Xiaomi ecosystem, one home",
+    "nl": "Je hele Xiaomi-ecosysteem in één huis",
+    "da": "Hele dit Xiaomi-økosystem i ét hjem",
+    "de": "Dein gesamtes Xiaomi-Ökosystem in einem Zuhause",
+    "es": "Todo tu ecosistema Xiaomi en un solo hogar",
+    "fr": "Tout votre écosystème Xiaomi dans une seule maison",
+    "it": "Tutto il tuo ecosistema Xiaomi in un'unica casa",
+    "no": "Hele Xiaomi-økosystemet ditt i ett hjem",
+    "sv": "Hela ditt Xiaomi-ekosystem i ett hem",
+    "pl": "Cały Twój ekosystem Xiaomi w jednym domu",
+    "ru": "Вся экосистема Xiaomi в одном доме",
+    "ko": "하나의 집에서 만나는 완전한 Xiaomi 생태계"
   },
   "dependencies": {
     "net": "*"
