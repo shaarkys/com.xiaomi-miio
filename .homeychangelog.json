@@ -562,5 +562,8 @@
   },
   "3.5.8": {
     "en": "Added a Flow action to safely restart Xiaomi Gateway v2 (lumi.gateway.v3)"
+  },
+  "3.5.9": {
+    "en": "Added Xiaomi Smart Pet Care Air Purifier support and named-room cleaning for the Xiaomi Robot Vacuum S12."
   }
 }
