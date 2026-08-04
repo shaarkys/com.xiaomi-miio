@@ -48,6 +48,7 @@ class Util {
     'zhimi.airp.meb1': 'Xiaomi Smart Air Purifier Elite',
     'xiaomi.airp.cpa4': 'Xiaomi Smart Air Purifier 4 Compact',
     'zhimi.airp.cpa4': 'Xiaomi Smart Air Purifier 4 Compact',
+    'xiaomi.airp.cpa5': 'Xiaomi Smart Pet Care Air Purifier',
 
     'zhimi.airfresh.va2': 'Smartmi Fresh Air System VA2',
     'zhimi.airfresh.va4': 'Smartmi Fresh Air System VA4',

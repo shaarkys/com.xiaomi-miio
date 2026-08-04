@@ -242,6 +242,10 @@ class XiaomiMiioApp extends Homey.App {
     this.homey.flow.getActionCard('vacuumRoomCleaning')
       .registerRunListener(async (args) => {
         try {
+          if (typeof args.device.cleanRooms === 'function') {
+            return await args.device.cleanRooms(args.rooms);
+          }
+
           if (args.device.getStoreValue('model').startsWith('dreame.vacuum')) {
             const rooms = JSON.stringify([{"piid":1,"value":18},{"piid":10,"value":"{\"selects\":[["+ args.rooms +"]]}"}]).replace(/\\"/g, '"'); // doesnt work
             return await args.device.miio.call("action", { siid: 2, aiid: 3, did: "call-2-3", in: rooms }, { retries: 1 });

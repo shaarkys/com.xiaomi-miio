@@ -3,6 +3,7 @@
 const Homey = require('homey');
 const Device = require('../wifi_device.js');
 const Util = require('../../lib/util.js');
+const { createS12RoomCleaningAction } = require('../../lib/vacuum-xiaomi-miot.js');
 
 /* supported devices */
 // https://home.miot-spec.com/spec/xiaomi.vacuum.b112gl
@@ -332,6 +333,30 @@ class XiaomiVacuumMiotDevice extends Device {
             });
         } catch (error) {
             this.error(error);
+        }
+    }
+
+    async cleanRooms(rooms) {
+        const model = this.getStoreValue('model');
+        const action = createS12RoomCleaningAction(model, rooms);
+
+        if (!this.miio) {
+            const error = new Error(`Cannot start room cleaning for ${model || 'unknown model'}: device is unreachable.`);
+            this.error(error.message);
+            this.setUnavailable(this.homey.__('unreachable')).catch((setUnavailableError) => {
+                this.error(setUnavailableError);
+            });
+            this.createDevice();
+            throw error;
+        }
+
+        this.log(`Starting room cleaning for ${model} with room IDs ${action.in[0]}.`);
+
+        try {
+            return await this.miio.call('action', action, { retries: 1 });
+        } catch (error) {
+            this.error(`Room cleaning failed for ${model}:`, error);
+            throw error;
         }
     }
 

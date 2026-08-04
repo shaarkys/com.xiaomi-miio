@@ -12306,7 +12306,7 @@
               "ru": "Выберите пылесос",
               "ko": "진공 청소기 선택"
             },
-            "filter": "driver_id=vacuum_mi_rockrobo_vacuum_advanced|vacuum_dreame_vacuum"
+            "filter": "driver_id=vacuum_mi_rockrobo_vacuum_advanced|vacuum_dreame_vacuum|vacuum_xiaomi_vacuum_miot"
           }
         ],
         "platforms": [

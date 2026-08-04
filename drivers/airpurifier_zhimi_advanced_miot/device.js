@@ -6,6 +6,7 @@ const Util = require('../../lib/util.js');
 const AirPurifierMiot = require('../../lib/airpurifier-zhimi-miot.js');
 
 const xiaomiMb5Profile = AirPurifierMiot.getModelProfile('xiaomi.airp.mb5');
+const xiaomiCpa5Profile = AirPurifierMiot.getModelProfile('xiaomi.airp.cpa5');
 
 /* supported devices */
 // https://home.miot-spec.com/spec/zhimi.airpurifier.ma4 // Airpurifier 3
@@ -27,6 +28,7 @@ const xiaomiMb5Profile = AirPurifierMiot.getModelProfile('xiaomi.airp.mb5');
 // https://home.miot-spec.com/spec/zhimi.airp.meb1 // Xiaomi Smart Air Purifier Elite
 // https://home.miot-spec.com/spec/xiaomi.airp.cpa4 // Xiaomi Smart Air Purifier 4 Compact
 // https://home.miot-spec.com/spec/zhimi.airp.cpa4 // Xiaomi Smart Air Purifier 4 Compact
+// https://home.miot-spec.com/spec/xiaomi.airp.cpa5 // Xiaomi Smart Pet Care Air Purifier
 // https://miot-spec.org/miot-spec-v2/instance?type=urn:miot-spec-v2:device:air-purifier:0000A007:xiaomi-mb5:1:0000D050 // Mijia Smart Air Purifier 6
 
 const mapping = {
@@ -50,10 +52,12 @@ const mapping = {
   "xiaomi.airp.cpa4": "mapping_cpa4",
   "zhimi.airp.cpa4": "mapping_cpa4",
   "xiaomi.airp.mb5": xiaomiMb5Profile.mapping,
+  "xiaomi.airp.cpa5": xiaomiCpa5Profile.mapping,
   "zhimi.airpurifier.*": "mapping_default",
 };
 
 const cpa4Models = ['xiaomi.airp.cpa4', 'zhimi.airp.cpa4'];
+const numericFanModels = [...cpa4Models, 'xiaomi.airp.cpa5'];
 
 const properties = {
   "mapping_default": {
@@ -308,7 +312,8 @@ const properties = {
       "light": { "min": 0, "max": 2 }
     }
   },
-  [xiaomiMb5Profile.mapping]: xiaomiMb5Profile.properties
+  [xiaomiMb5Profile.mapping]: xiaomiMb5Profile.properties,
+  [xiaomiCpa5Profile.mapping]: xiaomiCpa5Profile.properties
 }
 
 const modes = {
@@ -331,12 +336,7 @@ class AdvancedMiAirPurifierMiotDevice extends Device {
       this.deviceProperties = properties[mappingId];
 
       // ADD DEVICES DEPENDANT CAPABILITIES
-      if (cpa4Models.includes(model) && this.hasCapability('airpurifier_zhimi_fanlevel')) {
-        await this.removeCapability('airpurifier_zhimi_fanlevel');
-      }
-      if (cpa4Models.includes(model) && !this.hasCapability('airpurifier_xiaomi_fanlevel')) {
-        await this.addCapability('airpurifier_xiaomi_fanlevel');
-      }
+      await this.migrateNumericFanCapability(model);
       await this.addOptionalCapabilities();
 
       // GENERIC DEVICE INIT ACTIONS
@@ -425,6 +425,28 @@ class AdvancedMiAirPurifierMiotDevice extends Device {
     }
   }
 
+  async migrateNumericFanCapability(model) {
+    if (!numericFanModels.includes(model)) return;
+
+    try {
+      this.log(`Starting numeric fan capability migration for model ${model}`);
+
+      const hasLegacyCapability = this.hasCapability('airpurifier_zhimi_fanlevel');
+      const hasNumericCapability = this.hasCapability('airpurifier_xiaomi_fanlevel');
+
+      if (!hasNumericCapability) {
+        await this.addCapability('airpurifier_xiaomi_fanlevel');
+      }
+      if (hasLegacyCapability) {
+        await this.removeCapability('airpurifier_zhimi_fanlevel');
+      }
+      this.log(`Completed numeric fan capability migration for model ${model}`);
+    } catch (error) {
+      const detail = error && error.message ? error.message : String(error);
+      this.error(`Numeric fan capability migration failed for model ${model}: ${detail}`);
+    }
+  }
+
   registerOptionalBooleanCapabilityListener(capability, property) {
     const propertyDefinition = this.deviceProperties.set_properties[property];
     if (!propertyDefinition || !this.hasCapability(capability)) return;
@@ -473,7 +495,7 @@ class AdvancedMiAirPurifierMiotDevice extends Device {
 
       /* data */
       const onoff = result.find(obj => obj.did === 'power');
-      const fanlevel = result.find(obj => obj.did === 'fanlevel');
+      const fanlevel = AirPurifierMiot.findValidResult(result, 'fanlevel');
       const measure_humidity = result.find(obj => obj.did === 'humidity');
       const measure_temperature = result.find(obj => obj.did === 'temperature');
       const measure_pm25 = result.find(obj => obj.did === 'aqi');
@@ -526,8 +548,11 @@ class AdvancedMiAirPurifierMiotDevice extends Device {
       }
 
       /* device specific settings */
-      if (cpa4Models.includes(this.getStoreValue('model')) && fanlevel !== undefined) {
-        await this.updateCapabilityValue("airpurifier_xiaomi_fanlevel", Number(fanlevel.value));
+      if (numericFanModels.includes(this.getStoreValue('model')) && fanlevel !== undefined) {
+        const numericFanlevel = AirPurifierMiot.decodeValue(this.modelProfile, 'fanlevel', fanlevel.value);
+        if (numericFanlevel !== undefined) {
+          await this.updateCapabilityValue("airpurifier_xiaomi_fanlevel", Number(numericFanlevel));
+        }
       } else if (fanlevel !== undefined) {
         const homeyFanlevel = AirPurifierMiot.decodeValue(this.modelProfile, 'fanlevel', fanlevel.value);
         if (homeyFanlevel !== undefined) {
