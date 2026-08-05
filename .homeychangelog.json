@@ -565,5 +565,8 @@
   },
   "3.5.9": {
     "en": "Added Xiaomi Smart Pet Care Air Purifier support and named-room cleaning for the Xiaomi Robot Vacuum S12."
+  },
+  "3.5.10": {
+    "en": "Fixed MIoT control commands for Advanced Xiaomi Air Purifiers by including the device ID in all property writes."
   }
 }
