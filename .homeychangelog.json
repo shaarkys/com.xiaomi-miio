@@ -568,5 +568,8 @@
   },
   "3.5.10": {
     "en": "Fixed MIoT control commands for Advanced Xiaomi Air Purifiers by including the device ID in all property writes."
+  },
+  "3.5.11": {
+    "en": "Improved Xiaomi vacuum reliability by serializing UDP property traffic, adding retries, and tolerating transient polling failures."
   }
 }
