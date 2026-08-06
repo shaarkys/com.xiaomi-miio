@@ -571,5 +571,8 @@
   },
   "3.5.11": {
     "en": "Improved Xiaomi vacuum reliability by serializing UDP property traffic, adding retries, and tolerating transient polling failures."
+  },
+  "3.5.12": {
+    "en": "Added dmaker.fan.p8 support with correct MIoT mappings, three-level fan control, model-specific capabilities, and regression coverage. Credit @giokerst"
   }
 }
