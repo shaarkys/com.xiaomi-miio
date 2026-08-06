@@ -2,6 +2,7 @@
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const Module = require('node:module');
 
 const {
   getModelProfile,
@@ -14,8 +15,55 @@ const {
 const driverCompose = require('../drivers/airpurifier_zhimi_advanced_miot/driver.compose.json');
 const Util = require('../lib/util.js');
 
+const originalModuleLoad = Module._load;
+Module._load = function loadWithHomeyStub(request, parent, isMain) {
+  if (request === 'homey') {
+    return { Device: class Device {} };
+  }
+  return originalModuleLoad.call(this, request, parent, isMain);
+};
+
+const AdvancedMiAirPurifierMiotDevice = require('../drivers/airpurifier_zhimi_advanced_miot/device.js');
+Module._load = originalModuleLoad;
+
 const profile = getModelProfile('xiaomi.airp.mb5');
 const cpa5Profile = getModelProfile('xiaomi.airp.cpa5');
+
+function createMiotDevice(deviceProperties = profile.properties) {
+  const calls = [];
+  const device = Object.create(AdvancedMiAirPurifierMiotDevice.prototype);
+  device.deviceProperties = deviceProperties;
+  device.getData = () => ({ id: 'stored-token' });
+  device.miio = {
+    handle: { api: { id: 123456 } },
+    call: async (...args) => {
+      calls.push(args);
+      return ['ok'];
+    }
+  };
+  device.error = () => {};
+  return { device, calls };
+}
+
+test('centralized MIoT writes include the connected device ID and mapped property', async () => {
+  const { device, calls } = createMiotDevice();
+
+  await device.setMiotProperty('power', true);
+
+  assert.deepEqual(calls, [
+    ['set_properties', [{ did: '123456', siid: 2, piid: 1, value: true }], { retries: 1 }]
+  ]);
+});
+
+test('centralized MIoT writes use the selected model mapping for a second property', async () => {
+  const { device, calls } = createMiotDevice(cpa5Profile.properties);
+
+  await device.setMiotProperty('fanlevel', 7);
+
+  assert.deepEqual(calls, [
+    ['set_properties', [{ did: '123456', siid: 9, piid: 1, value: 7 }], { retries: 1 }]
+  ]);
+});
 
 test('xiaomi.airp.mb5 uses its released MIoT property layout', () => {
   assert.ok(profile);

@@ -28,9 +28,17 @@ class XiaomiMiioApp extends Homey.App {
         try {
           if (args.device.deviceProperties.hasOwnProperty('device_properties')) {
             if (args.device.deviceProperties.device_properties.hasOwnProperty('light')) {
+              const value = Number(args.led) === 1 ? args.device.deviceProperties.device_properties.light.max : args.device.deviceProperties.device_properties.light.min;
+              if (typeof args.device.setMiotProperty === 'function' && args.device.deviceProperties.set_properties?.light) {
+                return await args.device.setMiotProperty('light', value);
+              }
               return await args.device.miio.call("set_properties", [{ siid: args.device.deviceProperties.set_properties.light.siid, piid: args.device.deviceProperties.set_properties.light.piid, value: Number(args.led) === 1 ? args.device.deviceProperties.device_properties.light.max : args.device.deviceProperties.device_properties.light.min }], { retries: 1 });
             }
           } else {
+            const value = Number(args.led) === 1 ? true : false;
+            if (typeof args.device.setMiotProperty === 'function' && args.device.deviceProperties.set_properties?.light) {
+              return await args.device.setMiotProperty('light', value);
+            }
             return await args.device.miio.call("set_properties", [{ siid: args.device.deviceProperties.set_properties.light.siid, piid: args.device.deviceProperties.set_properties.light.piid, value: Number(args.led) === 1 ? true : false }], { retries: 1 });
           }
         } catch (error) {
@@ -41,6 +49,10 @@ class XiaomiMiioApp extends Homey.App {
     this.homey.flow.getActionCard('enableBuzzer')
       .registerRunListener(async (args) => {
         try {
+          const value = Number(args.sound) === 1 ? true : false;
+          if (typeof args.device.setMiotProperty === 'function' && args.device.deviceProperties.set_properties?.buzzer) {
+            return await args.device.setMiotProperty('buzzer', value);
+          }
           return await args.device.miio.call("set_properties", [{ siid: args.device.deviceProperties.set_properties.buzzer.siid, piid: args.device.deviceProperties.set_properties.buzzer.piid, value: Number(args.sound) === 1 ? true : false }], { retries: 1 });
         } catch (error) {
           return Promise.reject(error.message);

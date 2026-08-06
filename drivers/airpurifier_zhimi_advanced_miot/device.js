@@ -349,7 +349,7 @@ class AdvancedMiAirPurifierMiotDevice extends Device {
       this.registerCapabilityListener('onoff', async (value) => {
         try {
           if (this.miio) {
-            return await this.miio.call("set_properties", [{ siid: this.deviceProperties.set_properties.power.siid, piid: this.deviceProperties.set_properties.power.piid, value: value }], { retries: 1 });
+            return await this.setMiotProperty('power', value);
           } else {
             this.setUnavailable(this.homey.__('unreachable')).catch(error => { this.error(error) });
             this.createDevice();
@@ -368,7 +368,7 @@ class AdvancedMiAirPurifierMiotDevice extends Device {
         try {
           if (this.miio) {
             const deviceValue = AirPurifierMiot.encodeValue(this.modelProfile, 'fanlevel', value);
-            return await this.miio.call("set_properties", [{ siid: this.deviceProperties.set_properties.fanlevel.siid, piid: this.deviceProperties.set_properties.fanlevel.piid, value: deviceValue }], { retries: 1 });
+            return await this.setMiotProperty('fanlevel', deviceValue);
           } else {
             this.setUnavailable(this.homey.__('unreachable')).catch(error => { this.error(error) });
             this.createDevice();
@@ -384,7 +384,7 @@ class AdvancedMiAirPurifierMiotDevice extends Device {
         try {
           if (this.miio) {
             const deviceValue = AirPurifierMiot.encodeValue(this.modelProfile, 'fanlevel', value);
-            return await this.miio.call("set_properties", [{ siid: this.deviceProperties.set_properties.fanlevel.siid, piid: this.deviceProperties.set_properties.fanlevel.piid, value: deviceValue }], { retries: 1 });
+            return await this.setMiotProperty('fanlevel', deviceValue);
           } else {
             this.setUnavailable(this.homey.__('unreachable')).catch(error => { this.error(error) });
             this.createDevice();
@@ -400,7 +400,7 @@ class AdvancedMiAirPurifierMiotDevice extends Device {
         try {
           if (this.miio) {
             const deviceValue = AirPurifierMiot.encodeValue(this.modelProfile, 'mode', value);
-            return await this.miio.call("set_properties", [{ siid: this.deviceProperties.set_properties.mode.siid, piid: this.deviceProperties.set_properties.mode.piid, value: deviceValue }], { retries: 1 });
+            return await this.setMiotProperty('mode', deviceValue);
           } else {
             this.setUnavailable(this.homey.__('unreachable')).catch(error => { this.error(error) });
             this.createDevice();
@@ -414,6 +414,27 @@ class AdvancedMiAirPurifierMiotDevice extends Device {
 
     } catch (error) {
       this.error(error);
+    }
+  }
+
+  async setMiotProperty(property, value) {
+    try {
+      if (!this.miio) {
+        this.setUnavailable(this.homey.__('unreachable')).catch(error => { this.error(error) });
+        this.createDevice();
+        return Promise.reject('Device unreachable, please try again ...');
+      }
+
+      const definition = this.deviceProperties?.set_properties?.[property];
+      if (!definition) {
+        throw new Error(`MIoT property ${property} is not supported by this device`);
+      }
+
+      const did = String(this.miio.handle.api.id);
+      return await this.miio.call('set_properties', [{ did, siid: definition.siid, piid: definition.piid, value }], { retries: 1 });
+    } catch (error) {
+      this.error(error);
+      return Promise.reject(error);
     }
   }
 
@@ -454,7 +475,7 @@ class AdvancedMiAirPurifierMiotDevice extends Device {
     this.registerCapabilityListener(capability, async (value) => {
       try {
         if (this.miio) {
-          return await this.miio.call("set_properties", [{ siid: propertyDefinition.siid, piid: propertyDefinition.piid, value }], { retries: 1 });
+          return await this.setMiotProperty(property, value);
         }
 
         this.setUnavailable(this.homey.__('unreachable')).catch(error => { this.error(error) });
@@ -473,15 +494,15 @@ class AdvancedMiAirPurifierMiotDevice extends Device {
     }
 
     if (changedKeys.includes("led")) {
-      const led = await this.miio.call("set_properties", [{ siid: this.deviceProperties.set_properties.light.siid, piid: this.deviceProperties.set_properties.light.piid, value: newSettings.led ? this.deviceProperties.device_properties.light.max : this.deviceProperties.device_properties.light.min }], { retries: 1 });
+      const led = await this.setMiotProperty('light', newSettings.led ? this.deviceProperties.device_properties.light.max : this.deviceProperties.device_properties.light.min);
     }
 
     if (changedKeys.includes("buzzer")) {
-      const buzzer = await this.miio.call("set_properties", [{ siid: this.deviceProperties.set_properties.buzzer.siid, piid: this.deviceProperties.set_properties.buzzer.piid, value: newSettings.buzzer }], { retries: 1 });
+      const buzzer = await this.setMiotProperty('buzzer', newSettings.buzzer);
     }
 
     if (changedKeys.includes("childLock") && this.deviceProperties.set_properties.child_lock !== undefined) {
-      const childlock = await this.miio.call("set_properties", [{ siid: this.deviceProperties.set_properties.child_lock.siid, piid: this.deviceProperties.set_properties.child_lock.piid, value: newSettings.childLock }], { retries: 1 });
+      const childlock = await this.setMiotProperty('child_lock', newSettings.childLock);
     }
 
     return Promise.resolve(true);
