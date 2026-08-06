@@ -5,6 +5,7 @@ const Device = require('../wifi_device.js');
 const Util = require('../../lib/util.js');
 
 /* supported devices */
+// https://home.miot-spec.com/spec/dmaker.fan.p8
 // https://home.miot-spec.com/spec/dmaker.fan.p9
 // https://home.miot-spec.com/spec/dmaker.fan.p10
 // https://home.miot-spec.com/spec/dmaker.fan.p11
@@ -20,6 +21,7 @@ const Util = require('../../lib/util.js');
 // https://home.miot-spec.com/spec/xiaomi.fan.p85
 
 const mapping = {
+    'dmaker.fan.p8': 'properties_p8',
     'dmaker.fan.p9': 'properties_p9',
     'dmaker.fan.p10': 'properties_p10',
     'dmaker.fan.p11': 'properties_p11',
@@ -37,6 +39,26 @@ const mapping = {
 };
 
 const properties = {
+    properties_p8: {
+        fanLevelMax: 3,
+        get_properties: [
+            { did: 'power', siid: 2, piid: 1 }, // onoff
+            { did: 'fan_level', siid: 2, piid: 2 }, // dim (levels 1-3)
+            { did: 'mode', siid: 2, piid: 7 }, // fan_dmaker_mode
+            { did: 'oscillating_mode', siid: 2, piid: 3 }, // oscillating
+            { did: 'light', siid: 2, piid: 12 }, // settings.led
+            { did: 'buzzer', siid: 2, piid: 11 }, // settings.buzzer
+            { did: 'child_lock', siid: 3, piid: 1 } // settings.childLock
+        ],
+        set_properties: {
+            fan_level: { siid: 2, piid: 2 },
+            oscillating_mode: { siid: 2, piid: 3 },
+            mode: { siid: 2, piid: 7 },
+            light: { siid: 2, piid: 12 },
+            buzzer: { siid: 2, piid: 11 },
+            child_lock: { siid: 3, piid: 1 }
+        }
+    },
     properties_p9: {
         get_properties: [
             { did: 'power', siid: 2, piid: 1 }, // onoff
@@ -270,6 +292,7 @@ const getCanonicalModel = (model) => canonicalModelMap[model] ?? model;
 
 /* Model‑specific mode enumerations */
 const modeMap = {
+    'dmaker.fan.p8': { 0: 'Straight Wind', 1: 'Sleep' },
     'dmaker.fan.p9': { 0: 'Straight Wind', 1: 'Natural Wind' },
     'dmaker.fan.p10': { 0: 'Straight Wind', 1: 'Natural Wind', 2: 'Sleep' },
     'dmaker.fan.p11': { 0: 'Straight Wind', 1: 'Natural Wind', 2: 'Sleep' },
@@ -336,7 +359,7 @@ class AdvancedDmakerFanMiotDevice extends Device {
             }
 
             // ADD DEVICES DEPENDANT CAPABILITIES
-            if (this.getStoreValue('model') === 'dmaker.fan.p44' || this.getStoreValue('model') === 'dmaker.fan.1c') {
+            if (this.getStoreValue('model') === 'dmaker.fan.p8' || this.getStoreValue('model') === 'dmaker.fan.p44' || this.getStoreValue('model') === 'dmaker.fan.1c') {
                 if (this.hasCapability('fan_speed')) {
                     this.removeCapability('fan_speed');
                 }
@@ -347,6 +370,10 @@ class AdvancedDmakerFanMiotDevice extends Device {
 
             // DEVICE VARIABLES
             this.deviceProperties = properties[mapping[this.getStoreValue('model')]] !== undefined ? properties[mapping[this.getStoreValue('model')]] : properties[mapping['dmaker.fan.*']];
+
+            if (this.deviceProperties.fanLevelMax !== undefined && this.hasCapability('dim')) {
+                await this.setCapabilityOptions('dim', { max: this.deviceProperties.fanLevelMax });
+            }
 
             /* Vertical swing (up/down) — only for models whose spec exposes it (e.g. p70 / p76) */
             if (this.deviceProperties.set_properties.vertical_swing !== undefined) {
@@ -477,13 +504,20 @@ class AdvancedDmakerFanMiotDevice extends Device {
                 }
             });
 
-            /* ─── DIM / gear fan‑level 1‑4 ─── */
+            /* ─── DIM / gear fan‑level (model-specific range) ─── */
             this.registerCapabilityListener('dim', async (value) => {
                 try {
                     if (!this.miio) throw new Error('miio not initialised');
 
                     const prop = this.deviceProperties.set_properties.fan_level ?? { siid: 2, piid: 2 }; // fall‑back for older models
-                    const fanLevelValue = this.deviceProperties.usesZeroIndexing ? this.util.clamp(Math.round(value) - 1, 0, 3) : value;
+                    let fanLevelValue;
+                    if (this.deviceProperties.usesZeroIndexing) {
+                        fanLevelValue = this.util.clamp(Math.round(value) - 1, 0, 3);
+                    } else if (this.deviceProperties.fanLevelMax !== undefined) {
+                        fanLevelValue = this.util.clamp(Math.round(value), 1, this.deviceProperties.fanLevelMax);
+                    } else {
+                        fanLevelValue = value;
+                    }
 
                     return await this.miio.call(
                         'set_properties',
