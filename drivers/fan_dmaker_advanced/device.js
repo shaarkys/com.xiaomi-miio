@@ -39,11 +39,11 @@ const mapping = {
 };
 
 const properties = {
-    +    properties_p8: {
+    properties_p8: {
         get_properties: [
             { did: 'power', siid: 2, piid: 1 }, // onoff
             { did: 'fan_level', siid: 2, piid: 2 }, // dim (levels 1-3)
-           { did: 'mode', siid: 2, piid: 7 }, // fan_dmaker_mode
+            { did: 'mode', siid: 2, piid: 7 }, // fan_dmaker_mode
             { did: 'oscillating_mode', siid: 2, piid: 3 }, // oscillating
             { did: 'light', siid: 2, piid: 12 }, // settings.led
             { did: 'buzzer', siid: 2, piid: 11 }, // settings.buzzer
