@@ -220,6 +220,24 @@ class MiWifiDeviceDevice extends Homey.Device {
 
     // HELPER FUNCTIONS
 
+    async callMiotSetProperties(properties, options = { retries: 1 }) {
+        if (!this.miio || typeof this.miio.call !== 'function') {
+            throw new Error('MIoT set_properties requires an active miio device with callable call');
+        }
+        if (!Array.isArray(properties)) {
+            throw new TypeError('MIoT set_properties properties must be an array');
+        }
+
+        const connectedDid = this.miio.handle?.api?.id;
+        if (connectedDid === undefined || connectedDid === null || connectedDid === '') {
+            throw new Error('MIoT set_properties requires a connected device ID');
+        }
+
+        const did = String(this.miio.handle.api.id);
+        const enrichedProperties = properties.map((property) => ({ ...property, did }));
+        return this.miio.call('set_properties', enrichedProperties, options);
+    }
+
     /* updating capabilities */
     async updateCapabilityValue(capability, value) {
         try {

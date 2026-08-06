@@ -626,7 +626,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                 this.log('[ADV_ROOM_CLEAN] action:', JSON.stringify(action));
 
                 if (args.device.miio && typeof args.device.miio.call === 'function') {
-                    if (props.length) await args.device.miio.call('set_properties', props, { retries: 1 });
+                    if (props.length) await args.device.callVacuumSetProperties(props, { retries: 2 });
                     await args.device.miio.call('action', action, { retries: 3 });
                 } else {
                     this.setUnavailable(this.homey.__('unreachable')).catch((error) => this.error(error));
@@ -665,7 +665,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                         const { payload, state } = this.buildCarpetModeSetPayload(String(value));
                         if (!payload.length) return null;
                         if (this.miio) {
-                            const result = await this.miio.call('set_properties', payload, { retries: 1 });
+                            const result = await this.callVacuumSetProperties(payload, { retries: 2 });
                             this._carpetModeState = state;
                             try {
                                 await this.setStoreValue('carpetModeState', state);
@@ -728,7 +728,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                         const mappedValue = this.mapMopModeOutbound(String(value));
                         if (mappedValue == null) return null;
                         if (this.miio) {
-                            return await this.miio.call('set_properties', [{ siid: this.deviceProperties.set_properties.mopmode.siid, piid: this.deviceProperties.set_properties.mopmode.piid, value: mappedValue }], { retries: 1 });
+                            return await this.callVacuumSetProperties([{ siid: this.deviceProperties.set_properties.mopmode.siid, piid: this.deviceProperties.set_properties.mopmode.piid, value: mappedValue }], { retries: 2 });
                         }
                         this.setUnavailable(this.homey.__('unreachable')).catch((error) => this.error(error));
                         this.createDevice();
@@ -746,7 +746,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                         const mappedValue = this.mapCleaningModeOutbound(String(value));
                         if (mappedValue == null) return null;
                         if (this.miio) {
-                            return await this.miio.call('set_properties', [{ siid: this.deviceProperties.set_properties.cleaning_mode.siid, piid: this.deviceProperties.set_properties.cleaning_mode.piid, value: mappedValue }], { retries: 1 });
+                            return await this.callVacuumSetProperties([{ siid: this.deviceProperties.set_properties.cleaning_mode.siid, piid: this.deviceProperties.set_properties.cleaning_mode.piid, value: mappedValue }], { retries: 2 });
                         }
                         this.setUnavailable(this.homey.__('unreachable')).catch((error) => this.error(error));
                         this.createDevice();
@@ -764,7 +764,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                         const mappedValue = this.mapWaterLevelOutbound(String(value));
                         if (mappedValue == null) return null;
                         if (this.miio) {
-                            return await this.miio.call('set_properties', [{ siid: this.deviceProperties.set_properties.water_level.siid, piid: this.deviceProperties.set_properties.water_level.piid, value: mappedValue }], { retries: 1 });
+                            return await this.callVacuumSetProperties([{ siid: this.deviceProperties.set_properties.water_level.siid, piid: this.deviceProperties.set_properties.water_level.piid, value: mappedValue }], { retries: 2 });
                         }
                         this.setUnavailable(this.homey.__('unreachable')).catch((error) => this.error(error));
                         this.createDevice();
@@ -782,7 +782,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                         const mappedValue = this.mapPathModeOutbound(String(value));
                         if (mappedValue == null) return null;
                         if (this.miio) {
-                            return await this.miio.call('set_properties', [{ siid: this.deviceProperties.set_properties.path_mode.siid, piid: this.deviceProperties.set_properties.path_mode.piid, value: mappedValue }], { retries: 1 });
+                            return await this.callVacuumSetProperties([{ siid: this.deviceProperties.set_properties.path_mode.siid, piid: this.deviceProperties.set_properties.path_mode.piid, value: mappedValue }], { retries: 2 });
                         }
                         this.setUnavailable(this.homey.__('unreachable')).catch((error) => this.error(error));
                         this.createDevice();
@@ -817,8 +817,15 @@ class XiaomiVacuumMiotDeviceMax extends Device {
     }
 
     async retrieveDeviceData() {
+        if (this._retrieveDeviceDataInProgress) {
+            this.log('[POLL] Skipping overlapping property poll.');
+            return;
+        }
+
+        this._retrieveDeviceDataInProgress = true;
         try {
             if (!this.miio || typeof this.miio.call !== 'function') {
+                this._mainPollFailures = 0;
                 if (this.getAvailable()) {
                     this.setUnavailable(this.homey.__('device.unreachable')).catch((error) => this.error(error));
                 }
@@ -826,7 +833,20 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                 return;
             }
             if (!this._syncModelFromDevice()) return;
-            const result = await this.miio.call('get_properties', this.deviceProperties.get_properties, { retries: 1 });
+
+            let result;
+            try {
+                result = await this.callVacuumGetProperties(this.deviceProperties.get_properties, { retries: 2 });
+                const recoveredFailures = this._mainPollFailures || 0;
+                if (recoveredFailures > 0) {
+                    const suffix = recoveredFailures === 1 ? '' : 's';
+                    this.log(`[POLL] Main property read recovered after ${recoveredFailures} consecutive failure${suffix}.`);
+                }
+                this._mainPollFailures = 0;
+            } catch (error) {
+                await this._handleMainPollFailure(error);
+                return;
+            }
 
             // Fetch rooms only when needed and only until discovered
             let result_rooms = null;
@@ -840,7 +860,11 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                 } catch (_) {}
 
                 if (!this._roomsDiscovered) {
-                    result_rooms = await this.miio.call('get_properties', this.deviceProperties.get_rooms, { retries: 1 });
+                    try {
+                        result_rooms = await this.callVacuumGetProperties(this.deviceProperties.get_rooms, { retries: 2 });
+                    } catch (error) {
+                        this.error(`[ROOMS] Optional property read failed: ${this._getSafeErrorDetails(error)}; continuing without room data.`);
+                    }
                     if (!result_rooms || !result_rooms.length || !result_rooms[0].value) {
                         const candidates = [
                             [{ did: 'rooms', siid: 4, piid: 20 }],
@@ -849,12 +873,14 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                         ];
                         for (const c of candidates) {
                             try {
-                                const r = await this.miio.call('get_properties', c, { retries: 1 });
+                                const r = await this.callVacuumGetProperties(c, { retries: 2 });
                                 if (r && r[0] && r[0].value) {
                                     result_rooms = r;
                                     break;
                                 }
-                            } catch (_) {}
+                            } catch (error) {
+                                this.error(`[ROOMS] Optional candidate property read failed: ${this._getSafeErrorDetails(error)}; continuing without room data.`);
+                            }
                         }
                     }
                 }
@@ -1118,13 +1144,9 @@ class XiaomiVacuumMiotDeviceMax extends Device {
 
             this.lastVacState = stateKey;
         } catch (error) {
-            this.log(error);
-            this.homey.clearInterval(this.pollingInterval);
-            if (this.getAvailable()) {
-                this.setUnavailable(this.homey.__('device.unreachable') + error.message).catch((err) => this.error(err));
-            }
-            this.homey.setTimeout(() => this.createDevice(), 60000);
-            this.error(error.message);
+            this.error(`[POLL] Local processing failed: ${this._getSafeErrorDetails(error)}; keeping the current miIO connection.`);
+        } finally {
+            this._retrieveDeviceDataInProgress = false;
         }
     }
 
@@ -1329,6 +1351,82 @@ class XiaomiVacuumMiotDeviceMax extends Device {
         return this._model || (this.getStoreValue ? this.getStoreValue('model') : undefined);
     }
 
+    _queuePropertyOperation(operation) {
+        if (!this._propertyOperationQueue) {
+            this._propertyOperationQueue = Promise.resolve();
+        }
+
+        const queuedOperation = this._propertyOperationQueue
+            .catch(() => {})
+            .then(operation);
+
+        this._propertyOperationQueue = queuedOperation.catch(() => {});
+        return queuedOperation;
+    }
+
+    callVacuumGetProperties(properties, options = { retries: 2 }) {
+        return this._queuePropertyOperation(() => {
+            if (!this.miio || typeof this.miio.call !== 'function') {
+                throw new Error('MIoT get_properties requires an active miio device with callable call');
+            }
+            return this.miio.call('get_properties', properties, options);
+        });
+    }
+
+    _getSafeErrorDetails(error) {
+        const rawMessage = error && typeof error.message === 'string' ? error.message : 'Unknown error';
+        const safeMessage = rawMessage
+            .replace(/\b(password|token|secret|api[_-]?key|authorization|cookie)\b\s*[:=]\s*[^,;\r\n]*/gi, '$1=[redacted]')
+            .replace(/\s+/g, ' ')
+            .trim()
+            .slice(0, 180) || 'Unknown error';
+        const rawCode = error && error.code != null ? String(error.code) : '';
+        const safeCode = /^[A-Za-z0-9_.-]{1,64}$/.test(rawCode) ? rawCode : '';
+
+        return safeCode ? `${safeMessage} (code: ${safeCode})` : safeMessage;
+    }
+
+    async _handleMainPollFailure(error) {
+        const failures = (this._mainPollFailures || 0) + 1;
+        this._mainPollFailures = failures;
+        const details = this._getSafeErrorDetails(error);
+
+        if (failures < 3) {
+            this.error(`[POLL] Main property read failed (${failures}/3): ${details}; keeping the current connection and polling.`);
+            return;
+        }
+
+        this._mainPollFailures = 0;
+        this.homey.clearInterval(this.pollingInterval);
+        if (this.recreateTimeout !== undefined && this.recreateTimeout !== null) {
+            this.homey.clearTimeout(this.recreateTimeout);
+        }
+
+        try {
+            await this.setUnavailable(this.homey.__('device.unreachable'));
+        } catch (error) {
+            this.error(`[POLL] Failed to mark device unavailable after repeated property read failures: ${this._getSafeErrorDetails(error)}.`);
+        }
+
+        this.recreateTimeout = this.homey.setTimeout(() => {
+            this.recreateTimeout = null;
+            this.createDevice();
+        }, 60000);
+        this.error(`[POLL] Main property read failed (3/3): ${details}; reconnecting in 60 seconds.`);
+    }
+
+    callVacuumSetProperties(properties, options = { retries: 2 }) {
+        return this._queuePropertyOperation(() => {
+            if (this.getModelIdentifier() === 'xiaomi.vacuum.d109gl') {
+                return this.callMiotSetProperties(properties, options);
+            }
+            if (!this.miio || typeof this.miio.call !== 'function') {
+                throw new Error('MIoT set_properties requires an active miio device with callable call');
+            }
+            return this.miio.call('set_properties', properties, options);
+        });
+    }
+
     mapMopModeInbound(raw) {
         if (raw == null) return null;
         if (this.getModelIdentifier() === 'xiaomi.vacuum.c102gl') {
@@ -1511,7 +1609,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             for (let siid = 1; siid <= 18; siid++) {
                 for (let piid = 1; piid <= 30; piid++) {
                     try {
-                        const res = await this.miio.call('get_properties', [{ siid, piid }], { retries: 1 });
+                        const res = await this.callVacuumGetProperties([{ siid, piid }], { retries: 2 });
                         if (Array.isArray(res) && res[0] && res[0].code === 0) {
                             results.push({ siid, piid, value: res[0].value });
                         }
