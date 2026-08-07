@@ -277,9 +277,20 @@ class MiWifiDeviceDevice extends Homey.Device {
 
     /* create device instance and start polling */
     async createDevice() {
+        /* reentrancy guard: prevent overlapping connection attempts (and the
+         * orphaned/duplicate polling loops that would otherwise result) when
+         * createDevice() is triggered concurrently from multiple call sites
+         * (poll failure, capability-listener fallback, hourly refresh, ...) */
+        if (this._creatingDevice) {
+            this.log('createDevice already in progress for ' + this.getName() + ', skipping duplicate call');
+            return;
+        }
+        this._creatingDevice = true;
+
         try {
             // stop any previous timers/loops
             this.homey.clearInterval(this.pollingInterval);
+            this.pollingInterval = null;
             this.homey.clearTimeout(this.recreateTimeout);
 
             // dispose of an old miio instance safely
@@ -316,6 +327,8 @@ class MiWifiDeviceDevice extends Homey.Device {
             this.recreateTimeout = this.homey.setTimeout(() => this.createDevice(), delay);
             this.miio = null;
             this.error(error.message);
+        } finally {
+            this._creatingDevice = false;
         }
     }
 
@@ -324,6 +337,14 @@ class MiWifiDeviceDevice extends Homey.Device {
         try {
             this.homey.clearInterval(this.refreshInterval);
             this.refreshInterval = this.homey.setInterval(() => {
+                this.log('Hourly refresh: recreating device connection for ' + this.getName());
+
+                /* stop the current polling loop before tearing down the connection,
+                 * otherwise a pending poll tick could still fire against a null/stale
+                 * miio instance during the reconnect window below */
+                this.homey.clearInterval(this.pollingInterval);
+                this.pollingInterval = null;
+
                 if (this.miio) {
                     try {
                         this.miio?.destroy();
@@ -375,6 +396,7 @@ class MiWifiDeviceDevice extends Homey.Device {
             this.pollingInterval = this.homey.setInterval(() => {
                 this.retrieveDeviceData();
             }, 1000 * interval);
+            this.log('Polling (re)started for ' + this.getName() + ' every ' + interval + 's');
         } catch (error) {
             this.setUnavailable(this.homey.__('device.unreachable') + error.message).catch((error) => {
                 this.error(error);

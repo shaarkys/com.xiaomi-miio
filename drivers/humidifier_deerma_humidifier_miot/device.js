@@ -152,6 +152,11 @@ class HumidifierDeermaMiotDevice extends Device {
 
   async retrieveDeviceData() {
     try {
+      if (!this.miio) {
+        this.setUnavailable(this.homey.__('device.unreachable')).catch(error => { this.error(error) });
+        this.createDevice();
+        return;
+      }
 
       const result = await this.miio.call("get_properties", this.deviceProperties.get_properties, { retries: 1 });
       if (!this.getAvailable()) { await this.setAvailable(); }
