@@ -278,7 +278,11 @@ class MijiaSmartScentDiffuserDevice extends Device {
 
   async retrieveDeviceData() {
     try {
-      const result = await this.miio.call('get_properties', this.deviceProperties.get_properties, { retries: 1 });
+      /* split the batched MIoT read into smaller chunks: some devices in this
+       * family fail to answer a large single-shot get_properties request
+       * within their retry window even though every property returns fine
+       * individually (see xiaomi.vacuum.d102gl for the confirmed case) */
+      const result = await this.callMiotGetProperties(this.deviceProperties.get_properties, { retries: 1, chunkSize: 5, delayMs: 100 });
       if (!this.getAvailable()) {
         await this.setAvailable();
       }

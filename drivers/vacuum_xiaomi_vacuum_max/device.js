@@ -117,6 +117,20 @@ const mapping = {
     'xiaomi.vacuum.c108': 'properties_c108'
 };
 
+/* Some MIoT vacuums time out on a large single-shot get_properties batch
+ * even though the connection is healthy and every property returns fine
+ * individually (confirmed on the X20 Pro / d102gl, which fails on its
+ * full 22-property batch but works reliably when split into per-property
+ * reads). Chunk size 1 is the value actually validated against that
+ * hardware; other mappings default to a conservative 5 as a precaution
+ * since large single-shot reads are the same shape of risk even without
+ * a confirmed report yet. */
+const GET_PROPERTIES_CHUNK_SIZE = {
+    'xiaomi.vacuum.d102gl': 1
+};
+const DEFAULT_GET_PROPERTIES_CHUNK_SIZE = 5;
+const GET_PROPERTIES_CHUNK_DELAY_MS = 100;
+
 /** Property sets */
 const properties = {
     /* Baseline (d109gl / d102gl) — unchanged except for our code hardening */
@@ -1366,10 +1380,8 @@ class XiaomiVacuumMiotDeviceMax extends Device {
 
     callVacuumGetProperties(properties, options = { retries: 2 }) {
         return this._queuePropertyOperation(() => {
-            if (!this.miio || typeof this.miio.call !== 'function') {
-                throw new Error('MIoT get_properties requires an active miio device with callable call');
-            }
-            return this.miio.call('get_properties', properties, options);
+            const chunkSize = GET_PROPERTIES_CHUNK_SIZE[this.getModelIdentifier()] ?? DEFAULT_GET_PROPERTIES_CHUNK_SIZE;
+            return this.callMiotGetProperties(properties, { ...options, chunkSize, delayMs: GET_PROPERTIES_CHUNK_DELAY_MS });
         });
     }
 

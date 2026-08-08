@@ -238,6 +238,44 @@ class MiWifiDeviceDevice extends Homey.Device {
         return this.miio.call('set_properties', enrichedProperties, options);
     }
 
+    /* MIoT get_properties helper with optional chunking.
+     *
+     * Some MIoT devices cannot assemble a reply fast enough for a large
+     * batched get_properties request and time out on it even though the
+     * connection itself is healthy and every property returns fine when
+     * requested in smaller groups (confirmed on xiaomi.vacuum.d102gl and
+     * others). Pass options.chunkSize to split a request into sequential
+     * smaller calls; omitting it preserves the original single-call
+     * behavior exactly, so drivers that never opt in are unaffected. */
+    async callMiotGetProperties(properties, options = {}) {
+        if (!this.miio || typeof this.miio.call !== 'function') {
+            throw new Error('MIoT get_properties requires an active miio device with callable call');
+        }
+        if (!Array.isArray(properties)) {
+            throw new TypeError('MIoT get_properties properties must be an array');
+        }
+
+        const { chunkSize, delayMs = 0, ...callOptions } = options;
+        const effectiveChunkSize = Number.isInteger(chunkSize) && chunkSize > 0 ? chunkSize : properties.length;
+
+        if (properties.length === 0 || effectiveChunkSize >= properties.length) {
+            return this.miio.call('get_properties', properties, callOptions);
+        }
+
+        const results = [];
+        for (let i = 0; i < properties.length; i += effectiveChunkSize) {
+            const batch = properties.slice(i, i + effectiveChunkSize);
+            const response = await this.miio.call('get_properties', batch, callOptions);
+            if (Array.isArray(response)) {
+                results.push(...response);
+            }
+            if (delayMs > 0 && i + effectiveChunkSize < properties.length) {
+                await new Promise((resolve) => this.homey.setTimeout(resolve, delayMs));
+            }
+        }
+        return results;
+    }
+
     /* updating capabilities */
     async updateCapabilityValue(capability, value) {
         try {

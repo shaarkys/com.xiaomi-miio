@@ -948,8 +948,13 @@ class PetFeederMiotDevice extends DeviceBase {
         try {
             if (!Array.isArray(requestArray) || requestArray.length === 0) return [];
 
-            // Use small batches to avoid timeouts or rate limits
-            const CHUNK_SIZE = 14;
+            // Use small batches to avoid timeouts or rate limits.
+            // CHUNK_SIZE was previously 14, but field reports showed this device
+            // still timing out repeatedly on 14-property batches; lowered to 5
+            // and paced with a delay between batches for the same reason the
+            // vacuum (d102gl) and other drivers needed the same treatment.
+            const CHUNK_SIZE = 5;
+            const CHUNK_DELAY_MS = 100;
             const results = [];
             const batchCount = Math.ceil(requestArray.length / CHUNK_SIZE);
             for (let i = 0; i < requestArray.length; i += CHUNK_SIZE) {
@@ -973,6 +978,9 @@ class PetFeederMiotDevice extends DeviceBase {
                         e?.message
                     );
                     for (let k = 0; k < batch.length; k++) results.push({});
+                }
+                if (i + CHUNK_SIZE < requestArray.length) {
+                    await new Promise((resolve) => this.homey.setTimeout(resolve, CHUNK_DELAY_MS));
                 }
             }
             return results;
