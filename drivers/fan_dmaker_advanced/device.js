@@ -371,8 +371,20 @@ class AdvancedDmakerFanMiotDevice extends Device {
             // DEVICE VARIABLES
             this.deviceProperties = properties[mapping[this.getStoreValue('model')]] !== undefined ? properties[mapping[this.getStoreValue('model')]] : properties[mapping['dmaker.fan.*']];
 
-            if (this.deviceProperties.fanLevelMax !== undefined && this.hasCapability('dim')) {
-                await this.setCapabilityOptions('dim', { max: this.deviceProperties.fanLevelMax });
+            if (this.deviceProperties.fanLevelMax !== undefined) {
+                if (this.hasCapability('dim')) {
+                    this.log(`Migrating fan-level capability from "dim" to "fan_dmaker_fanlevel" for model ${this.getStoreValue('model')}`);
+                    await this.removeCapability('dim').catch((error) => this.error('Failed to remove dim capability', error));
+                }
+                if (!this.hasCapability('fan_dmaker_fanlevel')) {
+                    await this.addCapability('fan_dmaker_fanlevel').catch((error) => this.error('Failed to add fan_dmaker_fanlevel capability', error));
+                }
+                await this.setCapabilityOptions('fan_dmaker_fanlevel', {
+                    values: Array.from({ length: this.deviceProperties.fanLevelMax }, (_, i) => ({
+                        id: String(i + 1),
+                        title: String(i + 1)
+                    }))
+                }).catch((error) => this.error('Failed to set fan_dmaker_fanlevel capability options', error));
             }
 
             /* Vertical swing (up/down) — only for models whose spec exposes it (e.g. p70 / p76) */
@@ -505,39 +517,63 @@ class AdvancedDmakerFanMiotDevice extends Device {
             });
 
             /* ─── DIM / gear fan‑level (model-specific range) ─── */
-            this.registerCapabilityListener('dim', async (value) => {
-                try {
-                    if (!this.miio) throw new Error('miio not initialised');
+            if (this.hasCapability('dim')) {
+                this.registerCapabilityListener('dim', async (value) => {
+                    try {
+                        if (!this.miio) throw new Error('miio not initialised');
 
-                    const prop = this.deviceProperties.set_properties.fan_level ?? { siid: 2, piid: 2 }; // fall‑back for older models
-                    let fanLevelValue;
-                    if (this.deviceProperties.usesZeroIndexing) {
-                        fanLevelValue = this.util.clamp(Math.round(value) - 1, 0, 3);
-                    } else if (this.deviceProperties.fanLevelMax !== undefined) {
-                        fanLevelValue = this.util.clamp(Math.round(value), 1, this.deviceProperties.fanLevelMax);
-                    } else {
-                        fanLevelValue = value;
+                        const prop = this.deviceProperties.set_properties.fan_level ?? { siid: 2, piid: 2 }; // fall‑back for older models
+                        let fanLevelValue;
+                        if (this.deviceProperties.usesZeroIndexing) {
+                            fanLevelValue = this.util.clamp(Math.round(value) - 1, 0, 3);
+                        } else if (this.deviceProperties.fanLevelMax !== undefined) {
+                            fanLevelValue = this.util.clamp(Math.round(value), 1, this.deviceProperties.fanLevelMax);
+                        } else {
+                            fanLevelValue = value;
+                        }
+
+                        return await this.miio.call(
+                            'set_properties',
+                            [
+                                {
+                                    did: 'fan_level',
+                                    siid: prop.siid,
+                                    piid: prop.piid,
+                                    value: fanLevelValue
+                                }
+                            ],
+                            { retries: 1 }
+                        );
+                    } catch (error) {
+                        this.error(error);
+                        this.setUnavailable(this.homey.__('unreachable')).catch(this.error);
+                        this.createDevice();
+                        return Promise.reject(error);
                     }
+                });
+            }
 
-                    return await this.miio.call(
-                        'set_properties',
-                        [
-                            {
-                                did: 'fan_level',
-                                siid: prop.siid,
-                                piid: prop.piid,
-                                value: fanLevelValue
-                            }
-                        ],
-                        { retries: 1 }
-                    );
-                } catch (error) {
-                    this.error(error);
-                    this.setUnavailable(this.homey.__('unreachable')).catch(this.error);
-                    this.createDevice();
-                    return Promise.reject(error);
-                }
-            });
+            if (this.hasCapability('fan_dmaker_fanlevel')) {
+                this.registerCapabilityListener('fan_dmaker_fanlevel', async (value) => {
+                    try {
+                        if (!this.miio) throw new Error('miio not initialised');
+
+                        const prop = this.deviceProperties.set_properties.fan_level ?? { siid: 2, piid: 2 };
+                        const fanLevelValue = this.util.clamp(Math.round(Number(value)), 1, this.deviceProperties.fanLevelMax);
+
+                        return await this.miio.call(
+                            'set_properties',
+                            [{ did: 'fan_level', siid: prop.siid, piid: prop.piid, value: fanLevelValue }],
+                            { retries: 1 }
+                        );
+                    } catch (error) {
+                        this.error(error);
+                        this.setUnavailable(this.homey.__('unreachable')).catch(this.error);
+                        this.createDevice();
+                        return Promise.reject(error);
+                    }
+                });
+            }
 
             this.registerCapabilityListener('fan_zhimi_angle', async (value) => {
                 try {
@@ -640,7 +676,11 @@ class AdvancedDmakerFanMiotDevice extends Device {
             /* capabilities */
             await this.updateCapabilityValue('onoff', onoff.value);
             await this.updateCapabilityValue('oscillating', !!oscillating_mode.value);
-            await this.updateCapabilityValue('dim', this.deviceProperties.usesZeroIndexing ? +dim_fan_level.value + 1 : +dim_fan_level.value);
+            if (this.hasCapability('fan_dmaker_fanlevel')) {
+                await this.updateCapabilityValue('fan_dmaker_fanlevel', dim_fan_level.value.toString());
+            } else if (this.hasCapability('dim')) {
+                await this.updateCapabilityValue('dim', this.deviceProperties.usesZeroIndexing ? +dim_fan_level.value + 1 : +dim_fan_level.value);
+            }
 
             if (this.hasCapability('fan_zhimi_angle')) {
                 const dim_oscillating_mode_angle = result.find((obj) => obj.did === 'oscillating_mode_angle');
