@@ -36461,6 +36461,28 @@
       "setable": false,
       "icon": "/assets/icons/measure_gas_density.svg"
     },
+    "measure_gateway_uptime": {
+      "type": "number",
+      "title": {
+        "en": "Uptime",
+        "nl": "Uptime",
+        "de": "Betriebszeit",
+        "fr": "Temps de fonctionnement"
+      },
+      "getable": true,
+      "setable": false,
+      "decimals": 1,
+      "min": 0,
+      "units": {
+        "en": "h",
+        "nl": "u",
+        "de": "Std",
+        "fr": "h"
+      },
+      "uiComponent": "sensor",
+      "insights": true,
+      "icon": "/assets/icons/gateway-uptime.svg"
+    },
     "measure_petfeeder_eaten_food_daily": {
       "type": "number",
       "title": {

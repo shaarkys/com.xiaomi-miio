@@ -331,8 +331,64 @@ class GatewayDevice extends Device {
         return true;
     }
 
+    /* Gateway uptime, read from the device's own miIO.info response (seconds
+     * since the gateway itself last booted). Support for this field is not
+     * documented/guaranteed across firmwares, so it is detected at runtime:
+     * the capability is only ever added to a device once a valid value has
+     * actually been observed on that specific unit, never added by default.
+     * Throttled to roughly once per hour since it changes slowly and this
+     * device is already known to be sensitive to extra request load. */
+    async updateGatewayUptime() {
+        try {
+            if (!this.miio || typeof this.miio.call !== 'function') return;
+            if (this.getStoreValue('model') !== 'lumi.gateway.v3') return;
+
+            const now = Date.now();
+            const oneHourMs = 60 * 60 * 1000;
+            if (this._lastUptimeCheck && now - this._lastUptimeCheck < oneHourMs) return;
+            this._lastUptimeCheck = now;
+
+            const info = await this.miio.call('miIO.info', [], { retries: 1 });
+            const uptimeSeconds = [info?.uptime, info?.life].find(
+                (value) => typeof value === 'number' && Number.isFinite(value) && value >= 0
+            );
+
+            if (typeof uptimeSeconds !== 'number') {
+                /* confirmed field names (uptime/life) were both absent on this
+                 * reply; log the raw keys once (no values, in case of sensitive
+                 * data) so an unexpected field name can be identified */
+                this.log('[UPTIME] miIO.info reply had neither uptime nor life field. Keys present:', Object.keys(info || {}).join(', '));
+                return;
+            }
+
+            const uptimeHours = Math.round((uptimeSeconds / 3600) * 10) / 10;
+
+            /* NOTE: this deliberately bypasses updateCapabilityValue(). That
+             * helper refuses to add a NEW capability to any device matching
+             * miio's 'cap:children' capability (the gateway matches it, since
+             * it manages Zigbee/light sub-devices) - a guard meant to avoid
+             * confusing child-device capabilities with parent ones, which
+             * incorrectly also blocks unrelated device-level capabilities like
+             * this one. Uptime is a property of the gateway itself, not of any
+             * child, so it is safe to add/set directly here. */
+            if (!this.hasCapability('measure_gateway_uptime')) {
+                this.log('[UPTIME] Adding measure_gateway_uptime capability (first valid reading: ' + uptimeHours + 'h)');
+                await this.addCapability('measure_gateway_uptime');
+            }
+            if (this.getCapabilityValue('measure_gateway_uptime') !== uptimeHours) {
+                await this.setCapabilityValue('measure_gateway_uptime', uptimeHours);
+            }
+        } catch (error) {
+            /* optional diagnostic value only; never let this affect the main poll */
+            this.error('[UPTIME] Failed to read gateway uptime:', error?.message);
+        }
+    }
+
     async retrieveDeviceData() {
         try {
+            /* optional, self-throttled, never blocks the rest of the poll */
+            await this.updateGatewayUptime();
+
             /* onoff */
             if (this.miio.matches('cap:power')) {
                 const power = await this.miio.power();
