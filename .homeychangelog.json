@@ -574,5 +574,8 @@
   },
   "3.5.12": {
     "en": "Added dmaker.fan.p8 support with correct MIoT mappings, three-level fan control, model-specific capabilities, and regression coverage. Credit @giokerst"
+  },
+  "3.5.13": {
+    "en": "Uptime support for lumi.gateway.v3,Fixed repeated offline/timeout issues on Xiaomi Robot Vacuum X20 Pro, Smart Pet Food Feeder, Scent Diffuser, and select DMaker Fan/Leshow Humidifier models, Fixed rapid/duplicate reconnect attempts on WiFi devices that could flood a device with overlapping requests after a connection drop or the hourly refresh cycle."
   }
 }
