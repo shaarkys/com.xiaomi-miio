@@ -19,6 +19,68 @@
     "value": true
   },
   {
+    "id": "child_lock",
+    "type": "checkbox",
+    "label": {
+      "en": "Child lock",
+      "nl": "Kinderslot",
+      "da": "Børnelås",
+      "de": "Kindersicherung",
+      "es": "Bloqueo infantil",
+      "fr": "Verrouillage enfant",
+      "it": "Blocco bambini",
+      "no": "Barnesikring",
+      "sv": "Barnlås",
+      "pl": "Blokada rodzicielska",
+      "ru": "Блокировка от детей",
+      "ko": "어린이 잠금"
+    },
+    "value": false
+  },
+  {
+    "id": "no_disturb",
+    "type": "checkbox",
+    "label": {
+      "en": "Do not disturb",
+      "nl": "Niet storen",
+      "da": "Forstyr ikke",
+      "de": "Nicht stören",
+      "es": "No molestar",
+      "fr": "Ne pas déranger",
+      "it": "Non disturbare",
+      "no": "Ikke forstyrr",
+      "sv": "Stör ej",
+      "pl": "Nie przeszkadzać",
+      "ru": "Не беспокоить",
+      "ko": "방해 금지"
+    },
+    "value": false
+  },
+  {
+    "id": "out_water_interval",
+    "type": "number",
+    "label": {
+      "en": "Watering interval (minutes)",
+      "nl": "Waterinterval (minuten)",
+      "da": "Vandingsinterval (minutter)",
+      "de": "Wasserintervall (Minuten)",
+      "es": "Intervalo de agua (minutos)",
+      "fr": "Intervalle d'eau (minutes)",
+      "it": "Intervallo di erogazione (minuti)",
+      "no": "Vanningsintervall (minutter)",
+      "sv": "Vattenintervall (minuter)",
+      "pl": "Interwał podawania wody (minuty)",
+      "ru": "Интервал подачи воды (минуты)",
+      "ko": "급수 간격(분)"
+    },
+    "value": 30,
+    "attr": {
+      "min": 10,
+      "max": 120,
+      "step": 5
+    }
+  },
+  {
     "id": "filter_life_remaining",
     "type": "label",
     "label": {

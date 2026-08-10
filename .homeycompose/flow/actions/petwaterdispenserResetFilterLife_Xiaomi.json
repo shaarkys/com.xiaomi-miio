@@ -1,0 +1,40 @@
+{
+  "title": {
+    "en": "Reset filter life",
+    "nl": "Filterlevensduur resetten",
+    "da": "Nulstil filterlevetid",
+    "de": "Filterlebensdauer zurücksetzen",
+    "es": "Restablecer vida útil del filtro",
+    "fr": "Réinitialiser la durée du filtre",
+    "it": "Reimposta durata filtro",
+    "no": "Tilbakestill filterlevetid",
+    "sv": "Återställ filterlivslängd",
+    "pl": "Zresetuj żywotność filtra",
+    "ru": "Сбросить ресурс фильтра",
+    "ko": "필터 수명 재설정"
+  },
+  "args": [
+    {
+      "name": "device",
+      "type": "device",
+      "placeholder": {
+        "en": "Select Pet Fountain",
+        "nl": "Selecteer Huisdierfontein",
+        "da": "Vælg Kæledyrsfountain",
+        "de": "Wählen Sie Haustierbrunnen",
+        "es": "Seleccione Fuente para Mascotas",
+        "fr": "Sélectionnez Fontaine pour Animaux",
+        "it": "Seleziona Fontana per Animali",
+        "no": "Velg Kjæledyrfontene",
+        "sv": "Välj Husdjursfontän",
+        "pl": "Wybierz Fontannę dla Zwierząt",
+        "ru": "Выберите фонтан для животных",
+        "ko": "펫 분수대 선택"
+      },
+      "filter": "driver_id=pet_waterer_xiaomi"
+    }
+  ],
+  "platforms": [
+    "local"
+  ]
+}

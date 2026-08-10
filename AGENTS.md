@@ -80,7 +80,17 @@ The primary Codex session acts as the architect and owns:
 8. execution of verification commands;
 9. final acceptance.
 
-The primary session should use GPT-5.6 Sol with High reasoning when this model and reasoning level are available.
+The primary Codex session should normally use GPT-5.6 Luna with High reasoning.
+
+Escalate the primary session to GPT-5.6 Terra when the task requires
+material architectural or implementation judgment that Luna cannot
+reliably resolve.
+
+Use GPT-5.6 Sol only for unusually difficult, ambiguous, security-sensitive,
+or high-risk work, or after Luna/Terra has demonstrably failed to resolve
+the problem.
+
+Do not escalate models solely because Sol Advisor orchestration is required.
 
 The expected custom agent types are:
 

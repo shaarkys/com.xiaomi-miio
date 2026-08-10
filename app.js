@@ -457,6 +457,30 @@ class XiaomiMiioApp extends Homey.App {
         }
       });
 
+    // Xiaomi Smart Pet Fountain 2 (IV02). Register this card once at app
+    // scope so reconnecting multiple device instances cannot add duplicate
+    // listeners.
+    this.homey.flow.getActionCard('petwaterdispenserMmggMode_Xiaomi')
+      .registerRunListener(async (args) => {
+        try {
+          return await args.device.triggerCapabilityListener('petwaterdispenser_mmgg_mode_3', args.mode);
+        } catch (error) {
+          return Promise.reject(error.message || error);
+        }
+      });
+
+    this.homey.flow.getActionCard('petwaterdispenserResetFilterLife_Xiaomi')
+      .registerRunListener(async (args) => {
+        try {
+          if (typeof args.device?.resetFilterLife !== 'function') {
+            throw new Error('Filter-life reset is not supported by this device');
+          }
+          return await args.device.resetFilterLife();
+        } catch (error) {
+          return Promise.reject(error.message || error);
+        }
+      });
+
     this.homey.flow.getActionCard('petfeederServeFood')
       .registerRunListener(async (args) => {
         try {
