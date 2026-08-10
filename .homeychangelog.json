@@ -580,5 +580,8 @@
   },
   "3.5.14": {
     "en": "dmaker.fan.p8 fan level now shows as discrete levels (1/2/3) instead of 100%/200%/300"
+  },
+  "3.5.15": {
+    "en": "Improved Xiaomi Smart Pet Fountain 2 (IV02) support"
   }
 }
