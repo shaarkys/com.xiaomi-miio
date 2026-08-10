@@ -9,6 +9,10 @@ const MULTICAST_PORT = 4321;
 
 const SERVER_PORT = 9898;
 
+function isExpectedSocketCloseError(error) {
+	return error && (error.code === 'ERR_SOCKET_DGRAM_NOT_RUNNING' || error.code === 'ERR_SOCKET_CLOSED');
+}
+
 /**
  * Local Developer API for the gateway. Used to read data from the gateway
  * and connected devices.
@@ -21,57 +25,97 @@ module.exports = class DeveloperApi extends EventEmitter {
 
 		this.address = address;
 		this.port = SERVER_PORT;
+		this._destroyed = false;
+		this._readyTimer = null;
 
 		// Bind a custom function instead of using directly to skip resolving debug before id is set
 		this.debug = function() { parent.debug.apply(parent, arguments); };
+		this._onMessage = this._onMessage.bind(this);
+		this._onListening = this._onListening.bind(this);
+		this._onSocketError = this._onSocketError.bind(this);
 
 		this.socket = dgram.createSocket({
 			type: 'udp4',
 			reuseAddr: true
 		});
 
-		this.socket.on('message', this._onMessage.bind(this));
-		this.socket.on('listening', () => {
-			// Add membership to the multicast addresss for all network interfaces
-			const interfaces = os.networkInterfaces();
-			for(const name of Object.keys(interfaces)) {
-				const addresses = interfaces[name];
-
-				for(const addr of addresses) {
-					if(addr.family === 'IPv4') {
-						this.socket.addMembership(MULTICAST_ADDRESS, addr.address);
-					}
-				}
-			}
-
-			// Broadcast a whois to find all gateways
-			const json = JSON.stringify({
-				cmd: 'whois'
-			});
-			this.debug('DEV BROADCAST ->', json);
-			this.socket.send(json, 0, json.length, MULTICAST_PORT, MULTICAST_ADDRESS);
-
-			// Give us one second to discover the gateway
-			setTimeout(() => {
-				this.debug('DEV <- Timeout for whois');
-				this.emit('ready');
-			}, 1000);
-		});
+		this.socket.on('message', this._onMessage);
+		this.socket.on('listening', this._onListening);
+		this.socket.on('error', this._onSocketError);
 		this.socket.bind({
 			port: SERVER_PORT,
 			exclusive: true
 		});
 	}
 
+	_onListening() {
+		if(this._destroyed) return;
+
+		// Add membership to the multicast addresss for all network interfaces
+		const interfaces = os.networkInterfaces();
+		for(const name of Object.keys(interfaces)) {
+			const addresses = interfaces[name];
+
+			for(const addr of addresses) {
+				if(addr.family === 'IPv4') {
+					this.socket.addMembership(MULTICAST_ADDRESS, addr.address);
+				}
+			}
+		}
+
+		// Broadcast a whois to find all gateways
+		const json = JSON.stringify({
+			cmd: 'whois'
+		});
+		this.debug('DEV BROADCAST ->', json);
+		this._send(json, MULTICAST_PORT, MULTICAST_ADDRESS);
+
+		// Give us one second to discover the gateway
+		this._readyTimer = setTimeout(() => {
+			this._readyTimer = null;
+			if(this._destroyed) return;
+
+			this.debug('DEV <- Timeout for whois');
+			this.emit('ready');
+		}, 1000);
+	}
+
 	destroy() {
-		this.socket.close();
+		if(this._destroyed) return;
+
+		this._destroyed = true;
+		if(this._readyTimer) {
+			clearTimeout(this._readyTimer);
+			this._readyTimer = null;
+		}
+
+		this.socket.removeListener('message', this._onMessage);
+		this.socket.removeListener('listening', this._onListening);
+		// Retain the error listener to absorb errors emitted while the socket closes.
+		try {
+			this.socket.close();
+		} catch(error) {
+			if(! isExpectedSocketCloseError(error)) throw error;
+		}
 	}
 
 	send(data) {
+		if(this._destroyed) return;
+
 		const json = JSON.stringify(data);
 		this.debug('DEV ->', json);
 
-		this.socket.send(json, 0, json.length, this.port, this.address);
+		this._send(json, this.port, this.address);
+	}
+
+	_send(json, port, address) {
+		if(this._destroyed) return;
+
+		this.socket.send(json, 0, json.length, port, address, err => {
+			if(err && ! this._destroyed) {
+				this.debug('DEV send failed', err);
+			}
+		});
 	}
 
 	read(sid) {
@@ -82,6 +126,8 @@ module.exports = class DeveloperApi extends EventEmitter {
 	}
 
 	_onMessage(msg) {
+		if(this._destroyed) return;
+
 		let data;
 		try {
 			this.debug('DEV <-', msg.toString());
@@ -116,5 +162,11 @@ module.exports = class DeveloperApi extends EventEmitter {
 				this.emit('properties:' + data.sid, parsed);
 			}
 		}
+	}
+
+	_onSocketError(error) {
+		if(this._destroyed) return;
+
+		this.debug('DEV socket error', error);
 	}
 };

@@ -124,7 +124,14 @@ const Gateway = Thing.type(Parent => class Gateway extends Parent.with(MiioApi, 
 			.then(() => this._updateDeviceList())
 			.then(() => {
 				// Update devices once every half an hour
-				this._deviceListTimer = setInterval(this._updateDeviceList.bind(this), 30 * 60 * 1000);
+				this._deviceListTimer = setInterval(() => {
+					try {
+						this._updateDeviceList()
+							.catch(err => this.debug('Gateway device list refresh failed', err));
+					} catch(error) {
+						this.debug('Gateway device list refresh failed', error);
+					}
+				}, 30 * 60 * 1000);
 			});
 	}
 
