@@ -583,5 +583,8 @@
   },
   "3.5.15": {
     "en": "Improved Xiaomi Smart Pet Fountain 2 (IV02) support"
+  },
+  "3.5.16": {
+    "en": "Underlying miio library patches to prevent some of the crashes"
   }
 }
