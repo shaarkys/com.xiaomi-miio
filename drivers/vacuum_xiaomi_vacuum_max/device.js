@@ -570,8 +570,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                     return Promise.reject(`No valid room selected. Requested: "${args.room}". Available: ${list_room.map((r) => r.name).join(', ')}.`);
                 }
 
-                let room_list = selected_ids.join(',');
-                if (selected_ids.length === 1) room_list += ',' + room_list; // single room workaround
+                const room_list = args.device._serializeRoomList(selected_ids);
 
                 // Only push properties that the model supports
                 const props = [];
@@ -1363,6 +1362,14 @@ class XiaomiVacuumMiotDeviceMax extends Device {
 
     getModelIdentifier() {
         return this._model || (this.getStoreValue ? this.getStoreValue('model') : undefined);
+    }
+
+    _serializeRoomList(selectedIds) {
+        const roomList = selectedIds.join(',');
+        if (selectedIds.length === 1 && this.getModelIdentifier() !== 'xiaomi.vacuum.d102gl') {
+            return `${roomList},${roomList}`;
+        }
+        return roomList;
     }
 
     _queuePropertyOperation(operation) {
