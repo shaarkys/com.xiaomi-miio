@@ -586,5 +586,8 @@
   },
   "3.5.16": {
     "en": "Underlying miio library patches to prevent some of the crashes"
+  },
+  "3.5.17": {
+    "en": "Fixed single-room cleaning running twice on Xiaomi Robot Vacuum X20 Pro (d102gl)."
   }
 }
