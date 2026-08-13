@@ -589,5 +589,8 @@
   },
   "3.5.17": {
     "en": "Fixed single-room cleaning running twice on Xiaomi Robot Vacuum X20 Pro (d102gl)."
+  },
+  "3.5.18": {
+    "en": "Added X20 Pro Flow cards for raw robot and base-station status changes."
   }
 }
