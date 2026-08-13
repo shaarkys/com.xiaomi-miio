@@ -50,9 +50,212 @@
           }
         }
       ]
+    },
+    {
+      "id": "x20_raw_status_changed",
+      "title": {
+        "en": "X20 Pro raw status changed"
+      },
+      "titleFormatted": {
+        "en": "X20 Pro raw status changed to [[status]]"
+      },
+      "tokens": [
+        {
+          "name": "status_code",
+          "type": "number",
+          "title": {
+            "en": "status code"
+          },
+          "example": 4
+        },
+        {
+          "name": "status_name",
+          "type": "string",
+          "title": {
+            "en": "status name"
+          },
+          "example": "Working"
+        },
+        {
+          "name": "previous_status_code",
+          "type": "number",
+          "title": {
+            "en": "previous status code"
+          },
+          "example": 1
+        },
+        {
+          "name": "previous_status_name",
+          "type": "string",
+          "title": {
+            "en": "previous status name"
+          },
+          "example": "Standby"
+        }
+      ],
+      "args": [
+        {
+          "name": "status",
+          "title": {
+            "en": "X20 Pro raw status"
+          },
+          "type": "dropdown",
+          "values": [
+            { "id": "1", "label": { "en": "Standby" } },
+            { "id": "2", "label": { "en": "Charging" } },
+            { "id": "3", "label": { "en": "Charging for resume-clean" } },
+            { "id": "4", "label": { "en": "Working" } },
+            { "id": "5", "label": { "en": "Paused" } },
+            { "id": "6", "label": { "en": "Returning to charger" } },
+            { "id": "7", "label": { "en": "Washing mop" } },
+            { "id": "8", "label": { "en": "Remote control" } },
+            { "id": "9", "label": { "en": "Fully charged" } },
+            { "id": "10", "label": { "en": "Mapping" } },
+            { "id": "11", "label": { "en": "Updating" } },
+            { "id": "12", "label": { "en": "Base station working" } },
+            { "id": "13", "label": { "en": "Returning to charger" } },
+            { "id": "14", "label": { "en": "Base station working" } },
+            { "id": "15", "label": { "en": "Error" } },
+            { "id": "16", "label": { "en": "Sweep & mop" } },
+            { "id": "17", "label": { "en": "Mopping" } },
+            { "id": "18", "label": { "en": "Mapping paused" } },
+            { "id": "19", "label": { "en": "Resume-clean return" } },
+            { "id": "20", "label": { "en": "Mid-job return to base" } },
+            { "id": "21", "label": { "en": "Mapping return to charger" } }
+          ]
+        }
+      ],
+      "platforms": ["local"]
+    },
+    {
+      "id": "x20_base_station_status_changed",
+      "title": {
+        "en": "X20 Pro base-station status changed"
+      },
+      "titleFormatted": {
+        "en": "X20 Pro base-station status changed to [[mode]]"
+      },
+      "tokens": [
+        {
+          "name": "base_status_code",
+          "type": "number",
+          "title": {
+            "en": "base-station status code"
+          },
+          "example": 1
+        },
+        {
+          "name": "base_status_name",
+          "type": "string",
+          "title": {
+            "en": "base-station status name"
+          },
+          "example": "Drying"
+        },
+        {
+          "name": "previous_base_status_code",
+          "type": "number",
+          "title": {
+            "en": "previous base-station status code"
+          },
+          "example": 0
+        },
+        {
+          "name": "previous_base_status_name",
+          "type": "string",
+          "title": {
+            "en": "previous base-station status name"
+          },
+          "example": "Idle"
+        }
+      ],
+      "args": [
+        {
+          "name": "mode",
+          "title": {
+            "en": "X20 Pro base-station mode"
+          },
+          "type": "dropdown",
+          "values": [
+            { "id": "0", "label": { "en": "Idle" } },
+            { "id": "1", "label": { "en": "Drying" } },
+            { "id": "2", "label": { "en": "Dust collection" } },
+            { "id": "3", "label": { "en": "Mop washing" } }
+          ]
+        }
+      ],
+      "platforms": ["local"]
     }
   ],
-  "conditions": [],
+  "conditions": [
+    {
+      "id": "x20_raw_status_is",
+      "title": {
+        "en": "X20 Pro raw status is"
+      },
+      "titleFormatted": {
+        "en": "X20 Pro raw status is [[status]]"
+      },
+      "args": [
+        {
+          "name": "status",
+          "title": {
+            "en": "X20 Pro raw status"
+          },
+          "type": "dropdown",
+          "values": [
+            { "id": "1", "label": { "en": "Standby" } },
+            { "id": "2", "label": { "en": "Charging" } },
+            { "id": "3", "label": { "en": "Charging for resume-clean" } },
+            { "id": "4", "label": { "en": "Working" } },
+            { "id": "5", "label": { "en": "Paused" } },
+            { "id": "6", "label": { "en": "Returning to charger" } },
+            { "id": "7", "label": { "en": "Washing mop" } },
+            { "id": "8", "label": { "en": "Remote control" } },
+            { "id": "9", "label": { "en": "Fully charged" } },
+            { "id": "10", "label": { "en": "Mapping" } },
+            { "id": "11", "label": { "en": "Updating" } },
+            { "id": "12", "label": { "en": "Base station working" } },
+            { "id": "13", "label": { "en": "Returning to charger" } },
+            { "id": "14", "label": { "en": "Base station working" } },
+            { "id": "15", "label": { "en": "Error" } },
+            { "id": "16", "label": { "en": "Sweep & mop" } },
+            { "id": "17", "label": { "en": "Mopping" } },
+            { "id": "18", "label": { "en": "Mapping paused" } },
+            { "id": "19", "label": { "en": "Resume-clean return" } },
+            { "id": "20", "label": { "en": "Mid-job return to base" } },
+            { "id": "21", "label": { "en": "Mapping return to charger" } }
+          ]
+        }
+      ],
+      "platforms": ["local"]
+    },
+    {
+      "id": "x20_base_station_status_is",
+      "title": {
+        "en": "X20 Pro base-station status is"
+      },
+      "titleFormatted": {
+        "en": "X20 Pro base-station status is [[mode]]"
+      },
+      "args": [
+        {
+          "name": "mode",
+          "title": {
+            "en": "X20 Pro base-station mode"
+          },
+          "type": "dropdown",
+          "values": [
+            { "id": "0", "label": { "en": "Idle" } },
+            { "id": "1", "label": { "en": "Drying" } },
+            { "id": "2", "label": { "en": "Dust collection" } },
+            { "id": "3", "label": { "en": "Mop washing" } }
+          ]
+        }
+      ],
+      "platforms": ["local"]
+    }
+  ],
   "actions": [
     {
       "id": "advanced_room_cleaning",

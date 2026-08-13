@@ -104,6 +104,39 @@ const STATUS_MAPPING_D101 = {
     stopped_error: [15]
 };
 
+const X20_RAW_STATUS_NAMES = {
+    1: 'Standby',
+    2: 'Charging',
+    3: 'Charging for resume-clean',
+    4: 'Working',
+    5: 'Paused',
+    6: 'Returning to charger',
+    7: 'Washing mop',
+    8: 'Remote control',
+    9: 'Fully charged',
+    10: 'Mapping',
+    11: 'Updating',
+    12: 'Base station working',
+    13: 'Returning to charger',
+    14: 'Base station working',
+    15: 'Error',
+    16: 'Sweep & mop',
+    17: 'Mopping',
+    18: 'Mapping paused',
+    19: 'Resume-clean return',
+    20: 'Mid-job return to base',
+    21: 'Mapping return to charger'
+};
+
+const X20_BASE_STATION_MODE_NAMES = {
+    0: 'Idle',
+    1: 'Drying',
+    2: 'Dust collection',
+    3: 'Mop washing'
+};
+
+const X20_MODEL = 'xiaomi.vacuum.d102gl';
+
 /** Model → property-set */
 const mapping = {
     'xiaomi.vacuum.d109gl': 'properties_d109gl',
@@ -387,6 +420,196 @@ class XiaomiVacuumMiotDeviceMax extends Device {
         return found;
     }
 
+    _isX20ProDevice() {
+        const model = typeof this.getModelIdentifier === 'function' ? this.getModelIdentifier() : this._model;
+        return model === X20_MODEL;
+    }
+
+    _resetX20StatusTracking() {
+        this._x20RawStatusCode = undefined;
+        this._x20RawStatusName = undefined;
+        this._x20PreviousRawStatusCode = undefined;
+        this._x20PreviousRawStatusName = undefined;
+        this._x20BaseStationMode = undefined;
+        this._x20BaseStationModeName = undefined;
+        this._x20PreviousBaseStationMode = undefined;
+        this._x20PreviousBaseStationModeName = undefined;
+    }
+
+    _coerceFiniteX20Number(value) {
+        if (value === null || value === undefined || typeof value === 'boolean') return null;
+        if (typeof value === 'string' && value.trim() === '') return null;
+        try {
+            const numericValue = Number(value);
+            return Number.isFinite(numericValue) ? numericValue : null;
+        } catch (_) {
+            return null;
+        }
+    }
+
+    _getX20RawStatusName(code) {
+        return Object.prototype.hasOwnProperty.call(X20_RAW_STATUS_NAMES, code) ? X20_RAW_STATUS_NAMES[code] : `Status ${code}`;
+    }
+
+    _getX20BaseStationModeName(mode) {
+        return Object.prototype.hasOwnProperty.call(X20_BASE_STATION_MODE_NAMES, mode) ? X20_BASE_STATION_MODE_NAMES[mode] : `Mode ${mode}`;
+    }
+
+    _parseX20BaseStationMode(rawValue) {
+        let value = rawValue;
+        for (let depth = 0; depth < 3; depth += 1) {
+            if (value && typeof value === 'object') {
+                if (Array.isArray(value)) return null;
+                return this._coerceFiniteX20Number(value.mode);
+            }
+            if (typeof value !== 'string') return null;
+            const text = value.trim();
+            if (!text || text.length > 4096) return null;
+            try {
+                value = JSON.parse(text);
+            } catch (_) {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    _getX20PollProperty(result, propName, siid, piid) {
+        if (!Array.isArray(result)) return undefined;
+        const propertyDefinitions = this.deviceProperties && Array.isArray(this.deviceProperties.get_properties)
+            ? this.deviceProperties.get_properties
+            : [];
+        const definition = propertyDefinitions.find((property) => property.did === propName);
+        const propertySiid = definition ? definition.siid : siid;
+        const propertyPiid = definition ? definition.piid : piid;
+        return result.find((property) => property && property.siid === propertySiid && property.piid === propertyPiid);
+    }
+
+    _x20RawStatusIs(selector) {
+        if (typeof this._isX20ProDevice !== 'function' || !this._isX20ProDevice()) return false;
+        const selectedCode = this._coerceFiniteX20Number(selector);
+        const currentCode = this._coerceFiniteX20Number(this._x20RawStatusCode);
+        return selectedCode !== null && currentCode !== null && selectedCode === currentCode;
+    }
+
+    _x20BaseStationStatusIs(selector) {
+        if (typeof this._isX20ProDevice !== 'function' || !this._isX20ProDevice()) return false;
+        const selectedMode = this._coerceFiniteX20Number(selector);
+        const currentMode = this._coerceFiniteX20Number(this._x20BaseStationMode);
+        return selectedMode !== null && currentMode !== null && selectedMode === currentMode;
+    }
+
+    async _triggerX20StatusTransition(kind, currentValue, previousValue) {
+        const raw = kind === 'raw';
+        const cardId = raw ? 'x20_raw_status_changed' : 'x20_base_station_status_changed';
+        const currentName = raw ? this._getX20RawStatusName(currentValue) : this._getX20BaseStationModeName(currentValue);
+        const previousName = raw ? this._getX20RawStatusName(previousValue) : this._getX20BaseStationModeName(previousValue);
+        const tokens = raw
+            ? {
+                  status_code: currentValue,
+                  status_name: currentName,
+                  previous_status_code: previousValue,
+                  previous_status_name: previousName
+              }
+            : {
+                  base_status_code: currentValue,
+                  base_status_name: currentName,
+                  previous_base_status_code: previousValue,
+                  previous_base_status_name: previousName
+              };
+        const state = raw ? { status: currentValue } : { mode: currentValue };
+
+        try {
+            const card = this.homey.flow.getDeviceTriggerCard(cardId);
+            await card.trigger(this, tokens, state);
+        } catch (error) {
+            if (typeof this.error === 'function') this.error(`[FLOW] ${cardId} trigger failed`, error);
+        }
+    }
+
+    async _observeX20StatusPoll(result) {
+        if (!this._isX20ProDevice() || !Array.isArray(result)) return;
+
+        const rawStatusProperty = this._getX20PollProperty(result, 'device_status', 2, 2);
+        const rawStatusCode = this._coerceFiniteX20Number(rawStatusProperty && rawStatusProperty.value);
+        if (rawStatusCode !== null) {
+            const previousStatusCode = this._coerceFiniteX20Number(this._x20RawStatusCode);
+            const previousStatusName = this._x20RawStatusName;
+            const statusName = this._getX20RawStatusName(rawStatusCode);
+            this._x20RawStatusCode = rawStatusCode;
+            this._x20RawStatusName = statusName;
+            if (previousStatusCode !== null && previousStatusCode !== rawStatusCode) {
+                this._x20PreviousRawStatusCode = previousStatusCode;
+                this._x20PreviousRawStatusName = previousStatusName || this._getX20RawStatusName(previousStatusCode);
+                await this._triggerX20StatusTransition('raw', rawStatusCode, previousStatusCode);
+            }
+        }
+
+        const baseStatusProperty = this._getX20PollProperty(result, 'base_station_working_status', 2, 18);
+        const baseStationMode = this._parseX20BaseStationMode(baseStatusProperty && baseStatusProperty.value);
+        if (baseStationMode !== null) {
+            const previousBaseStationMode = this._coerceFiniteX20Number(this._x20BaseStationMode);
+            const previousBaseStationModeName = this._x20BaseStationModeName;
+            const baseStationModeName = this._getX20BaseStationModeName(baseStationMode);
+            this._x20BaseStationMode = baseStationMode;
+            this._x20BaseStationModeName = baseStationModeName;
+            if (previousBaseStationMode !== null && previousBaseStationMode !== baseStationMode) {
+                this._x20PreviousBaseStationMode = previousBaseStationMode;
+                this._x20PreviousBaseStationModeName = previousBaseStationModeName || this._getX20BaseStationModeName(previousBaseStationMode);
+                await this._triggerX20StatusTransition('base', baseStationMode, previousBaseStationMode);
+            }
+        }
+    }
+
+    _registerX20FlowListeners() {
+        if (!this.homey || !this.homey.flow) return;
+        const isX20ProDevice = (device) => {
+            if (!device) return false;
+            let model;
+            try {
+                model = typeof device.getModelIdentifier === 'function' ? device.getModelIdentifier() : device._model;
+            } catch (_) {
+                model = device._model;
+            }
+            return model === X20_MODEL;
+        };
+        const registerTrigger = (cardId, selector) => {
+            try {
+                const card = this.homey.flow.getDeviceTriggerCard(cardId);
+                if (card && typeof card.registerRunListener === 'function') {
+                    card.registerRunListener(async (args, state) => {
+                        const device = args && args.device;
+                        if (!device || !isX20ProDevice(device)) return false;
+                        const selected = this._coerceFiniteX20Number(args && args[selector]);
+                        const current = this._coerceFiniteX20Number(state && state[selector]);
+                        return selected !== null && current !== null && selected === current;
+                    });
+                }
+            } catch (error) {
+                if (typeof this.error === 'function') this.error(`[FLOW] Failed to register ${cardId}`, error);
+            }
+        };
+        const registerCondition = (cardId, selector, conditionMethod) => {
+            try {
+                const card = this.homey.flow.getConditionCard(cardId);
+                if (card && typeof card.registerRunListener === 'function') {
+                    card.registerRunListener(async (args) => {
+                        const device = args && args.device;
+                        if (!device || !isX20ProDevice(device) || typeof device[conditionMethod] !== 'function') return false;
+                        return device[conditionMethod](args[selector]);
+                    });
+                }
+            } catch (error) {
+                if (typeof this.error === 'function') this.error(`[FLOW] Failed to register ${cardId}`, error);
+            }
+        };
+
+        registerTrigger('x20_raw_status_changed', 'status');
+        registerTrigger('x20_base_station_status_changed', 'mode');
+        registerCondition('x20_raw_status_is', 'status', '_x20RawStatusIs');
+        registerCondition('x20_base_station_status_is', 'mode', '_x20BaseStationStatusIs');
+    }
+
     _getDeviceModel() {
         if (this.miio) {
             return this.miio.miioModel || (this.miio.management && this.miio.management.model) || null;
@@ -398,6 +621,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
         const mappedKey = mapping[model];
         this.deviceProperties = properties[mappedKey] || properties.properties_d109gl;
         this._model = model;
+        if (this._model !== X20_MODEL) this._resetX20StatusTracking();
         if (this._model === 'xiaomi.vacuum.d102gl') {
             this.deviceProperties = {
                 ...this.deviceProperties,
@@ -405,7 +629,8 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             };
             const extraProps = [
                 { did: 'water_check_status', siid: 2, piid: 54 },
-                { did: 'fault_ids', siid: 2, piid: 66 }
+                { did: 'fault_ids', siid: 2, piid: 66 },
+                { did: 'base_station_working_status', siid: 2, piid: 18 }
             ];
             for (const prop of extraProps) {
                 if (!this.deviceProperties.get_properties.some((existing) => existing.did === prop.did)) {
@@ -465,6 +690,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             this._sessionStartAreaRaw = 0;
             this._sessionStartTimeRaw = 0;
             this._isSessionActive = false;
+            this._resetX20StatusTracking();
 
             const model = this.getStoreValue('model');
             this._applyModelProperties(model);
@@ -518,6 +744,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             // FLOW CARDS (optional; if not present, triggers are try/catch’d below)
             this.homey.flow.getDeviceTriggerCard('alertVacuum');
             this.homey.flow.getDeviceTriggerCard('statusVacuum');
+            this._registerX20FlowListeners();
 
             // Advanced room cleaning (works for all, just skips unsupported set_properties)
             this.homey.flow.getActionCard('advanced_room_cleaning').registerRunListener(async (args) => {
@@ -859,6 +1086,12 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             } catch (error) {
                 await this._handleMainPollFailure(error);
                 return;
+            }
+
+            try {
+                await this._observeX20StatusPoll(result);
+            } catch (error) {
+                this.error(`[FLOW] Failed to process X20 Pro status poll: ${this._getSafeErrorDetails(error)}`);
             }
 
             // Fetch rooms only when needed and only until discovered
