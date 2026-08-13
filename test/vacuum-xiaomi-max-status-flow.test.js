@@ -71,14 +71,23 @@ function baseResult(value) {
     return [{ siid: 2, piid: 18, value }];
 }
 
-test('adds the X20 Pro base-station property only to the per-device d102gl clone', () => {
-    const x20 = createVacuumDevice('xiaomi.vacuum.d102gl').device;
-    const sibling = createVacuumDevice('xiaomi.vacuum.d109gl').device;
+test('adds the X20 Pro/Max base-station property only to supported per-device clones', () => {
+    const pro = createVacuumDevice('xiaomi.vacuum.d102gl').device;
+    const max = createVacuumDevice('xiaomi.vacuum.d109gl').device;
+    const sibling = createVacuumDevice('xiaomi.vacuum.c102gl').device;
 
-    assert.ok(x20.deviceProperties.get_properties.some((property) => property.did === 'base_station_working_status'));
+    for (const device of [pro, max]) {
+        assert.equal(device.deviceProperties.get_properties.filter((property) => property.did === 'base_station_working_status').length, 1);
+    }
+    assert.notEqual(pro.deviceProperties.get_properties, max.deviceProperties.get_properties);
+    assert.notEqual(max.deviceProperties.get_properties, sibling.deviceProperties.get_properties);
+    assert.ok(pro.deviceProperties.get_properties.some((property) => property.did === 'water_check_status'));
+    assert.ok(pro.deviceProperties.get_properties.some((property) => property.did === 'fault_ids'));
+    assert.ok(!max.deviceProperties.get_properties.some((property) => property.did === 'water_check_status'));
+    assert.ok(!max.deviceProperties.get_properties.some((property) => property.did === 'fault_ids'));
     assert.ok(!sibling.deviceProperties.get_properties.some((property) => property.did === 'base_station_working_status'));
-    assert.ok(x20.deviceProperties.get_properties.some((property) => property.did === 'water_check_status'));
     assert.ok(!sibling.deviceProperties.get_properties.some((property) => property.did === 'water_check_status'));
+    assert.ok(!sibling.deviceProperties.get_properties.some((property) => property.did === 'fault_ids'));
 });
 
 test('raw X20 status initializes without a trigger, then emits one transition with code/name tokens', async () => {
@@ -108,6 +117,20 @@ test('raw X20 status initializes without a trigger, then emits one transition wi
     assert.equal(flow.events[1].tokens.previous_status_name, 'Working');
 });
 
+test('raw X20 Max status uses the same first-observation and transition behavior', async () => {
+    const { device, flow } = createVacuumDevice('xiaomi.vacuum.d109gl');
+
+    await device._observeX20StatusPoll(rawResult(1));
+    assert.equal(flow.events.length, 0);
+    assert.equal(device._x20RawStatusCode, 1);
+
+    await device._observeX20StatusPoll(rawResult(4));
+    assert.equal(flow.events.length, 1);
+    assert.deepEqual(flow.events[0].state, { status: 4 });
+    assert.equal(flow.events[0].tokens.status_name, 'Working');
+    assert.equal(flow.events[0].tokens.previous_status_code, 1);
+});
+
 test('raw X20 status conditions reject guards and match current finite state', async () => {
     const { device } = createVacuumDevice('xiaomi.vacuum.d102gl');
 
@@ -119,7 +142,10 @@ test('raw X20 status conditions reject guards and match current finite state', a
     assert.equal(device._x20RawStatusIs(2), false);
     assert.equal(device._x20RawStatusIs(Infinity), false);
 
-    const sibling = createVacuumDevice('xiaomi.vacuum.d109gl').device;
+    const max = createVacuumDevice('xiaomi.vacuum.d109gl').device;
+    max._x20RawStatusCode = 1;
+    assert.equal(max._x20RawStatusIs(1), true);
+    const sibling = createVacuumDevice('xiaomi.vacuum.c102gl').device;
     sibling._x20RawStatusCode = 1;
     assert.equal(sibling._x20RawStatusIs(1), false);
     assert.equal(VacuumDevice.prototype._x20RawStatusIs.call({}, 1), false);
@@ -153,6 +179,20 @@ test('base-station mode parses object, JSON string, and double-encoded JSON stri
     assert.equal(flow.events[2].tokens.base_status_name, 'Mode 99');
 });
 
+test('X20 Max base-station mode observes PIID 18 and emits transitions', async () => {
+    const { device, flow } = createVacuumDevice('xiaomi.vacuum.d109gl');
+
+    await device._observeX20StatusPoll(baseResult({ mode: 0 }));
+    assert.equal(flow.events.length, 0);
+    assert.equal(device._x20BaseStationMode, 0);
+
+    await device._observeX20StatusPoll(baseResult({ mode: 1 }));
+    assert.equal(flow.events.length, 1);
+    assert.deepEqual(flow.events[0].state, { mode: 1 });
+    assert.equal(flow.events[0].tokens.base_status_name, 'Drying');
+    assert.equal(flow.events[0].tokens.previous_base_status_code, 0);
+});
+
 test('malformed base-station values preserve the last valid mode and do not trigger', async () => {
     const { device, flow } = createVacuumDevice('xiaomi.vacuum.d102gl');
 
@@ -177,10 +217,14 @@ test('base-station condition does not coerce null to mode zero', async () => {
     assert.equal(device._x20BaseStationStatusIs(0), true);
     assert.equal(device._x20BaseStationStatusIs('0'), true);
     assert.equal(device._x20BaseStationStatusIs(NaN), false);
+
+    const max = createVacuumDevice('xiaomi.vacuum.d109gl').device;
+    await max._observeX20StatusPoll(baseResult({ mode: 0 }));
+    assert.equal(max._x20BaseStationStatusIs('0'), true);
 });
 
 test('sibling models do not read, track, or trigger X20 statuses', async () => {
-    const { device, flow } = createVacuumDevice('xiaomi.vacuum.d109gl');
+    const { device, flow } = createVacuumDevice('xiaomi.vacuum.c102gl');
 
     await device._observeX20StatusPoll([...rawResult(1), ...baseResult({ mode: 1 })]);
     assert.equal(flow.events.length, 0);
@@ -199,7 +243,16 @@ test('X20 trigger listeners compare finite selected dropdown values to trigger s
     assert.equal(await flow.triggerListeners.x20_base_station_status_changed({}, { mode: 0 }), false);
     assert.equal(await flow.triggerListeners.x20_base_station_status_changed({ mode: 'not-finite' }, { mode: 0 }), false);
 
-    const sibling = createVacuumDevice('xiaomi.vacuum.d109gl');
+    const max = createVacuumDevice('xiaomi.vacuum.d109gl');
+    max.device._x20RawStatusCode = 4;
+    max.device._x20BaseStationMode = 0;
+    max.device._registerX20FlowListeners();
+    assert.equal(await max.flow.triggerListeners.x20_raw_status_changed({ device: max.device, status: '4' }, { status: 4 }), true);
+    assert.equal(await max.flow.triggerListeners.x20_base_station_status_changed({ device: max.device, mode: '0' }, { mode: 0 }), true);
+    assert.equal(await max.flow.conditionListeners.x20_raw_status_is({ device: max.device, status: '4' }), true);
+    assert.equal(await max.flow.conditionListeners.x20_base_station_status_is({ device: max.device, mode: '0' }), true);
+
+    const sibling = createVacuumDevice('xiaomi.vacuum.c102gl');
     sibling.device._registerX20FlowListeners();
     assert.equal(await sibling.flow.triggerListeners.x20_raw_status_changed({ device: sibling.device, status: '4' }, { status: 4 }), false);
     assert.equal(await sibling.flow.conditionListeners.x20_raw_status_is({ device: sibling.device, status: '4' }), false);

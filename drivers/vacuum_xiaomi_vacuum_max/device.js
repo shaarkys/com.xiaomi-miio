@@ -135,7 +135,11 @@ const X20_BASE_STATION_MODE_NAMES = {
     3: 'Mop washing'
 };
 
-const X20_MODEL = 'xiaomi.vacuum.d102gl';
+const X20_SUPPORTED_MODELS = new Set(['xiaomi.vacuum.d102gl', 'xiaomi.vacuum.d109gl']);
+
+function isSupportedX20Model(model) {
+    return X20_SUPPORTED_MODELS.has(model);
+}
 
 /** Model → property-set */
 const mapping = {
@@ -420,9 +424,9 @@ class XiaomiVacuumMiotDeviceMax extends Device {
         return found;
     }
 
-    _isX20ProDevice() {
+    _isSupportedX20Device() {
         const model = typeof this.getModelIdentifier === 'function' ? this.getModelIdentifier() : this._model;
-        return model === X20_MODEL;
+        return isSupportedX20Model(model);
     }
 
     _resetX20StatusTracking() {
@@ -486,14 +490,14 @@ class XiaomiVacuumMiotDeviceMax extends Device {
     }
 
     _x20RawStatusIs(selector) {
-        if (typeof this._isX20ProDevice !== 'function' || !this._isX20ProDevice()) return false;
+        if (typeof this._isSupportedX20Device !== 'function' || !this._isSupportedX20Device()) return false;
         const selectedCode = this._coerceFiniteX20Number(selector);
         const currentCode = this._coerceFiniteX20Number(this._x20RawStatusCode);
         return selectedCode !== null && currentCode !== null && selectedCode === currentCode;
     }
 
     _x20BaseStationStatusIs(selector) {
-        if (typeof this._isX20ProDevice !== 'function' || !this._isX20ProDevice()) return false;
+        if (typeof this._isSupportedX20Device !== 'function' || !this._isSupportedX20Device()) return false;
         const selectedMode = this._coerceFiniteX20Number(selector);
         const currentMode = this._coerceFiniteX20Number(this._x20BaseStationMode);
         return selectedMode !== null && currentMode !== null && selectedMode === currentMode;
@@ -528,7 +532,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
     }
 
     async _observeX20StatusPoll(result) {
-        if (!this._isX20ProDevice() || !Array.isArray(result)) return;
+        if (!this._isSupportedX20Device() || !Array.isArray(result)) return;
 
         const rawStatusProperty = this._getX20PollProperty(result, 'device_status', 2, 2);
         const rawStatusCode = this._coerceFiniteX20Number(rawStatusProperty && rawStatusProperty.value);
@@ -563,7 +567,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
 
     _registerX20FlowListeners() {
         if (!this.homey || !this.homey.flow) return;
-        const isX20ProDevice = (device) => {
+        const isSupportedX20Device = (device) => {
             if (!device) return false;
             let model;
             try {
@@ -571,7 +575,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             } catch (_) {
                 model = device._model;
             }
-            return model === X20_MODEL;
+            return isSupportedX20Model(model);
         };
         const registerTrigger = (cardId, selector) => {
             try {
@@ -579,7 +583,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                 if (card && typeof card.registerRunListener === 'function') {
                     card.registerRunListener(async (args, state) => {
                         const device = args && args.device;
-                        if (!device || !isX20ProDevice(device)) return false;
+                        if (!device || !isSupportedX20Device(device)) return false;
                         const selected = this._coerceFiniteX20Number(args && args[selector]);
                         const current = this._coerceFiniteX20Number(state && state[selector]);
                         return selected !== null && current !== null && selected === current;
@@ -595,7 +599,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                 if (card && typeof card.registerRunListener === 'function') {
                     card.registerRunListener(async (args) => {
                         const device = args && args.device;
-                        if (!device || !isX20ProDevice(device) || typeof device[conditionMethod] !== 'function') return false;
+                        if (!device || !isSupportedX20Device(device) || typeof device[conditionMethod] !== 'function') return false;
                         return device[conditionMethod](args[selector]);
                     });
                 }
@@ -619,19 +623,23 @@ class XiaomiVacuumMiotDeviceMax extends Device {
 
     _applyModelProperties(model) {
         const mappedKey = mapping[model];
+        const previousModel = this._model;
         this.deviceProperties = properties[mappedKey] || properties.properties_d109gl;
         this._model = model;
-        if (this._model !== X20_MODEL) this._resetX20StatusTracking();
-        if (this._model === 'xiaomi.vacuum.d102gl') {
+        if (!isSupportedX20Model(this._model) || (previousModel && previousModel !== this._model)) this._resetX20StatusTracking();
+        if (isSupportedX20Model(this._model)) {
             this.deviceProperties = {
                 ...this.deviceProperties,
                 get_properties: [...this.deviceProperties.get_properties]
             };
-            const extraProps = [
-                { did: 'water_check_status', siid: 2, piid: 54 },
-                { did: 'fault_ids', siid: 2, piid: 66 },
-                { did: 'base_station_working_status', siid: 2, piid: 18 }
-            ];
+            const extraProps =
+                this._model === 'xiaomi.vacuum.d102gl'
+                    ? [
+                          { did: 'water_check_status', siid: 2, piid: 54 },
+                          { did: 'fault_ids', siid: 2, piid: 66 },
+                          { did: 'base_station_working_status', siid: 2, piid: 18 }
+                      ]
+                    : [{ did: 'base_station_working_status', siid: 2, piid: 18 }];
             for (const prop of extraProps) {
                 if (!this.deviceProperties.get_properties.some((existing) => existing.did === prop.did)) {
                     this.deviceProperties.get_properties.push(prop);
@@ -651,6 +659,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                 this.log(`[MODEL] Detected model change: ${this._model || 'unknown'} -> ${actualModel}`);
                 this._modelMismatchLogged = true;
             }
+            this._resetX20StatusTracking();
             this._model = actualModel;
             try {
                 this.setStoreValue('model', actualModel);
@@ -1091,7 +1100,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             try {
                 await this._observeX20StatusPoll(result);
             } catch (error) {
-                this.error(`[FLOW] Failed to process X20 Pro status poll: ${this._getSafeErrorDetails(error)}`);
+                this.error(`[FLOW] Failed to process X20 Pro/Max status poll: ${this._getSafeErrorDetails(error)}`);
             }
 
             // Fetch rooms only when needed and only until discovered

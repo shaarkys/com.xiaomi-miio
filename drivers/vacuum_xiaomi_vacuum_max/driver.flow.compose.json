@@ -54,10 +54,10 @@
     {
       "id": "x20_raw_status_changed",
       "title": {
-        "en": "X20 Pro raw status changed"
+        "en": "X20 Pro/Max raw status changed"
       },
       "titleFormatted": {
-        "en": "X20 Pro raw status changed to [[status]]"
+        "en": "X20 Pro/Max raw status changed to [[status]]"
       },
       "tokens": [
         {
@@ -97,7 +97,7 @@
         {
           "name": "status",
           "title": {
-            "en": "X20 Pro raw status"
+            "en": "X20 Pro/Max raw status"
           },
           "type": "dropdown",
           "values": [
@@ -130,10 +130,10 @@
     {
       "id": "x20_base_station_status_changed",
       "title": {
-        "en": "X20 Pro base-station status changed"
+        "en": "X20 Pro/Max base-station status changed"
       },
       "titleFormatted": {
-        "en": "X20 Pro base-station status changed to [[mode]]"
+        "en": "X20 Pro/Max base-station status changed to [[mode]]"
       },
       "tokens": [
         {
@@ -173,7 +173,7 @@
         {
           "name": "mode",
           "title": {
-            "en": "X20 Pro base-station mode"
+            "en": "X20 Pro/Max base-station mode"
           },
           "type": "dropdown",
           "values": [
@@ -191,16 +191,16 @@
     {
       "id": "x20_raw_status_is",
       "title": {
-        "en": "X20 Pro raw status is"
+        "en": "X20 Pro/Max raw status is"
       },
       "titleFormatted": {
-        "en": "X20 Pro raw status is [[status]]"
+        "en": "X20 Pro/Max raw status is [[status]]"
       },
       "args": [
         {
           "name": "status",
           "title": {
-            "en": "X20 Pro raw status"
+            "en": "X20 Pro/Max raw status"
           },
           "type": "dropdown",
           "values": [
@@ -233,16 +233,16 @@
     {
       "id": "x20_base_station_status_is",
       "title": {
-        "en": "X20 Pro base-station status is"
+        "en": "X20 Pro/Max base-station status is"
       },
       "titleFormatted": {
-        "en": "X20 Pro base-station status is [[mode]]"
+        "en": "X20 Pro/Max base-station status is [[mode]]"
       },
       "args": [
         {
           "name": "mode",
           "title": {
-            "en": "X20 Pro base-station mode"
+            "en": "X20 Pro/Max base-station mode"
           },
           "type": "dropdown",
           "values": [
