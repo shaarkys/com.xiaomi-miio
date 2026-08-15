@@ -317,7 +317,7 @@ test('all property read/write call sites use retries two while action retries st
 
     assert.equal(propertyWriteLines.length, 6);
     assert.ok(propertyWriteLines.every((line) => line.includes('{ retries: 2 }')));
-    assert.equal(propertyReadLines.length, 4, 'main, room, candidate, and diagnostic reads must use the queue');
+    assert.equal(propertyReadLines.length, 5, 'main, room, candidate, diagnostic, and pre-clean refresh reads must use the queue');
     assert.ok(propertyReadLines.every((line) => line.includes('{ retries: 2 }')));
     assert.deepEqual(actionRetries, [3, 1, 1, 1]);
 });

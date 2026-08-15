@@ -167,6 +167,7 @@ const GET_PROPERTIES_CHUNK_SIZE = {
 };
 const DEFAULT_GET_PROPERTIES_CHUNK_SIZE = 5;
 const GET_PROPERTIES_CHUNK_DELAY_MS = 100;
+const ROOM_ID_ALIASES_STORE_KEY = 'roomIdAliases';
 
 /** Property sets */
 const properties = {
@@ -761,22 +762,12 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                     return Promise.reject('Room cleaning is not supported by this device.');
                 }
                 // Room IDs can change after editing the map in Xiaomi Home.
-                // Always ask the vacuum for its current room map immediately before
-                // resolving the Flow room argument. Keep the cached list only as a
-                // fallback if that optional refresh fails.
-                const cachedRooms = args.device._parseRoomsSetting(args.device.getSetting('rooms'));
-                let list_room = cachedRooms;
-
-                try {
-                    const refreshedRooms = await args.device._refreshRoomsBeforeCleaning();
-                    if (refreshedRooms.length) list_room = refreshedRooms;
-                } catch (error) {
-                    args.device.error(
-                        '[ROOMS] Refresh before room clean failed: ' +
-                        args.device._getSafeErrorDetails(error) +
-                        '; using cached room list.'
-                    );
-                }
+                // Resolve against a live map when possible, while retaining persistent
+                // old-ID semantics for existing numeric Flow values.
+                const roomState = await args.device._getRoomCleaningState();
+                const cachedRooms = roomState.cachedRooms;
+                const list_room = roomState.rooms;
+                const roomAliases = roomState.aliases;
 
                 let selected_ids;
                 if (args.room === 'all') {
@@ -788,71 +779,33 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                         if (!token) continue;
                         if (/^\d+$/.test(token)) {
                             const requestedId = Number(token);
-                            const oldRoom = cachedRooms.find(
-                                (room) => Number(room.id) === requestedId
+                            const resolution = args.device._resolveNumericRoomId(
+                                requestedId,
+                                list_room,
+                                cachedRooms,
+                                roomAliases
                             );
-                            const exactCurrentRoom = list_room.find(
-                                (room) => Number(room.id) === requestedId
-                            );
 
-                            // A numeric room ID may still exist after a Xiaomi map
-                            // edit but now belong to a different room. When we have
-                            // cached semantic information for that old ID, compare
-                            // the room name before trusting the numeric match.
-                            if (oldRoom && oldRoom.name) {
-                                const oldName = String(oldRoom.name).trim().toLowerCase();
-                                const exactCurrentName = exactCurrentRoom
-                                    ? String(exactCurrentRoom.name || '').trim().toLowerCase()
-                                    : '';
-
-                                if (exactCurrentRoom && exactCurrentName === oldName) {
-                                    selected_ids.push(Number(exactCurrentRoom.id));
-                                    continue;
+                            if (resolution.id != null) {
+                                selected_ids.push(resolution.id);
+                                if (resolution.remapped) {
+                                    args.device.log(
+                                        '[ROOMS] Remapped stale room id ' +
+                                        requestedId +
+                                        ' (' +
+                                        resolution.name +
+                                        ') -> ' +
+                                        resolution.id
+                                    );
                                 }
-
-                                const replacements = list_room.filter(
-                                    (room) =>
-                                        String(room.name || '').trim().toLowerCase() === oldName
-                                );
-
-                                if (replacements.length === 1) {
-                                    const replacementId = Number(replacements[0].id);
-                                    selected_ids.push(replacementId);
-
-                                    if (replacementId !== requestedId) {
-                                        args.device.log(
-                                            '[ROOMS] Remapped stale room id ' +
-                                            requestedId +
-                                            ' (' +
-                                            oldRoom.name +
-                                            ') -> ' +
-                                            replacementId
-                                        );
-                                    }
-                                    continue;
-                                }
-
-                                args.device.log(
-                                    '[ROOMS] Stale room id ' +
-                                    requestedId +
-                                    ' (' +
-                                    oldRoom.name +
-                                    ') could not be resolved uniquely in the current room map.'
-                                );
-                                continue;
-                            }
-
-                            // No cached meaning is known for this numeric ID, so a
-                            // currently existing ID can still be used as entered.
-                            if (exactCurrentRoom) {
-                                selected_ids.push(Number(exactCurrentRoom.id));
                                 continue;
                             }
 
                             args.device.log(
-                                '[ROOMS] Requested numeric room id ' +
+                                '[ROOMS] Numeric room id ' +
                                 requestedId +
-                                ' is not present in the current room map.'
+                                ' rejected: ' +
+                                resolution.reason
                             );
                             continue;
                         }
@@ -1759,6 +1712,169 @@ class XiaomiVacuumMiotDeviceMax extends Device {
         return this._normalizeRoomList(rooms);
     }
 
+
+    _roomNameKey(name) {
+        return String(name || '').trim().toLowerCase();
+    }
+
+    _parseRoomIdAliases(rawAliases) {
+        let value = rawAliases;
+        if (typeof value === 'string') {
+            try {
+                value = JSON.parse(value);
+            } catch (_) {
+                return {};
+            }
+        }
+        if (!value || typeof value !== 'object' || Array.isArray(value)) return {};
+
+        const aliases = {};
+        for (const [rawId, rawNames] of Object.entries(value)) {
+            const id = Number(rawId);
+            if (!Number.isFinite(id)) continue;
+            const names = Array.isArray(rawNames) ? rawNames : [rawNames];
+            for (const name of names) this._addRoomIdAlias(aliases, id, name);
+        }
+        return aliases;
+    }
+
+    _addRoomIdAlias(aliases, id, name) {
+        const numericId = Number(id);
+        const displayName = typeof name === 'string' ? name.trim() : '';
+        if (!Number.isFinite(numericId) || !displayName) return;
+
+        const key = String(numericId);
+        if (!Array.isArray(aliases[key])) aliases[key] = [];
+        const canonicalName = this._roomNameKey(displayName);
+        if (!aliases[key].some((existing) => this._roomNameKey(existing) === canonicalName)) {
+            aliases[key].push(displayName);
+        }
+    }
+
+    _mergeRoomIdAliases(previousRooms, currentRooms, rawAliases) {
+        const aliases = this._parseRoomIdAliases(rawAliases);
+        const previous = this._normalizeRoomList(previousRooms);
+        const current = this._normalizeRoomList(currentRooms);
+        const currentById = new Map(current.map((room) => [Number(room.id), room]));
+
+        for (const previousRoom of previous) {
+            const currentRoom = currentById.get(Number(previousRoom.id));
+            if (!currentRoom || this._roomNameKey(currentRoom.name) !== this._roomNameKey(previousRoom.name)) {
+                this._addRoomIdAlias(aliases, previousRoom.id, previousRoom.name);
+                if (currentRoom) this._addRoomIdAlias(aliases, previousRoom.id, currentRoom.name);
+            }
+        }
+
+        // If an ID with historical meaning is later reused, preserve both meanings.
+        // A numeric Flow using that ID is then intentionally rejected as ambiguous.
+        for (const [id, names] of Object.entries({ ...aliases })) {
+            const currentRoom = currentById.get(Number(id));
+            if (!currentRoom) continue;
+            if (names.some((name) => this._roomNameKey(name) !== this._roomNameKey(currentRoom.name))) {
+                this._addRoomIdAlias(aliases, id, currentRoom.name);
+            }
+        }
+
+        return aliases;
+    }
+
+    _getStoredRoomIdAliases() {
+        if (typeof this.getStoreValue !== 'function') return {};
+        try {
+            return this._parseRoomIdAliases(this.getStoreValue(ROOM_ID_ALIASES_STORE_KEY));
+        } catch (error) {
+            this.error(
+                '[ROOMS] Failed to read persisted room id aliases: ' +
+                this._getSafeErrorDetails(error)
+            );
+            return {};
+        }
+    }
+
+    _resolveNumericRoomId(requestedId, currentRooms, cachedRooms, rawAliases) {
+        const numericId = Number(requestedId);
+        const rooms = this._normalizeRoomList(currentRooms);
+        const aliases = this._parseRoomIdAliases(rawAliases);
+        const aliasNames = aliases[String(numericId)] || [];
+
+        if (aliasNames.length > 1) {
+            return {
+                id: null,
+                reason: 'historical id is ambiguous (' + aliasNames.join(' / ') + ')'
+            };
+        }
+
+        if (aliasNames.length === 1) {
+            const name = aliasNames[0];
+            const canonicalName = this._roomNameKey(name);
+            const matches = rooms.filter(
+                (room) => this._roomNameKey(room.name) === canonicalName
+            );
+            if (matches.length === 1) {
+                const id = Number(matches[0].id);
+                return { id, name, remapped: id !== numericId };
+            }
+            return {
+                id: null,
+                reason: 'historical room name "' + name + '" is not unique in the current map'
+            };
+        }
+
+        const cachedRoom = this._normalizeRoomList(cachedRooms).find(
+            (room) => Number(room.id) === numericId
+        );
+        const exactCurrentRoom = rooms.find((room) => Number(room.id) === numericId);
+
+        if (cachedRoom && cachedRoom.name) {
+            const cachedName = this._roomNameKey(cachedRoom.name);
+            if (exactCurrentRoom && this._roomNameKey(exactCurrentRoom.name) === cachedName) {
+                return { id: numericId, name: cachedRoom.name, remapped: false };
+            }
+            const matches = rooms.filter((room) => this._roomNameKey(room.name) === cachedName);
+            if (matches.length === 1) {
+                const id = Number(matches[0].id);
+                return { id, name: cachedRoom.name, remapped: id !== numericId };
+            }
+            return {
+                id: null,
+                reason: 'cached room name "' + cachedRoom.name + '" is not unique in the current map'
+            };
+        }
+
+        if (exactCurrentRoom) {
+            return { id: numericId, name: exactCurrentRoom.name, remapped: false };
+        }
+
+        return { id: null, reason: 'id is not present in the current room map' };
+    }
+
+    async _getRoomCleaningState() {
+        const cachedRooms = this._parseRoomsSetting(this.getSetting('rooms'));
+        const storedAliases = this._getStoredRoomIdAliases();
+
+        try {
+            const refreshed = await this._refreshRoomsBeforeCleaning();
+            return {
+                cachedRooms,
+                rooms: refreshed.rooms.length ? refreshed.rooms : cachedRooms,
+                aliases: refreshed.aliases,
+                refreshed: true
+            };
+        } catch (error) {
+            this.error(
+                '[ROOMS] Refresh before room clean failed: ' +
+                this._getSafeErrorDetails(error) +
+                '; using cached room list.'
+            );
+            return {
+                cachedRooms,
+                rooms: cachedRooms,
+                aliases: storedAliases,
+                refreshed: false
+            };
+        }
+    }
+
     _roomListSignature(rooms) {
         return this._normalizeRoomList(rooms)
             .map((room) => ({
@@ -1770,86 +1886,86 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             .join('|');
     }
 
+
     async _refreshRoomsBeforeCleaning() {
         if (
             !this.deviceProperties ||
             !this.deviceProperties.supports ||
-            !this.deviceProperties.supports.rooms
+            !this.deviceProperties.supports.rooms ||
+            !Array.isArray(this.deviceProperties.get_rooms) ||
+            !this.deviceProperties.get_rooms.length
         ) {
-            return [];
+            throw new Error('No configured room property for this device.');
         }
 
-        const candidates = [];
+        const definition = this.deviceProperties.get_rooms;
+        const result = await this.callVacuumGetProperties(definition, { retries: 2 });
 
         if (
-            Array.isArray(this.deviceProperties.get_rooms) &&
-            this.deviceProperties.get_rooms.length
+            !Array.isArray(result) ||
+            !result[0] ||
+            result[0].value == null ||
+            result[0].value === ''
         ) {
-            candidates.push(this.deviceProperties.get_rooms);
+            throw new Error('No room data returned by the vacuum.');
         }
 
-        // Existing fallback locations retained from the 3.5.19 discovery code.
-        candidates.push(
-            [{ did: 'rooms', siid: 4, piid: 20 }],
-            [{ did: 'rooms', siid: 6, piid: 15 }],
-            [{ did: 'rooms', siid: 7, piid: 3 }]
-        );
+        const rooms = this._parseRoomsPayload(result[0].value);
+        if (!rooms.length) throw new Error('No parsable room data returned by the vacuum.');
 
-        let lastError = null;
+        const previousRooms = this._parseRoomsSetting(this.getSetting('rooms'));
+        const previousSignature = this._roomListSignature(previousRooms);
+        const newSignature = this._roomListSignature(rooms);
+        const previousAliases = this._getStoredRoomIdAliases();
+        const aliases = this._mergeRoomIdAliases(previousRooms, rooms, previousAliases);
 
-        for (const definition of candidates) {
+        if (
+            typeof this.setStoreValue === 'function' &&
+            JSON.stringify(previousAliases) !== JSON.stringify(aliases)
+        ) {
             try {
-                const result = await this.callVacuumGetProperties(definition, { retries: 2 });
-
-                if (
-                    !Array.isArray(result) ||
-                    !result[0] ||
-                    result[0].value == null ||
-                    result[0].value === ''
-                ) {
-                    continue;
-                }
-
-                const rooms = this._parseRoomsPayload(result[0].value);
-                if (!rooms.length) continue;
-
-                const previousRooms = this._parseRoomsSetting(this.getSetting('rooms'));
-                const previousSignature = this._roomListSignature(previousRooms);
-                const newSignature = this._roomListSignature(rooms);
-
-                const settings = {
-                    rooms: JSON.stringify(rooms),
-                    rooms_display: rooms.map((room) => room.name || ('Room ' + room.id)).join(', ')
-                };
-
-                if (
-                    this.getSetting('rooms') !== settings.rooms ||
-                    this.getSetting('rooms_display') !== settings.rooms_display
-                ) {
-                    await this.setSettings(settings);
-                }
-
-                this._roomsDiscovered = true;
-
-                if (previousSignature !== newSignature) {
-                    this.log(
-                        '[ROOMS] Room map refreshed before cleaning: ' +
-                        (previousSignature || '(none)') +
-                        ' -> ' +
-                        newSignature
-                    );
-                } else {
-                    this.log('[ROOMS] Room map checked before cleaning: unchanged.');
-                }
-
-                return rooms;
+                await this.setStoreValue(ROOM_ID_ALIASES_STORE_KEY, aliases);
             } catch (error) {
-                lastError = error;
+                this.error(
+                    '[ROOMS] Failed to persist room id aliases: ' +
+                    this._getSafeErrorDetails(error)
+                );
             }
         }
 
-        if (lastError) throw lastError;
-        throw new Error('No parsable room data returned by the vacuum.');
+        const settings = {
+            rooms: JSON.stringify(rooms),
+            rooms_display: rooms.map((room) => room.name || ('Room ' + room.id)).join(', ')
+        };
+
+        if (
+            this.getSetting('rooms') !== settings.rooms ||
+            this.getSetting('rooms_display') !== settings.rooms_display
+        ) {
+            try {
+                await this.setSettings(settings);
+            } catch (error) {
+                this.error(
+                    '[ROOMS] Failed to persist refreshed room settings: ' +
+                    this._getSafeErrorDetails(error)
+                );
+            }
+        }
+
+        this._roomsDiscovered = true;
+
+        if (previousSignature !== newSignature) {
+            this.log(
+                '[ROOMS] Room map refreshed before cleaning: ' +
+                (previousSignature || '(none)') +
+                ' -> ' +
+                newSignature
+            );
+        } else {
+            this.log('[ROOMS] Room map checked before cleaning: unchanged.');
+        }
+
+        return { rooms, aliases };
     }
 
     getModelIdentifier() {
