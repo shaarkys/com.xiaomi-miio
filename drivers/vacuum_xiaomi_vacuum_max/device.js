@@ -135,10 +135,66 @@ const X20_BASE_STATION_MODE_NAMES = {
     3: 'Mop washing'
 };
 
-const X20_SUPPORTED_MODELS = new Set(['xiaomi.vacuum.d102gl', 'xiaomi.vacuum.d109gl']);
+const BASE_STATION_STATUS_CAPABILITY = 'vacuum_xiaomi_base_station_status';
+const X20_RAW_STATUS_MODELS = Object.freeze(['xiaomi.vacuum.d102gl', 'xiaomi.vacuum.d109gl']);
+const BASE_STATION_STATUS_MODELS = Object.freeze([
+    'xiaomi.vacuum.d102gl',
+    'xiaomi.vacuum.d109gl',
+    'xiaomi.vacuum.ov51gl',
+    'xiaomi.vacuum.c102gl'
+]);
+const PIID18_BASE_STATION_STATUS_MODELS = Object.freeze(['xiaomi.vacuum.d102gl', 'xiaomi.vacuum.d109gl', 'xiaomi.vacuum.ov51gl']);
+const C102_IDLE_BASE_STATION_STATUS_CODES = Object.freeze([0, 1, 2, 3, 4, 5, 6, 7, 10, 11, 12, 13, 14, 19, 21, 23]);
+
+function createBaseStationActionDescriptor(aiid) {
+    return Object.freeze({ siid: 2, aiid, did: `call-2-${aiid}`, in: Object.freeze([]) });
+}
+
+const BASE_STATION_ACTION_DESCRIPTORS = Object.freeze({
+    'xiaomi.vacuum.d102gl': Object.freeze({
+        start_dust_collection: createBaseStationActionDescriptor(18),
+        start_mop_washing: createBaseStationActionDescriptor(19),
+        stop_mop_washing: createBaseStationActionDescriptor(31),
+        start_drying: createBaseStationActionDescriptor(20),
+        stop_drying: createBaseStationActionDescriptor(32)
+    }),
+    'xiaomi.vacuum.d109gl': Object.freeze({
+        start_dust_collection: createBaseStationActionDescriptor(18),
+        start_mop_washing: createBaseStationActionDescriptor(19),
+        stop_mop_washing: createBaseStationActionDescriptor(31),
+        start_drying: createBaseStationActionDescriptor(20),
+        stop_drying: createBaseStationActionDescriptor(32)
+    }),
+    'xiaomi.vacuum.c102gl': Object.freeze({
+        start_dust_collection: createBaseStationActionDescriptor(4),
+        start_mop_washing: createBaseStationActionDescriptor(6),
+        start_drying: createBaseStationActionDescriptor(8),
+        stop_drying: createBaseStationActionDescriptor(9)
+    }),
+    'xiaomi.vacuum.ov51gl': Object.freeze({
+        start_dust_collection: createBaseStationActionDescriptor(18)
+    })
+});
 
 function isSupportedX20Model(model) {
-    return X20_SUPPORTED_MODELS.has(model);
+    return X20_RAW_STATUS_MODELS.includes(model);
+}
+
+function isSupportedBaseStationStatusModel(model) {
+    return BASE_STATION_STATUS_MODELS.includes(model);
+}
+
+function usesPiid18BaseStationStatus(model) {
+    return PIID18_BASE_STATION_STATUS_MODELS.includes(model);
+}
+
+function getDeviceModelIdentifier(device) {
+    if (!device) return undefined;
+    try {
+        return typeof device.getModelIdentifier === 'function' ? device.getModelIdentifier() : device._model;
+    } catch (_) {
+        return device._model;
+    }
 }
 
 /** Model → property-set */
@@ -428,8 +484,11 @@ class XiaomiVacuumMiotDeviceMax extends Device {
     }
 
     _isSupportedX20Device() {
-        const model = typeof this.getModelIdentifier === 'function' ? this.getModelIdentifier() : this._model;
-        return isSupportedX20Model(model);
+        return isSupportedX20Model(getDeviceModelIdentifier(this));
+    }
+
+    _isSupportedBaseStationStatusDevice() {
+        return isSupportedBaseStationStatusModel(getDeviceModelIdentifier(this));
     }
 
     _resetX20StatusTracking() {
@@ -492,6 +551,43 @@ class XiaomiVacuumMiotDeviceMax extends Device {
         return result.find((property) => property && property.siid === propertySiid && property.piid === propertyPiid);
     }
 
+    _getC102BaseStationMode(result) {
+        const statusProperty = this._getX20PollProperty(result, 'device_status', 2, 1);
+        const statusCode = this._coerceFiniteX20Number(statusProperty && statusProperty.value);
+        if (statusCode === null || !Number.isInteger(statusCode)) return null;
+        if (statusCode === 8) return 1;
+        if (statusCode === 9) return 3;
+        if (statusCode === 22) return 2;
+        return C102_IDLE_BASE_STATION_STATUS_CODES.includes(statusCode) ? 0 : null;
+    }
+
+    async _updateBaseStationStatusCapability(modeName) {
+        try {
+            if (typeof this.hasCapability !== 'function' || !this.hasCapability(BASE_STATION_STATUS_CAPABILITY)) return;
+            await this.setCapabilityValue(BASE_STATION_STATUS_CAPABILITY, modeName);
+        } catch (error) {
+            const details = typeof this._getSafeErrorDetails === 'function' ? this._getSafeErrorDetails(error) : (error && error.message) || 'Unknown error';
+            if (typeof this.error === 'function') this.error(`[BASE_STATION] Failed to update status capability: ${details}`);
+        }
+    }
+
+    async _observeBaseStationMode(baseStationMode) {
+        const previousBaseStationMode = this._coerceFiniteX20Number(this._x20BaseStationMode);
+        if (previousBaseStationMode === baseStationMode) return;
+
+        const previousBaseStationModeName = this._x20BaseStationModeName;
+        const baseStationModeName = this._getX20BaseStationModeName(baseStationMode);
+        this._x20BaseStationMode = baseStationMode;
+        this._x20BaseStationModeName = baseStationModeName;
+        await this._updateBaseStationStatusCapability(baseStationModeName);
+
+        if (previousBaseStationMode !== null) {
+            this._x20PreviousBaseStationMode = previousBaseStationMode;
+            this._x20PreviousBaseStationModeName = previousBaseStationModeName || this._getX20BaseStationModeName(previousBaseStationMode);
+            await this._triggerX20StatusTransition('base', baseStationMode, previousBaseStationMode);
+        }
+    }
+
     _x20RawStatusIs(selector) {
         if (typeof this._isSupportedX20Device !== 'function' || !this._isSupportedX20Device()) return false;
         const selectedCode = this._coerceFiniteX20Number(selector);
@@ -500,7 +596,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
     }
 
     _x20BaseStationStatusIs(selector) {
-        if (typeof this._isSupportedX20Device !== 'function' || !this._isSupportedX20Device()) return false;
+        if (typeof this._isSupportedBaseStationStatusDevice !== 'function' || !this._isSupportedBaseStationStatusDevice()) return false;
         const selectedMode = this._coerceFiniteX20Number(selector);
         const currentMode = this._coerceFiniteX20Number(this._x20BaseStationMode);
         return selectedMode !== null && currentMode !== null && selectedMode === currentMode;
@@ -535,58 +631,45 @@ class XiaomiVacuumMiotDeviceMax extends Device {
     }
 
     async _observeX20StatusPoll(result) {
-        if (!this._isSupportedX20Device() || !Array.isArray(result)) return;
+        if (!Array.isArray(result)) return;
 
-        const rawStatusProperty = this._getX20PollProperty(result, 'device_status', 2, 2);
-        const rawStatusCode = this._coerceFiniteX20Number(rawStatusProperty && rawStatusProperty.value);
-        if (rawStatusCode !== null) {
-            const previousStatusCode = this._coerceFiniteX20Number(this._x20RawStatusCode);
-            const previousStatusName = this._x20RawStatusName;
-            const statusName = this._getX20RawStatusName(rawStatusCode);
-            this._x20RawStatusCode = rawStatusCode;
-            this._x20RawStatusName = statusName;
-            if (previousStatusCode !== null && previousStatusCode !== rawStatusCode) {
-                this._x20PreviousRawStatusCode = previousStatusCode;
-                this._x20PreviousRawStatusName = previousStatusName || this._getX20RawStatusName(previousStatusCode);
-                await this._triggerX20StatusTransition('raw', rawStatusCode, previousStatusCode);
+        if (this._isSupportedX20Device()) {
+            const rawStatusProperty = this._getX20PollProperty(result, 'device_status', 2, 2);
+            const rawStatusCode = this._coerceFiniteX20Number(rawStatusProperty && rawStatusProperty.value);
+            if (rawStatusCode !== null) {
+                const previousStatusCode = this._coerceFiniteX20Number(this._x20RawStatusCode);
+                const previousStatusName = this._x20RawStatusName;
+                const statusName = this._getX20RawStatusName(rawStatusCode);
+                this._x20RawStatusCode = rawStatusCode;
+                this._x20RawStatusName = statusName;
+                if (previousStatusCode !== null && previousStatusCode !== rawStatusCode) {
+                    this._x20PreviousRawStatusCode = previousStatusCode;
+                    this._x20PreviousRawStatusName = previousStatusName || this._getX20RawStatusName(previousStatusCode);
+                    await this._triggerX20StatusTransition('raw', rawStatusCode, previousStatusCode);
+                }
             }
         }
 
-        const baseStatusProperty = this._getX20PollProperty(result, 'base_station_working_status', 2, 18);
-        const baseStationMode = this._parseX20BaseStationMode(baseStatusProperty && baseStatusProperty.value);
-        if (baseStationMode !== null) {
-            const previousBaseStationMode = this._coerceFiniteX20Number(this._x20BaseStationMode);
-            const previousBaseStationModeName = this._x20BaseStationModeName;
-            const baseStationModeName = this._getX20BaseStationModeName(baseStationMode);
-            this._x20BaseStationMode = baseStationMode;
-            this._x20BaseStationModeName = baseStationModeName;
-            if (previousBaseStationMode !== null && previousBaseStationMode !== baseStationMode) {
-                this._x20PreviousBaseStationMode = previousBaseStationMode;
-                this._x20PreviousBaseStationModeName = previousBaseStationModeName || this._getX20BaseStationModeName(previousBaseStationMode);
-                await this._triggerX20StatusTransition('base', baseStationMode, previousBaseStationMode);
-            }
-        }
+        if (!this._isSupportedBaseStationStatusDevice()) return;
+
+        const model = getDeviceModelIdentifier(this);
+        const baseStationMode = usesPiid18BaseStationStatus(model)
+            ? this._parseX20BaseStationMode((this._getX20PollProperty(result, 'base_station_working_status', 2, 18) || {}).value)
+            : this._getC102BaseStationMode(result);
+        if (baseStationMode !== null) await this._observeBaseStationMode(baseStationMode);
     }
 
     _registerX20FlowListeners() {
         if (!this.homey || !this.homey.flow) return;
-        const isSupportedX20Device = (device) => {
-            if (!device) return false;
-            let model;
-            try {
-                model = typeof device.getModelIdentifier === 'function' ? device.getModelIdentifier() : device._model;
-            } catch (_) {
-                model = device._model;
-            }
-            return isSupportedX20Model(model);
-        };
-        const registerTrigger = (cardId, selector) => {
+        const isRawStatusDevice = (device) => isSupportedX20Model(getDeviceModelIdentifier(device));
+        const isBaseStationStatusDevice = (device) => isSupportedBaseStationStatusModel(getDeviceModelIdentifier(device));
+        const registerTrigger = (cardId, selector, isSupportedDevice) => {
             try {
                 const card = this.homey.flow.getDeviceTriggerCard(cardId);
                 if (card && typeof card.registerRunListener === 'function') {
                     card.registerRunListener(async (args, state) => {
                         const device = args && args.device;
-                        if (!device || !isSupportedX20Device(device)) return false;
+                        if (!device || !isSupportedDevice(device)) return false;
                         const selected = this._coerceFiniteX20Number(args && args[selector]);
                         const current = this._coerceFiniteX20Number(state && state[selector]);
                         return selected !== null && current !== null && selected === current;
@@ -596,13 +679,13 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                 if (typeof this.error === 'function') this.error(`[FLOW] Failed to register ${cardId}`, error);
             }
         };
-        const registerCondition = (cardId, selector, conditionMethod) => {
+        const registerCondition = (cardId, selector, conditionMethod, isSupportedDevice) => {
             try {
                 const card = this.homey.flow.getConditionCard(cardId);
                 if (card && typeof card.registerRunListener === 'function') {
                     card.registerRunListener(async (args) => {
                         const device = args && args.device;
-                        if (!device || !isSupportedX20Device(device) || typeof device[conditionMethod] !== 'function') return false;
+                        if (!device || !isSupportedDevice(device) || typeof device[conditionMethod] !== 'function') return false;
                         return device[conditionMethod](args[selector]);
                     });
                 }
@@ -611,10 +694,41 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             }
         };
 
-        registerTrigger('x20_raw_status_changed', 'status');
-        registerTrigger('x20_base_station_status_changed', 'mode');
-        registerCondition('x20_raw_status_is', 'status', '_x20RawStatusIs');
-        registerCondition('x20_base_station_status_is', 'mode', '_x20BaseStationStatusIs');
+        registerTrigger('x20_raw_status_changed', 'status', isRawStatusDevice);
+        registerTrigger('x20_base_station_status_changed', 'mode', isBaseStationStatusDevice);
+        registerCondition('x20_raw_status_is', 'status', '_x20RawStatusIs', isRawStatusDevice);
+        registerCondition('x20_base_station_status_is', 'mode', '_x20BaseStationStatusIs', isBaseStationStatusDevice);
+    }
+
+    _registerBaseStationControlFlowListener() {
+        if (!this.homey || !this.homey.flow) return;
+        try {
+            const card = this.homey.flow.getActionCard('base_station_control');
+            if (!card || typeof card.registerRunListener !== 'function') return;
+            card.registerRunListener(async (args) => {
+                const target = args && args.device;
+                if (!target) throw new Error('A target vacuum device is required.');
+
+                const model = getDeviceModelIdentifier(target);
+                const commands = BASE_STATION_ACTION_DESCRIPTORS[model];
+                if (!commands) throw new Error('Base station control is not supported by this device.');
+
+                const command = args && args.command;
+                if (typeof command !== 'string' || !Object.prototype.hasOwnProperty.call(commands, command)) {
+                    throw new Error('The selected base station command is not supported by this device.');
+                }
+
+                if (!target.miio || typeof target.miio.call !== 'function') {
+                    throw new Error('The target vacuum is not connected.');
+                }
+
+                const descriptor = commands[command];
+                return target.miio.call('action', { ...descriptor, in: [...descriptor.in] }, { retries: 1 });
+            });
+        } catch (error) {
+            const details = typeof this._getSafeErrorDetails === 'function' ? this._getSafeErrorDetails(error) : (error && error.message) || 'Unknown error';
+            if (typeof this.error === 'function') this.error(`[FLOW] Failed to register base_station_control: ${details}`);
+        }
     }
 
     _getDeviceModel() {
@@ -629,8 +743,8 @@ class XiaomiVacuumMiotDeviceMax extends Device {
         const previousModel = this._model;
         this.deviceProperties = properties[mappedKey] || properties.properties_d109gl;
         this._model = model;
-        if (!isSupportedX20Model(this._model) || (previousModel && previousModel !== this._model)) this._resetX20StatusTracking();
-        if (isSupportedX20Model(this._model)) {
+        if (!isSupportedBaseStationStatusModel(this._model) || (previousModel && previousModel !== this._model)) this._resetX20StatusTracking();
+        if (usesPiid18BaseStationStatus(this._model)) {
             this.deviceProperties = {
                 ...this.deviceProperties,
                 get_properties: [...this.deviceProperties.get_properties]
@@ -688,6 +802,21 @@ class XiaomiVacuumMiotDeviceMax extends Device {
         return true;
     }
 
+    async _migrateBaseStationStatusCapability() {
+        const model = getDeviceModelIdentifier(this);
+        if (!isSupportedBaseStationStatusModel(model)) return;
+
+        try {
+            if (this.hasCapability(BASE_STATION_STATUS_CAPABILITY)) return;
+            this.log(`[MIGRATION] Adding base-station status capability for ${model}.`);
+            await this.addCapability(BASE_STATION_STATUS_CAPABILITY);
+            this.log(`[MIGRATION] Added base-station status capability for ${model}.`);
+        } catch (error) {
+            const details = typeof this._getSafeErrorDetails === 'function' ? this._getSafeErrorDetails(error) : (error && error.message) || 'Unknown error';
+            if (typeof this.error === 'function') this.error(`[MIGRATION] Failed to add base-station status capability for ${model}: ${details}`);
+        }
+    }
+
     async onInit() {
         try {
             if (!this.util) this.util = new Util({ homey: this.homey });
@@ -706,6 +835,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
 
             const model = this.getStoreValue('model');
             this._applyModelProperties(model);
+            await this._migrateBaseStationStatusCapability();
             this._carpetModeState = this.getStoreValue('carpetModeState') || '0';
             if (!this.getStoreValue('carpetModeState')) {
                 try {
@@ -757,6 +887,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             this.homey.flow.getDeviceTriggerCard('alertVacuum');
             this.homey.flow.getDeviceTriggerCard('statusVacuum');
             this._registerX20FlowListeners();
+            this._registerBaseStationControlFlowListener();
 
             // Advanced room cleaning (works for all, just skips unsupported set_properties)
             this.homey.flow.getActionCard('advanced_room_cleaning').registerRunListener(async (args) => {
@@ -1070,7 +1201,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             try {
                 await this._observeX20StatusPoll(result);
             } catch (error) {
-                this.error(`[FLOW] Failed to process X20 Pro/Max status poll: ${this._getSafeErrorDetails(error)}`);
+                this.error(`[FLOW] Failed to process raw/base-station status poll: ${this._getSafeErrorDetails(error)}`);
             }
 
             // Fetch rooms only when needed and only until discovered

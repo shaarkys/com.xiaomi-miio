@@ -3468,10 +3468,10 @@
       {
         "id": "x20_base_station_status_changed",
         "title": {
-          "en": "X20 Pro/Max base-station status changed"
+          "en": "Base station status changed"
         },
         "titleFormatted": {
-          "en": "X20 Pro/Max base-station status changed to [[mode]]"
+          "en": "Base station status changed to [[mode]]"
         },
         "tokens": [
           {
@@ -3516,7 +3516,7 @@
           {
             "name": "mode",
             "title": {
-              "en": "X20 Pro/Max base-station mode"
+              "en": "Base station mode"
             },
             "type": "dropdown",
             "values": [
@@ -4726,10 +4726,10 @@
       {
         "id": "x20_base_station_status_is",
         "title": {
-          "en": "X20 Pro/Max base-station status is"
+          "en": "Base station status is"
         },
         "titleFormatted": {
-          "en": "X20 Pro/Max base-station status is [[mode]]"
+          "en": "Base station status is [[mode]]"
         },
         "args": [
           {
@@ -4740,7 +4740,7 @@
           {
             "name": "mode",
             "title": {
-              "en": "X20 Pro/Max base-station mode"
+              "en": "Base station mode"
             },
             "type": "dropdown",
             "values": [
@@ -14197,6 +14197,61 @@
             "type": "device",
             "name": "device",
             "filter": "driver_id=fan_xiaomi_advanced&capabilities=fan_xiaomi_vertical_swing"
+          }
+        ]
+      },
+      {
+        "id": "base_station_control",
+        "title": {
+          "en": "Control base station"
+        },
+        "titleFormatted": {
+          "en": "[[command]] base station"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=vacuum_xiaomi_vacuum_max"
+          },
+          {
+            "name": "command",
+            "title": {
+              "en": "Base station command"
+            },
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "start_dust_collection",
+                "label": {
+                  "en": "Start dust collection"
+                }
+              },
+              {
+                "id": "start_mop_washing",
+                "label": {
+                  "en": "Start mop washing"
+                }
+              },
+              {
+                "id": "stop_mop_washing",
+                "label": {
+                  "en": "Stop mop washing"
+                }
+              },
+              {
+                "id": "start_drying",
+                "label": {
+                  "en": "Start drying"
+                }
+              },
+              {
+                "id": "stop_drying",
+                "label": {
+                  "en": "Stop drying"
+                }
+              }
+            ]
           }
         ]
       },
@@ -31891,6 +31946,7 @@
         "vacuum_xiaomi_path_mode_max",
         "vacuum_xiaomi_carpet_mode_max",
         "vacuum_xiaomi_status",
+        "vacuum_xiaomi_base_station_status",
         "measure_battery",
         "alarm_battery",
         "alarm_main_brush_work_time",
@@ -38985,6 +39041,17 @@
       ],
       "getable": true,
       "setable": true,
+      "icon": "/assets/icons/vacuum-mop.svg"
+    },
+    "vacuum_xiaomi_base_station_status": {
+      "type": "string",
+      "title": {
+        "en": "Base station status"
+      },
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "uiComponent": "sensor",
       "icon": "/assets/icons/vacuum-mop.svg"
     },
     "vacuum_xiaomi_carpet_mode_max": {

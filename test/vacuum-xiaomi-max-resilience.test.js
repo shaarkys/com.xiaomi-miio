@@ -305,7 +305,7 @@ test('a failed unavailable update logs its safe cause without blocking the recon
     assert.ok(errors.some(([message]) => String(message).includes('Homey unavailable update failed') && String(message).includes('EHOMEY')));
 });
 
-test('all property read/write call sites use retries two while action retries stay unchanged', () => {
+test('all property read/write call sites use retries two while action retries remain bounded', () => {
     const source = fs.readFileSync(require.resolve('../drivers/vacuum_xiaomi_vacuum_max/device.js'), 'utf8');
     const lines = source.split(/\r?\n/);
     const propertyWriteLines = lines.filter((line) => /(?:args\.device|this)\.callVacuumSetProperties\(/.test(line));
@@ -319,5 +319,5 @@ test('all property read/write call sites use retries two while action retries st
     assert.ok(propertyWriteLines.every((line) => line.includes('{ retries: 2 }')));
     assert.equal(propertyReadLines.length, 5, 'main, polling-room, cleaning-refresh, candidate, and diagnostic reads must use the queue');
     assert.ok(propertyReadLines.every((line) => line.includes('{ retries: 2 }')));
-    assert.deepEqual(actionRetries, [3, 1, 1, 1]);
+    assert.deepEqual(actionRetries, [1, 3, 1, 1, 1]);
 });

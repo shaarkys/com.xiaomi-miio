@@ -30,6 +30,7 @@
     "vacuum_xiaomi_path_mode_max",
     "vacuum_xiaomi_carpet_mode_max",
     "vacuum_xiaomi_status",
+    "vacuum_xiaomi_base_station_status",
     "measure_battery",
     "alarm_battery",
     "alarm_main_brush_work_time",
