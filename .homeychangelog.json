@@ -595,5 +595,8 @@
   },
   "3.5.19": {
     "en": "Added X20 Max Flow cards for raw robot and base-station status changes"
+  },
+  "3.5.20": {
+    "en": "Advanced Room Cleaning now resolves against a fresh room map, with credits to @odheas-prog."
   }
 }
