@@ -99,6 +99,35 @@ test('uses valid live room data when persisting refreshed settings fails', async
     assert.ok(fixture.errors.some(([message]) => String(message).includes('Failed to persist refreshed room settings')));
 });
 
+test('preserves the old semantic cache if alias persistence fails', async () => {
+    const fixture = createRoomDevice({
+        settingsRooms: [{ id: 48, name: 'Hall' }],
+        liveRooms: [{ id: 61, name: 'Hall' }],
+        storeError: new Error('store unavailable')
+    });
+    const state = await fixture.device._getRoomCleaningState();
+
+    assert.equal(state.refreshed, true);
+    assert.deepEqual(state.rooms, [{ id: 61, name: 'Hall' }]);
+    assert.equal(fixture.device._resolveNumericRoomId(48, state.rooms, state.cachedRooms, state.aliases).id, 61);
+    assert.equal(fixture.settings.rooms, JSON.stringify([{ id: 48, name: 'Hall' }]));
+    assert.ok(fixture.errors.some(([message]) => String(message).includes('Failed to persist room id aliases')));
+    assert.ok(fixture.errors.some(([message]) => String(message).includes('Keeping previous room settings')));
+
+    // Simulate an app restart with no alias store write having succeeded. The old
+    // settings still retain 48 -> Hall, so the live map can safely remap it again.
+    const restarted = createRoomDevice({
+        settingsRooms: [{ id: 48, name: 'Hall' }],
+        liveRooms: [{ id: 61, name: 'Hall' }],
+        storeError: new Error('store unavailable')
+    });
+    const restartedState = await restarted.device._getRoomCleaningState();
+    assert.equal(
+        restarted.device._resolveNumericRoomId(48, restartedState.rooms, restartedState.cachedRooms, restartedState.aliases).id,
+        61
+    );
+});
+
 test('rejects a numeric room id once the same id has ambiguous historical meaning', async () => {
     const fixture = createRoomDevice({
         settingsRooms: [

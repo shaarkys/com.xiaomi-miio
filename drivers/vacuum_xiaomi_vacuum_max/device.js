@@ -1919,12 +1919,13 @@ class XiaomiVacuumMiotDeviceMax extends Device {
         const previousAliases = this._getStoredRoomIdAliases();
         const aliases = this._mergeRoomIdAliases(previousRooms, rooms, previousAliases);
 
-        if (
-            typeof this.setStoreValue === 'function' &&
-            JSON.stringify(previousAliases) !== JSON.stringify(aliases)
-        ) {
+        const aliasesChanged = JSON.stringify(previousAliases) !== JSON.stringify(aliases);
+        let aliasesPersisted = !aliasesChanged;
+
+        if (aliasesChanged && typeof this.setStoreValue === 'function') {
             try {
                 await this.setStoreValue(ROOM_ID_ALIASES_STORE_KEY, aliases);
+                aliasesPersisted = true;
             } catch (error) {
                 this.error(
                     '[ROOMS] Failed to persist room id aliases: ' +
@@ -1937,11 +1938,18 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             rooms: JSON.stringify(rooms),
             rooms_display: rooms.map((room) => room.name || ('Room ' + room.id)).join(', ')
         };
-
-        if (
+        const settingsChanged =
             this.getSetting('rooms') !== settings.rooms ||
-            this.getSetting('rooms_display') !== settings.rooms_display
-        ) {
+            this.getSetting('rooms_display') !== settings.rooms_display;
+
+        if (settingsChanged && aliasesChanged && !aliasesPersisted) {
+            // Do not overwrite the only persisted old-ID -> name association when
+            // alias storage is temporarily unavailable. The current action still
+            // uses the valid live room map, and a later run can retry persistence.
+            this.error(
+                '[ROOMS] Keeping previous room settings because room id aliases could not be persisted.'
+            );
+        } else if (settingsChanged) {
             try {
                 await this.setSettings(settings);
             } catch (error) {
