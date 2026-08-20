@@ -208,6 +208,26 @@ class AdvancedOlderMiAirPurifierDevice extends Device {
     }
   }
 
+  async handleModeEvent(mode) {
+    let normalizedMode = mode;
+
+    if (typeof mode === 'number') {
+      if (!Number.isFinite(mode) || !Object.prototype.hasOwnProperty.call(MIOT_MODE_TO_CAPABILITY, mode)) {
+        this.log(`[airpurifier_mode] Ignoring unsupported numeric mode event for model ${this.model || 'unknown'}: ${mode}`);
+        return;
+      }
+
+      normalizedMode = MIOT_MODE_TO_CAPABILITY[mode];
+    }
+
+    if (this.isV7 && !V7_SUPPORTED_MODES.has(normalizedMode)) {
+      this.log(`[airpurifier_mode] Ignoring unsupported mode event for v7 device: ${normalizedMode}`);
+      return;
+    }
+
+    return super.handleModeEvent(normalizedMode);
+  }
+
   async onSettings({ oldSettings, newSettings, changedKeys }) {
     if (changedKeys.includes('address') || changedKeys.includes('token') || changedKeys.includes('polling')) {
       this.refreshDevice();
