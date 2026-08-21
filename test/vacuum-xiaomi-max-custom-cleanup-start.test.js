@@ -174,6 +174,28 @@ test('autocomplete filters safely by display name or full decimal ID', async () 
     assert.deepEqual(tooLong, []);
 });
 
+test('autocomplete shows every plan when Homey reopens an existing selection as the query', async () => {
+    const target = createStartDevice({
+        propertyHandler: async () => catalogResult([
+            { id: OBSERVED_IDS[0], name: 'Šimon 1st sweep only' },
+            { id: OBSERVED_IDS[1], name: 'Test Emma,choda,WC' }
+        ])
+    });
+    const selectedPlan = {
+        id: String(OBSERVED_IDS[1]),
+        name: 'Test Emma,choda,WC',
+        description: `Plan ID ${OBSERVED_IDS[1]}`
+    };
+
+    const bySelectedName = await target.card.autocomplete(selectedPlan.name, { device: target.device, plan: selectedPlan });
+    const bySelectedId = await target.card.autocomplete(selectedPlan.id, { device: target.device, plan: selectedPlan });
+    const typedSearch = await target.card.autocomplete('šimon', { device: target.device, plan: selectedPlan });
+
+    assert.deepEqual(bySelectedName.map((plan) => plan.id), OBSERVED_IDS.map(String));
+    assert.deepEqual(bySelectedId.map((plan) => plan.id), OBSERVED_IDS.map(String));
+    assert.deepEqual(typedSearch.map((plan) => plan.id), [String(OBSERVED_IDS[0])]);
+});
+
 test('autocomplete rejects non-live, unsupported, and disconnected targets before queueing', async () => {
     for (const settings of [
         { actualModel: 'xiaomi.vacuum.c102gl' },

@@ -1172,7 +1172,22 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             card.registerArgumentAutocompleteListener('plan', async (query, args) => {
                 const { target, model } = validateTarget(args);
                 const plans = await target._queuePropertyOperation(() => readPlans(target, model));
-                const normalizedQuery = typeof query === 'string' ? query.slice(0, 100).trim().toLowerCase() : '';
+                let normalizedQuery = typeof query === 'string' ? query.slice(0, 100).trim().toLowerCase() : '';
+                const selectedPlan = getCustomCleanupDiagnosticOwnDataValue(args, 'plan');
+                const selectedName = getCustomCleanupDiagnosticOwnDataValue(selectedPlan, 'name');
+                const selectedId = getCustomCleanupDiagnosticOwnDataValue(selectedPlan, 'id');
+                const normalizedSelectedName = typeof selectedName === 'string'
+                    ? selectedName.slice(0, 100).trim().toLowerCase()
+                    : '';
+                const normalizedSelectedId = typeof selectedId === 'string' || Number.isSafeInteger(selectedId)
+                    ? String(selectedId).slice(0, 100).trim().toLowerCase()
+                    : '';
+
+                // Homey may reopen a selected autocomplete argument with its name as the
+                // query while rendering an empty search box. Show the full list in that case.
+                if (normalizedQuery && (normalizedQuery === normalizedSelectedName || normalizedQuery === normalizedSelectedId)) {
+                    normalizedQuery = '';
+                }
                 return plans
                     .filter((plan) => !normalizedQuery || plan.name.toLowerCase().includes(normalizedQuery) || String(plan.id).includes(normalizedQuery))
                     .map((plan) => ({

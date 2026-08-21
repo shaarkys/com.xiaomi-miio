@@ -601,5 +601,8 @@
   },
   "3.5.21": {
     "en": "Added separate base-station status and model-specific Flow controls for Xiaomi X20, X20 Pro, X20 Max and H40 robot vacuums."
+  },
+  "3.5.22": {
+    "en": "Added Flow-based discovery and launching of Xiaomi Home Custom cleanup plans for X20 Pro, X20 Max, and H40, preserving the saved room-cleaning order."
   }
 }
