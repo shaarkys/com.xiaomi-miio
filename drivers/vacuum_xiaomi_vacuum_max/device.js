@@ -145,6 +145,77 @@ const BASE_STATION_STATUS_MODELS = Object.freeze([
 ]);
 const PIID18_BASE_STATION_STATUS_MODELS = Object.freeze(['xiaomi.vacuum.d102gl', 'xiaomi.vacuum.d109gl', 'xiaomi.vacuum.ov51gl']);
 const C102_IDLE_BASE_STATION_STATUS_CODES = Object.freeze([0, 1, 2, 3, 4, 5, 6, 7, 10, 11, 12, 13, 14, 19, 21, 23]);
+const CUSTOM_CLEANUP_DIAGNOSTIC_MODELS = Object.freeze(['xiaomi.vacuum.d102gl', 'xiaomi.vacuum.d109gl', 'xiaomi.vacuum.ov51gl']);
+const CUSTOM_CLEANUP_DIAGNOSTIC_PROPERTIES = Object.freeze([
+    Object.freeze({ did: 'user_define_sweep_cfg', siid: 2, piid: 42 }),
+    Object.freeze({ did: 'user_define_sweep_id', siid: 2, piid: 43 })
+]);
+const CUSTOM_CLEANUP_DIAGNOSTIC_ACTION = Object.freeze({
+    did: 'call-20-2',
+    siid: 20,
+    aiid: 2,
+    in: Object.freeze([Object.freeze({ piid: 2, value: 0 })])
+});
+const CUSTOM_CLEANUP_START_PROPERTIES = Object.freeze([
+    Object.freeze({ did: 'user_define_sweep_cfg', siid: 2, piid: 42 })
+]);
+const CUSTOM_CLEANUP_START_ACTION = Object.freeze({
+    did: 'call-2-42',
+    siid: 2,
+    aiid: 42,
+    in: Object.freeze([Object.freeze({ piid: 43 })])
+});
+const CUSTOM_CLEANUP_DIAGNOSTIC_SAFE_KEYS = new Set([
+    'action',
+    'aiid',
+    'code',
+    'count',
+    'data',
+    'did',
+    'error',
+    'errors',
+    'failed',
+    'id',
+    'in',
+    'index',
+    'items',
+    'length',
+    'list',
+    'method',
+    'out',
+    'params',
+    'piid',
+    'properties',
+    'property',
+    'result',
+    'results',
+    'service',
+    'siid',
+    'state',
+    'status',
+    'success',
+    'total',
+    'type',
+    'value',
+    'version'
+]);
+const CUSTOM_CLEANUP_DIAGNOSTIC_LIMITS = Object.freeze({
+    arrayEntries: 24,
+    depth: 6,
+    jsonDecodes: 12,
+    objectKeys: 24,
+    rawStringLength: 4096,
+    serializedLength: 3500
+});
+const CUSTOM_CLEANUP_DIAGNOSTIC_CATALOG_LIMITS = Object.freeze({
+    candidateIds: 8,
+    catalogArrays: 4,
+    catalogRecords: 32,
+    jsonDecodes: 2,
+    propertyResponseItems: 24,
+    rawStringLength: 4096,
+    topLevelProperties: 16
+});
 
 function createBaseStationActionDescriptor(aiid) {
     return Object.freeze({ siid: 2, aiid, did: `call-2-${aiid}`, in: Object.freeze([]) });
@@ -186,6 +257,44 @@ function isSupportedBaseStationStatusModel(model) {
 
 function usesPiid18BaseStationStatus(model) {
     return PIID18_BASE_STATION_STATUS_MODELS.includes(model);
+}
+
+function isCustomCleanupDiagnosticModel(model) {
+    return CUSTOM_CLEANUP_DIAGNOSTIC_MODELS.includes(model);
+}
+
+function getCustomCleanupDiagnosticOwnDataDescriptor(value, property) {
+    if (!value || typeof value !== 'object') return null;
+    try {
+        const descriptor = Object.getOwnPropertyDescriptor(value, property);
+        return descriptor && Object.prototype.hasOwnProperty.call(descriptor, 'value') ? descriptor : null;
+    } catch (_) {
+        return null;
+    }
+}
+
+function getCustomCleanupDiagnosticOwnDataValue(value, property) {
+    const descriptor = getCustomCleanupDiagnosticOwnDataDescriptor(value, property);
+    return descriptor ? descriptor.value : undefined;
+}
+
+function getCustomCleanupDiagnosticArrayLength(value) {
+    if (!Array.isArray(value)) return 0;
+    const length = getCustomCleanupDiagnosticOwnDataValue(value, 'length');
+    return Number.isSafeInteger(length) && length >= 0 ? length : 0;
+}
+
+function decodeCustomCleanupDiagnosticCatalog(value) {
+    let decoded = value;
+    for (let count = 0; count < CUSTOM_CLEANUP_DIAGNOSTIC_CATALOG_LIMITS.jsonDecodes && typeof decoded === 'string'; count += 1) {
+        if (decoded.length > CUSTOM_CLEANUP_DIAGNOSTIC_CATALOG_LIMITS.rawStringLength) return undefined;
+        try {
+            decoded = JSON.parse(decoded);
+        } catch (_) {
+            return undefined;
+        }
+    }
+    return typeof decoded === 'string' ? undefined : decoded;
 }
 
 function getDeviceModelIdentifier(device) {
@@ -731,6 +840,506 @@ class XiaomiVacuumMiotDeviceMax extends Device {
         }
     }
 
+    _createCustomCleanupDiagnosticMarker(type, reason, length) {
+        const marker = { redacted: true, type };
+        if (reason) marker.reason = reason;
+        if (Number.isFinite(length) && length >= 0) marker.length = Math.floor(length);
+        return marker;
+    }
+
+    _markCustomCleanupDiagnosticTruncated(context) {
+        context.truncated = true;
+    }
+
+    _sanitizeCustomCleanupDiagnosticString(value, context, depth, ancestors) {
+        let decoded = value;
+
+        while (typeof decoded === 'string') {
+            if (decoded.length > CUSTOM_CLEANUP_DIAGNOSTIC_LIMITS.rawStringLength) {
+                this._markCustomCleanupDiagnosticTruncated(context);
+                return this._createCustomCleanupDiagnosticMarker('redacted_string', 'input_length', decoded.length);
+            }
+            if (context.jsonDecodes >= CUSTOM_CLEANUP_DIAGNOSTIC_LIMITS.jsonDecodes) {
+                this._markCustomCleanupDiagnosticTruncated(context);
+                return this._createCustomCleanupDiagnosticMarker('redacted_string', 'json_decode_limit', decoded.length);
+            }
+
+            try {
+                decoded = JSON.parse(decoded);
+                context.jsonDecodes += 1;
+            } catch (_) {
+                return this._createCustomCleanupDiagnosticMarker('redacted_string', 'non_json_string', decoded.length);
+            }
+        }
+
+        return this._sanitizeCustomCleanupDiagnosticValue(decoded, context, depth, ancestors);
+    }
+
+    _sanitizeCustomCleanupDiagnosticValue(value, context, depth = 0, ancestors = new Set()) {
+        if (value === null || typeof value === 'boolean') return value;
+        if (typeof value === 'number') {
+            return Number.isFinite(value)
+                ? value
+                : this._createCustomCleanupDiagnosticMarker('redacted_number', 'non_finite');
+        }
+        if (typeof value === 'string') {
+            return this._sanitizeCustomCleanupDiagnosticString(value, context, depth, ancestors);
+        }
+        if (typeof value !== 'object') {
+            return this._createCustomCleanupDiagnosticMarker(`redacted_${typeof value}`, 'unsupported_type');
+        }
+        if (depth >= CUSTOM_CLEANUP_DIAGNOSTIC_LIMITS.depth) {
+            this._markCustomCleanupDiagnosticTruncated(context);
+            return this._createCustomCleanupDiagnosticMarker('truncated_value', 'depth');
+        }
+        if (ancestors.has(value)) {
+            this._markCustomCleanupDiagnosticTruncated(context);
+            return this._createCustomCleanupDiagnosticMarker('truncated_value', 'circular_reference');
+        }
+
+        ancestors.add(value);
+        try {
+            if (Array.isArray(value)) {
+                const sanitized = [];
+                const arrayLength = getCustomCleanupDiagnosticArrayLength(value);
+                const limit = Math.min(arrayLength, CUSTOM_CLEANUP_DIAGNOSTIC_LIMITS.arrayEntries);
+                for (let index = 0; index < limit; index += 1) {
+                    const descriptor = getCustomCleanupDiagnosticOwnDataDescriptor(value, String(index));
+                    if (!descriptor) {
+                        sanitized.push(this._createCustomCleanupDiagnosticMarker('redacted_value', 'access_failed'));
+                        continue;
+                    }
+                    try {
+                        sanitized.push(this._sanitizeCustomCleanupDiagnosticValue(descriptor.value, context, depth + 1, ancestors));
+                    } catch (_) {
+                        sanitized.push(this._createCustomCleanupDiagnosticMarker('redacted_value', 'access_failed'));
+                    }
+                }
+                if (arrayLength > limit) {
+                    this._markCustomCleanupDiagnosticTruncated(context);
+                    sanitized.push({ truncated: true, reason: 'array_entries', length: arrayLength });
+                }
+                return sanitized;
+            }
+
+            let keys;
+            try {
+                keys = Object.keys(value);
+            } catch (_) {
+                this._markCustomCleanupDiagnosticTruncated(context);
+                return this._createCustomCleanupDiagnosticMarker('truncated_value', 'keys_unavailable');
+            }
+
+            const sanitized = {};
+            const limit = Math.min(keys.length, CUSTOM_CLEANUP_DIAGNOSTIC_LIMITS.objectKeys);
+            let redactedKeyIndex = 0;
+            for (let index = 0; index < limit; index += 1) {
+                const key = keys[index];
+                const sanitizedKey = CUSTOM_CLEANUP_DIAGNOSTIC_SAFE_KEYS.has(key) ? key : `redacted_key_${++redactedKeyIndex}`;
+                const descriptor = getCustomCleanupDiagnosticOwnDataDescriptor(value, key);
+                if (!descriptor) {
+                    sanitized[sanitizedKey] = this._createCustomCleanupDiagnosticMarker('redacted_value', 'access_failed');
+                    continue;
+                }
+                try {
+                    sanitized[sanitizedKey] = this._sanitizeCustomCleanupDiagnosticValue(descriptor.value, context, depth + 1, ancestors);
+                } catch (_) {
+                    sanitized[sanitizedKey] = this._createCustomCleanupDiagnosticMarker('redacted_value', 'access_failed');
+                }
+            }
+            if (keys.length > limit) {
+                this._markCustomCleanupDiagnosticTruncated(context);
+                sanitized.truncated = { reason: 'object_keys', length: keys.length };
+            }
+            return sanitized;
+        } catch (_) {
+            this._markCustomCleanupDiagnosticTruncated(context);
+            return this._createCustomCleanupDiagnosticMarker('truncated_value', 'sanitize_failed');
+        } finally {
+            ancestors.delete(value);
+        }
+    }
+
+    _formatCustomCleanupDiagnosticSnapshot(value) {
+        const context = { jsonDecodes: 0, truncated: false };
+        let snapshot;
+        try {
+            snapshot = this._sanitizeCustomCleanupDiagnosticValue(value, context);
+        } catch (_) {
+            context.truncated = true;
+            snapshot = this._createCustomCleanupDiagnosticMarker('redacted_value', 'sanitize_failed');
+        }
+
+        let serialized;
+        try {
+            serialized = JSON.stringify({ snapshot, truncated: context.truncated });
+        } catch (_) {
+            return '{"snapshot":{"redacted":true,"type":"redacted_value","reason":"serialization"},"truncated":true}';
+        }
+        if (serialized.length > CUSTOM_CLEANUP_DIAGNOSTIC_LIMITS.serializedLength) {
+            return JSON.stringify({
+                snapshot: this._createCustomCleanupDiagnosticMarker('truncated_value', 'serialized_length', serialized.length),
+                truncated: true
+            });
+        }
+        return serialized;
+    }
+
+    _getCustomCleanupDiagnosticSafeError(error) {
+        let details = '';
+        try {
+            details = typeof this._getSafeErrorDetails === 'function' ? this._getSafeErrorDetails(error) : '';
+        } catch (_) {}
+
+        let code = '';
+        try {
+            code = error && error.code != null ? String(error.code) : '';
+        } catch (_) {}
+        if (/^(?:E[A-Z0-9_.-]{0,63}|-?\d{1,12})$/.test(code)) return `request failed (code: ${code})`;
+        if (/\btimeout\b/i.test(details)) return 'request timed out';
+        return 'request failed';
+    }
+
+    _extractCustomCleanupDiagnosticPlanIds(propertyResult) {
+        return this._extractCustomCleanupPlans(propertyResult).map((plan) => plan.id);
+    }
+
+    _getCustomCleanupPlanDisplayName(record, fallbackOrder) {
+        const namedProperties = ['name', 'title', 'label'];
+        const normalizeName = (value) => {
+            if (typeof value !== 'string') return null;
+            const normalized = value.replace(/[\u0000-\u001F\u007F-\u009F]/g, ' ').replace(/\s+/g, ' ').trim();
+            return normalized ? normalized.slice(0, 80) : null;
+        };
+
+        for (const property of namedProperties) {
+            const name = normalizeName(getCustomCleanupDiagnosticOwnDataValue(record, property));
+            if (name) return name;
+        }
+
+        try {
+            const keys = Object.keys(record);
+            const limit = Math.min(keys.length, CUSTOM_CLEANUP_DIAGNOSTIC_CATALOG_LIMITS.topLevelProperties);
+            for (let index = 0; index < limit; index += 1) {
+                const property = keys[index];
+                if (property === 'id' || namedProperties.includes(property)) continue;
+                const name = normalizeName(getCustomCleanupDiagnosticOwnDataValue(record, property));
+                if (name) return name;
+            }
+        } catch (_) {}
+
+        return `Custom cleanup ${fallbackOrder}`;
+    }
+
+    _extractCustomCleanupPlans(propertyResult) {
+        const plans = [];
+        const seenIds = new Set();
+        let catalogArraysInspected = 0;
+        let recordsInspected = 0;
+
+        const inspectCatalogArray = (catalog) => {
+            if (!Array.isArray(catalog) || catalogArraysInspected >= CUSTOM_CLEANUP_DIAGNOSTIC_CATALOG_LIMITS.catalogArrays) return;
+            catalogArraysInspected += 1;
+
+            const recordLimit = Math.min(getCustomCleanupDiagnosticArrayLength(catalog), CUSTOM_CLEANUP_DIAGNOSTIC_CATALOG_LIMITS.catalogRecords - recordsInspected);
+            for (let index = 0; index < recordLimit && plans.length < CUSTOM_CLEANUP_DIAGNOSTIC_CATALOG_LIMITS.candidateIds; index += 1) {
+                recordsInspected += 1;
+                const record = getCustomCleanupDiagnosticOwnDataValue(catalog, String(index));
+                if (!record || typeof record !== 'object' || Array.isArray(record)) continue;
+
+                const id = getCustomCleanupDiagnosticOwnDataValue(record, 'id');
+                if (!Number.isInteger(id) || id < 1 || id > 0xFFFFFFFF || seenIds.has(id)) continue;
+
+                seenIds.add(id);
+                plans.push({
+                    id,
+                    name: this._getCustomCleanupPlanDisplayName(record, plans.length + 1)
+                });
+            }
+        };
+
+        const inspectCatalogValue = (value) => {
+            const catalogRoot = decodeCustomCleanupDiagnosticCatalog(value);
+            if (Array.isArray(catalogRoot)) {
+                inspectCatalogArray(catalogRoot);
+                return;
+            }
+            if (!catalogRoot || typeof catalogRoot !== 'object') return;
+
+            let topLevelPropertiesInspected = 0;
+            try {
+                for (const property in catalogRoot) {
+                    topLevelPropertiesInspected += 1;
+                    if (topLevelPropertiesInspected > CUSTOM_CLEANUP_DIAGNOSTIC_CATALOG_LIMITS.topLevelProperties
+                        || catalogArraysInspected >= CUSTOM_CLEANUP_DIAGNOSTIC_CATALOG_LIMITS.catalogArrays
+                        || recordsInspected >= CUSTOM_CLEANUP_DIAGNOSTIC_CATALOG_LIMITS.catalogRecords
+                        || plans.length >= CUSTOM_CLEANUP_DIAGNOSTIC_CATALOG_LIMITS.candidateIds) break;
+                    if (!Object.prototype.hasOwnProperty.call(catalogRoot, property)) continue;
+
+                    const catalog = getCustomCleanupDiagnosticOwnDataValue(catalogRoot, property);
+                    if (Array.isArray(catalog)) inspectCatalogArray(catalog);
+                }
+            } catch (_) {}
+        };
+
+        const propertyResponseLimit = Math.min(
+            getCustomCleanupDiagnosticArrayLength(propertyResult),
+            CUSTOM_CLEANUP_DIAGNOSTIC_CATALOG_LIMITS.propertyResponseItems
+        );
+        for (let index = 0; index < propertyResponseLimit && plans.length < CUSTOM_CLEANUP_DIAGNOSTIC_CATALOG_LIMITS.candidateIds; index += 1) {
+            const propertyResponse = getCustomCleanupDiagnosticOwnDataValue(propertyResult, String(index));
+            if (!propertyResponse || typeof propertyResponse !== 'object' || Array.isArray(propertyResponse)) continue;
+            if (getCustomCleanupDiagnosticOwnDataValue(propertyResponse, 'siid') !== 2
+                || getCustomCleanupDiagnosticOwnDataValue(propertyResponse, 'piid') !== 42
+                || getCustomCleanupDiagnosticOwnDataValue(propertyResponse, 'code') !== 0) continue;
+
+            const value = getCustomCleanupDiagnosticOwnDataValue(propertyResponse, 'value');
+            inspectCatalogValue(value);
+        }
+
+        return plans;
+    }
+
+    _getCustomCleanupStartPlanId(plan) {
+        if (!plan || typeof plan !== 'object' || Array.isArray(plan)) return null;
+        const id = getCustomCleanupDiagnosticOwnDataValue(plan, 'id');
+        if (Number.isSafeInteger(id) && id >= 1 && id <= 0xFFFFFFFF) return id;
+        if (typeof id !== 'string' || !/^[1-9]\d{0,9}$/.test(id)) return null;
+
+        const numericId = Number(id);
+        return Number.isSafeInteger(numericId) && numericId >= 1 && numericId <= 0xFFFFFFFF && String(numericId) === id
+            ? numericId
+            : null;
+    }
+
+    _getCustomCleanupStartTargetModel(target) {
+        try {
+            const model = typeof target._getDeviceModel === 'function' ? target._getDeviceModel() : null;
+            return isCustomCleanupDiagnosticModel(model) ? model : null;
+        } catch (_) {
+            return null;
+        }
+    }
+
+    _getCustomCleanupStartSafeError(error) {
+        try {
+            return typeof this._getCustomCleanupDiagnosticSafeError === 'function'
+                ? this._getCustomCleanupDiagnosticSafeError(error)
+                : 'request failed';
+        } catch (_) {
+            return 'request failed';
+        }
+    }
+
+    _registerCustomCleanupStartFlowListener() {
+        if (!this.homey || !this.homey.flow) return;
+        try {
+            const card = this.homey.flow.getActionCard('start_custom_cleanup_plan');
+            if (!card || typeof card.registerRunListener !== 'function' || typeof card.registerArgumentAutocompleteListener !== 'function') return;
+
+            const validateTarget = (args) => {
+                const target = args && args.device;
+                if (!target) throw new Error('A target vacuum device is required.');
+
+                const model = this._getCustomCleanupStartTargetModel(target);
+                if (!model) throw new Error('Custom cleanup plans require a supported live vacuum model.');
+                if (!target.miio || typeof target.miio.call !== 'function') throw new Error('The target vacuum is not connected.');
+                if (typeof target._queuePropertyOperation !== 'function'
+                    || typeof target.callMiotGetProperties !== 'function'
+                    || typeof target._extractCustomCleanupPlans !== 'function') {
+                    throw new Error('The target vacuum does not support Custom cleanup plans.');
+                }
+                return { target, model };
+            };
+
+            const readPlans = async (target, model) => {
+                try {
+                    const chunkSize = GET_PROPERTIES_CHUNK_SIZE[model] ?? DEFAULT_GET_PROPERTIES_CHUNK_SIZE;
+                    const propertyResult = await target.callMiotGetProperties(
+                        CUSTOM_CLEANUP_START_PROPERTIES.map((property) => ({ ...property })),
+                        { retries: 2, chunkSize, delayMs: GET_PROPERTIES_CHUNK_DELAY_MS }
+                    );
+                    return target._extractCustomCleanupPlans(propertyResult);
+                } catch (error) {
+                    const safeError = this._getCustomCleanupStartSafeError(error);
+                    try {
+                        if (typeof target.error === 'function') target.error(`[CUSTOM_CLEANUP_START] Catalog refresh failed: ${safeError}`);
+                    } catch (_) {}
+                    throw new Error('Could not refresh Custom cleanup plans; please try again.');
+                }
+            };
+
+            card.registerArgumentAutocompleteListener('plan', async (query, args) => {
+                const { target, model } = validateTarget(args);
+                const plans = await target._queuePropertyOperation(() => readPlans(target, model));
+                const normalizedQuery = typeof query === 'string' ? query.slice(0, 100).trim().toLowerCase() : '';
+                return plans
+                    .filter((plan) => !normalizedQuery || plan.name.toLowerCase().includes(normalizedQuery) || String(plan.id).includes(normalizedQuery))
+                    .map((plan) => ({
+                        id: String(plan.id),
+                        name: plan.name,
+                        description: `Plan ID ${plan.id}`
+                    }));
+            });
+
+            card.registerRunListener(async (args) => {
+                const planId = this._getCustomCleanupStartPlanId(args && args.plan);
+                if (planId === null) throw new Error('Select a valid Custom cleanup plan from the Flow card.');
+
+                const { target, model } = validateTarget(args);
+                return target._queuePropertyOperation(async () => {
+                    const plans = await readPlans(target, model);
+                    if (!plans.some((plan) => plan.id === planId)) {
+                        throw new Error('The selected Custom cleanup plan is no longer available. Edit the Flow and select the plan again.');
+                    }
+
+                    try {
+                        const result = await target.miio.call(
+                            'action',
+                            {
+                                ...CUSTOM_CLEANUP_START_ACTION,
+                                in: [{ piid: 43, value: planId }]
+                            },
+                            { retries: 1 }
+                        );
+                        const actionCode = getCustomCleanupDiagnosticOwnDataValue(result, 'code');
+                        if (typeof actionCode === 'number' && Number.isFinite(actionCode) && actionCode !== 0) {
+                            const actionError = new Error('Custom cleanup start action failed.');
+                            actionError.code = actionCode;
+                            throw actionError;
+                        }
+                        return result;
+                    } catch (error) {
+                        const safeError = this._getCustomCleanupStartSafeError(error);
+                        try {
+                            if (typeof target.error === 'function') target.error(`[CUSTOM_CLEANUP_START] Action failed for plan ID ${planId}: ${safeError}`);
+                        } catch (_) {}
+                        throw new Error(`Could not start Custom cleanup plan ID ${planId}; please try again.`);
+                    }
+                });
+            });
+        } catch (error) {
+            const details = this._getCustomCleanupStartSafeError(error);
+            if (typeof this.error === 'function') this.error(`[CUSTOM_CLEANUP_START] Failed to register start_custom_cleanup_plan: ${details}`);
+        }
+    }
+
+    _registerCustomCleanupDiagnosticFlowListener() {
+        if (!this.homey || !this.homey.flow) return;
+        try {
+            const card = this.homey.flow.getActionCard('diagnose_custom_cleanup_plans');
+            if (!card || typeof card.registerRunListener !== 'function') return;
+
+            card.registerRunListener(async (args) => {
+                const target = args && args.device;
+                if (!target) throw new Error('A target vacuum device is required.');
+
+                let actualModel = null;
+                try {
+                    actualModel = typeof target._getDeviceModel === 'function' ? target._getDeviceModel() : null;
+                } catch (_) {}
+                const expectedModel = args && args.expected_model;
+                if (typeof expectedModel !== 'string' || !isCustomCleanupDiagnosticModel(expectedModel) || !actualModel || !isCustomCleanupDiagnosticModel(actualModel) || actualModel !== expectedModel) {
+                    throw new Error('Custom cleanup diagnostics require a matching supported live vacuum model selection.');
+                }
+                if (!target.miio || typeof target.miio.call !== 'function') {
+                    throw new Error('The target vacuum is not connected.');
+                }
+                if (typeof target._queuePropertyOperation !== 'function' || typeof target.callMiotGetProperties !== 'function') {
+                    throw new Error('The target vacuum does not support this diagnostic.');
+                }
+
+                const logDiagnostic = (message) => {
+                    try {
+                        if (typeof target.log === 'function') target.log(`[CUSTOM_CLEANUP_DIAG] ${message}`);
+                    } catch (_) {}
+                };
+                const formatSnapshot = (result) => {
+                    try {
+                        return typeof target._formatCustomCleanupDiagnosticSnapshot === 'function'
+                            ? target._formatCustomCleanupDiagnosticSnapshot(result)
+                            : '{"snapshot":{"redacted":true,"type":"redacted_value","reason":"formatter_unavailable"},"truncated":true}';
+                    } catch (_) {
+                        return '{"snapshot":{"redacted":true,"type":"redacted_value","reason":"format_failed"},"truncated":true}';
+                    }
+                };
+                const safeError = (error) => {
+                    try {
+                        return typeof target._getCustomCleanupDiagnosticSafeError === 'function'
+                            ? target._getCustomCleanupDiagnosticSafeError(error)
+                            : 'request failed';
+                    } catch (_) {
+                        return 'request failed';
+                    }
+                };
+
+                logDiagnostic(`model/start: ${expectedModel}; reading custom cleanup structure.`);
+                return target._queuePropertyOperation(async () => {
+                    let propertyError;
+                    let actionError;
+                    let candidateIds = [];
+
+                    try {
+                        const chunkSize = GET_PROPERTIES_CHUNK_SIZE[expectedModel] ?? DEFAULT_GET_PROPERTIES_CHUNK_SIZE;
+                        const propertyResult = await target.callMiotGetProperties(
+                            CUSTOM_CLEANUP_DIAGNOSTIC_PROPERTIES.map((property) => ({ ...property })),
+                            { retries: 2, chunkSize, delayMs: GET_PROPERTIES_CHUNK_DELAY_MS }
+                        );
+                        logDiagnostic(`property result: ${formatSnapshot(propertyResult)}`);
+                        try {
+                            candidateIds = typeof target._extractCustomCleanupDiagnosticPlanIds === 'function'
+                                ? target._extractCustomCleanupDiagnosticPlanIds(propertyResult)
+                                : [];
+                        } catch (_) {
+                            candidateIds = [];
+                        }
+                    } catch (error) {
+                        propertyError = error;
+                        logDiagnostic(`property read failed: ${safeError(error)}`);
+                    }
+
+                    const queryIds = candidateIds.length > 0 ? candidateIds : [0];
+                    if (candidateIds.length > 0) {
+                        logDiagnostic(`catalog candidate IDs: ${candidateIds.join(', ')}.`);
+                    } else {
+                        logDiagnostic('catalog: no valid plan IDs; querying fallback id 0.');
+                    }
+
+                    for (const id of queryIds) {
+                        const queryLabel = id === 0 ? 'get-user-define' : `get-user-define id ${id}`;
+                        try {
+                            const actionResult = await target.miio.call(
+                                'action',
+                                {
+                                    ...CUSTOM_CLEANUP_DIAGNOSTIC_ACTION,
+                                    in: CUSTOM_CLEANUP_DIAGNOSTIC_ACTION.in.map((input) => ({ ...input, value: id }))
+                                },
+                                { retries: 1 }
+                            );
+                            logDiagnostic(`${queryLabel} result: ${formatSnapshot(actionResult)}`);
+                        } catch (error) {
+                            if (!actionError) actionError = error;
+                            logDiagnostic(`${queryLabel} failed: ${safeError(error)}`);
+                        }
+                    }
+
+                    if (propertyError || actionError) {
+                        logDiagnostic('completion: partial failure; inspect the diagnostic entries.');
+                        throw new Error('Custom cleanup diagnostic did not complete; inspect [CUSTOM_CLEANUP_DIAG] logs.');
+                    }
+
+                    logDiagnostic('completion: all read-only diagnostic requests succeeded.');
+                    return true;
+                });
+            });
+        } catch (error) {
+            const details = typeof this._getCustomCleanupDiagnosticSafeError === 'function'
+                ? this._getCustomCleanupDiagnosticSafeError(error)
+                : 'request failed';
+            if (typeof this.error === 'function') this.error(`[CUSTOM_CLEANUP_DIAG] Failed to register diagnose_custom_cleanup_plans: ${details}`);
+        }
+    }
+
     _getDeviceModel() {
         if (this.miio) {
             return this.miio.miioModel || (this.miio.management && this.miio.management.model) || null;
@@ -888,6 +1497,8 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             this.homey.flow.getDeviceTriggerCard('statusVacuum');
             this._registerX20FlowListeners();
             this._registerBaseStationControlFlowListener();
+            this._registerCustomCleanupDiagnosticFlowListener();
+            this._registerCustomCleanupStartFlowListener();
 
             // Advanced room cleaning (works for all, just skips unsupported set_properties)
             this.homey.flow.getActionCard('advanced_room_cleaning').registerRunListener(async (args) => {

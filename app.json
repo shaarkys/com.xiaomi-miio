@@ -14256,6 +14256,72 @@
         ]
       },
       {
+        "id": "diagnose_custom_cleanup_plans",
+        "title": {
+          "en": "Diagnose Xiaomi Home Custom cleanup plans"
+        },
+        "titleFormatted": {
+          "en": "Diagnose Xiaomi Home Custom cleanup plans for [[expected_model]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=vacuum_xiaomi_vacuum_max"
+          },
+          {
+            "name": "expected_model",
+            "title": {
+              "en": "Vacuum model"
+            },
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "xiaomi.vacuum.d102gl",
+                "label": {
+                  "en": "Xiaomi Robot Vacuum X20 Pro"
+                }
+              },
+              {
+                "id": "xiaomi.vacuum.d109gl",
+                "label": {
+                  "en": "Xiaomi Robot Vacuum X20 Max"
+                }
+              },
+              {
+                "id": "xiaomi.vacuum.ov51gl",
+                "label": {
+                  "en": "Xiaomi Robot Vacuum H40"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "start_custom_cleanup_plan",
+        "title": {
+          "en": "Start Xiaomi Home Custom cleanup plan"
+        },
+        "titleFormatted": {
+          "en": "Start Xiaomi Home Custom cleanup plan [[plan]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=vacuum_xiaomi_vacuum_max"
+          },
+          {
+            "name": "plan",
+            "title": {
+              "en": "Custom cleanup plan"
+            },
+            "type": "autocomplete"
+          }
+        ]
+      },
+      {
         "id": "advanced_room_cleaning",
         "title": {
           "en": "advanced cleaning",
