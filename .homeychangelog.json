@@ -607,5 +607,8 @@
   },
   "3.5.23": {
     "en": "Added Flow-based discovery and launching of Xiaomi Home Custom cleanup plans for X20 Pro, X20 Max, and H40, preserving the saved room-cleaning order."
+  },
+  "3.5.24": {
+    "en": "Added a Times (Once/Twice) option to Advanced Room Cleaning Flows for the Xiaomi Robot Vacuum X20 Max and compatible models."
   }
 }
