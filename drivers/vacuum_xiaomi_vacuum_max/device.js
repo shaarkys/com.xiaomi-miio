@@ -146,6 +146,15 @@ const BASE_STATION_STATUS_MODELS = Object.freeze([
 const PIID18_BASE_STATION_STATUS_MODELS = Object.freeze(['xiaomi.vacuum.d102gl', 'xiaomi.vacuum.d109gl', 'xiaomi.vacuum.ov51gl']);
 const C102_IDLE_BASE_STATION_STATUS_CODES = Object.freeze([0, 1, 2, 3, 4, 5, 6, 7, 10, 11, 12, 13, 14, 19, 21, 23]);
 const CUSTOM_CLEANUP_DIAGNOSTIC_MODELS = Object.freeze(['xiaomi.vacuum.d102gl', 'xiaomi.vacuum.d109gl', 'xiaomi.vacuum.ov51gl']);
+const CLEAN_TIMES_MODELS = Object.freeze([
+    'xiaomi.vacuum.d109gl',
+    'xiaomi.vacuum.d102gl',
+    'xiaomi.vacuum.d101',
+    'xiaomi.vacuum.d101gl',
+    'xiaomi.vacuum.ov51gl',
+    'xiaomi.vacuum.ov71gl',
+    'xiaomi.vacuum.b108gl'
+]);
 const CUSTOM_CLEANUP_DIAGNOSTIC_PROPERTIES = Object.freeze([
     Object.freeze({ did: 'user_define_sweep_cfg', siid: 2, piid: 42 }),
     Object.freeze({ did: 'user_define_sweep_id', siid: 2, piid: 43 })
@@ -371,6 +380,7 @@ const properties = {
             mopmode: { siid: 2, piid: 4 },
             cleaning_mode: { siid: 2, piid: 9 },
             water_level: { siid: 2, piid: 10 },
+            clean_times: { siid: 2, piid: 8 },
             path_mode: { siid: 2, piid: 74 },
             room_clean_action: { siid: 2, aiid: 16, piid: 15 }, // baseline
             carpet_avoidance: { siid: 2, piid: 73 }
@@ -380,6 +390,7 @@ const properties = {
             mopmode: true,
             cleaning_mode: true,
             water_level: true,
+            clean_times: true,
             path_mode: true,
             carpet_avoidance: true,
             consumables: true,
@@ -420,6 +431,7 @@ const properties = {
             mopmode: { siid: 2, piid: 4 },
             cleaning_mode: { siid: 2, piid: 9 },
             water_level: { siid: 2, piid: 10 },
+            clean_times: { siid: 2, piid: 8 },
             path_mode: { siid: 2, piid: 74 },
             room_clean_action: { siid: 2, aiid: 16, piid: 15 },
             carpet_avoidance: { siid: 2, piid: 73 }
@@ -429,6 +441,7 @@ const properties = {
             mopmode: true,
             cleaning_mode: true,
             water_level: true,
+            clean_times: true,
             path_mode: true,
             carpet_avoidance: true,
             consumables: true,
@@ -484,6 +497,7 @@ const properties = {
             mopmode: true,
             cleaning_mode: true,
             water_level: true,
+            clean_times: false,
             path_mode: true,
             carpet_avoidance: true,
             consumables: true,
@@ -518,6 +532,7 @@ const properties = {
             mopmode: { siid: 2, piid: 3 },
             cleaning_mode: { siid: 2, piid: 8 },
             water_level: { siid: 2, piid: 9 },
+            clean_times: { siid: 2, piid: 7 },
             room_clean_action: { siid: 2, aiid: 13, piid: 13 },
             carpet_avoidance: { siid: 2, piid: 20 }
         },
@@ -526,6 +541,7 @@ const properties = {
             mopmode: true,
             cleaning_mode: true,
             water_level: true,
+            clean_times: true,
             path_mode: false,
             carpet_avoidance: true,
             consumables: false,
@@ -563,6 +579,7 @@ const properties = {
             mopmode: false,
             cleaning_mode: true,
             water_level: false,
+            clean_times: false,
             path_mode: false,
             carpet_avoidance: false,
             consumables: false,
@@ -838,6 +855,21 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             const details = typeof this._getSafeErrorDetails === 'function' ? this._getSafeErrorDetails(error) : (error && error.message) || 'Unknown error';
             if (typeof this.error === 'function') this.error(`[FLOW] Failed to register base_station_control: ${details}`);
         }
+    }
+
+    _registerAdvancedRoomCleaningFlowListeners() {
+        const register = (cardId, includeCleanTimes) => {
+            this.homey.flow.getActionCard(cardId).registerRunListener((args) => {
+                const target = args && args.device;
+                if (!target || typeof target._runAdvancedRoomCleaning !== 'function') {
+                    return Promise.reject('Room cleaning is not supported by this device.');
+                }
+                return target._runAdvancedRoomCleaning(args, includeCleanTimes);
+            });
+        };
+
+        register('advanced_room_cleaning', false);
+        register('advanced_room_cleaning_times', true);
     }
 
     _createCustomCleanupDiagnosticMarker(type, reason, length) {
@@ -1515,101 +1547,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             this._registerCustomCleanupDiagnosticFlowListener();
             this._registerCustomCleanupStartFlowListener();
 
-            // Advanced room cleaning (works for all, just skips unsupported set_properties)
-            this.homey.flow.getActionCard('advanced_room_cleaning').registerRunListener(async (args) => {
-                if (!args.device || !args.device.deviceProperties || !args.device.deviceProperties.supports.rooms || !args.device.deviceProperties.set_properties.room_clean_action) {
-                    return Promise.reject('Room cleaning is not supported by this device.');
-                }
-                const {
-                    rooms: list_room,
-                    selectedIds: selected_ids
-                } = await args.device._resolveAdvancedRoomCleaningSelection(args.room);
-
-                if (!selected_ids.length) {
-                    return Promise.reject(
-                        `No valid CURRENT room selected. Requested: "${args.room}". Available: ${list_room
-                            .map((room) => (room.name || ('Room ' + room.id)) + ' [' + room.id + ']')
-                            .join(', ')}.`
-                    );
-                }
-
-                const room_list = args.device._serializeRoomList(selected_ids);
-
-                // Only push properties that the model supports
-                const props = [];
-                const selectedMode = String(args.mode);
-                if (this.deviceProperties.supports.mopmode) {
-                    const mopOutbound = this.mapMopModeOutbound(selectedMode);
-                    if (mopOutbound != null) {
-                        props.push({
-                            siid: this.deviceProperties.set_properties.mopmode.siid,
-                            piid: this.deviceProperties.set_properties.mopmode.piid,
-                            value: mopOutbound
-                        });
-                    }
-                }
-                if (this.deviceProperties.supports.path_mode) {
-                    const pathOutbound = this.mapPathModeOutbound(String(args.accuracy));
-                    if (pathOutbound != null) {
-                        props.push({
-                            siid: this.deviceProperties.set_properties.path_mode.siid,
-                            piid: this.deviceProperties.set_properties.path_mode.piid,
-                            value: pathOutbound
-                        });
-                    }
-                }
-                if (this.deviceProperties.supports.cleaning_mode && (selectedMode === '1' || selectedMode === '3')) {
-                    const sweepOutbound = this.mapCleaningModeOutbound(String(args.mode_sweep));
-                    if (sweepOutbound != null) {
-                        props.push({
-                            siid: this.deviceProperties.set_properties.cleaning_mode.siid,
-                            piid: this.deviceProperties.set_properties.cleaning_mode.piid,
-                            value: sweepOutbound
-                        });
-                    }
-                }
-                if (this.deviceProperties.supports.water_level && (selectedMode === '2' || selectedMode === '3')) {
-                    const mopLevelOutbound = this.mapWaterLevelOutbound(String(args.mode_mop));
-                    if (mopLevelOutbound != null) {
-                        props.push({
-                            siid: this.deviceProperties.set_properties.water_level.siid,
-                            piid: this.deviceProperties.set_properties.water_level.piid,
-                            value: mopLevelOutbound
-                        });
-                    }
-                }
-                if (this.deviceProperties.supports.carpet_avoidance && typeof args.carpet_avoidance !== 'undefined') {
-                    const carpetPayload = this.buildCarpetModeSetPayload(String(args.carpet_avoidance));
-                    if (carpetPayload.length) {
-                        props.push(...carpetPayload);
-                    }
-                }
-
-                const action = {
-                    siid: this.deviceProperties.set_properties.room_clean_action.siid,
-                    aiid: this.deviceProperties.set_properties.room_clean_action.aiid,
-                    in: [
-                        {
-                            siid: this.deviceProperties.set_properties.room_clean_action.siid,
-                            piid: this.deviceProperties.set_properties.room_clean_action.piid,
-                            code: 0,
-                            value: room_list
-                        }
-                    ]
-                };
-
-                this.log('[ADV_ROOM_CLEAN] props:', JSON.stringify(props));
-                this.log('[ADV_ROOM_CLEAN] action:', JSON.stringify(action));
-
-                if (args.device.miio && typeof args.device.miio.call === 'function') {
-                    if (props.length) await args.device.callVacuumSetProperties(props, { retries: 2 });
-                    await args.device.miio.call('action', action, { retries: 3 });
-                } else {
-                    this.setUnavailable(this.homey.__('unreachable')).catch((error) => this.error(error));
-                    this.createDevice();
-                    return Promise.reject('Device unreachable, please try again ...');
-                }
-            });
+            this._registerAdvancedRoomCleaningFlowListeners();
 
             const registerVacuumAction = (cardId, capabilityId, argKey, supportKey) => {
                 this.homey.flow.getActionCard(cardId).registerRunListener(async (args) => {
@@ -2861,12 +2799,125 @@ class XiaomiVacuumMiotDeviceMax extends Device {
         return this._model || (this.getStoreValue ? this.getStoreValue('model') : undefined);
     }
 
+    async _runAdvancedRoomCleaning(args, includeCleanTimes) {
+        if (!this.deviceProperties || !this.deviceProperties.supports.rooms || !this.deviceProperties.set_properties.room_clean_action) {
+            throw new Error('Room cleaning is not supported by this device.');
+        }
+        const cleanTimesProperty = includeCleanTimes ? this._buildCleanTimesProperty(args.times) : null;
+        const {
+            rooms: listRoom,
+            selectedIds
+        } = await this._resolveAdvancedRoomCleaningSelection(args.room);
+
+        if (!selectedIds.length) {
+            throw new Error(
+                `No valid CURRENT room selected. Requested: "${args.room}". Available: ${listRoom
+                    .map((room) => (room.name || ('Room ' + room.id)) + ' [' + room.id + ']')
+                    .join(', ')}.`
+            );
+        }
+
+        const roomList = this._serializeRoomList(selectedIds);
+        const props = [];
+        if (cleanTimesProperty) props.push(cleanTimesProperty);
+        const selectedMode = String(args.mode);
+        if (this.deviceProperties.supports.mopmode) {
+            const mopOutbound = this.mapMopModeOutbound(selectedMode);
+            if (mopOutbound != null) {
+                props.push({
+                    siid: this.deviceProperties.set_properties.mopmode.siid,
+                    piid: this.deviceProperties.set_properties.mopmode.piid,
+                    value: mopOutbound
+                });
+            }
+        }
+        if (this.deviceProperties.supports.path_mode) {
+            const pathOutbound = this.mapPathModeOutbound(String(args.accuracy));
+            if (pathOutbound != null) {
+                props.push({
+                    siid: this.deviceProperties.set_properties.path_mode.siid,
+                    piid: this.deviceProperties.set_properties.path_mode.piid,
+                    value: pathOutbound
+                });
+            }
+        }
+        if (this.deviceProperties.supports.cleaning_mode && (selectedMode === '1' || selectedMode === '3')) {
+            const sweepOutbound = this.mapCleaningModeOutbound(String(args.mode_sweep));
+            if (sweepOutbound != null) {
+                props.push({
+                    siid: this.deviceProperties.set_properties.cleaning_mode.siid,
+                    piid: this.deviceProperties.set_properties.cleaning_mode.piid,
+                    value: sweepOutbound
+                });
+            }
+        }
+        if (this.deviceProperties.supports.water_level && (selectedMode === '2' || selectedMode === '3')) {
+            const mopLevelOutbound = this.mapWaterLevelOutbound(String(args.mode_mop));
+            if (mopLevelOutbound != null) {
+                props.push({
+                    siid: this.deviceProperties.set_properties.water_level.siid,
+                    piid: this.deviceProperties.set_properties.water_level.piid,
+                    value: mopLevelOutbound
+                });
+            }
+        }
+        if (this.deviceProperties.supports.carpet_avoidance && typeof args.carpet_avoidance !== 'undefined') {
+            const carpetPayload = this.buildCarpetModeSetPayload(String(args.carpet_avoidance));
+            if (carpetPayload.length) props.push(...carpetPayload);
+        }
+
+        const action = {
+            siid: this.deviceProperties.set_properties.room_clean_action.siid,
+            aiid: this.deviceProperties.set_properties.room_clean_action.aiid,
+            in: [
+                {
+                    siid: this.deviceProperties.set_properties.room_clean_action.siid,
+                    piid: this.deviceProperties.set_properties.room_clean_action.piid,
+                    code: 0,
+                    value: roomList
+                }
+            ]
+        };
+
+        this.log('[ADV_ROOM_CLEAN] props:', JSON.stringify(props));
+        this.log('[ADV_ROOM_CLEAN] action:', JSON.stringify(action));
+
+        if (this.miio && typeof this.miio.call === 'function') {
+            if (props.length) await this.callVacuumSetProperties(props, { retries: 2 });
+            return this.miio.call('action', action, { retries: 3 });
+        }
+
+        this.setUnavailable(this.homey.__('unreachable')).catch((error) => this.error(error));
+        this.createDevice();
+        throw new Error('Device unreachable, please try again ...');
+    }
+
     _serializeRoomList(selectedIds) {
         const roomList = selectedIds.join(',');
         if (selectedIds.length === 1 && this.getModelIdentifier() !== 'xiaomi.vacuum.d102gl') {
             return `${roomList},${roomList}`;
         }
         return roomList;
+    }
+
+    _buildCleanTimesProperty(value) {
+        const cleanTimes = Number(value);
+        const model = this.getModelIdentifier();
+        const property = this.deviceProperties && this.deviceProperties.set_properties && this.deviceProperties.set_properties.clean_times;
+        const supported = this.deviceProperties && this.deviceProperties.supports && this.deviceProperties.supports.clean_times;
+
+        if (!CLEAN_TIMES_MODELS.includes(model) || !supported || !property) {
+            throw new Error('Cleaning repetitions are not supported by this vacuum model.');
+        }
+        if (!Number.isInteger(cleanTimes) || cleanTimes < 1 || cleanTimes > 2) {
+            throw new Error('Cleaning repetitions must be Once (1) or Twice (2).');
+        }
+
+        return {
+            siid: property.siid,
+            piid: property.piid,
+            value: cleanTimes
+        };
     }
 
     _queuePropertyOperation(operation) {

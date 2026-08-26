@@ -325,6 +325,7 @@
     },
     {
       "id": "advanced_room_cleaning",
+      "deprecated": true,
       "title": {
         "en": "advanced cleaning",
         "it": "Pulizia avanzata",
@@ -1387,6 +1388,7 @@
           ]
         }
       ]
-    }
+    },
+    { "$extends": ["advanced_room_cleaning_times"] }
   ]
 }

@@ -187,7 +187,7 @@
       "게이트웨이"
     ]
   },
-  "version": "3.5.22",
+  "version": "3.5.23",
   "compatibility": ">=12.2.0",
   "platforms": [
     "local"
@@ -14323,6 +14323,7 @@
       },
       {
         "id": "advanced_room_cleaning",
+        "deprecated": true,
         "title": {
           "en": "advanced cleaning",
           "it": "Pulizia avanzata",
@@ -15414,6 +15415,218 @@
               }
             ]
           }
+        ]
+      },
+      {
+        "id": "advanced_room_cleaning_times",
+        "title": {
+          "en": "Advanced cleaning with repetitions"
+        },
+        "titleFormatted": {
+          "en": "Start [[mode]] with accuracy [[accuracy]]. Sweep [[mode_sweep]] and mop [[mode_mop]] on room [[room]], [[times]] time(s) (carpet-avoid: [[carpet_avoidance]])"
+        },
+        "hint": {
+          "en": "Cleaning repetitions are available only on compatible models. X20/X20+ and E5 do not expose this setting."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=vacuum_xiaomi_vacuum_max"
+          },
+          {
+            "name": "mode",
+            "type": "dropdown",
+            "title": {
+              "en": "Select mode"
+            },
+            "values": [
+              {
+                "id": "1",
+                "label": {
+                  "en": "Sweep"
+                }
+              },
+              {
+                "id": "2",
+                "label": {
+                  "en": "Mop"
+                }
+              },
+              {
+                "id": "3",
+                "label": {
+                  "en": "Sweep and mop"
+                }
+              },
+              {
+                "id": "4",
+                "label": {
+                  "en": "Sweep and after mop"
+                }
+              }
+            ]
+          },
+          {
+            "name": "accuracy",
+            "type": "dropdown",
+            "title": {
+              "en": "Select clean accuracy"
+            },
+            "values": [
+              {
+                "id": "1",
+                "label": {
+                  "en": "Quick"
+                }
+              },
+              {
+                "id": "2",
+                "label": {
+                  "en": "Standard"
+                }
+              },
+              {
+                "id": "3",
+                "label": {
+                  "en": "Deep"
+                }
+              }
+            ]
+          },
+          {
+            "name": "mode_sweep",
+            "type": "dropdown",
+            "title": {
+              "en": "Select sweep power"
+            },
+            "values": [
+              {
+                "id": "1",
+                "label": {
+                  "en": "Silent"
+                }
+              },
+              {
+                "id": "2",
+                "label": {
+                  "en": "Basic"
+                }
+              },
+              {
+                "id": "3",
+                "label": {
+                  "en": "Strong"
+                }
+              },
+              {
+                "id": "4",
+                "label": {
+                  "en": "Full Speed"
+                }
+              }
+            ]
+          },
+          {
+            "name": "mode_mop",
+            "type": "dropdown",
+            "title": {
+              "en": "Mop mode"
+            },
+            "values": [
+              {
+                "id": "0",
+                "label": {
+                  "en": "Off"
+                }
+              },
+              {
+                "id": "1",
+                "label": {
+                  "en": "Level 1"
+                }
+              },
+              {
+                "id": "2",
+                "label": {
+                  "en": "Level 2"
+                }
+              },
+              {
+                "id": "3",
+                "label": {
+                  "en": "Level 3"
+                }
+              }
+            ]
+          },
+          {
+            "name": "carpet_avoidance",
+            "type": "dropdown",
+            "title": {
+              "en": "Carpet avoidance"
+            },
+            "values": [
+              {
+                "id": "0",
+                "label": {
+                  "en": "Self Adaptation"
+                }
+              },
+              {
+                "id": "1",
+                "label": {
+                  "en": "Avoid"
+                }
+              },
+              {
+                "id": "2",
+                "label": {
+                  "en": "Ignore"
+                }
+              },
+              {
+                "id": "3",
+                "label": {
+                  "en": "Span"
+                }
+              }
+            ]
+          },
+          {
+            "name": "times",
+            "type": "dropdown",
+            "title": {
+              "en": "Times"
+            },
+            "values": [
+              {
+                "id": "1",
+                "label": {
+                  "en": "Once"
+                }
+              },
+              {
+                "id": "2",
+                "label": {
+                  "en": "Twice"
+                }
+              }
+            ]
+          },
+          {
+            "type": "text",
+            "name": "room",
+            "title": {
+              "en": "Select room separated by commas ('all' for all rooms)"
+            },
+            "placeholder": {
+              "en": "all"
+            }
+          }
+        ],
+        "platforms": [
+          "local"
         ]
       }
     ]

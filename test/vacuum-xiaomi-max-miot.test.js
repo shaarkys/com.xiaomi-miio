@@ -104,5 +104,5 @@ test('all six vacuum property-write paths call the model-aware wrapper', () => {
     const wrapperCalls = source.match(/(?:args\.device|this)\.callVacuumSetProperties\(/g) || [];
 
     assert.equal(wrapperCalls.length, 6);
-    assert.match(source, /if \(props\.length\) await args\.device\.callVacuumSetProperties\(props, \{ retries: 2 \}\);/);
+    assert.match(source, /if \(props\.length\) await this\.callVacuumSetProperties\(props, \{ retries: 2 \}\);/);
 });
