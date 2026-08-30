@@ -622,5 +622,8 @@
   },
   "3.5.28": {
     "en": "Corrected IV2001 dispensing to use 10 g portions and fixed the feeder-scale calibration action payload."
+  },
+  "3.5.29": {
+    "en": "Fixed IV2001 food bowl errors being incorrectly reported as food-out errors and improved feeder fault Flow triggering and diagnostics."
   }
 }
