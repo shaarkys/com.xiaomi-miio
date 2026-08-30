@@ -619,5 +619,8 @@
   },
   "3.5.27": {
     "en": "Added IV2001-specific desiccant replacement status reset Flow actions. "
+  },
+  "3.5.28": {
+    "en": "Corrected IV2001 dispensing to use 10 g portions and fixed the feeder-scale calibration action payload."
   }
 }
