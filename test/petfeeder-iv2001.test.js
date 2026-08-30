@@ -174,6 +174,142 @@ test('feeder fault transition triggers the dedicated error card once with useful
     ]);
 });
 
+test('IV2001 reports 2/11 as a food bowl error while preserving the published error code', async () => {
+    const { device } = createDevice();
+    const statusTriggers = [];
+    const errorTriggers = [];
+    device._state = { lastMode: 'idle', activeFaultCodes: new Set() };
+    device._flow = {
+        feederStatusChanged: { trigger: async (...args) => statusTriggers.push(args) },
+        feederError: { trigger: async (...args) => errorTriggers.push(args) }
+    };
+    device.hasCapability = (capability) => capability === 'petfeeder_status_mode';
+    device.getCapabilityValue = () => false;
+    device._setCap = async () => {};
+
+    const bowlError = {
+        error: { code: 0, value: 0 },
+        food_stuck_status: { code: 0, value: 0 },
+        food_out_status: { code: 0, value: 1 }
+    };
+    await device._updateStatusMode(bowlError);
+    await device._updateStatusMode(bowlError);
+
+    assert.equal(errorTriggers.length, 1);
+    assert.deepEqual(errorTriggers[0].slice(1), [
+        { error: 'Food bowl error', error_code: 'food_out' },
+        {}
+    ]);
+    assert.equal(statusTriggers.length, 1);
+});
+
+test('feeder error card triggers for a newly activated fault while status remains fault', async () => {
+    const { device } = createDevice();
+    const statusTriggers = [];
+    const errorTriggers = [];
+    device._state = { lastMode: 'fault', activeFaultCodes: new Set(['food_out']) };
+    device._flow = {
+        feederStatusChanged: { trigger: async (...args) => statusTriggers.push(args) },
+        feederError: { trigger: async (...args) => errorTriggers.push(args) }
+    };
+    device.hasCapability = (capability) => capability === 'petfeeder_status_mode';
+    device.getCapabilityValue = () => false;
+    device._setCap = async () => {};
+
+    await device._updateStatusMode({
+        error: { code: 0, value: 0 },
+        food_stuck_status: { code: 0, value: 1 },
+        food_out_status: { code: 0, value: 1 }
+    });
+
+    assert.equal(errorTriggers.length, 1);
+    assert.deepEqual(errorTriggers[0].slice(1), [
+        { error: 'Food stuck', error_code: 'food_stuck' },
+        {}
+    ]);
+    assert.equal(statusTriggers.length, 0);
+});
+
+test('legacy feeders retain the Food out error wording', async () => {
+    const { device } = createDevice('default');
+    const errorTriggers = [];
+    device._state = { lastMode: 'idle', activeFaultCodes: new Set() };
+    device._flow = {
+        feederStatusChanged: { trigger: async () => {} },
+        feederError: { trigger: async (...args) => errorTriggers.push(args) }
+    };
+    device.hasCapability = (capability) => capability === 'petfeeder_status_mode';
+    device.getCapabilityValue = () => false;
+    device._setCap = async () => {};
+
+    await device._updateStatusMode({
+        error: { code: 0, value: 0 },
+        food_stuck_status: { code: 0, value: 0 },
+        food_out_status: { code: 0, value: 1 }
+    });
+
+    assert.deepEqual(errorTriggers[0].slice(1), [
+        { error: 'Food out', error_code: 'food_out' },
+        {}
+    ]);
+});
+
+test('IV2001 diagnostics include every raw device fault status', () => {
+    const { device, logs } = createDevice();
+    device._state = { lastDiagnosticSignature: undefined, lastDiagnosticLogAt: 0 };
+    device.getSetting = () => 10;
+    const entry = (siid, piid, value) => ({ code: 0, value, siid, piid });
+
+    device._logIv2001Diagnostics({
+        error: entry(2, 1, 0),
+        foodlevel: entry(2, 6, 0),
+        food_stuck_status: entry(2, 10, 0),
+        food_out_status: entry(2, 11, 1),
+        heap_status: entry(2, 15, 0),
+        bowl_weight_sample: entry(2, 22, 0),
+        bowl_level_status: entry(2, 31, 0)
+    });
+
+    const summary = logs[0][1];
+    assert.match(summary, /device_fault@2\/1\{code=0,value=0\}/);
+    assert.match(summary, /food_stuck_status@2\/10\{code=0,value=0\}/);
+    assert.match(summary, /food_bowl_error_status@2\/11\{code=0,value=1\}/);
+    assert.match(summary, /food_heap_status@2\/15\{code=0,value=0\}/);
+});
+
+test('IV2001 applies bowl-error labels without changing published capability value IDs', async () => {
+    const { device } = createDevice();
+    const calls = [];
+    device.hasCapability = () => true;
+    device.setCapabilityOptions = async (...args) => calls.push(args);
+
+    await device._applyIv2001CapabilityOptions();
+
+    assert.deepEqual(calls, [
+        ['petfeeder_food_out_status', {
+            title: { en: 'Food bowl status' },
+            values: [
+                { id: 'ok', title: { en: 'OK' } },
+                { id: 'food_out', title: { en: 'Food bowl error' } }
+            ]
+        }],
+        ['alarm_petfeeder_food_out', { title: { en: 'Food bowl error' } }]
+    ]);
+});
+
+test('legacy feeders keep shared food-out capability options', async () => {
+    const { device } = createDevice('default');
+    let called = false;
+    device.hasCapability = () => true;
+    device.setCapabilityOptions = async () => {
+        called = true;
+    };
+
+    await device._applyIv2001CapabilityOptions();
+
+    assert.equal(called, false);
+});
+
 test('feeder Flow triggers explain status and expose the existing fault alarm without the generic Mode card', () => {
     const root = path.join(__dirname, '..');
     const errorCard = JSON.parse(fs.readFileSync(path.join(root, '.homeycompose/flow/triggers/feeder_error.json'), 'utf8'));
@@ -184,9 +320,11 @@ test('feeder Flow triggers explain status and expose the existing fault alarm wi
     assert.equal(errorCard.title.en, 'Feeder error detected');
     assert.equal(errorCard.args[0].filter, 'driver_id=petfeeder_mmgg_miot&capabilities=alarm_petfeeder_fault');
     assert.deepEqual(errorCard.tokens.map((token) => token.name), ['error', 'error_code']);
-    assert.match(errorCard.hint.en, /Feeder fault alarm turns on/);
+    assert.match(errorCard.hint.en, /each newly reported feeder fault/);
+    assert.match(errorCard.hint.en, /food bowl error/);
+    assert.match(errorCard.hint.en, /error code food_out/);
     assert.match(statusCard.hint.en, /Idle, Feeding, and Fault/);
-    assert.match(statusCard.hint.en, /food stuck, or food out/);
+    assert.match(statusCard.hint.en, /food bowl error/);
     assert.doesNotMatch(genericModeCard.args[0].filter, /petfeeder_mmgg_miot/);
     assert.match(genericModeCard.hint.en, /separate Feeder status changed card/);
     assert.ok(deviceSource.includes("feederError: this.homey.flow.getDeviceTriggerCard('feeder_error')"));

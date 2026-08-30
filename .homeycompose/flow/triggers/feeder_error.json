@@ -3,7 +3,7 @@
     "en": "Feeder error detected"
   },
   "hint": {
-    "en": "Triggers when the Feeder fault alarm turns on. The error can be a device error code, food stuck, or food out."
+    "en": "Triggers once for each newly reported feeder fault. Errors include a device fault code, food blockage, and on the IV2001 a food bowl error. The IV2001 bowl-error token keeps the error code food_out for compatibility with existing Flows."
   },
   "args": [
     {

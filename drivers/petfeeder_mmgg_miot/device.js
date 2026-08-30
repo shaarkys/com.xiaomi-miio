@@ -237,6 +237,7 @@ class PetFeederMiotDevice extends DeviceBase {
 
             // Ensure capabilities exist (upgrade-safe)
             await this._ensureCapabilities();
+            await this._applyIv2001CapabilityOptions();
 
             // Settings defaults
             const s = this.getSettings() || {};
@@ -272,6 +273,7 @@ class PetFeederMiotDevice extends DeviceBase {
             this._state = {
                 once: new Set(),
                 lastMode: 'unknown',
+                activeFaultCodes: new Set(),
                 targetFeedingMeasure: MANUAL_FEED_PORTION_GRAMS,
                 suppressSettingApply: false,
                 desiccantAlarm: this.getCapabilityValue('alarm_desiccant_low') === true,
@@ -738,7 +740,7 @@ class PetFeederMiotDevice extends DeviceBase {
     async _updateStatusMode(g) {
         if (!this.hasCapability('petfeeder_status_mode')) return;
 
-        let faultDetails;
+        const activeFaults = [];
         const err = g.error;
         if (err && err.code === 0) {
             const value = toNumber(err.value);
@@ -746,21 +748,29 @@ class PetFeederMiotDevice extends DeviceBase {
                 (Number.isFinite(value) && value !== 0) ||
                 (typeof err.value !== 'undefined' && String(err.value) !== '0');
             if (hasError) {
-                faultDetails = {
+                activeFaults.push({
                     error: 'Device error',
                     error_code: String(err.value).slice(0, 64)
-                };
+                });
             }
         }
         const stuck = g.food_stuck_status;
-        if (!faultDetails && stuck && stuck.code === 0 && toNumber(stuck.value) === 1) {
-            faultDetails = { error: 'Food stuck', error_code: 'food_stuck' };
+        if (stuck && stuck.code === 0 && toNumber(stuck.value) === 1) {
+            activeFaults.push({ error: 'Food stuck', error_code: 'food_stuck' });
         }
         const out = g.food_out_status;
-        if (!faultDetails && out && out.code === 0 && toNumber(out.value) === 1) {
-            faultDetails = { error: 'Food out', error_code: 'food_out' };
+        if (out && out.code === 0 && toNumber(out.value) === 1) {
+            activeFaults.push({
+                error: this._presetId === 'iv2001' ? 'Food bowl error' : 'Food out',
+                // Keep the published token value stable for existing Advanced Flows.
+                error_code: 'food_out'
+            });
         }
-        const isFault = Boolean(faultDetails);
+        const isFault = activeFaults.length > 0;
+
+        const previousFaultCodes = this._state.activeFaultCodes instanceof Set
+            ? this._state.activeFaultCodes
+            : new Set();
 
         const isFeeding = (() => {
             if (this.getCapabilityValue('petfeeder_busy') === true) return true;
@@ -779,15 +789,17 @@ class PetFeederMiotDevice extends DeviceBase {
         const text = isFault ? 'fault' : isFeeding ? 'feeding' : 'idle';
         const prev = this._state.lastMode;
         await this._setCap('petfeeder_status_mode', text);
-        if (text !== prev) {
-            if (text === 'fault') {
-                try {
-                    await this._flow.feederError?.trigger(this, faultDetails, {});
-                    this.log('[FAULT] trigger:', faultDetails);
-                } catch (e) {
-                    this._warn('[FAULT] trigger error:', e?.message);
-                }
+        for (const faultDetails of activeFaults) {
+            if (previousFaultCodes.has(faultDetails.error_code)) continue;
+            try {
+                await this._flow.feederError?.trigger(this, faultDetails, {});
+                this.log('[FAULT] trigger:', faultDetails);
+            } catch (e) {
+                this._warn('[FAULT] trigger error:', e?.message);
             }
+        }
+        this._state.activeFaultCodes = new Set(activeFaults.map(({ error_code: errorCode }) => errorCode));
+        if (text !== prev) {
             await this._flow.feederStatusChanged?.trigger(this, { new_status: text, previous_status: prev || 'unknown' }, {});
             this.log('[MODE] change:', prev, '->', text);
             this._state.lastMode = text;
@@ -1138,7 +1150,11 @@ class PetFeederMiotDevice extends DeviceBase {
         if (this._presetId !== 'iv2001' || !this._state) return;
 
         const diagnostics = [
+            ['device_fault', g.error],
             ['container_food_level', g.foodlevel],
+            ['food_stuck_status', g.food_stuck_status],
+            ['food_bowl_error_status', g.food_out_status],
+            ['food_heap_status', g.heap_status],
             ['bowl_weight_sample', g.bowl_weight_sample],
             ['device_bowl_level', g.bowl_level_status],
             ['device_low_food_intake_threshold', g.setting_low_food_intake_threshold],
@@ -1533,6 +1549,29 @@ class PetFeederMiotDevice extends DeviceBase {
                 this.log('[INIT] removed capability:', 'petfeeder_eaten_food_total');
             } catch (e) {
                 this._warn('[INIT] removeCapability failed', 'petfeeder_eaten_food_total', e?.message);
+            }
+        }
+    }
+
+    async _applyIv2001CapabilityOptions() {
+        if (this._presetId !== 'iv2001') return;
+
+        const options = [
+            ['petfeeder_food_out_status', {
+                title: { en: 'Food bowl status' },
+                values: [
+                    { id: 'ok', title: { en: 'OK' } },
+                    { id: 'food_out', title: { en: 'Food bowl error' } }
+                ]
+            }],
+            ['alarm_petfeeder_food_out', { title: { en: 'Food bowl error' } }]
+        ];
+        for (const [capabilityId, capabilityOptions] of options) {
+            if (!this.hasCapability(capabilityId)) continue;
+            try {
+                await this.setCapabilityOptions(capabilityId, capabilityOptions);
+            } catch (e) {
+                this._warn('[INIT] capability options failed', capabilityId, e?.message);
             }
         }
     }

@@ -1,6 +1,6 @@
 {
   "title": { "en": "Feeder status changed" },
-  "hint":  { "en": "Triggers when the feeder operating status changes between Idle, Feeding, and Fault. Fault means the device reported an error code, food stuck, or food out." },
+  "hint":  { "en": "Triggers when the feeder operating status changes between Idle, Feeding, and Fault. Fault means the device reported an error code, food blockage, or on the IV2001 a food bowl error." },
   "args": [
     {
       "name": "device",
