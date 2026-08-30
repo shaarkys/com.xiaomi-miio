@@ -10367,6 +10367,41 @@
       },
       {
         "title": {
+          "en": "Dispense food by weight"
+        },
+        "titleFormatted": {
+          "en": "Dispense [[grams]] g"
+        },
+        "args": [
+          {
+            "name": "grams",
+            "title": {
+              "en": "Grams"
+            },
+            "type": "number",
+            "placeholder": {
+              "en": "Grams"
+            },
+            "min": 1,
+            "max": 150,
+            "step": 1
+          },
+          {
+            "name": "device",
+            "type": "device",
+            "placeholder": {
+              "en": "Select device"
+            },
+            "filter": "driver_id=petfeeder_mmgg_miot&capabilities=petfeeder_screen_display_mode"
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "id": "petfeederDispenseGrams"
+      },
+      {
+        "title": {
           "en": "Set screen display"
         },
         "titleFormatted": {

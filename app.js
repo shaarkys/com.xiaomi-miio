@@ -499,6 +499,18 @@ class XiaomiMiioApp extends Homey.App {
         }
       });
 
+    this.homey.flow.getActionCard('petfeederDispenseGrams')
+      .registerRunListener(async (args) => {
+        try {
+          if (typeof args.device?.dispenseGrams !== 'function') {
+            throw new Error('Dispensing by weight is not supported by this device');
+          }
+          return await args.device.dispenseGrams(args.grams);
+        } catch (error) {
+          return Promise.reject(error.message || error);
+        }
+      });
+
     this.homey.flow.getActionCard('petfeederScreenDisplayMode')
       .registerRunListener(async (args) => {
         try {

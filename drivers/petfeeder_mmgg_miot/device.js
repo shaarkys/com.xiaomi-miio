@@ -1070,6 +1070,27 @@ class PetFeederMiotDevice extends DeviceBase {
         }
     }
 
+    async dispenseGrams(gramsValue) {
+        if (!this.miio) throw new Error('miio not ready');
+        if (this._presetId !== 'iv2001') throw new Error('Dispensing by weight is not supported by this device');
+
+        const grams = Number(gramsValue);
+        if (!Number.isInteger(grams) || grams < 1 || grams > 150) {
+            throw new RangeError('Dispensing amount must be a whole number from 1 to 150 grams');
+        }
+
+        const actionPayload = {
+            did: 'call-2-1',
+            siid: 2,
+            aiid: 1,
+            in: [{ piid: 8, value: grams }]
+        };
+        const result = await this._callMiio('action', actionPayload, { retries: 1 }, 12000);
+        this.log('[FEED] manual feed by weight', { grams });
+        await this._timeline(`Manual feed: ${grams} g`);
+        return result;
+    }
+
     _logIv2001Diagnostics(g) {
         if (this._presetId !== 'iv2001' || !this._state) return;
 
