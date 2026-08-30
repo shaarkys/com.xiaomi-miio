@@ -610,5 +610,8 @@
   },
   "3.5.24": {
     "en": "Added a Times (Once/Twice) option to Advanced Room Cleaning Flows for the Xiaomi Robot Vacuum X20 Max and compatible models."
+  },
+  "3.5.25": {
+    "en": "Added a dedicated gram-based dispensing Flow action for Xiaomi Smart Pet Food Feeder 2, preventing unintended serving-size multiplication."
   }
 }
