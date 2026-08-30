@@ -2,6 +2,9 @@
   "title": {
     "en": "Calibrate feeder scale"
   },
+  "hint": {
+    "en": "Empty the food bowl, place it correctly on the weighing tray, then run this card."
+  },
   "args": [
     {
       "name": "device",
@@ -9,7 +12,7 @@
       "placeholder": {
         "en": "Select device"
       },
-      "filter": "driver_id=petfeeder_mmgg_miot"
+      "filter": "driver_id=petfeeder_mmgg_miot&capabilities=petfeeder_screen_display_mode"
     }
   ],
   "platforms": [

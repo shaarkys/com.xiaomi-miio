@@ -108,6 +108,7 @@ function resolveSettingProps(presetId) {
 }
 
 const MANUAL_FEED_PORTION_GRAMS = 5; // fallback grams per portion when target measure missing
+const IV2001_PORTION_GRAMS = 10; // firmware action input is a portion count; one portion is approximately 10 g
 const DESICCANT_FULL_DAYS = 30; // according to device UI (full pack lifetime)
 const MANUAL_FEED_MAX_PORTIONS = 30;
 const STORE_KEYS = {
@@ -249,6 +250,7 @@ class PetFeederMiotDevice extends DeviceBase {
             // Flow triggers
             this._flow = {
                 feederStatusChanged: this.homey.flow.getDeviceTriggerCard('feeder_status_changed'),
+                feederError: this.homey.flow.getDeviceTriggerCard('feeder_error'),
                 eatenFoodChanged: this.homey.flow.getDeviceTriggerCard('eaten_food_changed'),
                 desiccantLow: this.homey.flow.getDeviceTriggerCard('desiccant_low')
             };
@@ -736,19 +738,29 @@ class PetFeederMiotDevice extends DeviceBase {
     async _updateStatusMode(g) {
         if (!this.hasCapability('petfeeder_status_mode')) return;
 
-        const isFault = (() => {
-            const err = g.error;
-            if (err && err.code === 0) {
-                const v = toNumber(err.value);
-                if (Number.isFinite(v) && v !== 0) return true;
-                if (typeof err.value !== 'undefined' && String(err.value) !== '0') return true;
+        let faultDetails;
+        const err = g.error;
+        if (err && err.code === 0) {
+            const value = toNumber(err.value);
+            const hasError =
+                (Number.isFinite(value) && value !== 0) ||
+                (typeof err.value !== 'undefined' && String(err.value) !== '0');
+            if (hasError) {
+                faultDetails = {
+                    error: 'Device error',
+                    error_code: String(err.value).slice(0, 64)
+                };
             }
-            const stuck = g.food_stuck_status;
-            if (stuck && stuck.code === 0 && toNumber(stuck.value) === 1) return true;
-            const out = g.food_out_status;
-            if (out && out.code === 0 && toNumber(out.value) === 1) return true;
-            return false;
-        })();
+        }
+        const stuck = g.food_stuck_status;
+        if (!faultDetails && stuck && stuck.code === 0 && toNumber(stuck.value) === 1) {
+            faultDetails = { error: 'Food stuck', error_code: 'food_stuck' };
+        }
+        const out = g.food_out_status;
+        if (!faultDetails && out && out.code === 0 && toNumber(out.value) === 1) {
+            faultDetails = { error: 'Food out', error_code: 'food_out' };
+        }
+        const isFault = Boolean(faultDetails);
 
         const isFeeding = (() => {
             if (this.getCapabilityValue('petfeeder_busy') === true) return true;
@@ -768,6 +780,14 @@ class PetFeederMiotDevice extends DeviceBase {
         const prev = this._state.lastMode;
         await this._setCap('petfeeder_status_mode', text);
         if (text !== prev) {
+            if (text === 'fault') {
+                try {
+                    await this._flow.feederError?.trigger(this, faultDetails, {});
+                    this.log('[FAULT] trigger:', faultDetails);
+                } catch (e) {
+                    this._warn('[FAULT] trigger error:', e?.message);
+                }
+            }
             await this._flow.feederStatusChanged?.trigger(this, { new_status: text, previous_status: prev || 'unknown' }, {});
             this.log('[MODE] change:', prev, '->', text);
             this._state.lastMode = text;
@@ -1041,7 +1061,11 @@ class PetFeederMiotDevice extends DeviceBase {
             }
             const raw = Number(portionCount);
             const count = Number.isFinite(raw) ? Math.max(1, Math.min(MANUAL_FEED_MAX_PORTIONS, Math.round(raw))) : 1;
-            const gramsPerPortion = Number.isFinite(this._state.targetFeedingMeasure) && this._state.targetFeedingMeasure > 0 ? this._state.targetFeedingMeasure : MANUAL_FEED_PORTION_GRAMS;
+            const gramsPerPortion = this._presetId === 'iv2001'
+                ? IV2001_PORTION_GRAMS
+                : Number.isFinite(this._state.targetFeedingMeasure) && this._state.targetFeedingMeasure > 0
+                    ? this._state.targetFeedingMeasure
+                    : MANUAL_FEED_PORTION_GRAMS;
             const grams = count * gramsPerPortion;
             let result;
             if (this._presetId === 'iv2001') {
@@ -1049,7 +1073,7 @@ class PetFeederMiotDevice extends DeviceBase {
                     did: 'call-2-1',
                     siid: 2,
                     aiid: 1,
-                    in: [{ piid: 8, value: grams }]
+                    in: [{ piid: 8, value: count }]
                 };
                 result = await this._callMiio('action', actionPayload, { retries: 1 }, 12000);
             } else {
@@ -1075,18 +1099,19 @@ class PetFeederMiotDevice extends DeviceBase {
         if (this._presetId !== 'iv2001') throw new Error('Dispensing by weight is not supported by this device');
 
         const grams = Number(gramsValue);
-        if (!Number.isInteger(grams) || grams < 1 || grams > 150) {
-            throw new RangeError('Dispensing amount must be a whole number from 1 to 150 grams');
+        if (!Number.isInteger(grams) || grams < 10 || grams > 150 || grams % IV2001_PORTION_GRAMS !== 0) {
+            throw new RangeError('Dispensing amount must be a multiple of 10 from 10 to 150 grams');
         }
+        const portions = grams / IV2001_PORTION_GRAMS;
 
         const actionPayload = {
             did: 'call-2-1',
             siid: 2,
             aiid: 1,
-            in: [{ piid: 8, value: grams }]
+            in: [{ piid: 8, value: portions }]
         };
         const result = await this._callMiio('action', actionPayload, { retries: 1 }, 12000);
-        this.log('[FEED] manual feed by weight', { grams });
+        this.log('[FEED] manual feed by weight', { grams, portions });
         await this._timeline(`Manual feed: ${grams} g`);
         return result;
     }
@@ -1242,7 +1267,12 @@ class PetFeederMiotDevice extends DeviceBase {
     async calibrateScale() {
         if (!this.miio) throw new Error('miio not ready');
         if (this._presetId !== 'iv2001') throw new Error('Calibration not supported by this device');
-        return this._callMiio('action', { siid: 2, aiid: 2, in: [] }, { retries: 1 }, 12000);
+        return this._callMiio(
+            'action',
+            { did: 'call-2-2', siid: 2, aiid: 2, in: [] },
+            { retries: 1 },
+            12000
+        );
     }
 
     async _callMiio(method, params, options, timeoutMs = 8000) {

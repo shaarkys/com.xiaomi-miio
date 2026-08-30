@@ -1,0 +1,36 @@
+{
+  "title": {
+    "en": "Feeder error detected"
+  },
+  "hint": {
+    "en": "Triggers when the Feeder fault alarm turns on. The error can be a device error code, food stuck, or food out."
+  },
+  "args": [
+    {
+      "name": "device",
+      "type": "device",
+      "filter": "driver_id=petfeeder_mmgg_miot&capabilities=alarm_petfeeder_fault"
+    }
+  ],
+  "tokens": [
+    {
+      "name": "error",
+      "type": "string",
+      "title": {
+        "en": "Error"
+      },
+      "example": "Food stuck"
+    },
+    {
+      "name": "error_code",
+      "type": "string",
+      "title": {
+        "en": "Error code"
+      },
+      "example": "food_stuck"
+    }
+  ],
+  "platforms": [
+    "local"
+  ]
+}

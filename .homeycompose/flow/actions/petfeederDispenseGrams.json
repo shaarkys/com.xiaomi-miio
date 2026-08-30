@@ -5,6 +5,9 @@
   "titleFormatted": {
     "en": "Dispense [[grams]] g"
   },
+  "hint": {
+    "en": "Dispenses food in 10 g portions. The actual weight can vary with the size and density of the food."
+  },
   "args": [
     {
       "name": "grams",
@@ -15,9 +18,9 @@
       "placeholder": {
         "en": "Grams"
       },
-      "min": 1,
+      "min": 10,
       "max": 150,
-      "step": 1
+      "step": 10
     },
     {
       "name": "device",

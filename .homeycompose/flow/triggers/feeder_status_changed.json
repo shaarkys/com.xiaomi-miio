@@ -1,6 +1,6 @@
 {
   "title": { "en": "Feeder status changed" },
-  "hint":  { "en": "Triggers when the feeder status (mode) changes." },
+  "hint":  { "en": "Triggers when the feeder operating status changes between Idle, Feeding, and Fault. Fault means the device reported an error code, food stuck, or food out." },
   "args": [
     {
       "name": "device",
