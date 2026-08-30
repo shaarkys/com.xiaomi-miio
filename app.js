@@ -511,6 +511,18 @@ class XiaomiMiioApp extends Homey.App {
         }
       });
 
+    this.homey.flow.getActionCard('petfeederResetDesiccantLife')
+      .registerRunListener(async (args) => {
+        try {
+          if (typeof args.device?.resetDesiccantLife !== 'function') {
+            throw new Error('Desiccant replacement status reset is not supported by this device');
+          }
+          return await args.device.resetDesiccantLife();
+        } catch (error) {
+          return Promise.reject(error.message || error);
+        }
+      });
+
     this.homey.flow.getActionCard('petfeederScreenDisplayMode')
       .registerRunListener(async (args) => {
         try {

@@ -72,9 +72,38 @@ test('gram action rejects non-IV2001 presets before sending any command', async 
     assert.deepEqual(calls, []);
 });
 
-test('new Flow card is IV2001-scoped and leaves the published servings card intact', () => {
+test('IV2001 desiccant reset invokes MIoT service 6 action 1 without inputs', async () => {
+    const { calls, device, logs, timeline } = createDevice();
+
+    const result = await device.resetDesiccantLife();
+
+    assert.deepEqual(calls, [[
+        'action',
+        {
+            did: 'call-6-1',
+            siid: 6,
+            aiid: 1,
+            in: []
+        },
+        { retries: 1 },
+        12000
+    ]]);
+    assert.deepEqual(result, { code: 0 });
+    assert.deepEqual(logs, [['[DESICCANT] replacement status reset requested']]);
+    assert.deepEqual(timeline, ['Desiccant replacement status reset requested']);
+});
+
+test('desiccant reset rejects non-IV2001 presets before sending any command', async () => {
+    const { calls, device } = createDevice('default');
+
+    await assert.rejects(device.resetDesiccantLife(), /not supported by this device/);
+    assert.deepEqual(calls, []);
+});
+
+test('new Flow cards are IV2001-scoped and leave the published servings card intact', () => {
     const root = path.join(__dirname, '..');
     const gramsCard = JSON.parse(fs.readFileSync(path.join(root, '.homeycompose/flow/actions/petfeederDispenseGrams.json'), 'utf8'));
+    const resetCard = JSON.parse(fs.readFileSync(path.join(root, '.homeycompose/flow/actions/petfeederResetDesiccantLife.json'), 'utf8'));
     const servingsCard = JSON.parse(fs.readFileSync(path.join(root, '.homeycompose/flow/actions/petfeederServeFood.json'), 'utf8'));
     const appSource = fs.readFileSync(path.join(root, 'app.js'), 'utf8');
 
@@ -92,8 +121,16 @@ test('new Flow card is IV2001-scoped and leaves the published servings card inta
         gramsCard.args[1].filter,
         'driver_id=petfeeder_mmgg_miot&capabilities=petfeeder_screen_display_mode'
     );
+    assert.equal(resetCard.title.en, 'Reset desiccant replacement status');
+    assert.equal(resetCard.args.length, 1);
+    assert.equal(
+        resetCard.args[0].filter,
+        'driver_id=petfeeder_mmgg_miot&capabilities=petfeeder_screen_display_mode'
+    );
     assert.equal(servingsCard.args[0].name, 'servings');
     assert.equal(servingsCard.args[0].max, 30);
     assert.equal((appSource.match(/getActionCard\('petfeederDispenseGrams'\)/g) || []).length, 1);
     assert.ok(appSource.includes('args.device.dispenseGrams(args.grams)'));
+    assert.equal((appSource.match(/getActionCard\('petfeederResetDesiccantLife'\)/g) || []).length, 1);
+    assert.ok(appSource.includes('args.device.resetDesiccantLife()'));
 });

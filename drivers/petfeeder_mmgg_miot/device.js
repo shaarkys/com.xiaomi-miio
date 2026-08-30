@@ -1091,6 +1091,24 @@ class PetFeederMiotDevice extends DeviceBase {
         return result;
     }
 
+    async resetDesiccantLife() {
+        if (!this.miio) throw new Error('miio not ready');
+        if (this._presetId !== 'iv2001') {
+            throw new Error('Desiccant replacement status reset is not supported by this device');
+        }
+
+        const actionPayload = {
+            did: 'call-6-1',
+            siid: 6,
+            aiid: 1,
+            in: []
+        };
+        const result = await this._callMiio('action', actionPayload, { retries: 1 }, 12000);
+        this.log('[DESICCANT] replacement status reset requested');
+        await this._timeline('Desiccant replacement status reset requested');
+        return result;
+    }
+
     _logIv2001Diagnostics(g) {
         if (this._presetId !== 'iv2001' || !this._state) return;
 
