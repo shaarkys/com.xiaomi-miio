@@ -613,5 +613,8 @@
   },
   "3.5.25": {
     "en": "Added a dedicated gram-based dispensing Flow action for Xiaomi Smart Pet Food Feeder 2, preventing unintended serving-size multiplication."
+  },
+  "3.5.26": {
+    "en": "Added IV2001-specific desiccant replacement status reset Flow actions.  "
   }
 }

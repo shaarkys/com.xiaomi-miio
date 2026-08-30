@@ -187,7 +187,7 @@
       "게이트웨이"
     ]
   },
-  "version": "3.5.25",
+  "version": "3.5.26",
   "compatibility": ">=12.2.0",
   "platforms": [
     "local"
@@ -10399,6 +10399,25 @@
           "local"
         ],
         "id": "petfeederDispenseGrams"
+      },
+      {
+        "title": {
+          "en": "Reset desiccant replacement status"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "placeholder": {
+              "en": "Select device"
+            },
+            "filter": "driver_id=petfeeder_mmgg_miot&capabilities=petfeeder_screen_display_mode"
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "id": "petfeederResetDesiccantLife"
       },
       {
         "title": {
