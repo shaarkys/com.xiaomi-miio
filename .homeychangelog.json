@@ -625,5 +625,8 @@
   },
   "3.5.29": {
     "en": "Fixed IV2001 food bowl errors being incorrectly reported as food-out errors and improved feeder fault Flow triggering and diagnostics."
+  },
+  "3.5.30": {
+    "en": "Rework of AirFryer implementation, experimental support for Xiaomi Smart Air Fryer 6.5 (xiaomi.fryer.maf65)"
   }
 }
