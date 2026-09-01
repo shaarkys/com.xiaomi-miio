@@ -187,7 +187,7 @@
       "게이트웨이"
     ]
   },
-  "version": "3.5.29",
+  "version": "3.5.30",
   "compatibility": ">=12.2.0",
   "platforms": [
     "local"
@@ -34631,6 +34631,91 @@
             "pl": "Pause2",
             "ru": "Pause2",
             "ko": "Pause2"
+          }
+        },
+        {
+          "id": "10",
+          "title": {
+            "en": "Keep warm",
+            "nl": "Warmhouden",
+            "da": "Hold varm",
+            "de": "Warmhalten",
+            "es": "Mantener caliente",
+            "fr": "Maintien au chaud",
+            "it": "Mantenimento in caldo",
+            "no": "Hold varm",
+            "sv": "Varmhållning",
+            "pl": "Podtrzymywanie ciepła",
+            "ru": "Поддержание тепла",
+            "ko": "보온"
+          }
+        },
+        {
+          "id": "11",
+          "title": {
+            "en": "Keep warm paused",
+            "nl": "Warmhouden gepauzeerd",
+            "da": "Varmholdning sat på pause",
+            "de": "Warmhalten pausiert",
+            "es": "Mantenimiento en caliente pausado",
+            "fr": "Maintien au chaud en pause",
+            "it": "Mantenimento in caldo in pausa",
+            "no": "Varmholding satt på pause",
+            "sv": "Varmhållning pausad",
+            "pl": "Podtrzymywanie ciepła wstrzymane",
+            "ru": "Поддержание тепла приостановлено",
+            "ko": "보온 일시 중지"
+          }
+        },
+        {
+          "id": "12",
+          "title": {
+            "en": "Keep warm finished",
+            "nl": "Warmhouden voltooid",
+            "da": "Varmholdning færdig",
+            "de": "Warmhalten abgeschlossen",
+            "es": "Mantenimiento en caliente finalizado",
+            "fr": "Maintien au chaud terminé",
+            "it": "Mantenimento in caldo terminato",
+            "no": "Varmholding ferdig",
+            "sv": "Varmhållning klar",
+            "pl": "Podtrzymywanie ciepła zakończone",
+            "ru": "Поддержание тепла завершено",
+            "ko": "보온 완료"
+          }
+        },
+        {
+          "id": "13",
+          "title": {
+            "en": "Crispy roast",
+            "nl": "Krokant roosteren",
+            "da": "Sprødstegning",
+            "de": "Knusprig rösten",
+            "es": "Asado crujiente",
+            "fr": "Rôtissage croustillant",
+            "it": "Cottura croccante",
+            "no": "Sprøsteking",
+            "sv": "Krispig rostning",
+            "pl": "Chrupiące pieczenie",
+            "ru": "Хрустящее запекание",
+            "ko": "바삭 굽기"
+          }
+        },
+        {
+          "id": "14",
+          "title": {
+            "en": "Degrease",
+            "nl": "Ontvetten",
+            "da": "Affedtning",
+            "de": "Entfetten",
+            "es": "Desgrasar",
+            "fr": "Dégraissage",
+            "it": "Sgrassatura",
+            "no": "Avfetting",
+            "sv": "Avfettning",
+            "pl": "Odtłuszczanie",
+            "ru": "Обезжиривание",
+            "ko": "기름 제거"
           }
         }
       ],

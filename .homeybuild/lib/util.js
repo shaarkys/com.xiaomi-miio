@@ -266,7 +266,8 @@ class Util {
     'careli.fryer.ybaf03': 'KitchenMi Smart Air Fryer 6007WA',
     'careli.fryer.maf02c': 'Mi Smart Air Fryer (3.5L)',
     'careli.fryer.maf07': 'Mi Smart Air Fryer (3.5L)',
-    'careli.fryer.maf02': 'Mi Smart Air Fryer (3.5L)'
+    'careli.fryer.maf02': 'Mi Smart Air Fryer (3.5L)',
+    'xiaomi.fryer.maf65': 'Xiaomi Smart Air Fryer 6.5L'
   }
 
   static modelToFriendlyNameSubdevice = {
