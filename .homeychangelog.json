@@ -628,5 +628,8 @@
   },
   "3.5.30": {
     "en": "Rework of AirFryer implementation, experimental support for Xiaomi Smart Air Fryer 6.5 (xiaomi.fryer.maf65)"
+  },
+  "3.5.31": {
+    "en": "Added experimental support for Xiaomi Robot Vacuum H50 (xiaomi.vacuum.ov43gb) through the Xiaomi Vacuum Cleaner MIoT MAX driver"
   }
 }
