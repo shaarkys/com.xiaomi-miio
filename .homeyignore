@@ -1,3 +1,8 @@
 docs/*
 appdirectory.zip
 appdirectory_working.zip
+# AI development tooling
+graft/
+.graft/
+AGENTS.md
+.ignore

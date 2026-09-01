@@ -37,13 +37,16 @@ class XiaomiRepeaterDriver extends Driver {
 
     session.setHandler('test_connection', async (data) => {
       let device;
+      const diagnostic = this._startPairingDiagnostic(data);
       try {
         device = await miio.device({ address: data.address, token: data.token });
+        this._setPairingDiagnosticStage(diagnostic, 'model-validation');
         const model = device.miioModel;
         if (!SUPPORTED_MODELS.has(model)) {
           throw new Error(`Unsupported model ${model}. Expected xiaomi.repeater.v2, xiaomi.repeater.v3 or xiaomi.repeater.rd10m.`);
         }
 
+        this._setPairingDiagnosticStage(diagnostic, 'device-object');
         const name = this.util.getFriendlyNameWiFi(model);
         const capabilities = model === 'xiaomi.repeater.rd10m'
           ? RD10M_CAPABILITIES
@@ -65,8 +68,10 @@ class XiaomiRepeaterDriver extends Driver {
           }
         };
 
+        this._completePairingDiagnostic(diagnostic, model);
         return deviceObject;
       } catch (error) {
+        this._failPairingDiagnostic(diagnostic, error);
         this.error(error);
         throw error;
       } finally {

@@ -17,13 +17,16 @@ class ChunmiRiceCookerDriver extends Driver {
 
     session.setHandler('test_connection', async (data) => {
       let device;
+      const diagnostic = this._startPairingDiagnostic(data);
       try {
         device = await miio.device({ address: data.address, token: data.token });
+        this._setPairingDiagnosticStage(diagnostic, 'model-validation');
         const model = device.miioModel;
         if (model !== SUPPORTED_MODEL) {
           throw new Error(`Unsupported model ${model}. Expected ${SUPPORTED_MODEL}.`);
         }
 
+        this._setPairingDiagnosticStage(diagnostic, 'device-object');
         deviceObject = {
           name: `${this.util.getFriendlyNameWiFi(model)} (${model})`,
           data: {
@@ -39,8 +42,10 @@ class ChunmiRiceCookerDriver extends Driver {
           }
         };
 
+        this._completePairingDiagnostic(diagnostic, model);
         return deviceObject;
       } catch (error) {
+        this._failPairingDiagnostic(diagnostic, error);
         this.error(error);
         throw error;
       } finally {
