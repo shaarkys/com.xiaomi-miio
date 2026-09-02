@@ -634,5 +634,8 @@
   },
   "3.5.32": {
     "en": "Improved privacy-safe local Wi‑Fi pairing diagnostics with connection stages, timing, input validation metadata, and redacted error details.  "
+  },
+  "3.5.33": {
+    "en": "Improved local device connectivity and discovery reliability."
   }
 }
