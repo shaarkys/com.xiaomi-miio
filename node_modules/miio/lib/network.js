@@ -163,62 +163,56 @@ class Network extends EventEmitter {
 
 	createSocket() {
 		try {
-			this._socket = dgram.createSocket('udp4');
-			this._socket.on('error', err => {
+			const socket = this._socket = dgram.createSocket('udp4');
+			socket.on('error', err => {
 				// Keep transport errors local so they do not crash the process.
 				this.debug('Network socket error', err);
 			});
-			setTimeout(() => {
-				// Bind the socket and when it is ready mark it for broadcasting
-				try {
-					this._socket.bind(() => {
-						if (this._socket) {
-							this._socket.setBroadcast(true);
 
-							const address = this._socket.address();
-							this.debug('Network bound to port', address.port);
-						} else {
-							this.createSocket();
-						}
-					});
+			// Install the receive handler before bind/send can expose the socket to replies.
+			socket.on('message', (msg, rinfo) => {
+				const buf = Buffer.from(msg);
+				try {
+					this.packet.raw = buf;
 				} catch(ex) {
-					this.debug(ex);
+					this.debug('Could not handle incoming message');
+					return;
 				}
 
-				// On any incoming message, parse it, update the discovery
-				this._socket.on('message', (msg, rinfo) => {
-					const buf = Buffer.from(msg);
-					try {
-						this.packet.raw = buf;
-					} catch(ex) {
-						this.debug('Could not handle incoming message');
-						return;
-					}
+				if (!this.packet.deviceId) {
+					this.debug('No device identifier in incoming packet');
+					return;
+				}
 
-					if (!this.packet.deviceId) {
-						this.debug('No device identifier in incoming packet');
-						return;
-					}
+				const device = this.findDevice(this.packet.deviceId, rinfo);
+				device.onMessage(buf);
 
-					const device = this.findDevice(this.packet.deviceId, rinfo);
-					device.onMessage(buf);
-
-					if (!this.packet.data) {
-						if (!device.enriched) {
-							// This is the first time we see this device
-							device.enrich()
-								.then(() => {
-									this.emit('device', device);
-								})
-								.catch(err => {
-									this.emit('device', device);
-								});
-						} else {
-							this.emit('device', device);
-						}
+				if (!this.packet.data) {
+					if (!device.enriched) {
+						// This is the first time we see this device
+						device.enrich()
+							.then(() => {
+								this.emit('device', device);
+							})
+							.catch(err => {
+								this.emit('device', device);
+							});
+					} else {
+						this.emit('device', device);
 					}
-				});
-			}, 100)
+				}
+			});
+
+			// Bind immediately. Node queues sends while binding, so replies cannot arrive
+			// before the receive handler above has been installed.
+			socket.bind(() => {
+				if (this._socket !== socket) return;
+
+				socket.setBroadcast(true);
+
+				const address = socket.address();
+				this.debug('Network bound to port', address.port);
+			});
 		} catch (error) {
 			console.log(error);
 		}
