@@ -17,6 +17,7 @@ const Util = require('../../lib/util.js');
 /** ------------------------------------------------------------------
  *  Shared constants (hoisted)
  *  ------------------------------------------------------------------ */
+const WATER_TANK_STATUS_MODELS = ['xiaomi.vacuum.d102gl', 'xiaomi.vacuum.d109gl'];
 const ERROR_CODES = {
     0: 'OK',
     1: 'Left-wheel-error',
@@ -1423,7 +1424,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                 get_properties: [...this.deviceProperties.get_properties]
             };
             const extraProps =
-                this._model === 'xiaomi.vacuum.d102gl'
+                WATER_TANK_STATUS_MODELS.includes(this._model)
                     ? [
                           { did: 'water_check_status', siid: 2, piid: 54 },
                           { did: 'fault_ids', siid: 2, piid: 66 },
@@ -1847,8 +1848,9 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             const water_level_prop = this.deviceProperties.supports.water_level ? this.getMiotProp(result, 'water_level') : null;
             const path_mode_prop = this.deviceProperties.supports.path_mode ? this.getMiotProp(result, 'path_mode') : null;
             const carpet_mode_prop = this.deviceProperties.supports.carpet_avoidance ? this.getMiotProp(result, 'carpet_avoidance') : null;
-            const water_check_status = this._model === 'xiaomi.vacuum.d102gl' ? this.getMiotProp(result, 'water_check_status') : null;
-            const fault_ids = this._model === 'xiaomi.vacuum.d102gl' ? this.getMiotProp(result, 'fault_ids') : null;
+            const hasWaterTankStatus = WATER_TANK_STATUS_MODELS.includes(this._model);
+            const water_check_status = hasWaterTankStatus ? this.getMiotProp(result, 'water_check_status') : null;
+            const fault_ids = hasWaterTankStatus ? this.getMiotProp(result, 'fault_ids') : null;
 
             const consumables = this.deviceProperties.supports.consumables
                 ? [
@@ -2032,24 +2034,48 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             }
 
             const isWaterTankFault = device_fault && Number(device_fault.value) === 210030;
-            if (isWaterTankFault && this._model === 'xiaomi.vacuum.d102gl') {
-                const waterCheckValue = water_check_status && water_check_status.value != null ? Number(water_check_status.value) : null;
+            if (isWaterTankFault && hasWaterTankStatus) {
+                const waterCheckValue = water_check_status && water_check_status.code === 0
+                    ? this._coerceFiniteX20Number(water_check_status.value) : null;
                 const waterCheckSuccess = waterCheckValue === 2;
                 const waterCheckFail = waterCheckValue === 3;
                 let hasWaterFaultId = null;
-                if (fault_ids && typeof fault_ids.value === 'string') {
-                    const ids = fault_ids.value.match(/\d+/g);
-                    if (!ids) {
-                        hasWaterFaultId = false;
-                    } else {
-                        hasWaterFaultId = ids.map((id) => Number(id)).includes(210030);
+                if (fault_ids && fault_ids.code === 0) {
+                    let payload = fault_ids.value;
+                    if (typeof payload === 'string') {
+                        const list = payload.trim().replace(/^\[\s*([\d,\s]*)\s*\]$/, '$1');
+                        if (/^(?:\d+(?:\s*,\s*\d+)*)?$/.test(list.trim())) {
+                            const ids = list.match(/\d+/g) || [];
+                            hasWaterFaultId = ids.map(Number).includes(210030);
+                        } else {
+                            try {
+                                payload = JSON.parse(payload);
+                            } catch (_) {
+                                // Keep malformed diagnostics unknown, not an empty fault list.
+                            }
+                        }
+                    }
+                    // X20 Max reports { ts: <timestamp>, fault: [<codes>] }.
+                    // Only the fault array represents errors; ts is metadata.
+                    if (payload && !Array.isArray(payload) && Array.isArray(payload.fault)
+                        && payload.fault.every((id) => Number.isSafeInteger(id) && id >= 0)) {
+                        hasWaterFaultId = payload.fault.includes(210030);
                     }
                 }
 
-                if (waterCheckSuccess || hasWaterFaultId === false || (stateKey === 'cleaning' && !waterCheckFail && hasWaterFaultId !== true)) {
+                // X20 firmware can retain 210030 after refilling. Explicit failure evidence
+                // wins; without diagnostics, only actual floor cleaning implies recovery.
+                const isCleaningFloor = device_status && device_status.code === 0 && [4, 16, 17].includes(device_status.value);
+                const diagnosticsUnavailable = (!water_check_status || water_check_status.code !== 0)
+                    && (!fault_ids || fault_ids.code !== 0);
+                const waterCheckPending = waterCheckValue === 0 || waterCheckValue === 1;
+                const recovered = waterCheckSuccess || hasWaterFaultId === false
+                    || (isCleaningFloor && (diagnosticsUnavailable || (waterCheckPending && !fault_ids)));
+                if (!waterCheckFail && hasWaterFaultId !== true && recovered) {
                     err = 'Everything-is-ok';
-                } else if (waterCheckFail) {
-                    err = 'Water tank empty';
+                    if (this.getSetting('error') !== err) {
+                        this.log(`[WATER] Ignoring retained fault 210030: status=${device_status && device_status.value}, waterCheck=${waterCheckValue}, activeWaterFault=${hasWaterFaultId}.`);
+                    }
                 }
             }
 

@@ -88,8 +88,8 @@ test('adds the PIID 18 base-station property only to isolated supported per-devi
     assert.notEqual(h40.deviceProperties.get_properties, d101.deviceProperties.get_properties);
     assert.ok(pro.deviceProperties.get_properties.some((property) => property.did === 'water_check_status'));
     assert.ok(pro.deviceProperties.get_properties.some((property) => property.did === 'fault_ids'));
-    assert.ok(!max.deviceProperties.get_properties.some((property) => property.did === 'water_check_status'));
-    assert.ok(!max.deviceProperties.get_properties.some((property) => property.did === 'fault_ids'));
+    assert.ok(max.deviceProperties.get_properties.some((property) => property.did === 'water_check_status' && property.siid === 2 && property.piid === 54));
+    assert.ok(max.deviceProperties.get_properties.some((property) => property.did === 'fault_ids' && property.siid === 2 && property.piid === 66));
     assert.ok(!h40.deviceProperties.get_properties.some((property) => property.did === 'water_check_status'));
     assert.ok(!h40.deviceProperties.get_properties.some((property) => property.did === 'fault_ids'));
     for (const device of [c102, d101, d101gl, ov71]) {
