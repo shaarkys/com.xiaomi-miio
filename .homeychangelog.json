@@ -637,5 +637,8 @@
   },
   "3.5.33": {
     "en": "Improved local device connectivity and discovery reliability."
+  },
+  "3.5.34": {
+    "en": "Fixed stale water-tank alarms on Xiaomi X20 Max by correctly parsing active fault reports, including after restart."
   }
 }
