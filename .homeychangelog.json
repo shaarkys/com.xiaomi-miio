@@ -640,5 +640,8 @@
   },
   "3.5.34": {
     "en": "Fixed stale water-tank alarms on Xiaomi X20 Max by correctly parsing active fault reports, including after restart."
+  },
+  "3.5.35": {
+    "en": "Improved Wi-Fi device poll resilience by tolerating transient timeouts before marking devices unavailable."
   }
 }
