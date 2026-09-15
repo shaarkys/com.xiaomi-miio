@@ -111,6 +111,7 @@ class Tokens {
 						});
 					};
 
+					save();
 				});
 			});
 	}
