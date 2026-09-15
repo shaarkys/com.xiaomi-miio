@@ -168,5 +168,6 @@ module.exports = class DeveloperApi extends EventEmitter {
 		if(this._destroyed) return;
 
 		this.debug('DEV socket error', error);
+		this.emit('error', error);
 	}
 };

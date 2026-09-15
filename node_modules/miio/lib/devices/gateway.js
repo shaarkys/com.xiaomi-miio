@@ -213,17 +213,43 @@ const Gateway = Thing.type(Parent => class Gateway extends Parent.with(MiioApi, 
 		if(this.devApi) return Promise.resolve();
 
 		return new Promise((resolve, reject) => {
-			this.devApi = new DeveloperApi(this, this.management.address);
+			const devApi = new DeveloperApi(this, this.management.address);
+			this.devApi = devApi;
 
-			this.devApi.on('propertiesChanged', e => {
+			let settled = false;
+			const fail = err => {
+				if(settled) return;
+				settled = true;
+				clearTimeout(timer);
+
+				// The Developer API socket binds exclusively to a fixed local
+				// port. If setup fails after the socket was created (timeout
+				// or bind/send error) and it is left open, every future
+				// reconnect attempt will fail to bind to that same port -
+				// this device would then stay unreachable forever, until the
+				// whole app process is restarted. Always release it here so
+				// the next attempt can bind cleanly.
+				this.devApi = null;
+				devApi.destroy();
+
+				reject(err || new Error('Timed out connecting to the local Developer API'));
+			};
+
+			devApi.on('propertiesChanged', e => {
 				if(e.id === '0') {
 					// Data for the local gateway
 					this._report(e.data);
 				}
 			});
-			this.devApi.on('ready', resolve);
+			devApi.on('ready', () => {
+				if(settled) return;
+				settled = true;
+				clearTimeout(timer);
+				resolve();
+			});
+			devApi.on('error', fail);
 
-			setTimeout(reject, 10000);
+			const timer = setTimeout(() => fail(), 10000);
 		});
 	}
 

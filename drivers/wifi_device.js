@@ -622,7 +622,22 @@ class MiWifiDeviceDevice extends Homey.Device {
             if (!this.getAvailable()) {
                 await this.setAvailable();
             }
+            this._pollFailures = 0;
         } catch (error) {
+            /* transient timeouts are common on Wi-Fi/miio devices; tolerate a few
+             * consecutive poll failures on the current connection before tearing it
+             * down and flipping the device unavailable, instead of flapping on
+             * every single timeout (mirrors the retry pattern already used by the
+             * vacuum_xiaomi_vacuum_max driver) */
+            const failures = (this._pollFailures || 0) + 1;
+            this._pollFailures = failures;
+
+            if (failures < 3) {
+                this.error(`[POLL] Device read failed (${failures}/3): ${error.message}; keeping the current connection and polling.`);
+                return;
+            }
+
+            this._pollFailures = 0;
             this.homey.clearInterval(this.pollingInterval);
 
             if (this.getAvailable()) {

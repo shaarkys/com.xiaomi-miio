@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "strictness": "strict",
+    "allow": [
+      "Bash(echo *)",
+      "Bash(Get-Content *)"
+    ]
+  }
+}
