@@ -1,3 +1,4 @@
+<!-- homey-template:start -->
 # Project AGENTS.md Guide for OpenAI Codex — Homey Apps
 
 This file defines mandatory project-specific instructions for OpenAI Codex and other AI agents working on this Homey application.
@@ -53,49 +54,33 @@ If `$homey-app` conflicts with the repository, current SDK behavior, this file, 
 
 Do not depend on optional reference files from the skill unless those files actually exist in the installed skill.
 
-Sol Advisor agents do not need Homey instructions embedded into their TOML files. Relevant Homey constraints belong in the worker specification.
+Astra Advisor subagents do not need Homey instructions embedded into fixed role files. Relevant Homey constraints belong in the bounded worker specification.
 
 ---
 
-# Sol Advisor for Homey
+# Astra Advisor for Homey
 
-Use `$orchestration` for non-trivial Homey implementation work when the global standalone skill is available.
+Use `$astra-advisor:orchestration` for non-trivial Homey implementation work when the Astra Advisor plugin is installed and the current Codex host exposes the required capabilities.
 
 Preferred invocation:
 
 ```text
-Use $orchestration to implement and verify this change.
+Use $astra-advisor:orchestration to plan, build, verify, and review this Homey change.
 ```
 
-If the actual environment provides the namespaced Sol Advisor plugin instead:
+The primary orchestration session must be GPT-6 Astra at the effort selected by the user.
 
-```text
-Use $sol-advisor:orchestration to implement and verify this change.
-```
+Do not use GPT-5.6 Sol, Terra, or Luna as the primary Astra Advisor session.
 
-When using Sol Advisor, the primary session must be:
+The skill cannot change the parent model or effort. If runtime metadata exposes them, report observed values. If the parent is not `gpt-6-astra`, report the prerequisite mismatch rather than claiming Astra orchestration.
 
-```text
-GPT-5.6 Sol / High
-```
-
-Do not use Luna or Terra as the primary orchestration session.
-
-The custom implementation/review roles are:
-
-```text
-sol_advisor_luna_implementer  = GPT-5.6 Luna / Max
-sol_advisor_terra_implementer = GPT-5.6 Terra / High
-sol_advisor_sol_reviewer      = GPT-5.6 Sol / High
-```
-
-Do not silently replace these roles, models, or reasoning levels.
+Astra Advisor uses dynamic native subagents rather than the old fixed Sol Advisor role TOMLs.
 
 ---
 
-## When Sol Advisor Should Be Used
+## When Astra Advisor Should Be Used
 
-Use Sol Advisor for Homey work involving:
+Use Astra Advisor for Homey work involving:
 
 * new application features;
 * behavior-changing bug fixes;
@@ -122,7 +107,7 @@ Use Sol Advisor for Homey work involving:
 * release-bound implementation changes;
 * difficult runtime-sensitive defects.
 
-Sol Advisor is normally unnecessary for:
+Astra Advisor is normally unnecessary for:
 
 * documentation-only edits;
 * spelling corrections;
@@ -132,172 +117,71 @@ Sol Advisor is normally unnecessary for:
 
 ---
 
-# Homey Selective Routing
+# Homey Astra Routing
 
-For Sol Advisor work, declare before task tools:
+Before the first implementation or delegation task call, emit:
 
 ```text
-SELECTIVE ROUTE
-mode: solo | delegate | audit | full
+ASTRA ROUTE
+parent: <observed model or unobservable> / <observed effort or unobservable>
+delegation: <none or each selected native subagent model and effort>
 risk: <concise Homey-specific rationale>
 ```
 
-`solo` is the default.
+This is a dynamic routing record, not the old fixed `solo/delegate/audit/full` route model.
 
-Select the route according to actual Homey risk.
+Choose delegation only when bounded independent work materially improves delivery.
 
----
+When the current Codex host exposes `collaboration.spawn_agent`, select a supported model and effort from live tool metadata and use `fork_turns: none`.
 
-## Homey `solo`
-
-Prefer `solo` for contained changes where:
-
-* blast radius is small;
-* no persisted format changes;
-* no capability migration is required;
-* no existing ID or public contract changes;
-* no authentication redesign;
-* no device identity changes;
-* no significant cross-driver change;
-* independent final review would add little value.
-
-The primary Sol / High session implements and verifies the change directly.
-
-No auxiliary reviewer is required.
-
----
-
-## Homey `delegate`
-
-Use `delegate` when the implementation is well specified and one worker materially improves execution.
-
-Use Luna / Max for:
-
-* routine Flow wiring;
-* boilerplate;
-* bounded manifest updates;
-* simple capability handling;
-* translations;
-* straightforward tests;
-* mechanical implementation following an already settled architecture.
-
-Use Terra / High for:
-
-* complex driver/device lifecycle behavior;
-* capability migration;
-* pairing or repair redesign;
-* authentication/token refresh;
-* race conditions;
-* reconnect logic;
-* persistence;
-* restart recovery;
-* cross-driver shared code;
-* security-sensitive implementation;
-* difficult debugging;
-* wider-blast-radius refactoring.
-
-The primary Sol session independently verifies the complete result.
-
-A fresh Sol reviewer is not automatically required for `delegate`.
-
----
-
-## Homey `audit`
-
-Prefer `audit` when the primary Sol session should implement but independent review is warranted because of compatibility or correctness risk.
-
-Strong candidates include:
-
-* material Flow compatibility changes;
-* settings lifecycle changes;
-* API/session handling;
-* release-bound compatibility-sensitive fixes;
-* changes where static correctness is difficult to assess;
-* changes affecting several existing device behaviors without requiring delegated implementation.
-
-The primary Sol session implements and verifies.
-
-A fresh read-only Sol / High reviewer then inspects the accumulated result.
-
----
-
-## Homey `full`
-
-Strongly consider `full` for broad or high-risk changes such as:
-
-* migration of capabilities across existing paired devices;
-* changing stored device data or device identity;
-* authentication/session architecture redesign;
-* persisted data-format migrations;
-* significant pairing/repair redesign;
-* cross-driver architecture changes;
-* major lifecycle/persistence redesign;
-* security-sensitive changes;
-* broad release-bound refactoring affecting existing installations;
-* changes with a substantial risk of breaking existing user Flows or paired devices.
-
-`full` uses:
-
-1. one selected implementation agent;
-2. primary Sol verification;
-3. fresh read-only Sol review.
-
-Do not use `full` automatically for every Homey change.
-
----
-
-# Sol Advisor Global Preflight
-
-The preferred installation is global:
+The currently documented Astra Advisor capability snapshot recognizes:
 
 ```text
-$HOME/.agents/skills/orchestration/
-$HOME/.agents/scripts/
-$HOME/.agents/agents/
-$HOME/.codex/agents/
+gpt-5.6-sol
+gpt-5.6-terra
+gpt-5.6-luna
 ```
 
-Do not require repository-local Sol Advisor files when the valid global installation is available.
+Do not encode fixed Homey role-to-model mappings.
 
-Preflight only selected auxiliary roles.
+For bounded mechanical Homey work, a faster supported subagent may be appropriate.
 
-### Luna
+For judgment-heavy migration, lifecycle, authentication, persistence, concurrency, or broad compatibility work, select a stronger supported subagent/effort when live capabilities allow it.
 
-```sh
-sh "$HOME/.agents/scripts/install-agents.sh" \
-  --target-dir "$HOME/.codex/agents" \
-  --check-role luna
+Never silently substitute a model, effort, role, or tool.
+
+---
+
+# Astra Advisor Capability Preflight
+
+Astra Advisor does not use the old standalone Sol Advisor agent installer or fixed role TOMLs.
+
+Do not require:
+
+```text
+$HOME/.agents/scripts/install-agents.sh
+$HOME/.codex/agents/sol-advisor-*.toml
 ```
 
-### Terra
+for Astra Advisor.
 
-```sh
-sh "$HOME/.agents/scripts/install-agents.sh" \
-  --target-dir "$HOME/.codex/agents" \
-  --check-role terra
-```
+Instead:
 
-### Reviewer
+1. confirm the Astra Advisor plugin is installed/enabled in Codex;
+2. confirm the parent session is GPT-6 Astra when observable;
+3. inspect the live subagent tool schema before delegation;
+4. select only models/efforts that the live host supports;
+5. fail a delegation closed if required controls are unavailable.
 
-```sh
-sh "$HOME/.agents/scripts/install-agents.sh" \
-  --target-dir "$HOME/.codex/agents" \
-  --check-role sol
-```
+After installing or updating the Astra Advisor plugin, start a new Codex task or IDE chat.
 
-For `solo`, no auxiliary-role check is necessary.
-
-If the repository intentionally contains a project-scoped Sol Advisor installation, use its corresponding `.agents` and `.codex` paths instead.
-
-Do not mix global and project-scoped role files within one orchestration task unless the effective source has been explicitly identified and verified.
-
-After agent installation or updates, start a new Codex task or IDE chat.
+In Abacus AI or another non-Codex host, continue to apply these Homey repository rules, but do not emulate Astra Advisor or fabricate Codex-only subagent controls.
 
 ---
 
 # Worker Specification for Homey
 
-Before delegating to Luna or Terra, the primary Sol session must define:
+Before delegating a bounded Homey deliverable, the Astra parent must define:
 
 ## Objective
 
@@ -362,8 +246,6 @@ Specify applicable:
 * generated-output inspection;
 * Git checks;
 * runtime smoke tests.
-
----
 
 # Project Structure
 
@@ -813,9 +695,9 @@ Never describe Homey runtime behavior as verified based only on:
 * `homey app validate`;
 * `homey app validate --level publish`;
 * static review;
-* Sol Advisor `solo` completion;
+* Astra Advisor orchestration completion;
 * delegated implementation;
-* Sol reviewer `ship`.
+* Astra reviewer `ship`.
 
 Homey validation does not prove:
 
@@ -980,7 +862,7 @@ For applicable changes, use this general order:
 13. run `git diff --check`;
 14. inspect `git status --short`;
 15. inspect the complete accumulated Git diff;
-16. perform Sol Advisor review only when selected route requires it;
+16. perform fresh Astra review for substantial implementation when Astra Advisor is active;
 17. perform authorized runtime smoke test, or provide exact manual steps.
 
 Do not claim a command passed unless it actually ran successfully.
@@ -989,23 +871,13 @@ If a relevant check is skipped, state why.
 
 ---
 
-# Sol Advisor Review Boundary
+# Astra Advisor Review Boundary
 
-For `solo`:
+For substantial implementation under Astra Advisor:
 
-* no fresh reviewer is required.
-
-For `delegate`:
-
-* no fresh reviewer is required unless the route is explicitly escalated.
-
-For `audit`:
-
-* fresh read-only Sol review is required.
-
-For `full`:
-
-* fresh read-only Sol review is required after delegated implementation and primary verification.
+* the Astra parent must inspect the complete accumulated diff;
+* the Astra parent must rerun applicable verification;
+* a fresh read-only reviewer is required before acceptance.
 
 Reviewer verdicts:
 
@@ -1067,9 +939,9 @@ For Homey implementation work, report:
 * runtime smoke-test status;
 * exact manual runtime test steps when runtime testing was not authorized;
 * remaining risks;
-* Sol Advisor route used;
-* implementation lane used if delegated;
-* reviewer verdict only when `audit` or `full` was selected.
+* Astra route declaration used when applicable;
+* delegated model/effort and bounded task when applicable;
+* fresh Astra reviewer verdict for substantial implementation when Astra Advisor is active.
 
 Distinguish clearly:
 
@@ -1093,8 +965,8 @@ truth.
 
 When Graft is available:
 
-1. For Sol Advisor work, declare the required `SELECTIVE ROUTE` before invoking
-   Graft or another task tool.
+1. For Astra Advisor work, emit the required `ASTRA ROUTE` before invoking
+   Graft or another implementation/delegation task tool.
 
 2. Use Graft early for:
 
@@ -1130,10 +1002,10 @@ When Graft is available:
 10. Mandatory Homey validation and runtime smoke-test requirements remain
     unchanged.
 
-11. For `audit` or `full` Sol Advisor review, the reviewer must inspect the actual
+11. For substantial Astra Advisor review, the reviewer must inspect the actual
     accumulated diff and relevant source. Graft may assist navigation but cannot
-    replace the review evidence required by the Sol Advisor and Homey rules.
-
+    replace the review evidence required by Astra Advisor and the Homey rules.
+<!-- homey-template:end -->
 
 <!-- graft:start -->
 ## Graft — repo context graph
