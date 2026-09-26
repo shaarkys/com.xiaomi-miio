@@ -33880,6 +33880,160 @@
       ]
     },
     {
+      "icon": "/drivers/yeelink_light_ceiling5/assets/icon.svg",
+      "pair": [
+        {
+          "id": "start",
+          "navigation": {
+            "next": "pair"
+          }
+        },
+        {
+          "id": "pair"
+        },
+        {
+          "id": "add_device"
+        }
+      ],
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [
+        "lan"
+      ],
+      "name": {
+        "en": "Yeelight Ceiling Light ceiling5 (WiFi)",
+        "nl": "Yeelight Plafondlamp ceiling5 (WiFi)",
+        "da": "Yeelight Loftslampe ceiling5 (WiFi)",
+        "de": "Yeelight Deckenleuchte ceiling5 (WiFi)",
+        "es": "Luz de techo Yeelight ceiling5 (WiFi)",
+        "fr": "Plafonnier Yeelight ceiling5 (WiFi)",
+        "it": "Plafoniera Yeelight ceiling5 (WiFi)",
+        "no": "Yeelight Taklampe ceiling5 (WiFi)",
+        "sv": "Yeelight Taklampa ceiling5 (WiFi)",
+        "pl": "Lampa sufitowa Yeelight ceiling5 (WiFi)",
+        "ru": "Потолочный светильник Yeelight ceiling5 (WiFi)",
+        "ko": "Yeelight 천장 조명 ceiling5 (WiFi)"
+      },
+      "images": {
+        "large": "drivers/yeelink_light_ceiling5/assets/images/large.jpg",
+        "small": "drivers/yeelink_light_ceiling5/assets/images/small.jpg"
+      },
+      "class": "light",
+      "capabilities": [
+        "onoff",
+        "dim",
+        "light_temperature",
+        "onoff.nightlight"
+      ],
+      "capabilitiesOptions": {
+        "dim": {
+          "min": 0.01
+        },
+        "onoff.nightlight": {
+          "title": {
+            "en": "Night Light",
+            "nl": "Nachtlicht",
+            "da": "Natlys",
+            "de": "Nachtlicht",
+            "es": "Luz nocturna",
+            "fr": "Veilleuse",
+            "it": "Luce notturna",
+            "no": "Nattlys",
+            "sv": "Nattljus",
+            "pl": "Lampka nocna",
+            "ru": "Ночник",
+            "ko": "야간 조명"
+          }
+        }
+      },
+      "id": "yeelink_light_ceiling5",
+      "settings": [
+        {
+          "type": "group",
+          "label": {
+            "en": "Device Settings",
+            "nl": "Apparaat instellingen",
+            "da": "Enhedsindstillinger",
+            "de": "Geräteeinstellungen",
+            "es": "Configuración del dispositivo",
+            "fr": "Paramètres de l'appareil",
+            "it": "Impostazioni del dispositivo",
+            "no": "Enhetsinnstillinger",
+            "sv": "Enhetsinställningar",
+            "pl": "Ustawienia urządzenia",
+            "ru": "Настройки устройства",
+            "ko": "장치 설정",
+            "ja": "デバイス設定",
+            "zh": "设备设置"
+          },
+          "children": [
+            {
+              "id": "address",
+              "type": "text",
+              "value": "0.0.0.0",
+              "label": {
+                "en": "IP Address",
+                "nl": "IP adres",
+                "da": "IP-adresse",
+                "de": "IP-Adresse",
+                "es": "Dirección IP",
+                "fr": "Adresse IP",
+                "it": "Indirizzo IP",
+                "no": "IP-adresse",
+                "sv": "IP-adress",
+                "pl": "Adres IP",
+                "ru": "IP-адрес",
+                "ko": "IP 주소"
+              }
+            },
+            {
+              "id": "token",
+              "type": "text",
+              "value": "",
+              "label": {
+                "en": "Mi Device Token",
+                "nl": "Mi Apparaat Token",
+                "da": "Mi Enheds Token",
+                "de": "Mi Gerätetoken",
+                "es": "Token del Dispositivo Mi",
+                "fr": "Jeton de l'Appareil Mi",
+                "it": "Token Dispositivo Mi",
+                "no": "Mi Enhet Token",
+                "sv": "Mi Enhetstoken",
+                "pl": "Token Urządzenia Mi",
+                "ru": "Токен Устройства Mi",
+                "ko": "Mi 기기 토큰"
+              }
+            },
+            {
+              "id": "polling",
+              "type": "number",
+              "value": 60,
+              "attr": {
+                "min": 5,
+                "max": 3600
+              },
+              "label": {
+                "en": "Polling Frequency",
+                "nl": "Polling frequentie",
+                "da": "Polling Frekvens",
+                "de": "Abfragefrequenz",
+                "es": "Frecuencia de sondeo",
+                "fr": "Fréquence de sondage",
+                "it": "Frequenza di polling",
+                "no": "Polling Frekvens",
+                "sv": "Pollingfrekvens",
+                "pl": "Częstotliwość odpytywania",
+                "ru": "Частота опроса",
+                "ko": "폴링 빈도"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
       "icon": "/drivers/yeelink_light_color1_lan/assets/icon.svg",
       "pair": [
         {

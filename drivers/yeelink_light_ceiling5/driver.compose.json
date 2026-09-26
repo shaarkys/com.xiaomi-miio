@@ -1,0 +1,51 @@
+{
+  "name": {
+    "en": "Yeelight Ceiling Light ceiling5 (WiFi)",
+    "nl": "Yeelight Plafondlamp ceiling5 (WiFi)",
+    "da": "Yeelight Loftslampe ceiling5 (WiFi)",
+    "de": "Yeelight Deckenleuchte ceiling5 (WiFi)",
+    "es": "Luz de techo Yeelight ceiling5 (WiFi)",
+    "fr": "Plafonnier Yeelight ceiling5 (WiFi)",
+    "it": "Plafoniera Yeelight ceiling5 (WiFi)",
+    "no": "Yeelight Taklampe ceiling5 (WiFi)",
+    "sv": "Yeelight Taklampa ceiling5 (WiFi)",
+    "pl": "Lampa sufitowa Yeelight ceiling5 (WiFi)",
+    "ru": "Потолочный светильник Yeelight ceiling5 (WiFi)",
+    "ko": "Yeelight 천장 조명 ceiling5 (WiFi)"
+  },
+  "images": {
+    "large": "drivers/yeelink_light_ceiling5/assets/images/large.jpg",
+    "small": "drivers/yeelink_light_ceiling5/assets/images/small.jpg"
+  },
+  "class": "light",
+  "$extends": [
+    "defaults"
+  ],
+  "capabilities": [
+    "onoff",
+    "dim",
+    "light_temperature",
+    "onoff.nightlight"
+  ],
+  "capabilitiesOptions": {
+    "dim": {
+      "min": 0.01
+    },
+    "onoff.nightlight": {
+      "title": {
+        "en": "Night Light",
+        "nl": "Nachtlicht",
+        "da": "Natlys",
+        "de": "Nachtlicht",
+        "es": "Luz nocturna",
+        "fr": "Veilleuse",
+        "it": "Luce notturna",
+        "no": "Nattlys",
+        "sv": "Nattljus",
+        "pl": "Lampka nocna",
+        "ru": "Ночник",
+        "ko": "야간 조명"
+      }
+    }
+  }
+}
