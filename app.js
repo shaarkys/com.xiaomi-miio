@@ -9,13 +9,6 @@ class XiaomiMiioApp extends Homey.App {
   async onInit() {
     this.log("Initializing Xiaomi Mi Home app ...");
 
-    this.homey.setTimeout(() => {
-      const browser = miio.browse({ cacheTime: 10  }); // little trick in an attempt to avoid command caching
-      browser.on('available', device => {
-        this.log('Discovered device on '+ device.address +' with device id '+ device.id);
-      });
-    }, 2000);
-
     // INITIALIZE GATEWAY MODULE
     this.mihub = new MiHub({log: this.log, homey: this.homey});
     this.onSettingsChanged = this.onSettingsChanged.bind(this);
