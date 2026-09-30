@@ -649,5 +649,8 @@
   },
   "3.5.37": {
     "en": "Add Yeelight ceiling light (yeelink.light.ceiling5) - credit @ joepenzo"
+  },
+  "3.5.38": {
+    "en": "Prevented unnecessary missing-token error reports during background device discovery."
   }
 }
