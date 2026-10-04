@@ -652,5 +652,8 @@
   },
   "3.5.38": {
     "en": "Prevented unnecessary missing-token error reports during background device discovery."
+  },
+  "3.5.39": {
+    "en": "Fixed Roborock S5 polling recovery to prevent repeated reconnects and errors during connection loss."
   }
 }
