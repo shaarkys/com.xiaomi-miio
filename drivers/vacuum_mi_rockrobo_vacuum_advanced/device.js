@@ -239,10 +239,32 @@ class MiRobotAdvancedDevice extends Device {
     }
   }
 
+  _schedulePollReconnect() {
+    if (this.recreateTimeout || this._creatingDevice) return;
+
+    this.log('Poll failed; retrying device connection in 60s');
+    this.recreateTimeout = this.homey.setTimeout(() => {
+      this.recreateTimeout = null;
+      this.createDevice();
+    }, 60000);
+  }
+
   async retrieveDeviceData() {
+    if (this._pollInProgress) return;
+
+    const miio = this.miio;
+    if (!miio) {
+      this._schedulePollReconnect();
+      return;
+    }
+
+    this._pollInProgress = true;
     try {
-      const result = await this.miio.call("get_status", [], { retries: 1 });
+      const result = await miio.call("get_status", [], { retries: 1 });
+      if (this.miio !== miio) return;
       if (!this.getAvailable()) { await this.setAvailable(); }
+      this.homey.clearTimeout(this.recreateTimeout);
+      this.recreateTimeout = null;
 
       /* data */
       const fanspeed = this.deviceProperties.fanspeeds[result[0]["fan_power"]];
@@ -311,13 +333,16 @@ class MiRobotAdvancedDevice extends Device {
           break;
       }
 
-      const consumables = await this.miio.call("get_consumable", [], { retries: 1 });
+      const consumables = await miio.call("get_consumable", [], { retries: 1 });
+      if (this.miio !== miio) return;
       this.vacuumConsumables(consumables);
 
-      const totals = await this.miio.call("get_clean_summary", [], { retries: 1 });
+      const totals = await miio.call("get_clean_summary", [], { retries: 1 });
+      if (this.miio !== miio) return;
       this.vacuumTotals(totals);
 
-      const rooms = await this.miio.call("get_room_mapping", [], { retries: 1 });
+      const rooms = await miio.call("get_room_mapping", [], { retries: 1 });
+      if (this.miio !== miio) return;
       if (rooms !== undefined) {
         if (rooms.toString() !== 'unknown_method') {
           if (this.getSetting('rooms') !== rooms.toString() ) {
@@ -333,15 +358,22 @@ class MiRobotAdvancedDevice extends Device {
       
 
     } catch (error) {
+      if (this.miio !== miio) return;
+
       this.homey.clearInterval(this.pollingInterval);
+      this.pollingInterval = null;
+      this.homey.clearTimeout(this.initialPollTimeout);
+      this.initialPollTimeout = null;
 
       if (this.getAvailable()) {
         this.setUnavailable(this.homey.__('device.unreachable') + error.message).catch(error => { this.error(error) });
       }
 
-      this.homey.setTimeout(() => { this.createDevice(); }, 60000);
+      this._schedulePollReconnect();
 
       this.error(error);
+    } finally {
+      this._pollInProgress = false;
     }
   }
 

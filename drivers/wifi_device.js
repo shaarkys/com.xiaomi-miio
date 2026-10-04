@@ -39,6 +39,7 @@ class MiWifiDeviceDevice extends Homey.Device {
         try {
             this.homey.clearInterval(this.pollingInterval);
             this.homey.clearInterval(this.refreshInterval);
+            this.homey.clearTimeout(this.initialPollTimeout);
             this.homey.clearTimeout(this.recreateTimeout);
             if (this.miio) {
                 try {
@@ -57,6 +58,7 @@ class MiWifiDeviceDevice extends Homey.Device {
         try {
             this.homey.clearInterval(this.pollingInterval);
             this.homey.clearInterval(this.refreshInterval);
+            this.homey.clearTimeout(this.initialPollTimeout);
             this.homey.clearTimeout(this.recreateTimeout);
             if (this.miio) {
                 try {
@@ -329,7 +331,10 @@ class MiWifiDeviceDevice extends Homey.Device {
             // stop any previous timers/loops
             this.homey.clearInterval(this.pollingInterval);
             this.pollingInterval = null;
+            this.homey.clearTimeout(this.initialPollTimeout);
+            this.initialPollTimeout = null;
             this.homey.clearTimeout(this.recreateTimeout);
+            this.recreateTimeout = null;
 
             // dispose of an old miio instance safely
             try {
@@ -382,6 +387,8 @@ class MiWifiDeviceDevice extends Homey.Device {
                  * miio instance during the reconnect window below */
                 this.homey.clearInterval(this.pollingInterval);
                 this.pollingInterval = null;
+                this.homey.clearTimeout(this.initialPollTimeout);
+                this.initialPollTimeout = null;
 
                 if (this.miio) {
                     try {
@@ -427,7 +434,9 @@ class MiWifiDeviceDevice extends Homey.Device {
     async pollDevice() {
         try {
             this.homey.clearInterval(this.pollingInterval);
-            this.homey.setTimeout(() => {
+            this.homey.clearTimeout(this.initialPollTimeout);
+            this.initialPollTimeout = this.homey.setTimeout(() => {
+                this.initialPollTimeout = null;
                 this.retrieveDeviceData();
             }, this.util.getRandomTimeout(5));
             let interval = this.getSetting('polling') || 60;
