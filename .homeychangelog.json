@@ -661,5 +661,8 @@
   },
   "3.5.41": {
     "en": "Added Xiaomi Robot Vacuum 5 Pro support to the MIoT MAX driver"
+  },
+  "3.5.42": {
+    "en": "Robot Vacuum 5 Pro: correct Water Shortage Alarm and show remaining Mop Life and Dust Bag Life percentages."
   }
 }
