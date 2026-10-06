@@ -11,6 +11,7 @@ const Util = require('../../lib/util.js');
 // https://home.miot-spec.com/spec/xiaomi.vacuum.c102gl // Xiaomi Robot Vacuum X20 / X20+
 // https://home.miot-spec.com/spec/xiaomi.vacuum.b108gl // Xiaomi Robot Vacuum S20+
 // https://home.miot-spec.com/spec/xiaomi.vacuum.ov51gl // Xiaomi Robot Vacuum H40
+// https://home.miot-spec.com/spec/xiaomi.vacuum.ov21gl // Xiaomi Robot Vacuum 5 Pro
 // https://home.miot-spec.com/spec/xiaomi.vacuum.ov71gl // Xiaomi Robot Vacuum S40 Pro
 // https://miot-spec.org/miot-spec-v2/instance?type=urn:miot-spec-v2:device:vacuum:0000A006:xiaomi-ov43gb:2 // Xiaomi Robot Vacuum H50
 // https://miot-spec.org/miot-spec-v2/instance?type=urn:miot-spec-v2:device:vacuum:0000A006:xiaomi-c108:1 // Xiaomi Robot Vacuum E5
@@ -143,10 +144,11 @@ const BASE_STATION_STATUS_MODELS = Object.freeze([
     'xiaomi.vacuum.d102gl',
     'xiaomi.vacuum.d109gl',
     'xiaomi.vacuum.ov43gb',
+    'xiaomi.vacuum.ov21gl',
     'xiaomi.vacuum.ov51gl',
     'xiaomi.vacuum.c102gl'
 ]);
-const PIID18_BASE_STATION_STATUS_MODELS = Object.freeze(['xiaomi.vacuum.d102gl', 'xiaomi.vacuum.d109gl', 'xiaomi.vacuum.ov43gb', 'xiaomi.vacuum.ov51gl']);
+const PIID18_BASE_STATION_STATUS_MODELS = Object.freeze(['xiaomi.vacuum.d102gl', 'xiaomi.vacuum.d109gl', 'xiaomi.vacuum.ov43gb', 'xiaomi.vacuum.ov21gl', 'xiaomi.vacuum.ov51gl']);
 const C102_IDLE_BASE_STATION_STATUS_CODES = Object.freeze([0, 1, 2, 3, 4, 5, 6, 7, 10, 11, 12, 13, 14, 19, 21, 23]);
 const CUSTOM_CLEANUP_DIAGNOSTIC_MODELS = Object.freeze(['xiaomi.vacuum.d102gl', 'xiaomi.vacuum.d109gl', 'xiaomi.vacuum.ov51gl']);
 const CLEAN_TIMES_MODELS = Object.freeze([
@@ -157,6 +159,7 @@ const CLEAN_TIMES_MODELS = Object.freeze([
     'xiaomi.vacuum.ov51gl',
     'xiaomi.vacuum.ov71gl',
     'xiaomi.vacuum.ov43gb',
+    'xiaomi.vacuum.ov21gl',
     'xiaomi.vacuum.b108gl'
 ]);
 const CUSTOM_CLEANUP_DIAGNOSTIC_PROPERTIES = Object.freeze([
@@ -256,6 +259,13 @@ const BASE_STATION_ACTION_DESCRIPTORS = Object.freeze({
         start_drying: createBaseStationActionDescriptor(20),
         stop_drying: createBaseStationActionDescriptor(32)
     }),
+    'xiaomi.vacuum.ov21gl': Object.freeze({
+        start_dust_collection: createBaseStationActionDescriptor(18),
+        start_mop_washing: createBaseStationActionDescriptor(19),
+        stop_mop_washing: createBaseStationActionDescriptor(31),
+        start_drying: createBaseStationActionDescriptor(20),
+        stop_drying: createBaseStationActionDescriptor(32)
+    }),
     'xiaomi.vacuum.c102gl': Object.freeze({
         start_dust_collection: createBaseStationActionDescriptor(4),
         start_mop_washing: createBaseStationActionDescriptor(6),
@@ -331,6 +341,7 @@ const mapping = {
     'xiaomi.vacuum.d109gl': 'properties_d109gl',
     'xiaomi.vacuum.d102gl': 'properties_d109gl', // unchanged — you said it’s flawless
     'xiaomi.vacuum.ov43gb': 'properties_ov43gb',
+    'xiaomi.vacuum.ov21gl': 'properties_ov43gb',
     'xiaomi.vacuum.d101': 'properties_d101',
     'xiaomi.vacuum.d101gl': 'properties_d101',
     'xiaomi.vacuum.ov51gl': 'properties_d101',
