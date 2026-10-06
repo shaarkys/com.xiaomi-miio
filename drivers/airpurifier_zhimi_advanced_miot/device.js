@@ -69,7 +69,7 @@ const properties = {
       { did: "temperature", siid: 3, piid: 8 }, // measure_temperature
       { did: "aqi", siid: 3, piid: 6 }, // measure_pm25
       { did: "buzzer", siid: 5, piid: 1 }, // settings.buzzer
-      { did: "child_lock", siid: 18, piid: 13 }, // settings.childLock
+      { did: "child_lock", siid: 7, piid: 1 }, // settings.childLock
       { did: "light", siid: 6, piid: 1 }, // settings.led
       { did: "filter_life_remaining", siid: 4, piid: 3 }, // settings.filter_life_remaining
       { did: "filter_hours_used", siid: 4, piid: 5 }, // settings.filter_hours_used
@@ -80,7 +80,7 @@ const properties = {
       "fanlevel": { siid: 2, piid: 4 },
       "mode": { siid: 2, piid: 5 },
       "buzzer": { siid: 5, piid: 1 },
-      "child_lock": { siid: 18, piid: 13 },
+      "child_lock": { siid: 7, piid: 1 },
       "light": { siid: 6, piid: 1 }
     },
     "device_properties": {
@@ -508,27 +508,51 @@ class AdvancedMiAirPurifierMiotDevice extends Device {
     return Promise.resolve(true);
   }
 
+  async getMiotProperties() {
+    const miio = this.miio;
+    const requestedProperties = this.deviceProperties.get_properties;
+    const result = [];
+
+    // Match python-miio's limit while keeping requests sequential.
+    for (let offset = 0; offset < requestedProperties.length; offset += 15) {
+      const batch = requestedProperties.slice(offset, offset + 15);
+      const response = await miio.call('get_properties', batch, { retries: 1 });
+      if (!Array.isArray(response)) {
+        throw new Error(`Invalid MIoT response for property batch ${Math.floor(offset / 15) + 1}`);
+      }
+      result.push(...response);
+    }
+
+    return result;
+  }
+
   async retrieveDeviceData() {
     try {
 
-      const result = await this.miio.call("get_properties", this.deviceProperties.get_properties, { retries: 1 });
-      if (!this.getAvailable()) { await this.setAvailable(); }
+      const result = await this.getMiotProperties();
 
       /* data */
-      const onoff = result.find(obj => obj.did === 'power');
+      const onoff = AirPurifierMiot.findValidResult(result, 'power');
+      if (onoff === undefined) {
+        const powerResult = result.find(obj => obj.did === 'power');
+        const detail = powerResult?.code !== undefined ? `code ${powerResult.code}` : 'missing or empty value';
+        throw new Error(`MIoT power read failed: ${detail}`);
+      }
+      if (!this.getAvailable()) { await this.setAvailable(); }
+
       const fanlevel = AirPurifierMiot.findValidResult(result, 'fanlevel');
-      const measure_humidity = result.find(obj => obj.did === 'humidity');
-      const measure_temperature = result.find(obj => obj.did === 'temperature');
-      const measure_pm25 = result.find(obj => obj.did === 'aqi');
+      const measure_humidity = AirPurifierMiot.findValidResult(result, 'humidity');
+      const measure_temperature = AirPurifierMiot.findValidResult(result, 'temperature');
+      const measure_pm25 = AirPurifierMiot.findValidResult(result, 'aqi');
       const onoff_ion = AirPurifierMiot.findValidResult(result, 'anion');
       const onoff_uv = AirPurifierMiot.findValidResult(result, 'uv');
 
-      const buzzer = result.find(obj => obj.did === 'buzzer');
-      const child_lock = result.find(obj => obj.did === 'child_lock');
-      const led = result.find(obj => obj.did === 'light');
-      const filter_life_remaining = result.find(obj => obj.did === 'filter_life_remaining');
-      const filter_hours_used = result.find(obj => obj.did === 'filter_hours_used');
-      const purify_volume = result.find(obj => obj.did === 'purify_volume');
+      const buzzer = AirPurifierMiot.findValidResult(result, 'buzzer');
+      const child_lock = AirPurifierMiot.findValidResult(result, 'child_lock');
+      const led = AirPurifierMiot.findValidResult(result, 'light');
+      const filter_life_remaining = AirPurifierMiot.findValidResult(result, 'filter_life_remaining');
+      const filter_hours_used = AirPurifierMiot.findValidResult(result, 'filter_hours_used');
+      const purify_volume = AirPurifierMiot.findValidResult(result, 'purify_volume');
 
       /* capabilities */
       await this.updateCapabilityValue("onoff", onoff.value);
@@ -538,7 +562,9 @@ class AdvancedMiAirPurifierMiotDevice extends Device {
       if (measure_temperature !== undefined) {
         await this.updateCapabilityValue("measure_temperature", measure_temperature.value);
       }
-      await this.updateCapabilityValue("measure_pm25", measure_pm25.value);
+      if (measure_pm25 !== undefined) {
+        await this.updateCapabilityValue("measure_pm25", measure_pm25.value);
+      }
 
       if (onoff_ion !== undefined) {
         await this.updateCapabilityValue("onoff.ion", onoff_ion.value);
@@ -548,13 +574,21 @@ class AdvancedMiAirPurifierMiotDevice extends Device {
       }
 
       /* settings */
-      await this.updateSettingValue("led", led.value === this.deviceProperties.device_properties.light.min ? false : true);
-      await this.updateSettingValue("buzzer", buzzer.value);
+      if (led !== undefined) {
+        await this.updateSettingValue("led", led.value === this.deviceProperties.device_properties.light.min ? false : true);
+      }
+      if (buzzer !== undefined) {
+        await this.updateSettingValue("buzzer", buzzer.value);
+      }
       if (child_lock !== undefined) {
         await this.updateSettingValue("childLock", child_lock.value);
       }
-      await this.updateSettingValue("filter_life_remaining", filter_life_remaining.value + '%');
-      await this.updateSettingValue("filter_hours_used", filter_hours_used.value + 'h');
+      if (filter_life_remaining !== undefined) {
+        await this.updateSettingValue("filter_life_remaining", filter_life_remaining.value + '%');
+      }
+      if (filter_hours_used !== undefined) {
+        await this.updateSettingValue("filter_hours_used", filter_hours_used.value + 'h');
+      }
       if (purify_volume !== undefined) {
         await this.updateSettingValue("purify_volume", purify_volume.value + 'm3');
       }
