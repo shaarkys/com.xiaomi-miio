@@ -655,5 +655,8 @@
   },
   "3.5.39": {
     "en": "Fixed Roborock S5 polling recovery to prevent repeated reconnects and errors during connection loss."
+  },
+  "3.5.40": {
+    "en": "Improved MIoT air purifier polling with batches of up to 15 properties, corrected the 3H child-lock mapping, and preserved existing readings when optional properties fail."
   }
 }
