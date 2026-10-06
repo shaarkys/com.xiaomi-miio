@@ -36,6 +36,8 @@
     "alarm_main_brush_work_time",
     "alarm_side_brush_work_time",
     "alarm_filter_work_time",
+    "vacuum_xiaomi_mop_life_level",
+    "vacuum_xiaomi_dust_bag_left_level",
     "alarm_water_shortage"
   ],
   "energy": {

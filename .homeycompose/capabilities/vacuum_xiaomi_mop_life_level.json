@@ -1,0 +1,12 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Mop life remaining"
+  },
+  "getable": true,
+  "setable": false,
+  "units": {
+    "en": "%"
+  },
+  "uiComponent": "sensor"
+}

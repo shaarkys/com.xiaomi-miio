@@ -26,28 +26,37 @@ function createDevice(model = 'xiaomi.vacuum.d109gl') {
     device._roomsDiscovered = true;
     device.miio = { call: async () => [] };
     device.getAvailable = () => true;
-    device.hasCapability = (id) => ['alarm_water_shortage', 'vacuum_xiaomi_status', 'vacuum_xiaomi_base_station_status'].includes(id);
+    device.hasCapability = (id) => ['alarm_water_shortage', 'vacuum_xiaomi_status', 'vacuum_xiaomi_base_station_status', 'vacuum_xiaomi_mop_life_level', 'vacuum_xiaomi_dust_bag_left_level'].includes(id);
     device.getCapabilityValue = (id) => capabilities[id];
     device.updateCapabilityValue = device.setCapabilityValue = async (id, value) => { capabilities[id] = value; };
     device.vacuumCleanerState = (value) => { capabilities.vacuumcleaner_state = value; };
     device.getSetting = (key) => settings[key];
     device.setSettings = async (values) => Object.assign(settings, values);
     device.vacuumConsumables = device.vacuumTotals = device._addLiveDelta = device._accumulateJobTotals = async () => {};
-    const poll = async ({ status = 4, fault = 210030, base = 0, water, ids, detergent = false } = {}) => {
-        device.callVacuumGetProperties = async () => [
-            { siid: 2, piid: 2, code: 0, value: status },
-            { siid: 2, piid: 3, code: 0, value: fault },
-            { siid: 2, piid: 4, code: 0, value: 3 },
-            { siid: 3, piid: 1, code: 0, value: 75 },
-            { siid: 2, piid: 6, code: 0, value: 2500 },
-            { siid: 2, piid: 7, code: 0, value: 2040 },
-            { siid: 2, piid: 71, code: 0, value: detergent },
-            { siid: 2, piid: 18, code: 0, value: JSON.stringify({ mode: base, runtime: 0, total_time: 0 }) },
-            ...(water ? [{ siid: 2, piid: 54, ...water }] : []),
-            ...(ids ? [{ siid: 2, piid: 66, ...ids }] : [])
-        ];
+    const poll = async ({ status = 4, fault = 210030, base = 0, water, ids, detergent = false, mop, dustBag } = {}) => {
+        const expectedErrorCount = errors.length + (mop instanceof Error && !device._mopLifeReadFailureLogged ? 1 : 0);
+        device.callVacuumGetProperties = async (requested) => {
+            if (requested === device.deviceProperties.get_mop_life_level) {
+                if (mop instanceof Error) throw mop;
+                return mop ? [{ siid: 9, piid: 1, ...mop }] : [];
+            }
+            return [
+                { siid: 2, piid: 2, code: 0, value: status },
+                { siid: 2, piid: 3, code: 0, value: fault },
+                { siid: 2, piid: 4, code: 0, value: 3 },
+                { siid: 3, piid: 1, code: 0, value: 75 },
+                { siid: 2, piid: 6, code: 0, value: 2500 },
+                { siid: 2, piid: 7, code: 0, value: 2040 },
+                { siid: 2, piid: 71, code: 0, value: detergent },
+                ...(dustBag ? [{ siid: 19, piid: 1, ...dustBag }] : []),
+                { siid: 2, piid: 18, code: 0, value: JSON.stringify({ mode: base, runtime: 0, total_time: 0 }) },
+                ...(water ? [{ siid: 2, piid: 54, ...water }] : []),
+                ...(ids ? [{ siid: 2, piid: 66, ...ids }] : [])
+            ];
+        };
         await device.retrieveDeviceData();
-        assert.deepEqual(errors, []);
+        assert.equal(errors.length, expectedErrorCount);
+        if (mop instanceof Error) assert.match(errors.at(-1)[0], /Optional mop life read failed/);
     };
     return { capabilities, settings, events, poll };
 }
@@ -166,4 +175,24 @@ test('retains other errors, detergent reminders, and unrelated model behavior', 
         await other.poll();
         assert.equal(other.capabilities.vacuum_xiaomi_status, 'Water tank empty');
     }
+});
+
+test('Robot Vacuum 5 Pro ignores detergent reminder for water alarm and publishes valid life percentages', async () => {
+    const { capabilities, poll } = createDevice('xiaomi.vacuum.ov21gl');
+    await poll({ status: 4, fault: 0, detergent: true, mop: { code: 0, value: 83 }, dustBag: { code: 0, value: 75 } });
+    assert.equal(capabilities.alarm_water_shortage, false);
+    assert.equal(capabilities.vacuum_xiaomi_mop_life_level, 83);
+    assert.equal(capabilities.vacuum_xiaomi_dust_bag_left_level, 75);
+
+    await poll({ fault: 0, detergent: true, mop: { code: -1, value: 12 }, dustBag: { code: 0, value: 74 } });
+    assert.equal(capabilities.vacuum_xiaomi_mop_life_level, 83, 'failed MIoT reads must not overwrite the last value');
+    assert.equal(capabilities.vacuum_xiaomi_dust_bag_left_level, 74);
+
+    await poll({ fault: 0, detergent: true, mop: new Error('optional mop read timed out') });
+    assert.equal(capabilities.alarm_water_shortage, false, 'optional mop failure must not interrupt the main poll');
+    assert.equal(capabilities.vacuum_xiaomi_mop_life_level, 83);
+
+    await poll({ fault: 210030, detergent: true, mop: { code: 0, value: 101 } });
+    assert.equal(capabilities.alarm_water_shortage, true, 'a water fault must still raise the alarm');
+    assert.equal(capabilities.vacuum_xiaomi_mop_life_level, 83, 'out-of-range percentages must be ignored');
 });

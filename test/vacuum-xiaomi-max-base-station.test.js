@@ -101,7 +101,7 @@ function enableBaseStationCapability(device, updates, order) {
     };
 }
 
-function createOnInitDevice(model, { existingBaseStationCapability = false, failBaseStationMigration = false } = {}) {
+function createOnInitDevice(model, { existingBaseStationCapability = false, failBaseStationMigration = false, failConsumableMigration = false } = {}) {
     const flow = createFlow();
     const capabilities = new Set([
         'vacuum_xiaomi_mop_mode_max',
@@ -135,6 +135,7 @@ function createOnInitDevice(model, { existingBaseStationCapability = false, fail
     device.addCapability = async (capability) => {
         added.push(capability);
         if (failBaseStationMigration && capability === BASE_STATION_STATUS_CAPABILITY) throw new Error('base station migration failed');
+        if (failConsumableMigration && capability === 'vacuum_xiaomi_mop_life_level') throw new Error('mop life migration failed');
         capabilities.add(capability);
     };
     device.removeCapability = async (capability) => removed.push(capability);
@@ -189,6 +190,19 @@ test('onInit migrates the base-station capability idempotently and preserves ini
     assert.ok(migrated.capabilities.has(BASE_STATION_STATUS_CAPABILITY));
     assert.ok(migrated.logs.some((args) => args.join(' ').includes('Adding base-station status capability')));
     assert.ok(migrated.logs.some((args) => args.join(' ').includes('Added base-station status capability')));
+
+    const ov21gl = createOnInitDevice('xiaomi.vacuum.ov21gl');
+    await ov21gl.device.onInit();
+    await ov21gl.device.onInit();
+    assert.deepEqual(ov21gl.added, [BASE_STATION_STATUS_CAPABILITY, 'vacuum_xiaomi_mop_life_level', 'vacuum_xiaomi_dust_bag_left_level']);
+    assert.ok(ov21gl.logs.some((args) => args.join(' ').includes('Added vacuum_xiaomi_mop_life_level')));
+    assert.ok(ov21gl.logs.some((args) => args.join(' ').includes('Added vacuum_xiaomi_dust_bag_left_level')));
+
+    const failedConsumable = createOnInitDevice('xiaomi.vacuum.ov21gl', { failConsumableMigration: true });
+    await failedConsumable.device.onInit();
+    assert.ok(failedConsumable.errors.some((args) => args.join(' ').includes('mop life migration failed')));
+    assert.ok(failedConsumable.capabilities.has('vacuum_xiaomi_dust_bag_left_level'));
+    assert.equal(typeof failedConsumable.flow.actionListeners.base_station_control, 'function');
 
     const failed = createOnInitDevice('xiaomi.vacuum.ov51gl', { failBaseStationMigration: true });
     await failed.device.onInit();

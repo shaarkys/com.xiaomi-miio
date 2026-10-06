@@ -139,6 +139,10 @@ const X20_BASE_STATION_MODE_NAMES = {
 };
 
 const BASE_STATION_STATUS_CAPABILITY = 'vacuum_xiaomi_base_station_status';
+const OV21GL_CONSUMABLE_LIFE_CAPABILITIES = Object.freeze([
+    'vacuum_xiaomi_mop_life_level',
+    'vacuum_xiaomi_dust_bag_left_level'
+]);
 const X20_RAW_STATUS_MODELS = Object.freeze(['xiaomi.vacuum.d102gl', 'xiaomi.vacuum.d109gl']);
 const BASE_STATION_STATUS_MODELS = Object.freeze([
     'xiaomi.vacuum.d102gl',
@@ -341,7 +345,7 @@ const mapping = {
     'xiaomi.vacuum.d109gl': 'properties_d109gl',
     'xiaomi.vacuum.d102gl': 'properties_d109gl', // unchanged — you said it’s flawless
     'xiaomi.vacuum.ov43gb': 'properties_ov43gb',
-    'xiaomi.vacuum.ov21gl': 'properties_ov43gb',
+    'xiaomi.vacuum.ov21gl': 'properties_ov21gl',
     'xiaomi.vacuum.d101': 'properties_d101',
     'xiaomi.vacuum.d101gl': 'properties_d101',
     'xiaomi.vacuum.ov51gl': 'properties_d101',
@@ -622,6 +626,17 @@ const properties = {
 properties.properties_ov43gb = {
     ...properties.properties_d109gl,
     status_mapping: STATUS_MAPPING_D101
+};
+
+properties.properties_ov21gl = {
+    ...properties.properties_ov43gb,
+    get_mop_life_level: [{ did: 'mop_life_level', siid: 9, piid: 1 }],
+    supports: {
+        ...properties.properties_ov43gb.supports,
+        mop_life_level: true,
+        dust_bag_life_level: true,
+        detergent_reminder_as_water_shortage: false
+    }
 };
 
 class XiaomiVacuumMiotDeviceMax extends Device {
@@ -1502,6 +1517,55 @@ class XiaomiVacuumMiotDeviceMax extends Device {
         }
     }
 
+    async _migrateConsumableLifeCapabilities() {
+        if (this._model !== 'xiaomi.vacuum.ov21gl') return;
+
+        for (const capability of OV21GL_CONSUMABLE_LIFE_CAPABILITIES) {
+            if (this.hasCapability(capability)) continue;
+            this.log(`[MIGRATION] Adding ${capability} for ${this._model}.`);
+            try {
+                await this.addCapability(capability);
+                this.log(`[MIGRATION] Added ${capability} for ${this._model}.`);
+            } catch (error) {
+                this.error(`[MIGRATION] Failed to add ${capability} for ${this._model}: ${this._getSafeErrorDetails(error)}.`);
+            }
+        }
+    }
+
+    async _updateConsumableLifeCapabilities(result) {
+        for (const { supported, property, capability } of [
+            { supported: this.deviceProperties.supports.mop_life_level, property: 'mop_life_level', capability: OV21GL_CONSUMABLE_LIFE_CAPABILITIES[0] },
+            { supported: this.deviceProperties.supports.dust_bag_life_level, property: 'dust_bag_life_level', capability: OV21GL_CONSUMABLE_LIFE_CAPABILITIES[1] }
+        ]) {
+            if (!supported || !this.hasCapability(capability)) continue;
+            let readings = result;
+            if (property === 'mop_life_level') {
+                try {
+                    readings = await this.callVacuumGetProperties(this.deviceProperties.get_mop_life_level, { retries: 1 });
+                    this._mopLifeReadFailureLogged = false;
+                } catch (error) {
+                    if (!this._mopLifeReadFailureLogged) {
+                        this.error(`[CONSUMABLES] Optional mop life read failed: ${this._getSafeErrorDetails(error)}; keeping the previous value.`);
+                        this._mopLifeReadFailureLogged = true;
+                    }
+                    continue;
+                }
+            }
+            if (!Array.isArray(readings)) continue;
+            const definitions = property === 'mop_life_level' ? this.deviceProperties.get_mop_life_level : this.deviceProperties.get_properties;
+            const definition = definitions.find((entry) => entry.did === property);
+            if (!definition) continue;
+            const reading = readings.find((entry) => entry.siid === definition.siid && entry.piid === definition.piid);
+            const value = reading && reading.code === 0 ? reading.value : undefined;
+            if (!Number.isInteger(value) || value < 0 || value > 100 || value === this.getCapabilityValue(capability)) continue;
+            try {
+                await this.setCapabilityValue(capability, value);
+            } catch (error) {
+                this.error(`[CONSUMABLES] Failed to update ${capability}: ${this._getSafeErrorDetails(error)}.`);
+            }
+        }
+    }
+
     async onInit() {
         try {
             if (!this.util) this.util = new Util({ homey: this.homey });
@@ -1521,6 +1585,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             const model = this.getStoreValue('model');
             this._applyModelProperties(model);
             await this._migrateBaseStationStatusCapability();
+            await this._migrateConsumableLifeCapabilities();
             this._carpetModeState = this.getStoreValue('carpetModeState') || '0';
             if (!this.getStoreValue('carpetModeState')) {
                 try {
@@ -2037,6 +2102,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             if (this.deviceProperties.supports.consumables) {
                 this.vacuumConsumables(consumables);
             }
+            await this._updateConsumableLifeCapabilities(result);
 
             /* error/status tiles + flows */
             let err = 'Everything-is-ok';
@@ -2093,7 +2159,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             if (this.hasCapability('alarm_water_shortage')) {
                 const waterShortageErrors = new Set(['Water tank empty', 'No-water-error']);
                 let detergentShortage = false;
-                if (this.deviceProperties.supports.detergent) {
+                if (this.deviceProperties.supports.detergent && this.deviceProperties.supports.detergent_reminder_as_water_shortage !== false) {
                     const det = this.getMiotProp(result, 'detergent_depletion_reminder');
                     detergentShortage = !!(det && det.value != null && det.value);
                 }

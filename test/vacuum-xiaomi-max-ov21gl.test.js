@@ -27,8 +27,10 @@ test('Robot Vacuum 5 Pro pairs by name and uses its published MIoT controls', ()
     assert.equal(new Util({}).getFriendlyNameWiFi(MODEL), 'Xiaomi Robot Vacuum 5 Pro');
 
     const driver = Object.create(VacuumDriver.prototype);
-    driver.manifest = { capabilities: ['onoff', 'vacuum_xiaomi_base_station_status'] };
+    driver.manifest = { capabilities: ['onoff', 'vacuum_xiaomi_base_station_status', 'vacuum_xiaomi_mop_life_level', 'vacuum_xiaomi_dust_bag_left_level'] };
     assert.deepEqual(driver.getPairingCapabilities(MODEL), driver.manifest.capabilities);
+    assert.deepEqual(driver.getPairingCapabilities('xiaomi.vacuum.ov43gb'), ['onoff', 'vacuum_xiaomi_base_station_status']);
+    assert.deepEqual(driver.getPairingCapabilities('xiaomi.vacuum.c108'), ['onoff']);
 
     const device = createDevice();
     assert.deepEqual(device.deviceProperties.status_mapping, createDevice('xiaomi.vacuum.ov43gb').deviceProperties.status_mapping);
@@ -37,6 +39,10 @@ test('Robot Vacuum 5 Pro pairs by name and uses its published MIoT controls', ()
     assert.deepEqual(device.deviceProperties.get_properties.find((property) => property.did === 'carpet_avoidance'), { did: 'carpet_avoidance', siid: 2, piid: 73 });
     assert.deepEqual(device.buildCarpetModeSetPayload('1').payload, [{ siid: 2, piid: 73, value: 1 }]);
     assert.deepEqual(device.deviceProperties.get_properties.filter((property) => property.did === 'base_station_working_status'), [{ did: 'base_station_working_status', siid: 2, piid: 18 }]);
+    assert.deepEqual(device.deviceProperties.get_mop_life_level, [{ did: 'mop_life_level', siid: 9, piid: 1 }]);
+    assert.equal(device.deviceProperties.get_properties.some((property) => property.did === 'mop_life_level'), false);
+    assert.deepEqual(device.deviceProperties.get_properties.find((property) => property.did === 'dust_bag_life_level'), { did: 'dust_bag_life_level', siid: 19, piid: 1 });
+    assert.equal(device.deviceProperties.supports.detergent_reminder_as_water_shortage, false);
     assert.deepEqual(device._buildCleanTimesProperty(2), { siid: 2, piid: 8, value: 2 });
     assert.equal(device._isSupportedBaseStationStatusDevice(), true);
     assert.equal(device._isSupportedX20Device(), false);
