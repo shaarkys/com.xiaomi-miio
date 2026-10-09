@@ -1188,13 +1188,38 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             : null;
     }
 
-    _getCustomCleanupStartTargetModel(target) {
+    async _getCustomCleanupStartTargetModel(target) {
+        const validModel = (model) => typeof model === 'string' && /^xiaomi\.vacuum\.[a-z0-9]{1,16}$/.test(model);
         try {
             const model = typeof target._getDeviceModel === 'function' ? target._getDeviceModel() : null;
-            return isCustomCleanupDiagnosticModel(model) ? model : null;
+            if (validModel(model)) return model;
         } catch (_) {
-            return null;
+            // A direct miIO.info read can still identify the connected device.
         }
+
+        const connection = target.miio;
+        if (!connection || typeof connection.call !== 'function') return null;
+        let lookup = target._customCleanupStartLiveModel;
+        if (!lookup || lookup.connection !== connection) {
+            lookup = { connection, model: null, promise: null };
+            const currentLookup = lookup;
+            lookup.promise = target._queuePropertyOperation(() => connection.call('miIO.info', [], { retries: 1 }))
+                .then((info) => {
+                    const model = info && info.model;
+                    if (target.miio === connection && validModel(model)) currentLookup.model = model;
+                    if (!currentLookup.model && target._customCleanupStartLiveModel === currentLookup) target._customCleanupStartLiveModel = null;
+                    return currentLookup.model;
+                })
+                .catch((error) => {
+                    if (target._customCleanupStartLiveModel === currentLookup) target._customCleanupStartLiveModel = null;
+                    try {
+                        if (typeof target.error === 'function') target.error(`[CUSTOM_CLEANUP_START] Live model lookup failed: ${this._getCustomCleanupStartSafeError(error)}`);
+                    } catch (_) {}
+                    return null;
+                });
+            target._customCleanupStartLiveModel = lookup;
+        }
+        return lookup.model || lookup.promise;
     }
 
     _getCustomCleanupStartSafeError(error) {
@@ -1213,22 +1238,28 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             const card = this.homey.flow.getActionCard('start_custom_cleanup_plan');
             if (!card || typeof card.registerRunListener !== 'function' || typeof card.registerArgumentAutocompleteListener !== 'function') return;
 
-            const validateTarget = (args) => {
+            const validateTarget = async (args) => {
                 const target = args && args.device;
                 if (!target) throw new Error('A target vacuum device is required.');
-
-                const model = this._getCustomCleanupStartTargetModel(target);
-                if (!model) throw new Error('Custom cleanup plans require a supported live vacuum model.');
                 if (!target.miio || typeof target.miio.call !== 'function') throw new Error('The target vacuum is not connected.');
+                const connection = target.miio;
                 if (typeof target._queuePropertyOperation !== 'function'
                     || typeof target.callMiotGetProperties !== 'function'
                     || typeof target._extractCustomCleanupPlans !== 'function') {
                     throw new Error('The target vacuum does not support Custom cleanup plans.');
                 }
-                return { target, model };
+
+                const model = await this._getCustomCleanupStartTargetModel(target);
+                if (target.miio !== connection) throw new Error('The target vacuum connection changed; try again.');
+                if (!model) throw new Error('Custom cleanup plans require a supported live vacuum model; the live model is unavailable.');
+                if (!isCustomCleanupDiagnosticModel(model)) {
+                    throw new Error(`Custom cleanup plans require a supported live vacuum model; detected ${model}.`);
+                }
+                return { target, model, connection };
             };
 
-            const readPlans = async (target, model) => {
+            const readPlans = async (target, model, connection) => {
+                if (target.miio !== connection) throw new Error('The target vacuum connection changed; try again.');
                 try {
                     const chunkSize = GET_PROPERTIES_CHUNK_SIZE[model] ?? DEFAULT_GET_PROPERTIES_CHUNK_SIZE;
                     const propertyResult = await target.callMiotGetProperties(
@@ -1246,8 +1277,8 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             };
 
             card.registerArgumentAutocompleteListener('plan', async (query, args) => {
-                const { target, model } = validateTarget(args);
-                const plans = await target._queuePropertyOperation(() => readPlans(target, model));
+                const { target, model, connection } = await validateTarget(args);
+                const plans = await target._queuePropertyOperation(() => readPlans(target, model, connection));
                 let normalizedQuery = typeof query === 'string' ? query.slice(0, 100).trim().toLowerCase() : '';
                 const selectedPlan = getCustomCleanupDiagnosticOwnDataValue(args, 'plan');
                 const selectedName = getCustomCleanupDiagnosticOwnDataValue(selectedPlan, 'name');
@@ -1277,15 +1308,16 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                 const planId = this._getCustomCleanupStartPlanId(args && args.plan);
                 if (planId === null) throw new Error('Select a valid Custom cleanup plan from the Flow card.');
 
-                const { target, model } = validateTarget(args);
+                const { target, model, connection } = await validateTarget(args);
                 return target._queuePropertyOperation(async () => {
-                    const plans = await readPlans(target, model);
+                    const plans = await readPlans(target, model, connection);
                     if (!plans.some((plan) => plan.id === planId)) {
                         throw new Error('The selected Custom cleanup plan is no longer available. Edit the Flow and select the plan again.');
                     }
+                    if (target.miio !== connection) throw new Error('The target vacuum connection changed; try again.');
 
                     try {
-                        const result = await target.miio.call(
+                        const result = await connection.call(
                             'action',
                             {
                                 ...CUSTOM_CLEANUP_START_ACTION,

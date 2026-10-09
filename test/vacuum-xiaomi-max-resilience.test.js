@@ -311,7 +311,7 @@ test('all property read/write call sites use retries two while action retries re
     const propertyWriteLines = lines.filter((line) => /(?:args\.device|this)\.callVacuumSetProperties\(/.test(line));
     const propertyReadLines = lines.filter((line) => line.includes('this.callVacuumGetProperties('));
     const actionRetries = Array.from(
-        source.matchAll(/\.miio\.call\(\s*'action',[\s\S]{0,800}?\{\s*retries:\s*(\d+)\s*\}\s*\)/g),
+        source.matchAll(/(?:\.miio|connection)\.call\(\s*'action',[\s\S]{0,800}?\{\s*retries:\s*(\d+)\s*\}\s*\)/g),
         (match) => Number(match[1])
     );
 

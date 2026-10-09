@@ -28,10 +28,12 @@ function createStartDevice({
     actualModel = 'xiaomi.vacuum.d109gl',
     actionHandler = async () => ({ code: 0 }),
     connected = true,
+    infoHandler = async () => ({}),
     propertyHandler = async () => catalogResult([{ id: OBSERVED_IDS[0], name: 'Kitchen' }, { id: OBSERVED_IDS[1] }])
 } = {}) {
     const actionCalls = [];
     const errors = [];
+    const infoCalls = [];
     const logs = [];
     const propertyCalls = [];
     let queueCalls = 0;
@@ -64,6 +66,10 @@ function createStartDevice({
     };
     device.miio = connected ? {
         call: async (method, action, options) => {
+            if (method === 'miIO.info') {
+                infoCalls.push({ method, action, options });
+                return infoHandler(method, action, options);
+            }
             actionCalls.push({ method, action, options });
             return actionHandler(method, action, options);
         }
@@ -76,6 +82,7 @@ function createStartDevice({
         card,
         device,
         errors,
+        infoCalls,
         logs,
         propertyCalls,
         queueCalls: () => queueCalls
@@ -206,7 +213,7 @@ test('autocomplete rejects non-live, unsupported, and disconnected targets befor
         target.device._model = 'xiaomi.vacuum.d109gl';
         target.device.getStoreValue = () => 'xiaomi.vacuum.d109gl';
         await assert.rejects(target.card.autocomplete('', { device: target.device }), /supported live vacuum model|not connected/i);
-        assert.equal(target.queueCalls(), 0);
+        assert.equal(target.queueCalls(), settings.actualModel === null ? 1 : 0);
         assert.deepEqual(target.propertyCalls, []);
     }
 
@@ -215,7 +222,94 @@ test('autocomplete rejects non-live, unsupported, and disconnected targets befor
         throw new Error('Private model error');
     };
     await assert.rejects(throwing.card.autocomplete('', { device: throwing.device }), /supported live vacuum model/i);
-    assert.equal(throwing.queueCalls(), 0);
+    assert.equal(throwing.queueCalls(), 1);
+});
+
+test('autocomplete identifies unsupported, unavailable, and disconnected live models without reading plans', async () => {
+    for (const { settings, message } of [
+        { settings: { actualModel: 'xiaomi.vacuum.c102gl' }, message: /detected xiaomi\.vacuum\.c102gl/ },
+        { settings: { actualModel: null }, message: /live model is unavailable/ },
+        { settings: { connected: false }, message: /not connected/ },
+        { settings: { actualModel: 'xiaomi.vacuum.d109gl\nprivate data' }, message: /live model is unavailable/ }
+    ]) {
+        const target = createStartDevice(settings);
+        await assert.rejects(target.card.autocomplete('', { device: target.device }), message);
+        assert.equal(target.queueCalls(), settings.actualModel === null || settings.actualModel?.includes('\n') ? 1 : 0);
+        assert.deepEqual(target.propertyCalls, []);
+    }
+});
+
+test('autocomplete verifies a missing live model through miIO.info once per connection', async () => {
+    const target = createStartDevice({
+        actualModel: null,
+        infoHandler: async () => ({ model: 'xiaomi.vacuum.d109gl', token: 'private token' })
+    });
+    const [first, second] = await Promise.all([
+        target.card.autocomplete('', { device: target.device }),
+        target.card.autocomplete('Kitchen', { device: target.device })
+    ]);
+    assert.equal(first.length, 2);
+    assert.deepEqual(second.map((plan) => plan.id), [String(OBSERVED_IDS[0])]);
+    assert.deepEqual(target.infoCalls, [{ method: 'miIO.info', action: [], options: { retries: 1 } }]);
+    assert.equal(target.queueCalls(), 3);
+    assert.equal(target.propertyCalls.length, 2);
+    assert.doesNotMatch(target.errors.join('\n'), /private token/);
+
+    await target.card.run({ device: target.device, plan: { id: String(OBSERVED_IDS[0]) } });
+    assert.equal(target.infoCalls.length, 1);
+    assert.equal(target.actionCalls.length, 1);
+});
+
+test('failed or unsupported miIO.info model lookup never reads plans or starts cleaning', async () => {
+    for (const { infoHandler, message } of [
+        { infoHandler: async () => ({ model: 'xiaomi.vacuum.c102gl' }), message: /detected xiaomi\.vacuum\.c102gl/ },
+        { infoHandler: async () => ({ model: 'private token' }), message: /live model is unavailable/ },
+        { infoHandler: async () => { throw Object.assign(new Error('private token'), { code: 'EINFO' }); }, message: /live model is unavailable/ }
+    ]) {
+        const target = createStartDevice({ actualModel: null, infoHandler });
+        await assert.rejects(target.card.autocomplete('', { device: target.device }), message);
+        assert.deepEqual(target.propertyCalls, []);
+        assert.deepEqual(target.actionCalls, []);
+        assert.doesNotMatch(target.errors.join('\n'), /private token/);
+    }
+});
+
+test('a model lookup from a replaced connection cannot authorize cleanup', async () => {
+    let resolveOldInfo;
+    const target = createStartDevice({
+        actualModel: null,
+        infoHandler: () => new Promise((resolve) => { resolveOldInfo = resolve; })
+    });
+    const oldSelection = target.card.autocomplete('', { device: target.device });
+    await Promise.resolve();
+    target.device.miio = {
+        call: async (method) => {
+            assert.equal(method, 'miIO.info');
+            return { model: 'xiaomi.vacuum.d109gl' };
+        }
+    };
+    resolveOldInfo({ model: 'xiaomi.vacuum.d109gl' });
+    await assert.rejects(oldSelection, /connection changed/);
+    assert.deepEqual(target.propertyCalls, []);
+
+    const plans = await target.card.autocomplete('', { device: target.device });
+    assert.equal(plans.length, 2);
+    assert.equal(target.propertyCalls.length, 1);
+});
+
+test('reconnect during catalog refresh never sends the start action to the replacement connection', async () => {
+    let target;
+    target = createStartDevice({
+        propertyHandler: async () => {
+            target.device.miio = { call: async () => { throw new Error('Unexpected action'); } };
+            return catalogResult([{ id: OBSERVED_IDS[0] }]);
+        }
+    });
+    await assert.rejects(
+        target.card.run({ device: target.device, plan: { id: String(OBSERVED_IDS[0]) } }),
+        /connection changed/
+    );
+    assert.deepEqual(target.actionCalls, []);
 });
 
 test('plan extraction preserves the diagnostic ID wrapper and never invokes accessors or inherited values', () => {
@@ -338,7 +432,7 @@ test('run rejects stale, malformed, unsupported, disconnected, and missing-helpe
     ]) {
         const target = createStartDevice(settings);
         await assert.rejects(target.card.run({ device: target.device, plan: { id: String(OBSERVED_IDS[0]) } }), /supported live vacuum model|not connected/i);
-        assert.equal(target.queueCalls(), 0);
+        assert.equal(target.queueCalls(), settings.actualModel === null ? 1 : 0);
         assert.deepEqual(target.actionCalls, []);
     }
 

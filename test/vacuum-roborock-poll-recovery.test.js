@@ -148,16 +148,20 @@ test('a successful S5 poll keeps the existing request sequence and cancels stale
 
 test('shared Wi-Fi poller cancels an earlier initial poll on restart and refresh', async () => {
   const timers = createTimers();
+  const logs = [];
   const device = Object.create(WifiDevice.prototype);
   device.homey = timers.homey;
   device.util = { getRandomTimeout: () => 0 };
   device.getSetting = () => 120;
+  device.getStoreValue = () => 'roborock.vacuum.s5';
   device.getName = () => 'Roborock S5';
-  device.log = () => {};
+  device.miio = { miioModel: 'roborock.vacuum.s5' };
+  device.log = (message) => logs.push(message);
   device.retrieveDeviceData = () => { device.pollCalls = (device.pollCalls || 0) + 1; };
 
   await device.pollDevice();
   const firstInitialPoll = device.initialPollTimeout;
+  assert.match(logs[0], /paired model: roborock\.vacuum\.s5, live model: roborock\.vacuum\.s5/);
   await device.pollDevice();
   const secondInitialPoll = device.initialPollTimeout;
 

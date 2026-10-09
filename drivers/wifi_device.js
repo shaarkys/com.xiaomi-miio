@@ -443,7 +443,16 @@ class MiWifiDeviceDevice extends Homey.Device {
             this.pollingInterval = this.homey.setInterval(() => {
                 this.retrieveDeviceData();
             }, 1000 * interval);
-            this.log('Polling (re)started for ' + this.getName() + ' every ' + interval + 's');
+            const safeModel = (model) => typeof model === 'string' && /^[a-z0-9]+\.[a-z0-9]+\.[a-z0-9]+$/.test(model) && model.length <= 64 ? model : 'unknown';
+            let pairedModel = 'unknown';
+            let liveModel = 'unknown';
+            try {
+                pairedModel = safeModel(this.getStoreValue?.('model'));
+            } catch (_) {}
+            try {
+                liveModel = safeModel(this.miio?.miioModel || this.miio?.management?.model);
+            } catch (_) {}
+            this.log('Polling (re)started for ' + this.getName() + ' every ' + interval + 's (paired model: ' + pairedModel + ', live model: ' + liveModel + ')');
         } catch (error) {
             this.setUnavailable(this.homey.__('device.unreachable') + error.message).catch((error) => {
                 this.error(error);
