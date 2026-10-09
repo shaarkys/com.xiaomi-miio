@@ -664,5 +664,8 @@
   },
   "3.5.42": {
     "en": "Robot Vacuum 5 Pro: correct Water Shortage Alarm and show remaining Mop Life and Dust Bag Life percentages."
+  },
+  "3.5.43": {
+    "en": "Fixed Custom cleanup plan selection when a supported vacuum’s live model metadata is missing, and added paired and live model details to the polling log."
   }
 }
