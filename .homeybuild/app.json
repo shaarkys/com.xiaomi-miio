@@ -14422,6 +14422,45 @@
         ]
       },
       {
+        "id": "discover_saved_vacuum_maps",
+        "title": {
+          "en": "Discover saved vacuum maps"
+        },
+        "titleFormatted": {
+          "en": "Discover saved vacuum maps"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=vacuum_xiaomi_vacuum_max"
+          }
+        ]
+      },
+      {
+        "id": "select_saved_vacuum_map",
+        "title": {
+          "en": "Select saved vacuum map"
+        },
+        "titleFormatted": {
+          "en": "Select saved vacuum map [[map]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=vacuum_xiaomi_vacuum_max"
+          },
+          {
+            "name": "map",
+            "title": {
+              "en": "Saved map"
+            },
+            "type": "autocomplete"
+          }
+        ]
+      },
+      {
         "id": "advanced_room_cleaning",
         "deprecated": true,
         "title": {
@@ -32710,6 +32749,17 @@
                 "ru": "Частота опроса",
                 "ko": "폴링 빈도"
               }
+            },
+            {
+              "id": "enable_saved_map_switch_diagnostic",
+              "type": "checkbox",
+              "label": {
+                "en": "Enable X20 Pro saved-map switching (diagnostic)"
+              },
+              "hint": {
+                "en": "Experimental local map switching. Requires Manual map mode and an idle vacuum. Existing numeric room Flows are limited to the original map."
+              },
+              "value": false
             }
           ]
         }

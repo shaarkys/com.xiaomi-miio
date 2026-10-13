@@ -324,6 +324,23 @@
       ]
     },
     {
+      "id": "discover_saved_vacuum_maps",
+      "title": { "en": "Discover saved vacuum maps" },
+      "titleFormatted": { "en": "Discover saved vacuum maps" }
+    },
+    {
+      "id": "select_saved_vacuum_map",
+      "title": { "en": "Select saved vacuum map" },
+      "titleFormatted": { "en": "Select saved vacuum map [[map]]" },
+      "args": [
+        {
+          "name": "map",
+          "title": { "en": "Saved map" },
+          "type": "autocomplete"
+        }
+      ]
+    },
+    {
       "id": "advanced_room_cleaning",
       "deprecated": true,
       "title": {

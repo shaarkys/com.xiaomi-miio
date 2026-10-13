@@ -3,6 +3,7 @@
 const Homey = require('homey');
 const Device = require('../wifi_device.js');
 const Util = require('../../lib/util.js');
+const { parseMapId, propertyValue, parseMapCatalog } = require('../../lib/saved-vacuum-maps.js');
 
 /* supported devices */
 // https://home.miot-spec.com/spec/xiaomi.vacuum.d109gl // Xiaomi Robot Vacuum X20 Max
@@ -369,6 +370,8 @@ const GET_PROPERTIES_CHUNK_SIZE = {
 const DEFAULT_GET_PROPERTIES_CHUNK_SIZE = 5;
 const GET_PROPERTIES_CHUNK_DELAY_MS = 100;
 const ROOM_ALIAS_STORE_KEY = 'room_id_name_aliases';
+const SAVED_MAP_SAFETY_STORE_KEY = 'saved_map_room_safety';
+const SAVED_MAP_MODELS = Object.freeze(['xiaomi.vacuum.d102gl', 'xiaomi.vacuum.d109gl']);
 const ROOM_ALIAS_SCHEMA_VERSION = 1;
 const MAX_ROOM_ALIAS_ENTRIES = 64;
 
@@ -1470,6 +1473,191 @@ class XiaomiVacuumMiotDeviceMax extends Device {
         return null;
     }
 
+    _registerSavedMapFlowListeners() {
+        if (!this.homey || !this.homey.flow) return;
+        try {
+            this.homey.flow.getActionCard('discover_saved_vacuum_maps')
+                .registerRunListener(async ({ device }) => {
+                    if (!device || typeof device.discoverSavedVacuumMaps !== 'function') throw new Error('Select a supported vacuum.');
+                    const catalog = await device.discoverSavedVacuumMaps();
+                    device.log(`[SAVED_MAP] Maps: ${JSON.stringify(catalog.maps.map(({ id, name, isCurrent }) => ({ id, name, isCurrent })))}.`);
+                    return true;
+                });
+
+            const card = this.homey.flow.getActionCard('select_saved_vacuum_map');
+            card.registerArgumentAutocompleteListener('map', async (query, args) => {
+                const target = args && args.device;
+                if (!target || typeof target.discoverSavedVacuumMaps !== 'function') throw new Error('Select a supported vacuum.');
+                const { maps } = await target.discoverSavedVacuumMaps();
+                const search = String(query || '').trim().toLowerCase().slice(0, 100);
+                return maps.filter((map) => !search || map.name.toLowerCase().includes(search) || String(map.id).includes(search))
+                    .map((map) => ({ id: String(map.id), name: map.name, description: `Map ID ${map.id}` }));
+            });
+            card.registerRunListener(async (args) => {
+                const target = args && args.device;
+                if (!target || typeof target.selectSavedVacuumMap !== 'function') throw new Error('Select a supported vacuum.');
+                return target.selectSavedVacuumMap(args.map && args.map.id);
+            });
+        } catch (error) {
+            this.error(`[SAVED_MAP] Flow registration failed: ${this._getSafeErrorDetails(error)}`);
+        }
+    }
+
+    async _runSavedMapOperation(operation) {
+        if (this._savedMapOperationBusy) throw new Error('Another saved-map operation is in progress.');
+        this._savedMapOperationBusy = true;
+        try {
+            const connection = this.miio;
+            if (!connection || typeof connection.call !== 'function') throw new Error('The vacuum is not connected.');
+            const model = await this._getCustomCleanupStartTargetModel(this);
+            if (this.miio !== connection) throw new Error('The vacuum connection changed; try again.');
+            if (!SAVED_MAP_MODELS.includes(model)) throw new Error('Saved maps are not supported by this vacuum model.');
+            return await this._queuePropertyOperation(() => operation(connection, model));
+        } finally {
+            this._savedMapOperationBusy = false;
+        }
+    }
+
+    async _readSavedMapProperty(connection, did, siid, piid) {
+        if (this.miio !== connection) throw new Error('The vacuum connection changed; try again.');
+        const result = await connection.call('get_properties', [{ did, siid, piid }], { retries: 2 });
+        if (this.miio !== connection) throw new Error('The vacuum connection changed; try again.');
+        return propertyValue(result, siid, piid);
+    }
+
+    async _readSavedMapCatalog(connection) {
+        const management = await this._readSavedMapProperty(connection, 'map_management', 10, 5);
+        const current = await this._readSavedMapProperty(connection, 'current_map_id', 10, 6);
+        return parseMapCatalog(management, current);
+    }
+
+    discoverSavedVacuumMaps() {
+        return this._runSavedMapOperation(async (connection) => {
+            const catalog = await this._readSavedMapCatalog(connection);
+            this.log(`[SAVED_MAP] Discovered map IDs ${catalog.maps.map(({ id }) => id).join(', ') || '(none)'}; current ${catalog.currentId}.`);
+            return catalog;
+        });
+    }
+
+    _getSavedMapSafety() {
+        const value = typeof this.getStoreValue === 'function' ? this.getStoreValue(SAVED_MAP_SAFETY_STORE_KEY) : null;
+        if (value == null) return null;
+        if (!value || value.version !== 1 || parseMapId(value.originalMapId) === null || !value.roomCaches || typeof value.roomCaches !== 'object') {
+            throw new Error('Saved-map room safety data is invalid; room cleaning is blocked.');
+        }
+        return value;
+    }
+
+    async _persistSavedMapSafety(value) {
+        try {
+            await this.setStoreValue(SAVED_MAP_SAFETY_STORE_KEY, value);
+        } catch (error) {
+            this.error(`[SAVED_MAP] Could not persist room safety: ${this._getSavedMapSafeErrorDetails(error)}`);
+            throw new Error('Could not persist saved-map room safety; map switch was blocked.');
+        }
+    }
+
+    _getSavedMapSafeErrorDetails(error) {
+        return this._getSafeErrorDetails(error)
+            .replace(/https?:\/\/[^\s,;]+/gi, '[redacted-url]')
+            .replace(/\b\d{5,}\/\d{5,}\/\d+\b/g, '[redacted-object]');
+    }
+
+    async _cacheSavedMapRooms(mapId, rooms) {
+        const safety = this._getSavedMapSafety();
+        if (!safety) return;
+        const normalizedRooms = rooms.map(({ id, name }) => ({ id, name }));
+        if (JSON.stringify(safety.roomCaches[String(mapId)]) === JSON.stringify(normalizedRooms)) return;
+        await this._persistSavedMapSafety({
+            ...safety,
+            roomCaches: { ...safety.roomCaches, [String(mapId)]: normalizedRooms }
+        });
+    }
+
+    async selectSavedVacuumMap(rawId) {
+        const requestedId = parseMapId(rawId);
+        if (requestedId === null) throw new Error('Select a valid saved map from the Flow card.');
+        return this._runSavedMapOperation(async (connection, model) => {
+            if (model !== 'xiaomi.vacuum.d102gl') throw new Error('Map switching is available only for X20 Pro diagnostics.');
+            if (this.getSetting('enable_saved_map_switch_diagnostic') !== true) throw new Error('Enable saved-map switch diagnostics in device settings first.');
+
+            const catalog = await this._readSavedMapCatalog(connection);
+            if (!catalog.maps.some(({ id }) => id === requestedId)) throw new Error('The selected saved map is no longer available.');
+            if (catalog.currentId === requestedId) {
+                const pending = this._getSavedMapSafety();
+                if (pending && pending.pendingTargetMapId != null) {
+                    const rooms = await this._refreshRoomsBeforeCleaning({ direct: true, mapId: requestedId, connection });
+                    if (!rooms.length) throw new Error('Cannot confirm active-map rooms.');
+                    await this._persistSavedMapSafety({ ...this._getSavedMapSafety(), pendingTargetMapId: null });
+                }
+                return true;
+            }
+
+            const existingSafety = this._getSavedMapSafety();
+            if (existingSafety && existingSafety.pendingTargetMapId != null) {
+                throw new Error('A previous map switch is uncertain. Select the currently active map to confirm its rooms before another switch.');
+            }
+
+            const status = await this._readSavedMapProperty(connection, 'device_status', 2, 2);
+            const method = await this._readSavedMapProperty(connection, 'map_switch_method', 10, 10);
+            if (![1, 2, 9].includes(status)) throw new Error(`Map switching requires an idle vacuum; current state ${status}.`);
+            if (method !== 0) throw new Error('Map switching requires Manual map-switch mode in Xiaomi Home.');
+
+            const originalMapId = existingSafety ? existingSafety.originalMapId : catalog.currentId;
+            const originalRooms = await this._refreshRoomsBeforeCleaning({ direct: true, mapId: existingSafety ? catalog.currentId : null, connection });
+            if (!originalRooms.length) throw new Error('Cannot switch maps without current room data.');
+            const confirmedMapId = parseMapId(await this._readSavedMapProperty(connection, 'current_map_id', 10, 6));
+            const confirmedStatus = await this._readSavedMapProperty(connection, 'device_status', 2, 2);
+            const confirmedMethod = await this._readSavedMapProperty(connection, 'map_switch_method', 10, 10);
+            if (confirmedMapId !== catalog.currentId || ![1, 2, 9].includes(confirmedStatus) || confirmedMethod !== 0) {
+                throw new Error('The active map or operating mode changed before switching; no command was sent.');
+            }
+            const safety = existingSafety || { version: 1, originalMapId, roomCaches: {} };
+            await this._persistSavedMapSafety({
+                ...safety,
+                pendingTargetMapId: requestedId,
+                roomCaches: { ...safety.roomCaches, [String(catalog.currentId)]: originalRooms.map(({ id, name }) => ({ id, name })) }
+            });
+            if (this.miio !== connection) throw new Error('The vacuum connection changed; map switch was not sent.');
+
+            this.log(`[SAVED_MAP] Switching map ${catalog.currentId} -> ${requestedId}.`);
+            let actionError = null;
+            try {
+                const response = await connection.call('action', {
+                    did: 'call-10-3', siid: 10, aiid: 3,
+                    in: [{ piid: 6, value: requestedId }]
+                }, { retries: 1 });
+                if (response && typeof response.code === 'number' && response.code !== 0) {
+                    throw new Error(`Set-map action returned code ${response.code}.`);
+                }
+            } catch (error) {
+                actionError = error;
+                this.error(`[SAVED_MAP] Set-map action uncertain: ${this._getSavedMapSafeErrorDetails(error)}`);
+            }
+
+            for (let attempt = 0; attempt < 3; attempt += 1) {
+                if (this.miio !== connection) throw new Error('The vacuum connection changed; verify the active map in Xiaomi Home.');
+                if (attempt) await new Promise((resolve) => this.homey.setTimeout(resolve, 1000));
+                try {
+                    const currentId = parseMapId(await this._readSavedMapProperty(connection, 'current_map_id', 10, 6));
+                    if (currentId === requestedId) {
+                        const rooms = await this._refreshRoomsBeforeCleaning({ direct: true, mapId: requestedId, connection });
+                        if (!rooms.length) throw new Error('The new map has no readable rooms.');
+                        const nextSafety = this._getSavedMapSafety();
+                        await this._persistSavedMapSafety({ ...nextSafety, pendingTargetMapId: null });
+                        this.log(`[SAVED_MAP] Map ${requestedId} selected and ${rooms.length} rooms refreshed.`);
+                        return true;
+                    }
+                } catch (error) {
+                    if (attempt === 2) this.error(`[SAVED_MAP] Verification failed: ${this._getSavedMapSafeErrorDetails(error)}`);
+                }
+            }
+            throw new Error(actionError
+                ? 'Map action may have succeeded, but its result could not be verified. Check Xiaomi Home before retrying.'
+                : 'Map action was acknowledged, but the selected map and rooms could not be verified.');
+        });
+    }
+
     _applyModelProperties(model) {
         const mappedKey = mapping[model];
         const previousModel = this._model;
@@ -1672,6 +1860,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             this._registerBaseStationControlFlowListener();
             this._registerCustomCleanupDiagnosticFlowListener();
             this._registerCustomCleanupStartFlowListener();
+            this._registerSavedMapFlowListeners();
 
             this._registerAdvancedRoomCleaningFlowListeners();
 
@@ -2685,7 +2874,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
         );
     }
 
-    async _resolveAdvancedRoomCleaningSelection(roomArgument) {
+    async _resolveAdvancedRoomCleaningSelection(roomArgument, { direct = false } = {}) {
         // Room IDs can change after editing the map in Xiaomi Home. Resolve the
         // argument only after a live refresh; cached rooms are a read-failure
         // fallback and never replace a successfully parsed live map.
@@ -2693,7 +2882,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
         let rooms = cachedRooms;
 
         try {
-            const refreshedRooms = await this._refreshRoomsBeforeCleaning();
+            const refreshedRooms = await this._refreshRoomsBeforeCleaning({ direct });
             if (refreshedRooms.length) rooms = refreshedRooms;
         } catch (error) {
             this.error(
@@ -2832,6 +3021,20 @@ class XiaomiVacuumMiotDeviceMax extends Device {
         return Array.from(new Set(selectedIds.filter((id) => this._isValidRoomId(id))));
     }
 
+    _resolveMapSafeRoomIds(roomArgument, rooms) {
+        if (roomArgument === 'all') return rooms.map(({ id }) => Number(id));
+        const ids = [];
+        for (const rawToken of String(roomArgument || '').split(',')) {
+            const token = rawToken.trim();
+            if (!token) continue;
+            if (/^\d+$/.test(token)) throw new Error('Numeric room IDs from an earlier map cannot be used on this map. Use a unique room name or all.');
+            const matches = rooms.filter((room) => this._roomNameKey(this._getSemanticRoomName(room)) === this._roomNameKey(token));
+            if (matches.length !== 1) throw new Error(`Room name "${token}" is not unique on the active map.`);
+            ids.push(Number(matches[0].id));
+        }
+        return [...new Set(ids)];
+    }
+
     _roomListSignature(rooms) {
         return this._normalizeRoomList(rooms)
             .map((room) => ({
@@ -2843,7 +3046,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             .join('|');
     }
 
-    async _refreshRoomsBeforeCleaning() {
+    async _refreshRoomsBeforeCleaning({ direct = false, mapId = null, connection = this.miio } = {}) {
         if (
             !this.deviceProperties ||
             !this.deviceProperties.supports ||
@@ -2873,7 +3076,13 @@ class XiaomiVacuumMiotDeviceMax extends Device {
         for (const definition of candidates) {
             let result;
             try {
-                result = await this.callVacuumGetProperties(definition, { retries: 2 });
+                if (direct) {
+                    if (!connection || this.miio !== connection) throw new Error('The vacuum connection changed; try again.');
+                    result = await connection.call('get_properties', definition, { retries: 2 });
+                    if (this.miio !== connection) throw new Error('The vacuum connection changed; try again.');
+                } else {
+                    result = await this.callVacuumGetProperties(definition, { retries: 2 });
+                }
             } catch (error) {
                 lastError = error;
                 continue;
@@ -2890,6 +3099,21 @@ class XiaomiVacuumMiotDeviceMax extends Device {
 
             const rooms = this._parseRoomsPayload(result[0].value);
             if (!rooms.length) continue;
+
+            if (mapId !== null) {
+                const confirmedMapId = parseMapId(await this._readSavedMapProperty(connection, 'current_map_id', 10, 6));
+                if (confirmedMapId !== mapId) throw new Error('The active map changed during room refresh.');
+                await this._cacheSavedMapRooms(mapId, rooms);
+                const settings = {
+                    rooms: JSON.stringify(rooms),
+                    rooms_display: rooms.map((room) => room.name || ('Room ' + room.id)).join(', ')
+                };
+                if (this._getRoomSettingValue('rooms') !== settings.rooms || this._getRoomSettingValue('rooms_display') !== settings.rooms_display) {
+                    await this.setSettings(settings);
+                }
+                this._roomsDiscovered = true;
+                return rooms;
+            }
 
             const previousRoomsSetting = this._getRoomSettingValue('rooms');
             const previousRooms = this._parseRoomsSetting(previousRoomsSetting);
@@ -2952,14 +3176,33 @@ class XiaomiVacuumMiotDeviceMax extends Device {
     }
 
     async _runAdvancedRoomCleaning(args, includeCleanTimes) {
+        if (SAVED_MAP_MODELS.includes(this.getModelIdentifier())) {
+            return this._queuePropertyOperation(() => this._runAdvancedRoomCleaningNow(args, includeCleanTimes, true));
+        }
+        return this._runAdvancedRoomCleaningNow(args, includeCleanTimes, false);
+    }
+
+    async _runAdvancedRoomCleaningNow(args, includeCleanTimes, direct) {
         if (!this.deviceProperties || !this.deviceProperties.supports.rooms || !this.deviceProperties.set_properties.room_clean_action) {
             throw new Error('Room cleaning is not supported by this device.');
         }
         const cleanTimesProperty = includeCleanTimes ? this._buildCleanTimesProperty(args.times) : null;
-        const {
-            rooms: listRoom,
-            selectedIds
-        } = await this._resolveAdvancedRoomCleaningSelection(args.room);
+        const connection = this.miio;
+        const safety = direct ? this._getSavedMapSafety() : null;
+        let listRoom;
+        let selectedIds;
+        let safeActiveMapId = null;
+        if (safety) {
+            if (safety.pendingTargetMapId != null) throw new Error('A previous map switch is uncertain. Confirm the active map with Select saved vacuum map before room cleaning.');
+            const { currentId } = await this._readSavedMapCatalog(connection);
+            safeActiveMapId = currentId;
+            listRoom = await this._refreshRoomsBeforeCleaning({ direct: true, mapId: currentId, connection });
+            selectedIds = currentId === safety.originalMapId
+                ? this._resolveRoomIdsForCleaning(args.room, listRoom, listRoom)
+                : this._resolveMapSafeRoomIds(args.room, listRoom);
+        } else {
+            ({ rooms: listRoom, selectedIds } = await this._resolveAdvancedRoomCleaningSelection(args.room, { direct }));
+        }
 
         if (!selectedIds.length) {
             throw new Error(
@@ -3035,8 +3278,14 @@ class XiaomiVacuumMiotDeviceMax extends Device {
         this.log('[ADV_ROOM_CLEAN] action:', JSON.stringify(action));
 
         if (this.miio && typeof this.miio.call === 'function') {
-            if (props.length) await this.callVacuumSetProperties(props, { retries: 2 });
-            return this.miio.call('action', action, { retries: 3 });
+            if (this.miio !== connection) throw new Error('The vacuum connection changed; room cleaning was not sent.');
+            if (props.length) await this.callVacuumSetProperties(props, { retries: 2 }, direct);
+            if (this.miio !== connection) throw new Error('The vacuum connection changed; room cleaning was not sent.');
+            if (safety) {
+                const currentMapId = parseMapId(await this._readSavedMapProperty(connection, 'current_map_id', 10, 6));
+                if (currentMapId !== safeActiveMapId) throw new Error('The active map changed before room cleaning; no command was sent.');
+            }
+            return connection.call('action', action, { retries: 3 });
         }
 
         this.setUnavailable(this.homey.__('unreachable')).catch((error) => this.error(error));
@@ -3137,8 +3386,8 @@ class XiaomiVacuumMiotDeviceMax extends Device {
         this.error(`[POLL] Main property read failed (3/3): ${details}; reconnecting in 60 seconds.`);
     }
 
-    callVacuumSetProperties(properties, options = { retries: 2 }) {
-        return this._queuePropertyOperation(() => {
+    callVacuumSetProperties(properties, options = { retries: 2 }, direct = false) {
+        const write = () => {
             if (this.getModelIdentifier() === 'xiaomi.vacuum.d109gl') {
                 return this.callMiotSetProperties(properties, options);
             }
@@ -3146,7 +3395,8 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                 throw new Error('MIoT set_properties requires an active miio device with callable call');
             }
             return this.miio.call('set_properties', properties, options);
-        });
+        };
+        return direct ? write() : this._queuePropertyOperation(write);
     }
 
     mapMopModeInbound(raw) {
