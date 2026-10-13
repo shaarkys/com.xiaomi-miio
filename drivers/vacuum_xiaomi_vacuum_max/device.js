@@ -1488,6 +1488,8 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             card.registerArgumentAutocompleteListener('map', async (query, args) => {
                 const target = args && args.device;
                 if (!target || typeof target.discoverSavedVacuumMaps !== 'function') throw new Error('Select a supported vacuum.');
+                const model = await target._getCustomCleanupStartTargetModel(target);
+                if (model !== 'xiaomi.vacuum.d102gl') throw new Error('Map switching is available only for X20 Pro diagnostics. X20 Max supports read-only map discovery.');
                 const { maps } = await target.discoverSavedVacuumMaps();
                 const search = String(query || '').trim().toLowerCase().slice(0, 100);
                 return maps.filter((map) => !search || map.name.toLowerCase().includes(search) || String(map.id).includes(search))
@@ -1534,7 +1536,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
     discoverSavedVacuumMaps() {
         return this._runSavedMapOperation(async (connection) => {
             const catalog = await this._readSavedMapCatalog(connection);
-            this.log(`[SAVED_MAP] Discovered map IDs ${catalog.maps.map(({ id }) => id).join(', ') || '(none)'}; current ${catalog.currentId}.`);
+            this.log(`[SAVED_MAP] Discovered map IDs ${catalog.maps.map(({ id }) => id).join(', ') || '(none)'}; reported current ${catalog.currentId}; catalog current ${catalog.markedCurrentId === null ? '(none)' : catalog.markedCurrentId}; current in catalog ${catalog.currentInCatalog}.`);
             return catalog;
         });
     }
@@ -1582,6 +1584,9 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             if (this.getSetting('enable_saved_map_switch_diagnostic') !== true) throw new Error('Enable saved-map switch diagnostics in device settings first.');
 
             const catalog = await this._readSavedMapCatalog(connection);
+            if (!catalog.currentInCatalog || (catalog.markedCurrentId !== null && catalog.markedCurrentId !== catalog.currentId)) {
+                throw new Error(`Saved-map catalog and current map disagree (reported ${catalog.currentId}, catalog ${catalog.markedCurrentId === null ? 'none' : catalog.markedCurrentId}); no map command was sent. Run Discover saved vacuum maps and check the sanitized IDs in the app log.`);
+            }
             if (!catalog.maps.some(({ id }) => id === requestedId)) throw new Error('The selected saved map is no longer available.');
             if (catalog.currentId === requestedId) {
                 const pending = this._getSavedMapSafety();

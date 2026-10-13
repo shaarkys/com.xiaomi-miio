@@ -323,7 +323,7 @@
         "id": "enable_saved_map_switch_diagnostic",
         "type": "checkbox",
         "label": { "en": "Enable X20 Pro saved-map switching (diagnostic)" },
-        "hint": { "en": "Experimental local map switching. Requires Manual map mode and an idle vacuum. Existing numeric room Flows are limited to the original map." },
+        "hint": { "en": "X20 Pro only: experimental local map switching requires Manual map mode and an idle vacuum. X20 Max supports read-only map discovery; this setting cannot enable switching on Max. Existing numeric room Flows are limited to the original map." },
         "value": false
       }
     ]

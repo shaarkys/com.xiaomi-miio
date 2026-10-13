@@ -15,7 +15,7 @@ Module._load = function loadWithHomeyStub(request, parent, isMain) {
 const VacuumDevice = require('../drivers/vacuum_xiaomi_vacuum_max/device.js');
 Module._load = originalLoad;
 
-function createDevice({ model = 'xiaomi.vacuum.d102gl', current = 0, maps = [{ map_id: 0, map_name: 'Downstairs', is_current: true }, { map_id: 123, map_name: 'Upstairs' }], store = new Map(), actionHandler } = {}) {
+function createDevice({ model = 'xiaomi.vacuum.d102gl', current = 0, markedCurrent = current, maps = [{ map_id: 0, map_name: 'Downstairs', is_current: true }, { map_id: 123, map_name: 'Upstairs' }], store = new Map(), actionHandler } = {}) {
     const calls = [];
     const logs = [];
     const device = Object.create(VacuumDevice.prototype);
@@ -38,7 +38,7 @@ function createDevice({ model = 'xiaomi.vacuum.d102gl', current = 0, maps = [{ m
         if (method === 'get_properties') {
             const { did, siid, piid } = payload[0];
             let value;
-            if (siid === 10 && piid === 5) value = JSON.stringify({ map_array: maps.map((entry) => ({ ...entry, is_current: entry.map_id === current })) });
+            if (siid === 10 && piid === 5) value = JSON.stringify({ map_array: maps.map((entry) => ({ ...entry, is_current: entry.map_id === markedCurrent })) });
             else if (siid === 10 && piid === 6) value = current;
             else if (siid === 10 && piid === 10) value = 0;
             else if (siid === 2 && piid === 2) value = 9;
@@ -46,8 +46,9 @@ function createDevice({ model = 'xiaomi.vacuum.d102gl', current = 0, maps = [{ m
             return [{ did, siid, piid, code: 0, value }];
         }
         if (method === 'action' && payload.siid === 10) {
-            if (actionHandler) return actionHandler({ payload, setCurrent: (id) => { current = id; }, device });
+            if (actionHandler) return actionHandler({ payload, setCurrent: (id) => { current = id; markedCurrent = id; }, device });
             current = payload.in[0].value;
+            markedCurrent = current;
             return { code: 0 };
         }
         return { code: 0 };
@@ -58,19 +59,37 @@ function createDevice({ model = 'xiaomi.vacuum.d102gl', current = 0, maps = [{ m
 
 test('map catalog keeps uint32 zero and names while discarding object URLs', () => {
     const raw = JSON.stringify({ map_array: [{ map_id: 0, map_name: '', is_current: true, obj_name: 'secret/url' }, { map_id: 4294967295, map_name: ' Upstairs ' }] });
-    assert.deepEqual(parseMapCatalog(raw, 0), { currentId: 0, maps: [{ id: 0, name: 'Map 0', isCurrent: true }, { id: 4294967295, name: 'Upstairs', isCurrent: false }] });
+    assert.deepEqual(parseMapCatalog(raw, 0), { currentId: 0, currentInCatalog: true, markedCurrentId: 0, maps: [{ id: 0, name: 'Map 0', isCurrent: true }, { id: 4294967295, name: 'Upstairs', isCurrent: false }] });
     assert.deepEqual(parseMapCatalog({ map_array: [{ map_id: 7, is_current: true }] }, 7).maps, [{ id: 7, name: 'Map 7', isCurrent: true }]);
-    assert.deepEqual(parseMapCatalog({ map_array: [] }, 0), { currentId: 0, maps: [] });
+    assert.deepEqual(parseMapCatalog({ map_array: [] }, 0), { currentId: 0, currentInCatalog: false, markedCurrentId: null, maps: [] });
     assert.equal(parseMapId('0'), 0);
     assert.equal(parseMapId('4294967295'), 4294967295);
     for (const bad of ['01', '-1', '4294967296', 1.5, null]) assert.equal(parseMapId(bad), null);
 });
 
-test('malformed, duplicate and conflicting map data fail closed', () => {
-    for (const value of ['oops', {}, { map_array: [{ map_id: 1 }, { map_id: 1 }] }, { map_array: [{ map_id: 1, is_current: true }, { map_id: 2, is_current: true }] }, { map_array: [{ map_id: 1, is_current: true }] }]) {
+test('malformed and duplicate map data fail closed', () => {
+    for (const value of ['oops', {}, { map_array: [{ map_id: 1 }, { map_id: 1 }] }, { map_array: [{ map_id: 1, is_current: true }, { map_id: 2, is_current: true }] }]) {
         assert.throws(() => parseMapCatalog(value, 2));
     }
     assert.throws(() => propertyValue([{ siid: 10, piid: 5, code: -1 }], 10, 5));
+});
+
+test('read-only catalog discovery reports current-map disagreements without exposing object URLs', async () => {
+    const run = createDevice({ current: 0, markedCurrent: 123, maps: [{ map_id: 123, map_name: 'Upstairs', obj_name: 'secret/url' }] });
+    const catalog = await run.device.discoverSavedVacuumMaps();
+    assert.equal(catalog.currentId, 0);
+    assert.equal(catalog.currentInCatalog, false);
+    assert.equal(catalog.markedCurrentId, 123);
+    assert.equal(run.logs.some((line) => line.includes('reported current 0; catalog current 123; current in catalog false')), true);
+    assert.equal(run.logs.some((line) => line.includes('secret/url')), false);
+    await assert.rejects(run.device.selectSavedVacuumMap('123'), /no map command was sent/);
+    assert.equal(run.calls.some(({ method }) => method === 'action'), false);
+    const conflicting = createDevice({ current: 0, markedCurrent: 123 });
+    const conflictCatalog = await conflicting.device.discoverSavedVacuumMaps();
+    assert.equal(conflictCatalog.currentInCatalog, true);
+    assert.equal(conflictCatalog.markedCurrentId, 123);
+    await assert.rejects(conflicting.device.selectSavedVacuumMap('123'), /no map command was sent/);
+    assert.equal(conflicting.calls.some(({ method }) => method === 'action'), false);
 });
 
 test('read-only discovery uses individual properties and rejects unsupported models', async () => {
@@ -235,6 +254,9 @@ test('Flow autocomplete and run route through selected device with decimal-strin
     owner._registerSavedMapFlowListeners();
     const target = createDevice().device;
     assert.deepEqual(await cards.get('select_saved_vacuum_map').autocomplete('Up', { device: target }), [{ id: '123', name: 'Upstairs', description: 'Map ID 123' }]);
+    const max = createDevice({ model: 'xiaomi.vacuum.d109gl' });
+    await assert.rejects(cards.get('select_saved_vacuum_map').autocomplete('Up', { device: max.device }), /only for X20 Pro/);
+    assert.equal(max.calls.length, 0);
     assert.equal(await cards.get('select_saved_vacuum_map').run({ device: target, map: { id: '123' } }), true);
     assert.equal(await cards.get('discover_saved_vacuum_maps').run({ device: target }), true);
 });
