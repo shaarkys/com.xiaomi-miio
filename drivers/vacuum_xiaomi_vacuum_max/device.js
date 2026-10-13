@@ -371,7 +371,6 @@ const DEFAULT_GET_PROPERTIES_CHUNK_SIZE = 5;
 const GET_PROPERTIES_CHUNK_DELAY_MS = 100;
 const ROOM_ALIAS_STORE_KEY = 'room_id_name_aliases';
 const SAVED_MAP_SAFETY_STORE_KEY = 'saved_map_room_safety';
-const SAVED_MAP_OBSERVATIONS_STORE_KEY = 'saved_map_duplicate_observations';
 const SAVED_MAP_MODELS = Object.freeze(['xiaomi.vacuum.d102gl', 'xiaomi.vacuum.d109gl']);
 const ROOM_ALIAS_SCHEMA_VERSION = 1;
 const MAX_ROOM_ALIAS_ENTRIES = 64;
@@ -1494,14 +1493,9 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                 const { duplicateIds, multipleCurrentMarkers } = catalog;
                 if (multipleCurrentMarkers || (model !== 'xiaomi.vacuum.d109gl' && duplicateIds.length)) throw new Error('Saved-map IDs are ambiguous on this vacuum. Run Discover saved vacuum maps and check the sanitized app log before selecting a map.');
                 const search = String(query || '').trim().toLowerCase().slice(0, 100);
-                let unavailable = null;
-                const selectable = [...new Set(catalog.entries.map((entry) => entry.id))].map((id) => {
-                    try { return target._getSavedMapSelectionEntry(catalog, id); }
-                    catch (error) { unavailable = error; return null; }
-                }).filter(Boolean);
+                const selectable = [...new Set(catalog.entries.map((entry) => entry.id))]
+                    .map((id) => target._getSavedMapSelectionEntry(catalog, id));
                 const matches = selectable.filter((map) => !search || map.name.toLowerCase().includes(search) || String(map.id).includes(search));
-                if (!matches.length && unavailable && !search) throw unavailable;
-                if (!matches.length && unavailable && catalog.entries.some((entry) => entry.name.toLowerCase().includes(search))) throw unavailable;
                 return matches
                     .map((map) => ({ id: String(map.id), name: map.name, description: `Map ID ${map.id}` }));
             });
@@ -1554,47 +1548,17 @@ class XiaomiVacuumMiotDeviceMax extends Device {
         throw new Error(`Saved-map catalog and current map disagree (reported ${catalog.currentId}, catalog ${catalog.markedCurrentId === null ? 'none' : catalog.markedCurrentId}).`);
     }
 
-    _getSavedMapObservations() {
-        const value = this.getStoreValue(SAVED_MAP_OBSERVATIONS_STORE_KEY);
-        if (value == null) return { version: 1, maps: {} };
-        if (value.version !== 1 || !value.maps || typeof value.maps !== 'object' || Array.isArray(value.maps)) {
-            throw new Error('Saved-map observations are invalid; duplicate map IDs cannot be selected.');
-        }
-        return value;
-    }
-
     _getSavedMapSelectionEntry(catalog, id) {
-        const entries = catalog.entries.filter((entry) => entry.id === id);
-        if (entries.length === 1) return entries[0];
-        if (!entries.length) return null;
-        const observed = this._getSavedMapObservations().maps[String(id)];
-        const matches = entries.filter((entry) => observed && catalog.objectFingerprints[entry.index - 1] === observed);
-        if (matches.length !== 1) throw new Error(`Map ID ${id} has multiple entries. Select it once in Xiaomi Home, then run Discover saved vacuum maps before using this Flow.`);
-        return matches[0];
+        return catalog.entries.find((entry) => entry.id === id) || null;
     }
 
     _resolveVerifiedSavedMapActiveId(catalog, model) {
         const activeId = this._resolveSavedMapActiveId(catalog, model);
         if (model === 'xiaomi.vacuum.d109gl' && catalog.duplicateIds.includes(activeId)) {
             const entry = this._getSavedMapSelectionEntry(catalog, activeId);
-            if (!entry.isCatalogCurrent) throw new Error('The active duplicate map does not match the previously observed map entry.');
+            if (!entry.isCatalogCurrent) throw new Error('The active duplicate map is not the first catalog entry for its map ID.');
         }
         return activeId;
-    }
-
-    async _rememberCurrentDuplicateMap(catalog) {
-        if (catalog.multipleCurrentMarkers) return;
-        const entry = catalog.entries.find((item) => item.isCatalogCurrent && catalog.duplicateIds.includes(item.id));
-        if (!entry) return;
-        const fingerprint = catalog.objectFingerprints[entry.index - 1];
-        if (!fingerprint || catalog.entries.some((item) => item.id === entry.id && item.index !== entry.index
-            && catalog.objectFingerprints[item.index - 1] === fingerprint)) return;
-        const observations = this._getSavedMapObservations();
-        if (observations.maps[String(entry.id)] === fingerprint) return;
-        await this.setStoreValue(SAVED_MAP_OBSERVATIONS_STORE_KEY, {
-            version: 1, maps: { ...observations.maps, [String(entry.id)]: fingerprint }
-        });
-        this.log(`[SAVED_MAP] Observed current map ID ${entry.id} at catalog entry ${entry.index}.`);
     }
 
     async _readSavedMapActiveId(connection) {
@@ -1608,10 +1572,6 @@ class XiaomiVacuumMiotDeviceMax extends Device {
         return this._runSavedMapOperation(async (connection, model) => {
             const catalog = await this._readSavedMapCatalog(connection, { readOnly: true });
             this.log(`[SAVED_MAP] Discovered maps ${JSON.stringify(catalog.entries)}; reported current ${catalog.currentId}; catalog current ${catalog.markedCurrentId === null ? '(none)' : catalog.markedCurrentId}; current in catalog ${catalog.currentInCatalog}; duplicate IDs ${catalog.duplicateIds.join(', ') || '(none)'}; multiple current markers ${catalog.multipleCurrentMarkers}.`);
-            if (model === 'xiaomi.vacuum.d109gl') {
-                try { await this._rememberCurrentDuplicateMap(catalog); }
-                catch (error) { this.error(`[SAVED_MAP] Could not retain current map observation: ${this._getSavedMapSafeErrorDetails(error)}`); }
-            }
             this._savedMapAutoDiscoveryConnection = connection;
             return catalog;
         });
@@ -1672,7 +1632,6 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             if (!SAVED_MAP_MODELS.includes(model)) throw new Error('Map switching is supported only for X20 Pro and X20 Max.');
 
             const catalog = await this._readSavedMapCatalog(connection, { readOnly: model === 'xiaomi.vacuum.d109gl' });
-            const targetEntry = model === 'xiaomi.vacuum.d109gl' ? this._getSavedMapSelectionEntry(catalog, requestedId) : null;
             const activeMapId = model === 'xiaomi.vacuum.d109gl'
                 ? this._resolveVerifiedSavedMapActiveId(catalog, model) : this._resolveSavedMapActiveId(catalog, model);
             if (!catalog.maps.some(({ id }) => id === requestedId)) throw new Error('The selected saved map is no longer available.');
@@ -1739,10 +1698,9 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                     const currentId = verifiedCatalog
                         ? this._resolveVerifiedSavedMapActiveId(verifiedCatalog, model) : await this._readSavedMapActiveId(connection);
                     if (currentId === requestedId) {
-                        if (verifiedCatalog && targetEntry && verifiedCatalog.duplicateIds.includes(requestedId)) {
+                        if (verifiedCatalog && verifiedCatalog.duplicateIds.includes(requestedId)) {
                             const currentEntry = this._getSavedMapSelectionEntry(verifiedCatalog, requestedId);
-                            const targetFingerprint = catalog.objectFingerprints[targetEntry.index - 1];
-                            if (!currentEntry.isCatalogCurrent || verifiedCatalog.objectFingerprints[currentEntry.index - 1] !== targetFingerprint) {
+                            if (!currentEntry.isCatalogCurrent || verifiedCatalog.entries.map((entry) => entry.id).join(',') !== catalog.entries.map((entry) => entry.id).join(',')) {
                                 throw new Error('The selected duplicate map entry could not be verified.');
                             }
                         }

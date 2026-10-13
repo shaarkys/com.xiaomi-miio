@@ -98,12 +98,12 @@ test('read-only catalog discovery reports current-map disagreements without expo
     assert.equal(conflicting.calls.some(({ method }) => method === 'action'), false);
 });
 
-test('X20 Max remembers the active duplicate entry and verifies its return after switching', async () => {
+test('X20 Max selects distinct IDs when a backup repeats one ID, and verifies the first entry', async () => {
     const run = createDevice({ model: 'xiaomi.vacuum.d109gl', current: 0, markedCurrent: 1,
         markedCurrentIndex: 0, fixedReportedCurrent: true,
-        maps: [{ map_id: 1, map_name: 'First', temp: 0, obj_name: 'private/first' },
-            { map_id: 1, map_name: 'Old', temp: 1, obj_name: 'private/old' },
-            { map_id: 2, map_name: 'Second', temp: 0, obj_name: 'private/second' }] });
+        maps: [{ map_id: 1, map_name: 'First', temp: 0 },
+            { map_id: 1, map_name: 'Old', temp: 1 },
+            { map_id: 2, map_name: 'Second', temp: 0 }] });
     const catalog = await run.device.discoverSavedVacuumMaps();
     assert.deepEqual(catalog.duplicateIds, [1]);
     assert.deepEqual(catalog.entries.map(({ index, id, name, temp }) => ({ index, id, name, temp })), [
@@ -111,25 +111,22 @@ test('X20 Max remembers the active duplicate entry and verifies its return after
         { index: 2, id: 1, name: 'Old', temp: 1 },
         { index: 3, id: 2, name: 'Second', temp: 0 }
     ]);
-    assert.equal(run.logs.some((line) => line.includes('private/')), false);
-    assert.equal(run.store.get('saved_map_duplicate_observations').maps['1'], catalog.objectFingerprints[0]);
-    assert.notEqual(catalog.objectFingerprints[0], catalog.objectFingerprints[1]);
+    assert.equal(run.store.has('saved_map_duplicate_observations'), false);
     assert.equal(await run.device.selectSavedVacuumMap('2'), true);
     assert.equal(await run.device.selectSavedVacuumMap('1'), true);
     assert.deepEqual(run.calls.filter(({ method }) => method === 'action').map(({ payload }) => payload.in[0].value), [2, 1]);
     assert.equal(run.store.get('saved_map_room_safety').pendingTargetMapId, null);
-    assert.equal(run.logs.some((line) => line.includes('private/') || line.includes(catalog.objectFingerprints[0])), false);
     const wrongEntry = createDevice({ model: 'xiaomi.vacuum.d109gl', current: 0, markedCurrent: 2,
-        markedCurrentIndex: 2, fixedReportedCurrent: true, store: new Map([['saved_map_duplicate_observations', run.store.get('saved_map_duplicate_observations')]]),
-        maps: [{ map_id: 1, obj_name: 'private/first' }, { map_id: 1, obj_name: 'private/old' }, { map_id: 2, obj_name: 'private/second' }],
+        markedCurrentIndex: 2, fixedReportedCurrent: true,
+        maps: [{ map_id: 1 }, { map_id: 1 }, { map_id: 2 }],
         actionHandler: ({ payload, setCurrentEntry }) => { setCurrentEntry(payload.in[0].value === 1 ? 1 : 2); return { code: 0 }; } });
     await assert.rejects(wrongEntry.device.selectSavedVacuumMap('1'), /could not be verified/);
     assert.equal(wrongEntry.store.get('saved_map_room_safety').pendingTargetMapId, 1);
-    const unobserved = createDevice({ model: 'xiaomi.vacuum.d109gl', current: 0, markedCurrent: 2,
-        markedCurrentIndex: 2, fixedReportedCurrent: true,
-        maps: [{ map_id: 1, obj_name: 'private/first' }, { map_id: 1, obj_name: 'private/old' }, { map_id: 2, obj_name: 'private/second' }] });
-    await assert.rejects(unobserved.device.selectSavedVacuumMap('1'), /Select it once in Xiaomi Home/);
-    assert.equal(unobserved.calls.some(({ method }) => method === 'action'), false);
+    const unexpectedActive = createDevice({ model: 'xiaomi.vacuum.d109gl', current: 0, markedCurrent: 1,
+        markedCurrentIndex: 1, fixedReportedCurrent: true,
+        maps: [{ map_id: 1 }, { map_id: 1 }, { map_id: 2 }] });
+    await assert.rejects(unexpectedActive.device.selectSavedVacuumMap('2'), /not the first catalog entry/);
+    assert.equal(unexpectedActive.calls.some(({ method }) => method === 'action'), false);
 });
 
 test('read-only discovery uses individual properties and rejects unsupported models', async () => {
@@ -351,9 +348,14 @@ test('Flow autocomplete and run route through selected device with decimal-strin
     const max = createDevice({ model: 'xiaomi.vacuum.d109gl' });
     assert.deepEqual(await cards.get('select_saved_vacuum_map').autocomplete('Up', { device: max.device }), [{ id: '123', name: 'Upstairs', description: 'Map ID 123' }]);
     const duplicate = createDevice({ model: 'xiaomi.vacuum.d109gl', current: 0, markedCurrent: 1, markedCurrentIndex: 0,
-        maps: [{ map_id: 1, map_name: '2nd_floor', obj_name: 'private/first' }, { map_id: 1, map_name: '', obj_name: 'private/old' }, { map_id: 2, map_name: 'New', obj_name: 'private/new' }] });
+        maps: [{ map_id: 1, map_name: '2nd_floor' }, { map_id: 1, map_name: '' }, { map_id: 2, map_name: 'New' }] });
     assert.deepEqual(await cards.get('select_saved_vacuum_map').autocomplete('', { device: duplicate.device }), [
         { id: '1', name: '2nd_floor', description: 'Map ID 1' }, { id: '2', name: 'New', description: 'Map ID 2' }
+    ]);
+    const fromLog = createDevice({ model: 'xiaomi.vacuum.d109gl', current: 0, markedCurrent: 1, markedCurrentIndex: 0,
+        maps: [{ map_id: 1 }, { map_id: 1 }, { map_id: 2 }] });
+    assert.deepEqual(await cards.get('select_saved_vacuum_map').autocomplete('', { device: fromLog.device }), [
+        { id: '1', name: 'Map 1', description: 'Map ID 1' }, { id: '2', name: 'Map 2', description: 'Map ID 2' }
     ]);
     assert.equal(await cards.get('select_saved_vacuum_map').run({ device: target, map: { id: '123' } }), true);
     assert.equal(await cards.get('discover_saved_vacuum_maps').run({ device: target }), true);
