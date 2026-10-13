@@ -667,5 +667,8 @@
   },
   "3.5.43": {
     "en": "Fixed Custom cleanup plan selection when a supported vacuum’s live model metadata is missing, and added paired and live model details to the polling log."
+  },
+  "3.5.44": {
+    "en": "Added saved-map discovery and Flow-based map switching for Xiaomi X20 Pro and X20 Max, with automatic room-list refresh and safeguards against using room IDs from the wrong map."
   }
 }
