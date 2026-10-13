@@ -1489,7 +1489,8 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                 if (!target || typeof target.discoverSavedVacuumMaps !== 'function') throw new Error('Select a supported vacuum.');
                 const model = await target._getCustomCleanupStartTargetModel(target);
                 if (!SAVED_MAP_MODELS.includes(model)) throw new Error('Map switching is supported only for X20 Pro and X20 Max.');
-                const { maps } = await target.discoverSavedVacuumMaps();
+                const { maps, duplicateIds, multipleCurrentMarkers } = await target.discoverSavedVacuumMaps();
+                if (duplicateIds.length || multipleCurrentMarkers) throw new Error('Saved-map IDs are ambiguous on this vacuum. Run Discover saved vacuum maps and check the sanitized app log before selecting a map.');
                 const search = String(query || '').trim().toLowerCase().slice(0, 100);
                 return maps.filter((map) => !search || map.name.toLowerCase().includes(search) || String(map.id).includes(search))
                     .map((map) => ({ id: String(map.id), name: map.name, description: `Map ID ${map.id}` }));
@@ -1526,10 +1527,10 @@ class XiaomiVacuumMiotDeviceMax extends Device {
         return propertyValue(result, siid, piid);
     }
 
-    async _readSavedMapCatalog(connection) {
+    async _readSavedMapCatalog(connection, { readOnly = false } = {}) {
         const management = await this._readSavedMapProperty(connection, 'map_management', 10, 5);
         const current = await this._readSavedMapProperty(connection, 'current_map_id', 10, 6);
-        return parseMapCatalog(management, current);
+        return parseMapCatalog(management, current, { readOnly });
     }
 
     _resolveSavedMapActiveId(catalog, model) {
@@ -1551,8 +1552,8 @@ class XiaomiVacuumMiotDeviceMax extends Device {
 
     discoverSavedVacuumMaps() {
         return this._runSavedMapOperation(async (connection) => {
-            const catalog = await this._readSavedMapCatalog(connection);
-            this.log(`[SAVED_MAP] Discovered maps ${JSON.stringify(catalog.maps)}; reported current ${catalog.currentId}; catalog current ${catalog.markedCurrentId === null ? '(none)' : catalog.markedCurrentId}; current in catalog ${catalog.currentInCatalog}.`);
+            const catalog = await this._readSavedMapCatalog(connection, { readOnly: true });
+            this.log(`[SAVED_MAP] Discovered maps ${JSON.stringify(catalog.entries)}; reported current ${catalog.currentId}; catalog current ${catalog.markedCurrentId === null ? '(none)' : catalog.markedCurrentId}; current in catalog ${catalog.currentInCatalog}; duplicate IDs ${catalog.duplicateIds.join(', ') || '(none)'}; multiple current markers ${catalog.multipleCurrentMarkers}.`);
             this._savedMapAutoDiscoveryConnection = connection;
             return catalog;
         });

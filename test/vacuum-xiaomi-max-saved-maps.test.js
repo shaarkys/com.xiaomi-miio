@@ -95,6 +95,23 @@ test('read-only catalog discovery reports current-map disagreements without expo
     assert.equal(conflicting.calls.some(({ method }) => method === 'action'), false);
 });
 
+test('discovery reports duplicate map IDs and safe metadata while switching stays blocked', async () => {
+    const run = createDevice({ model: 'xiaomi.vacuum.d109gl', current: 0, markedCurrent: 1,
+        maps: [{ map_id: 1, map_name: 'First', temp: 0, obj_name: 'private/first' },
+            { map_id: 2, map_name: 'Second', temp: 0, obj_name: 'private/second' },
+            { map_id: 1, map_name: 'Old', temp: 1, obj_name: 'private/old' }] });
+    const catalog = await run.device.discoverSavedVacuumMaps();
+    assert.deepEqual(catalog.duplicateIds, [1]);
+    assert.deepEqual(catalog.entries.map(({ index, id, name, temp }) => ({ index, id, name, temp })), [
+        { index: 1, id: 1, name: 'First', temp: 0 },
+        { index: 2, id: 2, name: 'Second', temp: 0 },
+        { index: 3, id: 1, name: 'Old', temp: 1 }
+    ]);
+    assert.equal(run.logs.some((line) => line.includes('private/')), false);
+    await assert.rejects(run.device.selectSavedVacuumMap('2'), /repeats map ID 1/);
+    assert.equal(run.calls.some(({ method }) => method === 'action'), false);
+});
+
 test('read-only discovery uses individual properties and rejects unsupported models', async () => {
     const { device, calls, logs } = createDevice();
     const result = await device.discoverSavedVacuumMaps();
