@@ -15,7 +15,7 @@ Module._load = function loadWithHomeyStub(request, parent, isMain) {
 const VacuumDevice = require('../drivers/vacuum_xiaomi_vacuum_max/device.js');
 Module._load = originalLoad;
 
-function createDevice({ model = 'xiaomi.vacuum.d102gl', current = 0, markedCurrent = current, maps = [{ map_id: 0, map_name: 'Downstairs', is_current: true }, { map_id: 123, map_name: 'Upstairs' }], store = new Map(), actionHandler } = {}) {
+function createDevice({ model = 'xiaomi.vacuum.d102gl', current = 0, reportedCurrent = current, markedCurrent = current, fixedReportedCurrent = false, maps = [{ map_id: 0, map_name: 'Downstairs', is_current: true }, { map_id: 123, map_name: 'Upstairs' }], store = new Map(), actionHandler } = {}) {
     const calls = [];
     const logs = [];
     const device = Object.create(VacuumDevice.prototype);
@@ -24,12 +24,12 @@ function createDevice({ model = 'xiaomi.vacuum.d102gl', current = 0, markedCurre
     device.homey = { setTimeout: (callback) => { queueMicrotask(callback); return 1; } };
     device.getStoreValue = (key) => store.get(key);
     device.setStoreValue = async (key, value) => { store.set(key, structuredClone(value)); };
-    device.getSetting = (key) => key === 'enable_saved_map_switch_diagnostic' ? true : '[]';
+    device.getSetting = () => '[]';
     device.setSettings = async () => {};
     device.log = (message) => logs.push(String(message));
     device.error = (message) => logs.push(String(message));
     device._refreshRoomsBeforeCleaning = async ({ mapId } = {}) => {
-        const rooms = [{ id: 7, name: mapId === 123 ? 'Office' : 'Kitchen' }];
+        const rooms = [{ id: 7, name: mapId === 123 || mapId === 2 ? 'Office' : 'Kitchen' }];
         if (mapId !== null && mapId !== undefined) await device._cacheSavedMapRooms(mapId, rooms);
         return rooms;
     };
@@ -39,16 +39,17 @@ function createDevice({ model = 'xiaomi.vacuum.d102gl', current = 0, markedCurre
             const { did, siid, piid } = payload[0];
             let value;
             if (siid === 10 && piid === 5) value = JSON.stringify({ map_array: maps.map((entry) => ({ ...entry, is_current: entry.map_id === markedCurrent })) });
-            else if (siid === 10 && piid === 6) value = current;
+            else if (siid === 10 && piid === 6) value = reportedCurrent;
             else if (siid === 10 && piid === 10) value = 0;
             else if (siid === 2 && piid === 2) value = 9;
             else throw new Error('Unexpected property');
             return [{ did, siid, piid, code: 0, value }];
         }
         if (method === 'action' && payload.siid === 10) {
-            if (actionHandler) return actionHandler({ payload, setCurrent: (id) => { current = id; markedCurrent = id; }, device });
+            if (actionHandler) return actionHandler({ payload, setCurrent: (id) => { current = id; markedCurrent = id; if (!fixedReportedCurrent) reportedCurrent = id; }, device });
             current = payload.in[0].value;
             markedCurrent = current;
+            if (!fixedReportedCurrent) reportedCurrent = current;
             return { code: 0 };
         }
         return { code: 0 };
@@ -72,6 +73,8 @@ test('malformed and duplicate map data fail closed', () => {
         assert.throws(() => parseMapCatalog(value, 2));
     }
     assert.throws(() => propertyValue([{ siid: 10, piid: 5, code: -1 }], 10, 5));
+    assert.throws(() => parseMapCatalog({ map_array: [{ map_id: 'private/url' }] }, 0), /entry 1 has an invalid map ID \(string\)/);
+    assert.throws(() => parseMapCatalog({ map_array: [{ map_id: 1 }, { map_id: 1 }] }, 0), /entry 2 repeats map ID 1/);
 });
 
 test('read-only catalog discovery reports current-map disagreements without exposing object URLs', async () => {
@@ -82,13 +85,13 @@ test('read-only catalog discovery reports current-map disagreements without expo
     assert.equal(catalog.markedCurrentId, 123);
     assert.equal(run.logs.some((line) => line.includes('reported current 0; catalog current 123; current in catalog false')), true);
     assert.equal(run.logs.some((line) => line.includes('secret/url')), false);
-    await assert.rejects(run.device.selectSavedVacuumMap('123'), /no map command was sent/);
+    await assert.rejects(run.device.selectSavedVacuumMap('123'), /disagree/);
     assert.equal(run.calls.some(({ method }) => method === 'action'), false);
     const conflicting = createDevice({ current: 0, markedCurrent: 123 });
     const conflictCatalog = await conflicting.device.discoverSavedVacuumMaps();
     assert.equal(conflictCatalog.currentInCatalog, true);
     assert.equal(conflictCatalog.markedCurrentId, 123);
-    await assert.rejects(conflicting.device.selectSavedVacuumMap('123'), /no map command was sent/);
+    await assert.rejects(conflicting.device.selectSavedVacuumMap('123'), /disagree/);
     assert.equal(conflicting.calls.some(({ method }) => method === 'action'), false);
 });
 
@@ -105,6 +108,37 @@ test('read-only discovery uses individual properties and rejects unsupported mod
     assert.equal(x20.calls.length, 0);
 });
 
+test('initial discovery reads once per successful connection and defers while a map operation is busy', async () => {
+    const run = createDevice({ model: 'xiaomi.vacuum.d109gl' });
+    const first = run.device.miio;
+    run.device._savedMapOperationBusy = true;
+    run.device._discoverSavedMapsAfterFirstPoll(first);
+    assert.equal(run.calls.length, 0);
+    run.device._savedMapOperationBusy = false;
+    run.device._discoverSavedMapsAfterFirstPoll(first);
+    await new Promise((resolve) => setImmediate(resolve));
+    assert.equal(run.calls.length, 2);
+    assert.equal(run.logs.filter((line) => line.includes('[SAVED_MAP] Discovered maps')).length, 1);
+    run.device._discoverSavedMapsAfterFirstPoll(first);
+    assert.equal(run.calls.length, 2);
+    run.device.miio = { call: first.call };
+    run.device._discoverSavedMapsAfterFirstPoll(first);
+    assert.equal(run.calls.length, 2);
+    run.device._discoverSavedMapsAfterFirstPoll(run.device.miio);
+    await new Promise((resolve) => setImmediate(resolve));
+    assert.equal(run.calls.length, 4);
+    const unsupported = createDevice({ model: 'xiaomi.vacuum.c102gl' });
+    unsupported.device._discoverSavedMapsAfterFirstPoll(unsupported.device.miio);
+    assert.equal(unsupported.calls.length, 0);
+    const failed = createDevice({ model: 'xiaomi.vacuum.d109gl' });
+    failed.device.miio.call = async () => { throw new Error('read failed'); };
+    failed.device._discoverSavedMapsAfterFirstPoll(failed.device.miio);
+    await new Promise((resolve) => setImmediate(resolve));
+    assert.equal(failed.logs.some((line) => line.includes('Initial read-only discovery failed: read failed')), true);
+    failed.device._discoverSavedMapsAfterFirstPoll(failed.device.miio);
+    assert.equal(failed.logs.filter((line) => line.includes('Initial read-only discovery failed')).length, 1);
+});
+
 test('switch uses exactly one set-map action, confirms map and refreshes active rooms', async () => {
     const { device, calls, store } = createDevice();
     assert.equal(await device.selectSavedVacuumMap('123'), true);
@@ -117,20 +151,43 @@ test('switch uses exactly one set-map action, confirms map and refreshes active 
     assert.equal(calls.filter(({ method }) => method === 'action').length, 1);
 });
 
-test('switch rejects stale IDs, Max writes, disabled setting and unsafe state before action', async () => {
+test('X20 Max uses the unique catalog marker when its reported current ID stays zero', async () => {
+    const single = createDevice({ model: 'xiaomi.vacuum.d109gl', current: 0, markedCurrent: 1, fixedReportedCurrent: true,
+        maps: [{ map_id: 1, map_name: 'Default' }] });
+    assert.equal(await single.device.selectSavedVacuumMap('1'), true);
+    assert.equal(single.calls.some(({ method }) => method === 'action'), false);
+    assert.equal(single.logs.some((line) => line.includes('already marked active')), true);
+    const run = createDevice({ model: 'xiaomi.vacuum.d109gl', current: 0, markedCurrent: 1, fixedReportedCurrent: true,
+        maps: [{ map_id: 1, map_name: 'Downstairs' }, { map_id: 2, map_name: 'Upstairs' }] });
+    assert.equal(await run.device.selectSavedVacuumMap('2'), true);
+    assert.deepEqual(run.calls.filter(({ method }) => method === 'action').map(({ payload }) => payload.in[0].value), [2]);
+    assert.equal(run.store.get('saved_map_room_safety').originalMapId, 1);
+    assert.equal(run.store.get('saved_map_room_safety').pendingTargetMapId, null);
+    assert.deepEqual(run.store.get('saved_map_room_safety').roomCaches['2'], [{ id: 7, name: 'Office' }]);
+    await assert.rejects(run.device._runAdvancedRoomCleaning({ room: '7', mode: '1' }, false), /Numeric room IDs/);
+    assert.equal(run.calls.filter(({ method, payload }) => method === 'action' && payload.siid === 2).length, 0);
+    const uncertain = createDevice({ model: 'xiaomi.vacuum.d109gl', current: 0, markedCurrent: 1, fixedReportedCurrent: true,
+        maps: [{ map_id: 1, map_name: 'Downstairs' }, { map_id: 2, map_name: 'Upstairs' }], actionHandler: () => ({ code: 0 }) });
+    await assert.rejects(uncertain.device.selectSavedVacuumMap('2'), /could not be verified/);
+    assert.equal(uncertain.calls.filter(({ method }) => method === 'action').length, 1);
+    assert.equal(uncertain.store.get('saved_map_room_safety').pendingTargetMapId, 2);
+    await assert.rejects(uncertain.device.selectSavedVacuumMap('2'), /previous map switch is uncertain/);
+    assert.equal(uncertain.calls.filter(({ method }) => method === 'action').length, 1);
+});
+
+test('switch rejects stale IDs, unsupported models and unsafe state before action', async () => {
     for (const [setup, id, error] of [
         [{}, '999', /no longer available/],
-        [{ model: 'xiaomi.vacuum.d109gl' }, '123', /X20 Pro/],
+        [{ model: 'xiaomi.vacuum.c102gl' }, '123', /not supported/],
         [{}, 'bad', /valid saved map/]
     ]) {
         const run = createDevice(setup);
         await assert.rejects(run.device.selectSavedVacuumMap(id), error);
         assert.equal(run.calls.some(({ method }) => method === 'action'), false);
     }
-    const disabled = createDevice();
-    disabled.device.getSetting = () => false;
-    await assert.rejects(disabled.device.selectSavedVacuumMap('123'), /Enable/);
-    assert.equal(disabled.calls.length, 0);
+    const oldSetting = createDevice();
+    oldSetting.device.getSetting = (key) => key === 'enable_saved_map_switch_diagnostic' ? false : '[]';
+    assert.equal(await oldSetting.device.selectSavedVacuumMap('123'), true);
     const busy = createDevice();
     const originalCall = busy.device.miio.call;
     busy.device.miio.call = async (method, payload, options) => method === 'get_properties' && payload[0].siid === 2
@@ -255,8 +312,7 @@ test('Flow autocomplete and run route through selected device with decimal-strin
     const target = createDevice().device;
     assert.deepEqual(await cards.get('select_saved_vacuum_map').autocomplete('Up', { device: target }), [{ id: '123', name: 'Upstairs', description: 'Map ID 123' }]);
     const max = createDevice({ model: 'xiaomi.vacuum.d109gl' });
-    await assert.rejects(cards.get('select_saved_vacuum_map').autocomplete('Up', { device: max.device }), /only for X20 Pro/);
-    assert.equal(max.calls.length, 0);
+    assert.deepEqual(await cards.get('select_saved_vacuum_map').autocomplete('Up', { device: max.device }), [{ id: '123', name: 'Upstairs', description: 'Map ID 123' }]);
     assert.equal(await cards.get('select_saved_vacuum_map').run({ device: target, map: { id: '123' } }), true);
     assert.equal(await cards.get('discover_saved_vacuum_maps').run({ device: target }), true);
 });

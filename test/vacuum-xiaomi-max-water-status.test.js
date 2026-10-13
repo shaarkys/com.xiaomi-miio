@@ -23,6 +23,7 @@ function createDevice(model = 'xiaomi.vacuum.d109gl') {
     device.error = (...args) => errors.push(args);
     device._applyModelProperties(model);
     device._syncModelFromDevice = () => true;
+    device._discoverSavedMapsAfterFirstPoll = () => {};
     device._roomsDiscovered = true;
     device.miio = { call: async () => [] };
     device.getAvailable = () => true;
