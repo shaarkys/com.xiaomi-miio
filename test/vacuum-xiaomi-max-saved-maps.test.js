@@ -87,6 +87,7 @@ test('read-only catalog discovery reports current-map disagreements without expo
     assert.equal(catalog.currentInCatalog, false);
     assert.equal(catalog.markedCurrentId, 123);
     assert.equal(run.logs.some((line) => line.includes('reported current 0; catalog current 123; current in catalog false')), true);
+    assert.equal(run.logs.some((line) => line.includes('Room refresh skipped:')), true);
     assert.equal(run.logs.some((line) => line.includes('secret/url')), false);
     await assert.rejects(run.device.selectSavedVacuumMap('123'), /disagree/);
     assert.equal(run.calls.some(({ method }) => method === 'action'), false);
@@ -142,6 +143,78 @@ test('read-only discovery uses individual properties and rejects unsupported mod
     assert.equal(x20.calls.length, 0);
 });
 
+test('map discovery refreshes the active map room settings without sending a map action', async () => {
+    const run = createDevice();
+    delete run.device._refreshRoomsBeforeCleaning;
+    run.device.deviceProperties.get_rooms = [{ did: 'rooms', siid: 2, piid: 16 }];
+    const settings = { rooms: '[]', rooms_display: '' };
+    run.device.getSetting = (key) => settings[key];
+    run.device.setSettings = async (values) => { Object.assign(settings, values); };
+    let activeMapId = 0;
+    let activeRoomName = 'Office';
+    const originalCall = run.device.miio.call;
+    run.device.miio.call = (method, payload, options) => {
+        if (method === 'get_properties') {
+            const { siid, piid } = payload[0];
+            if (siid === 10 && piid === 5) return Promise.resolve([{ siid, piid, code: 0, value: JSON.stringify({
+                map_array: [{ map_id: 0, is_current: activeMapId === 0 }, { map_id: 123, is_current: activeMapId === 123 }]
+            }) }]);
+            if (siid === 10 && piid === 6) return Promise.resolve([{ siid, piid, code: 0, value: activeMapId }]);
+            if (siid === 2 && piid === 16) return Promise.resolve([{ siid, piid, code: 0, value: JSON.stringify({
+                rooms: [activeMapId === 0 ? { id: 7, name: 'Kitchen' } : { id: 9, name: activeRoomName }]
+            }) }]);
+        }
+        return originalCall(method, payload, options);
+    };
+    await run.device.discoverSavedVacuumMaps();
+    assert.deepEqual(JSON.parse(settings.rooms), [{ id: 7, name: 'Kitchen' }]);
+    activeMapId = 123;
+    await run.device.discoverSavedVacuumMaps();
+    assert.deepEqual(JSON.parse(settings.rooms), [{ id: 9, name: 'Office' }]);
+    assert.equal(settings.rooms_display, 'Office');
+    assert.equal(run.logs.some((line) => line.includes('Refreshed rooms for active map 123: 1')), true);
+    activeRoomName = 'Study';
+    await run.device.selectSavedVacuumMap('123');
+    assert.deepEqual(JSON.parse(settings.rooms), [{ id: 9, name: 'Study' }]);
+    assert.equal(run.logs.some((line) => line.includes('already marked active; refreshed rooms (1)')), true);
+    assert.equal(run.calls.some(({ method }) => method === 'action'), false);
+});
+
+test('map discovery reports a failed room refresh and preserves the current room settings', async () => {
+    const run = createDevice();
+    delete run.device._refreshRoomsBeforeCleaning;
+    const settings = { rooms: '[{"id":7,"name":"Kitchen"}]', rooms_display: 'Kitchen' };
+    run.device.getSetting = (key) => settings[key];
+    run.device.setSettings = async (values) => { Object.assign(settings, values); };
+    const originalCall = run.device.miio.call;
+    run.device.miio.call = (method, payload, options) => method === 'get_properties' && payload[0].siid !== 10
+        ? Promise.reject(new Error('room read failed')) : originalCall(method, payload, options);
+    await assert.rejects(run.device.discoverSavedVacuumMaps(), /room read failed/);
+    assert.equal(settings.rooms_display, 'Kitchen');
+    assert.equal(run.calls.some(({ method }) => method === 'action'), false);
+});
+
+test('X20 Max discovery refreshes rooms for the catalog-marked map when reported current stays zero', async () => {
+    const run = createDevice({ model: 'xiaomi.vacuum.d109gl', current: 0, markedCurrent: 1,
+        markedCurrentIndex: 0, fixedReportedCurrent: true,
+        maps: [{ map_id: 1 }, { map_id: 1 }, { map_id: 2 }] });
+    const refreshed = [];
+    run.device._refreshRoomsBeforeCleaning = async ({ mapId }) => {
+        refreshed.push(mapId);
+        return [{ id: mapId, name: `Room ${mapId}` }];
+    };
+    let activeMapId = 1;
+    const originalCall = run.device.miio.call;
+    run.device.miio.call = (method, payload, options) => method === 'get_properties' && payload[0].piid === 5
+        ? Promise.resolve([{ siid: 10, piid: 5, code: 0, value: JSON.stringify({ map_array: [
+            { map_id: 1, is_current: activeMapId === 1 }, { map_id: 1 }, { map_id: 2, is_current: activeMapId === 2 }
+        ] }) }]) : originalCall(method, payload, options);
+    await run.device.discoverSavedVacuumMaps();
+    activeMapId = 2;
+    await run.device.discoverSavedVacuumMaps();
+    assert.deepEqual(refreshed, [1, 2]);
+});
+
 test('initial discovery reads once per successful connection and defers while a map operation is busy', async () => {
     const run = createDevice({ model: 'xiaomi.vacuum.d109gl' });
     const first = run.device.miio;
@@ -153,6 +226,7 @@ test('initial discovery reads once per successful connection and defers while a 
     await new Promise((resolve) => setImmediate(resolve));
     assert.equal(run.calls.length, 2);
     assert.equal(run.logs.filter((line) => line.includes('[SAVED_MAP] Discovered maps')).length, 1);
+    assert.equal(run.logs.some((line) => line.includes('Refreshed rooms for active map 0: 1')), true);
     run.device._discoverSavedMapsAfterFirstPoll(first);
     assert.equal(run.calls.length, 2);
     run.device.miio = { call: first.call };
@@ -168,9 +242,9 @@ test('initial discovery reads once per successful connection and defers while a 
     failed.device.miio.call = async () => { throw new Error('read failed'); };
     failed.device._discoverSavedMapsAfterFirstPoll(failed.device.miio);
     await new Promise((resolve) => setImmediate(resolve));
-    assert.equal(failed.logs.some((line) => line.includes('Initial read-only discovery failed: read failed')), true);
+    assert.equal(failed.logs.some((line) => line.includes('Initial map or room discovery failed: read failed')), true);
     failed.device._discoverSavedMapsAfterFirstPoll(failed.device.miio);
-    assert.equal(failed.logs.filter((line) => line.includes('Initial read-only discovery failed')).length, 1);
+    assert.equal(failed.logs.filter((line) => line.includes('Initial map or room discovery failed')).length, 1);
 });
 
 test('switch uses exactly one set-map action, confirms map and refreshes active rooms', async () => {
@@ -346,6 +420,7 @@ test('Flow autocomplete and run route through selected device with decimal-strin
     const target = createDevice().device;
     assert.deepEqual(await cards.get('select_saved_vacuum_map').autocomplete('Up', { device: target }), [{ id: '123', name: 'Upstairs', description: 'Map ID 123' }]);
     const max = createDevice({ model: 'xiaomi.vacuum.d109gl' });
+    max.device._refreshRoomsBeforeCleaning = async () => { throw new Error('Autocomplete must not refresh rooms.'); };
     assert.deepEqual(await cards.get('select_saved_vacuum_map').autocomplete('Up', { device: max.device }), [{ id: '123', name: 'Upstairs', description: 'Map ID 123' }]);
     const duplicate = createDevice({ model: 'xiaomi.vacuum.d109gl', current: 0, markedCurrent: 1, markedCurrentIndex: 0,
         maps: [{ map_id: 1, map_name: '2nd_floor' }, { map_id: 1, map_name: '' }, { map_id: 2, map_name: 'New' }] });

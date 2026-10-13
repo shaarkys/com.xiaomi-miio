@@ -1489,7 +1489,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                 if (!target || typeof target.discoverSavedVacuumMaps !== 'function') throw new Error('Select a supported vacuum.');
                 const model = await target._getCustomCleanupStartTargetModel(target);
                 if (!SAVED_MAP_MODELS.includes(model)) throw new Error('Map switching is supported only for X20 Pro and X20 Max.');
-                const catalog = await target.discoverSavedVacuumMaps();
+                const catalog = await target.discoverSavedVacuumMaps({ refreshRooms: false });
                 const { duplicateIds, multipleCurrentMarkers } = catalog;
                 if (multipleCurrentMarkers || (model !== 'xiaomi.vacuum.d109gl' && duplicateIds.length)) throw new Error('Saved-map IDs are ambiguous on this vacuum. Run Discover saved vacuum maps and check the sanitized app log before selecting a map.');
                 const search = String(query || '').trim().toLowerCase().slice(0, 100);
@@ -1568,10 +1568,28 @@ class XiaomiVacuumMiotDeviceMax extends Device {
         return parseMapId(await this._readSavedMapProperty(connection, 'current_map_id', 10, 6));
     }
 
-    discoverSavedVacuumMaps() {
+    discoverSavedVacuumMaps({ refreshRooms = true } = {}) {
         return this._runSavedMapOperation(async (connection, model) => {
             const catalog = await this._readSavedMapCatalog(connection, { readOnly: true });
             this.log(`[SAVED_MAP] Discovered maps ${JSON.stringify(catalog.entries)}; reported current ${catalog.currentId}; catalog current ${catalog.markedCurrentId === null ? '(none)' : catalog.markedCurrentId}; current in catalog ${catalog.currentInCatalog}; duplicate IDs ${catalog.duplicateIds.join(', ') || '(none)'}; multiple current markers ${catalog.multipleCurrentMarkers}.`);
+            if (refreshRooms) {
+                let activeMapId = null;
+                try {
+                    if (catalog.multipleCurrentMarkers || (model !== 'xiaomi.vacuum.d109gl' && catalog.duplicateIds.length)) {
+                        throw new Error('Saved-map catalog has ambiguous current markers or map IDs.');
+                    }
+                    activeMapId = model === 'xiaomi.vacuum.d109gl'
+                        ? this._resolveVerifiedSavedMapActiveId(catalog, model)
+                        : this._resolveSavedMapActiveId(catalog, model);
+                } catch (error) {
+                    this.log(`[SAVED_MAP] Room refresh skipped: ${this._getSavedMapSafeErrorDetails(error)}`);
+                }
+                if (activeMapId !== null) {
+                    const rooms = await this._refreshRoomsBeforeCleaning({ direct: true, mapId: activeMapId, connection });
+                    if (!rooms.length) throw new Error('The active saved map has no readable rooms.');
+                    this.log(`[SAVED_MAP] Refreshed rooms for active map ${activeMapId}: ${rooms.length}.`);
+                }
+            }
             this._savedMapAutoDiscoveryConnection = connection;
             return catalog;
         });
@@ -1583,10 +1601,10 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             if (this._savedMapAutoDiscoveryConnection === connection) return;
             this._savedMapAutoDiscoveryConnection = connection;
             this.discoverSavedVacuumMaps().catch((error) => {
-                this.error(`[SAVED_MAP] Initial read-only discovery failed: ${this._getSavedMapSafeErrorDetails(error)}`);
+                this.error(`[SAVED_MAP] Initial map or room discovery failed: ${this._getSavedMapSafeErrorDetails(error)}`);
             });
         } catch (error) {
-            this.error(`[SAVED_MAP] Initial read-only discovery failed: ${this._getSavedMapSafeErrorDetails(error)}`);
+            this.error(`[SAVED_MAP] Initial map or room discovery failed: ${this._getSavedMapSafeErrorDetails(error)}`);
         }
     }
 
@@ -1636,13 +1654,13 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                 ? this._resolveVerifiedSavedMapActiveId(catalog, model) : this._resolveSavedMapActiveId(catalog, model);
             if (!catalog.maps.some(({ id }) => id === requestedId)) throw new Error('The selected saved map is no longer available.');
             if (activeMapId === requestedId) {
+                const rooms = await this._refreshRoomsBeforeCleaning({ direct: true, mapId: requestedId, connection });
+                if (!rooms.length) throw new Error('Cannot confirm active-map rooms.');
                 const pending = this._getSavedMapSafety();
                 if (pending && pending.pendingTargetMapId != null) {
-                    const rooms = await this._refreshRoomsBeforeCleaning({ direct: true, mapId: requestedId, connection });
-                    if (!rooms.length) throw new Error('Cannot confirm active-map rooms.');
                     await this._persistSavedMapSafety({ ...this._getSavedMapSafety(), pendingTargetMapId: null });
                 }
-                this.log(`[SAVED_MAP] Map ${requestedId} is already marked active; no set-map action sent.`);
+                this.log(`[SAVED_MAP] Map ${requestedId} is already marked active; refreshed rooms (${rooms.length}); no set-map action sent.`);
                 return true;
             }
             if (model === 'xiaomi.vacuum.d109gl' && new Set(catalog.maps.map(({ id }) => id)).size < 2) throw new Error('X20 Max needs at least two distinct saved map IDs before switching; no map command was sent.');
