@@ -1542,7 +1542,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
         if (catalog.currentInCatalog && (catalog.markedCurrentId === null || catalog.markedCurrentId === catalog.currentId)) {
             return catalog.currentId;
         }
-        if (model === 'xiaomi.vacuum.d109gl' && catalog.currentId === 0 && !catalog.currentInCatalog && catalog.markedCurrentId !== null) {
+        if (SAVED_MAP_MODELS.includes(model) && catalog.currentId === 0 && !catalog.currentInCatalog && catalog.markedCurrentId !== null) {
             return catalog.markedCurrentId;
         }
         throw new Error(`Saved-map catalog and current map disagree (reported ${catalog.currentId}, catalog ${catalog.markedCurrentId === null ? 'none' : catalog.markedCurrentId}).`);
@@ -1562,10 +1562,16 @@ class XiaomiVacuumMiotDeviceMax extends Device {
     }
 
     async _readSavedMapActiveId(connection) {
-        if (this.getModelIdentifier() === 'xiaomi.vacuum.d109gl') {
+        const model = this.getModelIdentifier();
+        if (model === 'xiaomi.vacuum.d109gl') {
             return this._resolveVerifiedSavedMapActiveId(await this._readSavedMapCatalog(connection, { readOnly: true }), 'xiaomi.vacuum.d109gl');
         }
-        return parseMapId(await this._readSavedMapProperty(connection, 'current_map_id', 10, 6));
+        const current = await this._readSavedMapProperty(connection, 'current_map_id', 10, 6);
+        const currentId = parseMapId(current);
+        if (currentId === null) throw new Error('Current map ID is invalid.');
+        if (model !== 'xiaomi.vacuum.d102gl' || currentId !== 0) return currentId;
+        const management = await this._readSavedMapProperty(connection, 'map_management', 10, 5);
+        return this._resolveSavedMapActiveId(parseMapCatalog(management, current), model);
     }
 
     discoverSavedVacuumMaps({ refreshRooms = true } = {}) {

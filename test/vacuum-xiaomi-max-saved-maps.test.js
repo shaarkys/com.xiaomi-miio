@@ -80,16 +80,16 @@ test('malformed and duplicate map data fail closed', () => {
     assert.throws(() => parseMapCatalog({ map_array: [{ map_id: 1 }, { map_id: 1 }] }, 0), /entry 2 repeats map ID 1/);
 });
 
-test('read-only catalog discovery reports current-map disagreements without exposing object URLs', async () => {
+test('read-only catalog discovery accepts a unique current marker when X20 Pro reports zero', async () => {
     const run = createDevice({ current: 0, markedCurrent: 123, maps: [{ map_id: 123, map_name: 'Upstairs', obj_name: 'secret/url' }] });
     const catalog = await run.device.discoverSavedVacuumMaps();
     assert.equal(catalog.currentId, 0);
     assert.equal(catalog.currentInCatalog, false);
     assert.equal(catalog.markedCurrentId, 123);
     assert.equal(run.logs.some((line) => line.includes('reported current 0; catalog current 123; current in catalog false')), true);
-    assert.equal(run.logs.some((line) => line.includes('Room refresh skipped:')), true);
+    assert.equal(run.logs.some((line) => line.includes('Refreshed rooms for active map 123: 1')), true);
     assert.equal(run.logs.some((line) => line.includes('secret/url')), false);
-    await assert.rejects(run.device.selectSavedVacuumMap('123'), /disagree/);
+    assert.equal(await run.device.selectSavedVacuumMap('123'), true);
     assert.equal(run.calls.some(({ method }) => method === 'action'), false);
     const conflicting = createDevice({ current: 0, markedCurrent: 123 });
     const conflictCatalog = await conflicting.device.discoverSavedVacuumMaps();
@@ -97,6 +97,34 @@ test('read-only catalog discovery reports current-map disagreements without expo
     assert.equal(conflictCatalog.markedCurrentId, 123);
     await assert.rejects(conflicting.device.selectSavedVacuumMap('123'), /disagree/);
     assert.equal(conflicting.calls.some(({ method }) => method === 'action'), false);
+    const missingMarker = createDevice({ current: 0, markedCurrent: 999,
+        maps: [{ map_id: 1 }, { map_id: 3 }] });
+    await assert.rejects(missingMarker.device.selectSavedVacuumMap('1'), /disagree/);
+    assert.equal(missingMarker.calls.some(({ method }) => method === 'action'), false);
+});
+
+test('X20 Pro uses the catalog marker for switching and verification when current-map-id stays zero', async () => {
+    const run = createDevice({ current: 0, markedCurrent: 3, fixedReportedCurrent: true,
+        maps: [{ map_id: 1, map_name: 'quer' }, { map_id: 3, map_name: 'Hoch' }] });
+    const originalCall = run.device.miio.call;
+    let status = 4;
+    run.device.miio.call = (method, payload, options) => method === 'get_properties' && payload[0].siid === 2 && payload[0].piid === 2
+        ? Promise.resolve([{ siid: 2, piid: 2, code: 0, value: status }]) : originalCall(method, payload, options);
+    await assert.rejects(run.device.selectSavedVacuumMap('1'), /requires an idle vacuum; current state 4/);
+    assert.equal(run.calls.some(({ method }) => method === 'action'), false);
+    status = 2;
+    assert.equal(await run.device.selectSavedVacuumMap('1'), true);
+    assert.deepEqual(run.calls.filter(({ method }) => method === 'action').map(({ payload }) => payload.in[0].value), [1]);
+    assert.equal(run.store.get('saved_map_room_safety').pendingTargetMapId, null);
+    assert.equal(await run.device.selectSavedVacuumMap('3'), true);
+    assert.deepEqual(run.calls.filter(({ method }) => method === 'action').map(({ payload }) => payload.in[0].value), [1, 3]);
+});
+
+test('X20 Pro does not verify a switch from an unchanged catalog marker and current-map-id zero', async () => {
+    const run = createDevice({ current: 0, markedCurrent: 3, fixedReportedCurrent: true,
+        maps: [{ map_id: 1 }, { map_id: 3 }], actionHandler: () => ({ code: 0 }) });
+    await assert.rejects(run.device.selectSavedVacuumMap('1'), /could not be verified/);
+    assert.equal(run.store.get('saved_map_room_safety').pendingTargetMapId, 1);
 });
 
 test('X20 Max selects distinct IDs when a backup repeats one ID, and verifies the first entry', async () => {
