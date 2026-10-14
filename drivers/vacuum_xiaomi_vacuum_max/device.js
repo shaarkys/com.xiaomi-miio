@@ -1690,6 +1690,10 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             if (confirmedMapId !== activeMapId || ![1, 2, 9].includes(confirmedStatus) || confirmedMethod !== 0) {
                 throw new Error('The active map or operating mode changed before switching; no command was sent.');
             }
+            const actionDid = model === 'xiaomi.vacuum.d102gl' ? connection.handle?.api?.id : 'call-10-3';
+            if (model === 'xiaomi.vacuum.d102gl' && (!Number.isSafeInteger(actionDid) || actionDid < 1 || actionDid > 0xFFFFFFFF)) {
+                throw new Error('The connected X20 Pro device ID is unavailable; no map command was sent.');
+            }
             const safety = existingSafety || { version: 1, originalMapId, roomCaches: {} };
             await this._persistSavedMapSafety({
                 ...safety,
@@ -1702,7 +1706,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             let actionError = null;
             try {
                 const response = await connection.call('action', {
-                    did: 'call-10-3', siid: 10, aiid: 3,
+                    did: actionDid, siid: 10, aiid: 3,
                     in: [{ piid: 6, value: requestedId }]
                 }, { retries: 1 });
                 if (response && typeof response.code === 'number' && response.code !== 0) {

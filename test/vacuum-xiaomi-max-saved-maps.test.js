@@ -15,7 +15,7 @@ Module._load = function loadWithHomeyStub(request, parent, isMain) {
 const VacuumDevice = require('../drivers/vacuum_xiaomi_vacuum_max/device.js');
 Module._load = originalLoad;
 
-function createDevice({ model = 'xiaomi.vacuum.d102gl', current = 0, reportedCurrent = current, markedCurrent = current, markedCurrentIndex = null, fixedReportedCurrent = false, maps = [{ map_id: 0, map_name: 'Downstairs', is_current: true }, { map_id: 123, map_name: 'Upstairs' }], store = new Map(), actionHandler } = {}) {
+function createDevice({ model = 'xiaomi.vacuum.d102gl', deviceDid = 12345678, current = 0, reportedCurrent = current, markedCurrent = current, markedCurrentIndex = null, fixedReportedCurrent = false, maps = [{ map_id: 0, map_name: 'Downstairs', is_current: true }, { map_id: 123, map_name: 'Upstairs' }], store = new Map(), actionHandler } = {}) {
     const calls = [];
     const logs = [];
     let currentEntryIndex = markedCurrentIndex;
@@ -34,7 +34,7 @@ function createDevice({ model = 'xiaomi.vacuum.d102gl', current = 0, reportedCur
         if (mapId !== null && mapId !== undefined) await device._cacheSavedMapRooms(mapId, rooms);
         return rooms;
     };
-    device.miio = { call: async (method, payload, options) => {
+    device.miio = { handle: { api: { id: deviceDid } }, call: async (method, payload, options) => {
         calls.push({ method, payload: structuredClone(payload), options });
         if (method === 'get_properties') {
             const { did, siid, piid } = payload[0];
@@ -279,12 +279,21 @@ test('switch uses exactly one set-map action, confirms map and refreshes active 
     const { device, calls, store } = createDevice();
     assert.equal(await device.selectSavedVacuumMap('123'), true);
     const actions = calls.filter(({ method }) => method === 'action');
-    assert.deepEqual(actions, [{ method: 'action', payload: { did: 'call-10-3', siid: 10, aiid: 3, in: [{ piid: 6, value: 123 }] }, options: { retries: 1 } }]);
+    assert.deepEqual(actions, [{ method: 'action', payload: { did: 12345678, siid: 10, aiid: 3, in: [{ piid: 6, value: 123 }] }, options: { retries: 1 } }]);
     assert.deepEqual(store.get('saved_map_room_safety'), {
         version: 1, originalMapId: 0, roomCaches: { '0': [{ id: 7, name: 'Kitchen' }], '123': [{ id: 7, name: 'Office' }] }, pendingTargetMapId: null
     });
     assert.equal(await device.selectSavedVacuumMap('123'), true);
     assert.equal(calls.filter(({ method }) => method === 'action').length, 1);
+});
+
+test('X20 Pro blocks a set-map action without a valid numeric connected device ID', async () => {
+    for (const deviceDid of [null, 0, '12345678', 0x100000000]) {
+        const run = createDevice({ deviceDid });
+        await assert.rejects(run.device.selectSavedVacuumMap('123'), /connected X20 Pro device ID is unavailable/);
+        assert.equal(run.calls.some(({ method }) => method === 'action'), false);
+        assert.equal(run.store.has('saved_map_room_safety'), false);
+    }
 });
 
 test('X20 Max uses the unique catalog marker when its reported current ID stays zero', async () => {
@@ -293,10 +302,12 @@ test('X20 Max uses the unique catalog marker when its reported current ID stays 
     assert.equal(await single.device.selectSavedVacuumMap('1'), true);
     assert.equal(single.calls.some(({ method }) => method === 'action'), false);
     assert.equal(single.logs.some((line) => line.includes('already marked active')), true);
-    const run = createDevice({ model: 'xiaomi.vacuum.d109gl', current: 0, markedCurrent: 1, fixedReportedCurrent: true,
+    const run = createDevice({ model: 'xiaomi.vacuum.d109gl', deviceDid: null, current: 0, markedCurrent: 1, fixedReportedCurrent: true,
         maps: [{ map_id: 1, map_name: 'Downstairs' }, { map_id: 2, map_name: 'Upstairs' }] });
     assert.equal(await run.device.selectSavedVacuumMap('2'), true);
-    assert.deepEqual(run.calls.filter(({ method }) => method === 'action').map(({ payload }) => payload.in[0].value), [2]);
+    assert.deepEqual(run.calls.filter(({ method }) => method === 'action').map(({ payload }) => payload), [
+        { did: 'call-10-3', siid: 10, aiid: 3, in: [{ piid: 6, value: 2 }] }
+    ]);
     assert.equal(run.store.get('saved_map_room_safety').originalMapId, 1);
     assert.equal(run.store.get('saved_map_room_safety').pendingTargetMapId, null);
     assert.deepEqual(run.store.get('saved_map_room_safety').roomCaches['2'], [{ id: 7, name: 'Office' }]);
