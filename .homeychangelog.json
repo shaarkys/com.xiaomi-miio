@@ -673,5 +673,8 @@
   },
   "3.5.45": {
     "en": "Fixed X20 Pro saved-map switching when the vacuum reports current map ID 0, using the uniquely marked current map and refreshing rooms after a confirmed switch."
+  },
+  "3.5.46": {
+    "en": "Fixed X20 Pro saved-map switching by using the vacuum’s device ID, while preserving X20 Max map switching."
   }
 }
