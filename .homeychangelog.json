@@ -670,5 +670,8 @@
   },
   "3.5.44": {
     "en": "Added saved-map discovery and Flow-based map switching for Xiaomi X20 Pro and X20 Max, with automatic room-list refresh and safeguards against using room IDs from the wrong map."
+  },
+  "3.5.45": {
+    "en": "Fixed X20 Pro saved-map switching when the vacuum reports current map ID 0, using the uniquely marked current map and refreshing rooms after a confirmed switch."
   }
 }
