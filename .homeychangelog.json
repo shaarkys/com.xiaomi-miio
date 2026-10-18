@@ -676,5 +676,8 @@
   },
   "3.5.46": {
     "en": "Fixed X20 Pro saved-map switching by using the vacuum’s device ID, while preserving X20 Max map switching."
+  },
+  "3.5.47": {
+    "en": "Improved X20 Pro connection stability and corrected MIoT timeout recovery. Added French translations for the Cat Feeder’s device."
   }
 }
