@@ -1,6 +1,6 @@
 {
   "type": "number",
-  "title": { "en": "Eaten food today" },
+  "title": { "en": "Eaten food today", "fr": "Nourriture consommée aujourd’hui" },
   "units": { "en": "g" },
   "decimals": 0,
   "min": 0,

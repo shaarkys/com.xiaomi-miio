@@ -1,17 +1,20 @@
 {
   "type": "boolean",
   "title": {
-    "en": "Feeder busy"
+    "en": "Feeder busy",
+    "fr": "Distributeur occupé"
   },
   "getable": true,
   "setable": false,
   "uiComponent": "sensor",
   "insights": true,
   "insightsTitleTrue": {
-    "en": "Feeding"
+    "en": "Feeding",
+    "fr": "Distribution en cours"
   },
   "insightsTitleFalse": {
-    "en": "Idle"
+    "en": "Idle",
+    "fr": "Au repos"
   },
   "icon": "/assets/icons/start.svg"
 }

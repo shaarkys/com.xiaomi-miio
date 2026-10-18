@@ -1,6 +1,6 @@
 {
-  "title": { "en": "Eaten food changed" },
-  "hint":  { "en": "Triggers when eaten food telemetry changes." },
+  "title": { "en": "Eaten food changed", "fr": "La quantité de nourriture consommée a changé" },
+  "hint":  { "en": "Triggers when eaten food telemetry changes.", "fr": "Se déclenche lorsque la quantité de nourriture consommée change." },
   "args": [
     {
       "name": "device",
@@ -9,8 +9,8 @@
     }
   ],
   "tokens": [
-    { "name": "today_g", "type": "number", "title": { "en": "Today (g)" } },
-    { "name": "total_g", "type": "number", "title": { "en": "Total (g)" } },
-    { "name": "delta_g", "type": "number", "title": { "en": "Delta (g)" } }
+    { "name": "today_g", "type": "number", "title": { "en": "Today (g)", "fr": "Aujourd’hui (g)" } },
+    { "name": "total_g", "type": "number", "title": { "en": "Total (g)", "fr": "Total (g)" } },
+    { "name": "delta_g", "type": "number", "title": { "en": "Delta (g)", "fr": "Variation (g)" } }
   ]
 }

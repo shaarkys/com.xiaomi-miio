@@ -1,14 +1,14 @@
 {
   "type": "enum",
-  "title": { "en": "Feeder Status" },
+  "title": { "en": "Feeder Status", "fr": "État du distributeur" },
   "getable": true,
   "setable": false,
   "values": [
-    { "id": "unknown", "title": { "en": "Unknown" } },
-    { "id": "idle", "title": { "en": "Idle" } },
-    { "id": "feeding", "title": { "en": "Feeding" } },
-    { "id": "paused", "title": { "en": "Paused" } },
-    { "id": "fault", "title": { "en": "Fault" } }
+    { "id": "unknown", "title": { "en": "Unknown", "fr": "Inconnu" } },
+    { "id": "idle", "title": { "en": "Idle", "fr": "Au repos" } },
+    { "id": "feeding", "title": { "en": "Feeding", "fr": "Distribution en cours" } },
+    { "id": "paused", "title": { "en": "Paused", "fr": "En pause" } },
+    { "id": "fault", "title": { "en": "Fault", "fr": "Erreur" } }
   ],
   "uiComponent": "sensor",
   "icon": "/assets/icons/start.svg"

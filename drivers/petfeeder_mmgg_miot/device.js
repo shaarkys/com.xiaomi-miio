@@ -1558,13 +1558,13 @@ class PetFeederMiotDevice extends DeviceBase {
 
         const options = [
             ['petfeeder_food_out_status', {
-                title: { en: 'Food bowl status' },
+                title: { en: 'Food bowl status', fr: 'État de la coupelle' },
                 values: [
-                    { id: 'ok', title: { en: 'OK' } },
-                    { id: 'food_out', title: { en: 'Food bowl error' } }
+                    { id: 'ok', title: { en: 'OK', fr: 'OK' } },
+                    { id: 'food_out', title: { en: 'Food bowl error', fr: 'Erreur de coupelle' } }
                 ]
             }],
-            ['alarm_petfeeder_food_out', { title: { en: 'Food bowl error' } }]
+            ['alarm_petfeeder_food_out', { title: { en: 'Food bowl error', fr: 'Erreur de coupelle' } }]
         ];
         for (const [capabilityId, capabilityOptions] of options) {
             if (!this.hasCapability(capabilityId)) continue;

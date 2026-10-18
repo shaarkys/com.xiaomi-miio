@@ -6,7 +6,7 @@
     "da": "Foderniveau i beholder",
     "de": "Füllstand im Futterbehälter",
     "es": "Nivel de comida del depósito",
-    "fr": "Niveau du réservoir de nourriture",
+    "fr": "Niveau de nourriture dans le réservoir",
     "it": "Livello cibo nel contenitore",
     "no": "Fôrnivå i beholder",
     "sv": "Matnivå i behållaren",
@@ -17,19 +17,22 @@
   "values": [
     {
       "title": {
-        "en": "Normal"
+        "en": "Normal",
+        "fr": "Normal"
       },
       "id": "normal"
     },
     {
       "title": {
-        "en": "Low"
+        "en": "Low",
+        "fr": "Faible"
       },
       "id": "low"
     },
     {
       "title": {
-        "en": "Unknown"
+        "en": "Unknown",
+        "fr": "Inconnu"
       },
       "id": "unknown"
     }

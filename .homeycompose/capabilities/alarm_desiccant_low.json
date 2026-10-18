@@ -1,6 +1,6 @@
 {
   "type": "boolean",
-  "title": { "en": "Desiccant Low" },
+  "title": { "en": "Desiccant Low", "fr": "Niveau de dessiccant faible" },
   "getable": true,
   "setable": false,
   "uiComponent": "sensor",

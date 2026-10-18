@@ -1,40 +1,47 @@
 {
   "title": {
-    "en": "Set screen display"
+    "en": "Set screen display",
+    "fr": "Régler l’affichage de l’écran"
   },
   "titleFormatted": {
-    "en": "Set screen display to [[mode]]"
+    "en": "Set screen display to [[mode]]",
+    "fr": "Régler l’affichage de l’écran sur [[mode]]"
   },
   "args": [
     {
       "name": "mode",
       "title": {
-        "en": "Display mode"
+        "en": "Display mode",
+        "fr": "Mode d’affichage"
       },
       "type": "dropdown",
       "values": [
         {
           "id": "off",
           "title": {
-            "en": "Off"
+            "en": "Off",
+            "fr": "Désactivé"
           }
         },
         {
           "id": "left_grams",
           "title": {
-            "en": "Left grams"
+            "en": "Left grams",
+            "fr": "Grammes restants"
           }
         },
         {
           "id": "eaten_grams",
           "title": {
-            "en": "Eaten grams"
+            "en": "Eaten grams",
+            "fr": "Grammes consommés"
           }
         },
         {
           "id": "percentage",
           "title": {
-            "en": "Percentage"
+            "en": "Percentage",
+            "fr": "Pourcentage"
           }
         }
       ]
@@ -43,7 +50,8 @@
       "name": "device",
       "type": "device",
       "placeholder": {
-        "en": "Select device"
+        "en": "Select device",
+        "fr": "Sélectionner un appareil"
       },
       "filter": "driver_id=petfeeder_mmgg_miot&capabilities=petfeeder_screen_display_mode"
     }

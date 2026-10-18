@@ -1,6 +1,6 @@
 {
-  "title": { "en": "Feeder status changed" },
-  "hint":  { "en": "Triggers when the feeder operating status changes between Idle, Feeding, and Fault. Fault means the device reported an error code, food blockage, or on the IV2001 a food bowl error." },
+  "title": { "en": "Feeder status changed", "fr": "L’état du distributeur a changé" },
+  "hint":  { "en": "Triggers when the feeder operating status changes between Idle, Feeding, and Fault. Fault means the device reported an error code, food blockage, or on the IV2001 a food bowl error.", "fr": "Se déclenche lorsque l’état du distributeur passe entre Au repos, Distribution en cours et Erreur. Une erreur indique un code d’erreur signalé par l’appareil, un blocage de nourriture ou, sur l’IV2001, une erreur de coupelle." },
   "args": [
     {
       "name": "device",
@@ -9,7 +9,7 @@
     }
   ],
   "tokens": [
-    { "name": "new_status",      "type": "string", "title": { "en": "New status" } },
-    { "name": "previous_status", "type": "string", "title": { "en": "Previous status" } }
+    { "name": "new_status",      "type": "string", "title": { "en": "New status", "fr": "Nouvel état" } },
+    { "name": "previous_status", "type": "string", "title": { "en": "Previous status", "fr": "État précédent" } }
   ]
 }

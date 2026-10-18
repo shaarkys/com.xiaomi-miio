@@ -902,10 +902,12 @@
       },
       {
         "title": {
-          "en": "Desiccant low"
+          "en": "Desiccant low",
+          "fr": "Niveau de dessiccant faible"
         },
         "hint": {
-          "en": "Triggers when desiccant level falls below the threshold."
+          "en": "Triggers when desiccant level falls below the threshold.",
+          "fr": "Se déclenche lorsque le niveau de dessiccant passe sous le seuil."
         },
         "args": [
           {
@@ -919,7 +921,8 @@
             "name": "level_percent",
             "type": "number",
             "title": {
-              "en": "Level (%)"
+              "en": "Level (%)",
+              "fr": "Niveau (%)"
             }
           }
         ],
@@ -927,10 +930,12 @@
       },
       {
         "title": {
-          "en": "Eaten food changed"
+          "en": "Eaten food changed",
+          "fr": "La quantité de nourriture consommée a changé"
         },
         "hint": {
-          "en": "Triggers when eaten food telemetry changes."
+          "en": "Triggers when eaten food telemetry changes.",
+          "fr": "Se déclenche lorsque la quantité de nourriture consommée change."
         },
         "args": [
           {
@@ -944,21 +949,24 @@
             "name": "today_g",
             "type": "number",
             "title": {
-              "en": "Today (g)"
+              "en": "Today (g)",
+              "fr": "Aujourd’hui (g)"
             }
           },
           {
             "name": "total_g",
             "type": "number",
             "title": {
-              "en": "Total (g)"
+              "en": "Total (g)",
+              "fr": "Total (g)"
             }
           },
           {
             "name": "delta_g",
             "type": "number",
             "title": {
-              "en": "Delta (g)"
+              "en": "Delta (g)",
+              "fr": "Variation (g)"
             }
           }
         ],
@@ -1003,10 +1011,12 @@
       },
       {
         "title": {
-          "en": "Feeder status changed"
+          "en": "Feeder status changed",
+          "fr": "L’état du distributeur a changé"
         },
         "hint": {
-          "en": "Triggers when the feeder operating status changes between Idle, Feeding, and Fault. Fault means the device reported an error code, food blockage, or on the IV2001 a food bowl error."
+          "en": "Triggers when the feeder operating status changes between Idle, Feeding, and Fault. Fault means the device reported an error code, food blockage, or on the IV2001 a food bowl error.",
+          "fr": "Se déclenche lorsque l’état du distributeur passe entre Au repos, Distribution en cours et Erreur. Une erreur indique un code d’erreur signalé par l’appareil, un blocage de nourriture ou, sur l’IV2001, une erreur de coupelle."
         },
         "args": [
           {
@@ -1020,14 +1030,16 @@
             "name": "new_status",
             "type": "string",
             "title": {
-              "en": "New status"
+              "en": "New status",
+              "fr": "Nouvel état"
             }
           },
           {
             "name": "previous_status",
             "type": "string",
             "title": {
-              "en": "Previous status"
+              "en": "Previous status",
+              "fr": "État précédent"
             }
           }
         ],
@@ -10448,14 +10460,16 @@
       },
       {
         "title": {
-          "en": "Reset desiccant replacement status"
+          "en": "Reset desiccant replacement status",
+          "fr": "Réinitialiser l’état du remplacement du dessiccant"
         },
         "args": [
           {
             "name": "device",
             "type": "device",
             "placeholder": {
-              "en": "Select device"
+              "en": "Select device",
+              "fr": "Sélectionner un appareil"
             },
             "filter": "driver_id=petfeeder_mmgg_miot&capabilities=petfeeder_screen_display_mode"
           }
@@ -10467,41 +10481,48 @@
       },
       {
         "title": {
-          "en": "Set screen display"
+          "en": "Set screen display",
+          "fr": "Régler l’affichage de l’écran"
         },
         "titleFormatted": {
-          "en": "Set screen display to [[mode]]"
+          "en": "Set screen display to [[mode]]",
+          "fr": "Régler l’affichage de l’écran sur [[mode]]"
         },
         "args": [
           {
             "name": "mode",
             "title": {
-              "en": "Display mode"
+              "en": "Display mode",
+              "fr": "Mode d’affichage"
             },
             "type": "dropdown",
             "values": [
               {
                 "id": "off",
                 "title": {
-                  "en": "Off"
+                  "en": "Off",
+                  "fr": "Désactivé"
                 }
               },
               {
                 "id": "left_grams",
                 "title": {
-                  "en": "Left grams"
+                  "en": "Left grams",
+                  "fr": "Grammes restants"
                 }
               },
               {
                 "id": "eaten_grams",
                 "title": {
-                  "en": "Eaten grams"
+                  "en": "Eaten grams",
+                  "fr": "Grammes consommés"
                 }
               },
               {
                 "id": "percentage",
                 "title": {
-                  "en": "Percentage"
+                  "en": "Percentage",
+                  "fr": "Pourcentage"
                 }
               }
             ]
@@ -10510,7 +10531,8 @@
             "name": "device",
             "type": "device",
             "placeholder": {
-              "en": "Select device"
+              "en": "Select device",
+              "fr": "Sélectionner un appareil"
             },
             "filter": "driver_id=petfeeder_mmgg_miot&capabilities=petfeeder_screen_display_mode"
           }
@@ -35660,7 +35682,8 @@
     "alarm_desiccant_low": {
       "type": "boolean",
       "title": {
-        "en": "Desiccant Low"
+        "en": "Desiccant Low",
+        "fr": "Niveau de dessiccant faible"
       },
       "getable": true,
       "setable": false,
@@ -37871,7 +37894,8 @@
     "measure_petfeeder_eaten_food_daily": {
       "type": "number",
       "title": {
-        "en": "Food consumed previous day"
+        "en": "Food consumed previous day",
+        "fr": "Nourriture consommée la veille"
       },
       "units": {
         "en": "g"
@@ -37887,7 +37911,8 @@
     "measure_petfeeder_eaten_food_today": {
       "type": "number",
       "title": {
-        "en": "Eaten food today"
+        "en": "Eaten food today",
+        "fr": "Nourriture consommée aujourd’hui"
       },
       "units": {
         "en": "g"
@@ -37903,7 +37928,8 @@
     "measure_petfeeder_food_in_bowl": {
       "type": "number",
       "title": {
-        "en": "Food left in bowl"
+        "en": "Food left in bowl",
+        "fr": "Quantité de nourriture restante dans la coupelle"
       },
       "units": {
         "en": "g"
@@ -37919,7 +37945,8 @@
     "measure_petfeeder_food_out_progress": {
       "type": "number",
       "title": {
-        "en": "Food out progress"
+        "en": "Food out progress",
+        "fr": "Progression de la distribution"
       },
       "units": {
         "en": "%"
@@ -37936,7 +37963,8 @@
     "measure_petfeeder_schedule_progress": {
       "type": "number",
       "title": {
-        "en": "Schedule progress"
+        "en": "Schedule progress",
+        "fr": "Progression du programme de distribution"
       },
       "units": {
         "en": "%"
@@ -38213,31 +38241,36 @@
     "petfeeder_bowl_level": {
       "type": "enum",
       "title": {
-        "en": "Food level in bowl"
+        "en": "Food level in bowl",
+        "fr": "Niveau de nourriture dans la coupelle"
       },
       "values": [
         {
           "id": "empty",
           "title": {
-            "en": "Empty"
+            "en": "Empty",
+            "fr": "Vide"
           }
         },
         {
           "id": "low",
           "title": {
-            "en": "Low"
+            "en": "Low",
+            "fr": "Faible"
           }
         },
         {
           "id": "normal",
           "title": {
-            "en": "Normal"
+            "en": "Normal",
+            "fr": "Normal"
           }
         },
         {
           "id": "unknown",
           "title": {
-            "en": "Unknown"
+            "en": "Unknown",
+            "fr": "Inconnu"
           }
         }
       ],
@@ -38249,27 +38282,32 @@
     "petfeeder_busy": {
       "type": "boolean",
       "title": {
-        "en": "Feeder busy"
+        "en": "Feeder busy",
+        "fr": "Distributeur occupé"
       },
       "getable": true,
       "setable": false,
       "uiComponent": "sensor",
       "insights": true,
       "insightsTitleTrue": {
-        "en": "Feeding"
+        "en": "Feeding",
+        "fr": "Distribution en cours"
       },
       "insightsTitleFalse": {
-        "en": "Idle"
+        "en": "Idle",
+        "fr": "Au repos"
       },
       "icon": "/assets/icons/start.svg"
     },
     "petfeeder_eaten_food_daily": {
       "type": "number",
       "title": {
-        "en": "Food consumed previous day"
+        "en": "Food consumed previous day",
+        "fr": "Nourriture consommée la veille"
       },
       "desc": {
-        "en": "Final locally calculated food consumption for the previous day"
+        "en": "Final locally calculated food consumption for the previous day",
+        "fr": "Consommation de nourriture de la veille, calculée localement"
       },
       "getable": true,
       "setable": false,
@@ -38281,17 +38319,20 @@
       "uiComponent": "sensor",
       "insights": true,
       "insightsTitle": {
-        "en": "Daily food consumption"
+        "en": "Daily food consumption",
+        "fr": "Consommation quotidienne de nourriture"
       },
       "icon": "/assets/icons/food-quantity.svg"
     },
     "petfeeder_eaten_food_today": {
       "type": "number",
       "title": {
-        "en": "Eaten Food Today"
+        "en": "Eaten Food Today",
+        "fr": "Nourriture consommée aujourd’hui"
       },
       "desc": {
-        "en": "Food consumed since midnight, calculated locally from small decreases in feeder weight"
+        "en": "Food consumed since midnight, calculated locally from small decreases in feeder weight",
+        "fr": "Nourriture consommée depuis minuit, calculée localement à partir des petites diminutions du poids mesuré par le distributeur"
       },
       "getable": true,
       "setable": false,
@@ -38303,7 +38344,8 @@
       "uiComponent": "sensor",
       "insights": true,
       "insightsTitle": {
-        "en": "Food eaten today"
+        "en": "Food eaten today",
+        "fr": "Nourriture consommée aujourd’hui"
       },
       "icon": "/assets/icons/food-quantity.svg"
     },
@@ -38327,7 +38369,8 @@
     "petfeeder_food_in_bowl": {
       "type": "number",
       "title": {
-        "en": "Food left in bowl"
+        "en": "Food left in bowl",
+        "fr": "Quantité de nourriture restante dans la coupelle"
       },
       "units": {
         "en": "g"
@@ -38338,7 +38381,8 @@
       "setable": false,
       "insights": true,
       "insightsTitle": {
-        "en": "Food in bowl"
+        "en": "Food in bowl",
+        "fr": "Nourriture dans la coupelle"
       },
       "uiComponent": "sensor",
       "icon": "/assets/icons/petfeeder_foodlevel.svg"
@@ -38346,7 +38390,8 @@
     "petfeeder_food_out_progress": {
       "type": "number",
       "title": {
-        "en": "Food out progress"
+        "en": "Food out progress",
+        "fr": "Progression de la distribution"
       },
       "getable": true,
       "setable": false,
@@ -38362,7 +38407,8 @@
     "petfeeder_food_out_status": {
       "type": "enum",
       "title": {
-        "en": "Food Out Status"
+        "en": "Food Out Status",
+        "fr": "État de la sortie de nourriture"
       },
       "getable": true,
       "setable": false,
@@ -38370,13 +38416,15 @@
         {
           "id": "ok",
           "title": {
-            "en": "OK"
+            "en": "OK",
+            "fr": "OK"
           }
         },
         {
           "id": "food_out",
           "title": {
-            "en": "Food Out"
+            "en": "Food Out",
+            "fr": "Absence de nourriture"
           }
         }
       ],
@@ -38386,7 +38434,8 @@
     "petfeeder_food_stuck_status": {
       "type": "enum",
       "title": {
-        "en": "Food stuck status"
+        "en": "Food stuck status",
+        "fr": "État de blocage de la nourriture"
       },
       "getable": true,
       "setable": false,
@@ -38395,19 +38444,22 @@
         {
           "id": "ok",
           "title": {
-            "en": "OK"
+            "en": "OK",
+            "fr": "OK"
           }
         },
         {
           "id": "stuck",
           "title": {
-            "en": "Food stuck"
+            "en": "Food stuck",
+            "fr": "Nourriture bloquée"
           }
         },
         {
           "id": "unknown",
           "title": {
-            "en": "Unknown"
+            "en": "Unknown",
+            "fr": "Inconnu"
           }
         }
       ],
@@ -38421,7 +38473,7 @@
         "da": "Foderniveau i beholder",
         "de": "Füllstand im Futterbehälter",
         "es": "Nivel de comida del depósito",
-        "fr": "Niveau du réservoir de nourriture",
+        "fr": "Niveau de nourriture dans le réservoir",
         "it": "Livello cibo nel contenitore",
         "no": "Fôrnivå i beholder",
         "sv": "Matnivå i behållaren",
@@ -38432,19 +38484,22 @@
       "values": [
         {
           "title": {
-            "en": "Normal"
+            "en": "Normal",
+            "fr": "Normal"
           },
           "id": "normal"
         },
         {
           "title": {
-            "en": "Low"
+            "en": "Low",
+            "fr": "Faible"
           },
           "id": "low"
         },
         {
           "title": {
-            "en": "Unknown"
+            "en": "Unknown",
+            "fr": "Inconnu"
           },
           "id": "unknown"
         }
@@ -38457,7 +38512,8 @@
     "petfeeder_heap_status": {
       "type": "enum",
       "title": {
-        "en": "Heap Status"
+        "en": "Heap Status",
+        "fr": "État de l’accumulation de nourriture"
       },
       "getable": true,
       "setable": false,
@@ -38465,13 +38521,15 @@
         {
           "id": "ok",
           "title": {
-            "en": "OK"
+            "en": "OK",
+            "fr": "OK"
           }
         },
         {
           "id": "heap_detected",
           "title": {
-            "en": "Heap Detected"
+            "en": "Heap Detected",
+            "fr": "Accumulation de nourriture détectée"
           }
         }
       ],
@@ -38481,31 +38539,36 @@
     "petfeeder_screen_display_mode": {
       "type": "enum",
       "title": {
-        "en": "Screen display"
+        "en": "Screen display",
+        "fr": "Affichage de l’écran"
       },
       "values": [
         {
           "id": "off",
           "title": {
-            "en": "Off"
+            "en": "Off",
+            "fr": "Désactivé"
           }
         },
         {
           "id": "left_grams",
           "title": {
-            "en": "Left grams"
+            "en": "Left grams",
+            "fr": "Grammes restants"
           }
         },
         {
           "id": "eaten_grams",
           "title": {
-            "en": "Eaten grams"
+            "en": "Eaten grams",
+            "fr": "Grammes consommés"
           }
         },
         {
           "id": "percentage",
           "title": {
-            "en": "Percentage"
+            "en": "Percentage",
+            "fr": "Pourcentage"
           }
         }
       ],
@@ -38517,7 +38580,8 @@
     "petfeeder_serve_food": {
       "type": "boolean",
       "title": {
-        "en": "Serve one portion"
+        "en": "Serve one portion",
+        "fr": "Distribuer une portion"
       },
       "getable": false,
       "setable": true,
@@ -38527,7 +38591,8 @@
     "petfeeder_schedule_progress": {
       "type": "number",
       "title": {
-        "en": "Schedule progress"
+        "en": "Schedule progress",
+        "fr": "Progression du programme de distribution"
       },
       "units": {
         "en": "%"
@@ -38543,7 +38608,8 @@
     "petfeeder_status_mode": {
       "type": "enum",
       "title": {
-        "en": "Feeder Status"
+        "en": "Feeder Status",
+        "fr": "État du distributeur"
       },
       "getable": true,
       "setable": false,
@@ -38551,31 +38617,36 @@
         {
           "id": "unknown",
           "title": {
-            "en": "Unknown"
+            "en": "Unknown",
+            "fr": "Inconnu"
           }
         },
         {
           "id": "idle",
           "title": {
-            "en": "Idle"
+            "en": "Idle",
+            "fr": "Au repos"
           }
         },
         {
           "id": "feeding",
           "title": {
-            "en": "Feeding"
+            "en": "Feeding",
+            "fr": "Distribution en cours"
           }
         },
         {
           "id": "paused",
           "title": {
-            "en": "Paused"
+            "en": "Paused",
+            "fr": "En pause"
           }
         },
         {
           "id": "fault",
           "title": {
-            "en": "Fault"
+            "en": "Fault",
+            "fr": "Erreur"
           }
         }
       ],

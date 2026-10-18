@@ -1,6 +1,6 @@
 {
   "type": "number",
-  "title": { "en": "Food left in bowl" },
+  "title": { "en": "Food left in bowl", "fr": "Quantité de nourriture restante dans la coupelle" },
   "units": { "en": "g" },
   "decimals": 1,
   "min": 0,

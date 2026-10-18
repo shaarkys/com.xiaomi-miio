@@ -1,31 +1,36 @@
 {
   "type": "enum",
   "title": {
-    "en": "Food level in bowl"
+    "en": "Food level in bowl",
+    "fr": "Niveau de nourriture dans la coupelle"
   },
   "values": [
     {
       "id": "empty",
       "title": {
-        "en": "Empty"
+        "en": "Empty",
+        "fr": "Vide"
       }
     },
     {
       "id": "low",
       "title": {
-        "en": "Low"
+        "en": "Low",
+        "fr": "Faible"
       }
     },
     {
       "id": "normal",
       "title": {
-        "en": "Normal"
+        "en": "Normal",
+        "fr": "Normal"
       }
     },
     {
       "id": "unknown",
       "title": {
-        "en": "Unknown"
+        "en": "Unknown",
+        "fr": "Inconnu"
       }
     }
   ],

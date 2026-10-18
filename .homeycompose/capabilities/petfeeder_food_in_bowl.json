@@ -1,7 +1,8 @@
 {
   "type": "number",
   "title": {
-    "en": "Food left in bowl"
+    "en": "Food left in bowl",
+    "fr": "Quantité de nourriture restante dans la coupelle"
   },
   "units": {
     "en": "g"
@@ -12,7 +13,8 @@
   "setable": false,
   "insights": true,
   "insightsTitle": {
-    "en": "Food in bowl"
+    "en": "Food in bowl",
+    "fr": "Nourriture dans la coupelle"
   },
   "uiComponent": "sensor",
   "icon": "/assets/icons/petfeeder_foodlevel.svg"

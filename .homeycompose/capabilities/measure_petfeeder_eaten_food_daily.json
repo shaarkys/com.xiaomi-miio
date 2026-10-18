@@ -1,6 +1,6 @@
 {
   "type": "number",
-  "title": { "en": "Food consumed previous day" },
+  "title": { "en": "Food consumed previous day", "fr": "Nourriture consommée la veille" },
   "units": { "en": "g" },
   "decimals": 0,
   "min": 0,

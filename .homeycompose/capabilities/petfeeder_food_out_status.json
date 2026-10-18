@@ -1,11 +1,11 @@
 {
   "type": "enum",
-  "title": { "en": "Food Out Status" },
+  "title": { "en": "Food Out Status", "fr": "État de la sortie de nourriture" },
   "getable": true,
   "setable": false,
   "values": [
-    { "id": "ok", "title": { "en": "OK" } },
-    { "id": "food_out", "title": { "en": "Food Out" } }
+    { "id": "ok", "title": { "en": "OK", "fr": "OK" } },
+    { "id": "food_out", "title": { "en": "Food Out", "fr": "Absence de nourriture" } }
   ],
   "uiComponent": "sensor",
   "icon": "/assets/icons/alarm_generic.svg"

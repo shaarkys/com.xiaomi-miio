@@ -1,7 +1,8 @@
 {
   "type": "boolean",
   "title": {
-    "en": "Serve one portion"
+    "en": "Serve one portion",
+    "fr": "Distribuer une portion"
   },
   "getable": false,
   "setable": true,

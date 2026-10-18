@@ -1,24 +1,25 @@
 {
   "type": "enum",
   "title": {
-    "en": "Screen display"
+    "en": "Screen display",
+    "fr": "Affichage de l’écran"
   },
   "values": [
     {
       "id": "off",
-      "title": { "en": "Off" }
+      "title": { "en": "Off", "fr": "Désactivé" }
     },
     {
       "id": "left_grams",
-      "title": { "en": "Left grams" }
+      "title": { "en": "Left grams", "fr": "Grammes restants" }
     },
     {
       "id": "eaten_grams",
-      "title": { "en": "Eaten grams" }
+      "title": { "en": "Eaten grams", "fr": "Grammes consommés" }
     },
     {
       "id": "percentage",
-      "title": { "en": "Percentage" }
+      "title": { "en": "Percentage", "fr": "Pourcentage" }
     }
   ],
   "getable": true,

@@ -1,13 +1,15 @@
 {
   "title": {
-    "en": "Reset desiccant replacement status"
+    "en": "Reset desiccant replacement status",
+    "fr": "Réinitialiser l’état du remplacement du dessiccant"
   },
   "args": [
     {
       "name": "device",
       "type": "device",
       "placeholder": {
-        "en": "Select device"
+        "en": "Select device",
+        "fr": "Sélectionner un appareil"
       },
       "filter": "driver_id=petfeeder_mmgg_miot&capabilities=petfeeder_screen_display_mode"
     }

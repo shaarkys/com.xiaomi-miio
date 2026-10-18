@@ -1,7 +1,8 @@
 {
   "type": "number",
   "title": {
-    "en": "Food out progress"
+    "en": "Food out progress",
+    "fr": "Progression de la distribution"
   },
   "getable": true,
   "setable": false,

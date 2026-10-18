@@ -1,10 +1,12 @@
 {
   "type": "number",
   "title": {
-    "en": "Eaten Food Today"
+    "en": "Eaten Food Today",
+    "fr": "Nourriture consommée aujourd’hui"
   },
   "desc": {
-    "en": "Food consumed since midnight, calculated locally from small decreases in feeder weight"
+    "en": "Food consumed since midnight, calculated locally from small decreases in feeder weight",
+    "fr": "Nourriture consommée depuis minuit, calculée localement à partir des petites diminutions du poids mesuré par le distributeur"
   },
   "getable": true,
   "setable": false,
@@ -16,7 +18,8 @@
   "uiComponent": "sensor",
   "insights": true,
   "insightsTitle": {
-    "en": "Food eaten today"
+    "en": "Food eaten today",
+    "fr": "Nourriture consommée aujourd’hui"
   },
   "icon": "/assets/icons/food-quantity.svg"
 }

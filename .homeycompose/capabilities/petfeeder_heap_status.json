@@ -1,11 +1,11 @@
 {
   "type": "enum",
-  "title": { "en": "Heap Status" },
+  "title": { "en": "Heap Status", "fr": "État de l’accumulation de nourriture" },
   "getable": true,
   "setable": false,
   "values": [
-    { "id": "ok", "title": { "en": "OK" } },
-    { "id": "heap_detected", "title": { "en": "Heap Detected" } }
+    { "id": "ok", "title": { "en": "OK", "fr": "OK" } },
+    { "id": "heap_detected", "title": { "en": "Heap Detected", "fr": "Accumulation de nourriture détectée" } }
   ],
   "uiComponent": "sensor",
   "icon": "/assets/icons/alarm_generic.svg"

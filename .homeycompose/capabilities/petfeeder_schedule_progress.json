@@ -1,7 +1,8 @@
 {
   "type": "number",
   "title": {
-    "en": "Schedule progress"
+    "en": "Schedule progress",
+    "fr": "Progression du programme de distribution"
   },
   "units": {
     "en": "%"

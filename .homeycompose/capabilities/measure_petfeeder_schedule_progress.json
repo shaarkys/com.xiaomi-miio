@@ -1,6 +1,6 @@
 {
   "type": "number",
-  "title": { "en": "Schedule progress" },
+  "title": { "en": "Schedule progress", "fr": "Progression du programme de distribution" },
   "units": { "en": "%" },
   "decimals": 0,
   "min": 0,

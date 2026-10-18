@@ -1,7 +1,8 @@
 {
   "type": "enum",
   "title": {
-    "en": "Food stuck status"
+    "en": "Food stuck status",
+    "fr": "État de blocage de la nourriture"
   },
   "getable": true,
   "setable": false,
@@ -10,19 +11,22 @@
     {
       "id": "ok",
       "title": {
-        "en": "OK"
+        "en": "OK",
+        "fr": "OK"
       }
     },
     {
       "id": "stuck",
       "title": {
-        "en": "Food stuck"
+        "en": "Food stuck",
+        "fr": "Nourriture bloquée"
       }
     },
     {
       "id": "unknown",
       "title": {
-        "en": "Unknown"
+        "en": "Unknown",
+        "fr": "Inconnu"
       }
     }
   ],

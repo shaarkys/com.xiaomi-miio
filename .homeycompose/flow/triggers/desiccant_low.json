@@ -1,6 +1,6 @@
 {
-  "title": { "en": "Desiccant low" },
-  "hint":  { "en": "Triggers when desiccant level falls below the threshold." },
+  "title": { "en": "Desiccant low", "fr": "Niveau de dessiccant faible" },
+  "hint":  { "en": "Triggers when desiccant level falls below the threshold.", "fr": "Se déclenche lorsque le niveau de dessiccant passe sous le seuil." },
   "args": [
     {
       "name": "device",
@@ -9,6 +9,6 @@
     }
   ],
   "tokens": [
-    { "name": "level_percent", "type": "number", "title": { "en": "Level (%)" } }
+    { "name": "level_percent", "type": "number", "title": { "en": "Level (%)", "fr": "Niveau (%)" } }
   ]
 }

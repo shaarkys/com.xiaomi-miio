@@ -1,10 +1,12 @@
 {
   "type": "number",
   "title": {
-    "en": "Food consumed previous day"
+    "en": "Food consumed previous day",
+    "fr": "Nourriture consommée la veille"
   },
   "desc": {
-    "en": "Final locally calculated food consumption for the previous day"
+    "en": "Final locally calculated food consumption for the previous day",
+    "fr": "Consommation de nourriture de la veille, calculée localement"
   },
   "getable": true,
   "setable": false,
@@ -16,7 +18,8 @@
   "uiComponent": "sensor",
   "insights": true,
   "insightsTitle": {
-    "en": "Daily food consumption"
+    "en": "Daily food consumption",
+    "fr": "Consommation quotidienne de nourriture"
   },
   "icon": "/assets/icons/food-quantity.svg"
 }
