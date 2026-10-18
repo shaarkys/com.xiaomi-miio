@@ -369,6 +369,7 @@ const GET_PROPERTIES_CHUNK_SIZE = {
 };
 const DEFAULT_GET_PROPERTIES_CHUNK_SIZE = 5;
 const GET_PROPERTIES_CHUNK_DELAY_MS = 100;
+const X20_PRO_OPTIONAL_POLL_PIIDS = Object.freeze([54, 66, 18]);
 const ROOM_ALIAS_STORE_KEY = 'room_id_name_aliases';
 const SAVED_MAP_SAFETY_STORE_KEY = 'saved_map_room_safety';
 const SAVED_MAP_MODELS = Object.freeze(['xiaomi.vacuum.d102gl', 'xiaomi.vacuum.d109gl']);
@@ -2160,6 +2161,10 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             let result;
             try {
                 result = await this.callVacuumGetProperties(this.deviceProperties.get_properties, { retries: 2 });
+                if (this.miio !== pollConnection) {
+                    this.log('[POLL] Discarding readings from a replaced connection.');
+                    return;
+                }
                 const recoveredFailures = this._mainPollFailures || 0;
                 if (recoveredFailures > 0) {
                     const suffix = recoveredFailures === 1 ? '' : 's';
@@ -2168,6 +2173,10 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                 this._mainPollFailures = 0;
                 mainPollSucceeded = true;
             } catch (error) {
+                if (this.miio !== pollConnection) {
+                    this.log('[POLL] Ignoring a property failure from a replaced connection.');
+                    return;
+                }
                 await this._handleMainPollFailure(error);
                 return;
             }
@@ -2216,6 +2225,10 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                 }
             }
 
+            if (this.miio !== pollConnection) {
+                this.log('[POLL] Discarding readings after the connection changed during room discovery.');
+                return;
+            }
             if (!this.getAvailable()) await this.setAvailable();
 
             // diff logging
@@ -3436,10 +3449,43 @@ class XiaomiVacuumMiotDeviceMax extends Device {
     }
 
     callVacuumGetProperties(properties, options = { retries: 2 }) {
+        const connection = this.miio;
+        const isProMainPoll = this.getModelIdentifier() === 'xiaomi.vacuum.d102gl'
+            && Array.isArray(properties) && properties.length > 0 && properties === this.deviceProperties?.get_properties;
         return this._queuePropertyOperation(() => {
+            if (isProMainPoll) return this._readX20ProPollProperties(properties, options, connection);
             const chunkSize = GET_PROPERTIES_CHUNK_SIZE[this.getModelIdentifier()] ?? DEFAULT_GET_PROPERTIES_CHUNK_SIZE;
             return this.callMiotGetProperties(properties, { ...options, chunkSize, delayMs: GET_PROPERTIES_CHUNK_DELAY_MS });
         });
+    }
+
+    async _readX20ProPollProperties(properties, options, connection) {
+        const result = [];
+        for (let index = 0; index < properties.length; index += 1) {
+            if (!connection || this.miio !== connection) throw new Error('The vacuum connection changed during polling.');
+            const property = properties[index];
+            const started = Date.now();
+            try {
+                const response = await connection.call('get_properties', [property], options);
+                if (this.miio !== connection) throw new Error('The vacuum connection changed during polling.');
+                const entry = Array.isArray(response) && response.find((item) => item && item.siid === property.siid && item.piid === property.piid);
+                if (!entry || entry.code !== 0 || entry.value == null) {
+                    throw new Error(entry && entry.code !== 0 ? `MIoT property returned code ${entry.code}.` : 'MIoT property returned no usable value.');
+                }
+                result.push(entry);
+            } catch (error) {
+                if (this.miio !== connection) throw error;
+                // The 20 baseline readings establish connectivity; ancillary water,
+                // fault-list and dock diagnostics must not discard those readings.
+                const optional = property.siid === 2 && X20_PRO_OPTIONAL_POLL_PIIDS.includes(property.piid);
+                this.error(`[POLL] ${optional ? 'Optional' : 'Main'} property ${property.did} (${property.siid}/${property.piid}) failed after ${Date.now() - started} ms: ${this._getSafeErrorDetails(error)}${optional ? '; continuing with the available readings.' : ''}`);
+                if (!optional) throw error;
+            }
+            if (index + 1 < properties.length) {
+                await new Promise((resolve) => this.homey.setTimeout(resolve, GET_PROPERTIES_CHUNK_DELAY_MS));
+            }
+        }
+        return result;
     }
 
     _getSafeErrorDetails(error) {

@@ -283,6 +283,120 @@ test('optional room reads and local processing failures do not trigger transport
     assert.ok(localCase.errors.some(([message]) => String(message).includes('capability update failed')));
 });
 
+test('X20 Pro keeps its main readings and connection when an ancillary status request times out', async (t) => {
+    for (const failedPiid of [54, 66, 18]) {
+        await t.test(`SIID 2 / PIID ${failedPiid}`, async () => {
+            const requested = [];
+            const updates = [];
+            const miio = {
+                call: async (method, batch, options) => {
+                    const property = batch[0];
+                    requested.push(property);
+                    assert.equal(method, 'get_properties');
+                    assert.equal(batch.length, 1);
+                    assert.equal(options.retries, 2);
+                    if (property.siid === 2 && property.piid === failedPiid) {
+                        throw Object.assign(new Error('Call to device timed out'), { code: 'timeout' });
+                    }
+                    const values = { device_status: 2, device_fault: 100008, battery: 80, fault_ids: '{"fault":[0]}', base_station_working_status: '{"mode":0}' };
+                    return [{ ...property, code: 0, value: values[property.did] ?? 1 }];
+                }
+            };
+            const run = createPollingDevice(miio);
+            run.device._applyModelProperties('xiaomi.vacuum.d102gl');
+            run.device._roomsDiscovered = true;
+            run.device._discoverSavedMapsAfterFirstPoll = () => {};
+            const scheduleTimeout = run.device.homey.setTimeout;
+            run.device.homey.setTimeout = (callback, delay) => {
+                if (delay === 100) {
+                    queueMicrotask(callback);
+                    return 'property-delay';
+                }
+                return scheduleTimeout(callback, delay);
+            };
+            run.device.updateCapabilityValue = async (capability, value) => updates.push({ capability, value });
+
+            for (let poll = 0; poll < 3; poll += 1) await run.device.retrieveDeviceData();
+
+            assert.equal(run.device._mainPollFailures, 0);
+            assert.deepEqual(run.unavailableCalls, []);
+            assert.deepEqual(run.timers.clearIntervals, []);
+            assert.deepEqual(run.timers.timeouts, []);
+            assert.equal(requested.length, 69, 'each poll continues through all 23 properties');
+            assert.equal(updates.filter(({ capability, value }) => capability === 'measure_battery' && value === 80).length, 3);
+            assert.ok(run.errors.some(([message]) => String(message).includes(`2/${failedPiid}`) && String(message).includes('timeout')));
+        });
+    }
+});
+
+test('X20 Pro ancillary reads remain strict outside the main status poll', async () => {
+    const timeout = Object.assign(new Error('Call to device timed out'), { code: 'timeout' });
+    const { device } = createPollingDevice({ call: async () => { throw timeout; } });
+    device._applyModelProperties('xiaomi.vacuum.d102gl');
+    await assert.rejects(device.callVacuumGetProperties([{ did: 'fault_ids', siid: 2, piid: 66 }]), (error) => error === timeout);
+});
+
+test('X20 Pro still reconnects after repeated failures of its core device-status request', async () => {
+    const timeout = Object.assign(new Error('Call to device timed out'), { code: 'timeout' });
+    const calls = [];
+    const run = createPollingDevice({
+        call: async (method, batch) => {
+            calls.push(batch);
+            throw timeout;
+        }
+    });
+    run.device._applyModelProperties('xiaomi.vacuum.d102gl');
+    for (let poll = 0; poll < 3; poll += 1) await run.device.retrieveDeviceData();
+    assert.deepEqual(calls.map((batch) => batch.map(({ siid, piid }) => ({ siid, piid }))), [
+        [{ siid: 2, piid: 2 }], [{ siid: 2, piid: 2 }], [{ siid: 2, piid: 2 }]
+    ]);
+    assert.deepEqual(run.unavailableCalls, ['device.unreachable']);
+    assert.equal(run.timers.timeouts.length, 1);
+    assert.equal(run.timers.timeouts[0].delay, 60000);
+    assert.ok(run.errors.some(([message]) => String(message).includes('device_status (2/2)')));
+});
+
+test('a replaced X20 Pro connection cannot contribute a failed poll or stale readings', async () => {
+    for (const fails of [false, true]) {
+        let run;
+        const replacement = { call: async () => { throw new Error('A stale poll must not use the replacement'); } };
+        const miio = {
+            call: async (method, batch) => {
+                run.device.miio = replacement;
+                if (fails) throw Object.assign(new Error('Old connection timeout'), { code: 'timeout' });
+                return [{ ...batch[0], code: 0, value: 2 }];
+            }
+        };
+        run = createPollingDevice(miio);
+        run.device._applyModelProperties('xiaomi.vacuum.d102gl');
+        run.device.homey.setTimeout = (callback) => { queueMicrotask(callback); return 'delay'; };
+        const updates = [];
+        run.device.updateCapabilityValue = async (...args) => updates.push(args);
+        await run.device.retrieveDeviceData();
+        assert.equal(run.device._mainPollFailures || 0, 0);
+        assert.deepEqual(run.unavailableCalls, []);
+        assert.deepEqual(updates, []);
+    }
+});
+
+test('room discovery cannot publish readings after the connection is replaced', async () => {
+    let run;
+    const replacement = { call: async () => [] };
+    const miio = {
+        call: async (method, batch) => {
+            if (batch.length === 0) return [];
+            run.device.miio = replacement;
+            return [{ ...batch[0], code: 0, value: '{"rooms":[]}' }];
+        }
+    };
+    run = createPollingDevice(miio, { rooms: true });
+    const updates = [];
+    run.device.updateCapabilityValue = async (...args) => updates.push(args);
+    await run.device.retrieveDeviceData();
+    assert.deepEqual(updates, []);
+    assert.deepEqual(run.unavailableCalls, []);
+});
+
 test('a failed unavailable update logs its safe cause without blocking the reconnect timer', async () => {
     const miio = {
         call: async () => {
