@@ -679,5 +679,8 @@
   },
   "3.5.47": {
     "en": "Improved X20 Pro connection stability and corrected MIoT timeout recovery. Added French translations for the Cat Feeder’s device."
+  },
+  "3.5.48": {
+    "en": "Use miio transport fix for replies preceding send callbacks"
   }
 }
