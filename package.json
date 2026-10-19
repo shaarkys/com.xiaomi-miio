@@ -13,7 +13,7 @@
   "dependencies": {
     "@thingbound/discovery": "github:thingbound/discovery",
     "abstract-things": "github:shaarkys/abstract-things-react-native",
-    "miio": "github:shaarkys/miio#c0fb6b641526e970dfbc5bbdb74e20480be6acf4",
+    "miio": "github:shaarkys/miio#5dbbbb9d2c5b5fef3c65c0f4c989721caf812cf7",
     "mimorelinks": "^1.2.1",
     "tinkerhub-discovery": "^0.6.0",
     "tinycolor2": "^1.6.0"
