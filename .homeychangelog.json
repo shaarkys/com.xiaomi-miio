@@ -682,5 +682,8 @@
   },
   "3.5.48": {
     "en": "Use miio transport fix for replies preceding send callbacks"
+  },
+  "3.5.49": {
+    "en": "Fixed missing miIO device IDs after connection interruptions, preventing Flow errors while devices otherwise remain responsive."
   }
 }
