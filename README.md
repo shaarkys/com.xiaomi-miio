@@ -13,5 +13,12 @@ As mentioned not all available devices are supported. [Here](https://github.com/
 ## Support
 Github is for bugs and features. If you need support, please use the community support forum and visit the [support topic](https://community.homey.app/t/app-pro-xiaomi-mi-home-app-for-wifi-devices/118) for further details.
 
-## Donations
-I enjoy creating apps for Homey and try to support them as best as I can. If you enjoy using my apps a [donation](https://www.paypal.me/bkubesa) in return for the time I put into this is much appreciated.
+## Support development
+
+If this integration is useful to you, you can optionally support my ongoing development and maintenance:
+
+- [GitHub Sponsors](https://github.com/sponsors/shaarkys)
+- [Ko-fi](https://ko-fi.com/bretislavkubesa)
+- [PayPal](https://www.paypal.com/paypalme/bkubesa)
+
+Contributions are appreciated, never required, and do not affect features or support.

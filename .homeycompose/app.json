@@ -196,6 +196,9 @@
   },
   "contributing": {
     "donate": {
+      "githubSponsors": {
+        "username": "shaarkys"
+      },
       "paypal": {
         "username": "bkubesa"
       }
