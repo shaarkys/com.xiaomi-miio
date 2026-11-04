@@ -3,6 +3,7 @@
 const Homey = require('homey');
 const miio = require('miio');
 const Util = require('../lib/util.js');
+const { diagnoseConnection } = require('../lib/connection-diagnostic.js');
 
 const PAIR_DIAGNOSTIC_MESSAGE_LIMIT = 240;
 
@@ -85,6 +86,32 @@ function sanitizePairingDiagnosticText(value, sensitiveValues = []) {
 
 class MiHomeWifiDriver extends Homey.Driver {
 
+  async _diagnoseConnection(address, token) {
+    const result = await diagnoseConnection(address, token);
+    this._logPairingDiagnostic(`[CONNECTION] input=${result.input}, handshake=${result.handshake}, authentication=${result.authentication}`);
+    return result;
+  }
+
+  async _requirePairingConnection(data) {
+    const result = await this._diagnoseConnection(data.address, data.token);
+    if (result.input !== 'valid') throw new Error('Check the address and token format. The token must contain 32 hexadecimal characters.');
+    if (result.handshake !== 'passed') throw new Error('No miIO handshake response. Check the device address and local network. The token could not be tested.');
+    if (!['passed', 'device_error'].includes(result.authentication)) throw new Error('The device responded to the handshake, but the authenticated information request failed. Check the token and local connection.');
+  }
+
+  onRepair(session, device) {
+    if (!this._repairDiagnostics) this._repairDiagnostics = new WeakSet();
+    session.setHandler('diagnose_connection', async () => {
+      if (this._repairDiagnostics.has(device)) return { input: 'busy', handshake: 'not_tested', authentication: 'not_tested' };
+      this._repairDiagnostics.add(device);
+      try {
+        return await this._diagnoseConnection(device.getSetting('address'), device.getSetting('token'));
+      } finally {
+        this._repairDiagnostics.delete(device);
+      }
+    });
+  }
+
   onInit() {
     if (!this.util) this.util = new Util({homey: this.homey});
   }
@@ -155,8 +182,12 @@ class MiHomeWifiDriver extends Homey.Driver {
     let deviceObject = {};
 
     session.setHandler('test_connection', async (data) => {
+      deviceObject = {};
       const diagnostic = this._startPairingDiagnostic(data);
       try {
+        this._setPairingDiagnosticStage(diagnostic, 'connection-diagnostic');
+        await this._requirePairingConnection(data);
+        this._setPairingDiagnosticStage(diagnostic, 'miio.device');
         const device = await miio.device({ address: data.address, token: data.token });
         this._setPairingDiagnosticStage(diagnostic, 'model-detection');
         const model = await device.miioModel;

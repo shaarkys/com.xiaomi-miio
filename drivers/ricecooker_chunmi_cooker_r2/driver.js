@@ -19,6 +19,9 @@ class ChunmiRiceCookerDriver extends Driver {
       let device;
       const diagnostic = this._startPairingDiagnostic(data);
       try {
+        this._setPairingDiagnosticStage(diagnostic, 'connection-diagnostic');
+        await this._requirePairingConnection(data);
+        this._setPairingDiagnosticStage(diagnostic, 'miio.device');
         device = await miio.device({ address: data.address, token: data.token });
         this._setPairingDiagnosticStage(diagnostic, 'model-validation');
         const model = device.miioModel;

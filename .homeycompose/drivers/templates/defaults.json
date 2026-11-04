@@ -17,6 +17,12 @@
       "$template": "add_device"
     }
   ],
+  "repair": [
+    {
+      "id": "connection_diagnostic",
+      "$template": "connection_diagnostic"
+    }
+  ],
   "platforms": [
     "local"
   ],

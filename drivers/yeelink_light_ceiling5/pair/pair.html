@@ -3,7 +3,13 @@
 Homey.setTitle( __('pair.title') );
 
 $(function() {
+  $('#address, #token, #polling').on('input', function() {
+    $('#connect').prop('disabled', true);
+    $('.mi-device-test').hide();
+  });
   $('#test-connection').click(function() {
+    $('#connect').prop('disabled', true);
+    $('#test-connection').prop('disabled', true);
     $('.mi-device-test').hide();
     $('.mi-device-error').hide();
     $('.mi-device-ok').hide();
@@ -21,16 +27,19 @@ $(function() {
 
       Homey.emit('test_connection', device_data)
         .then(result => {
-          $('.mi-device-test').show();
-          $('#connect').prop('disabled', false);
+          if ($('#address').val() === inputaddress && $('#token').val() === inputtoken && (Number($('#polling').val()) || 60) === inputpolling) {
+            $('.mi-device-test').show();
+            $('#connect').prop('disabled', false);
+          }
         }).catch(error => {
           $('.mi-device-error').show();
-          $('.mi-device-error-msg').html(error.message || error.toString());
-        });
+          $('.mi-device-error-msg').text(error.message || error.toString());
+        }).finally(() => $('#test-connection').prop('disabled', false));
 
     } else {
       $('.mi-device-error').show();
       $('.mi-device-error-msg').html( __('pair.nosettings') );
+      $('#test-connection').prop('disabled', false);
     }
 
 	});
@@ -102,5 +111,6 @@ $(function() {
 
 <div class="messages">
   <p class="mi-device-status mi-device-test" style="color: #008C23;"><i class="fa fa-check"></i> <span data-i18n="pair.testResult">Connection test successful, you can now connect the device with Homey.</span></p>
+  <p class="mi-device-status mi-device-test">Address and token format checked; handshake and authenticated request received.</p>
   <p class="mi-device-status mi-device-error" style="color: #ff6300;"><i class="fa fa-times"></i> <span class="mi-device-error-msg"></span></p>
 </div>

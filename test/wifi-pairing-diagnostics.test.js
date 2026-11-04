@@ -28,6 +28,7 @@ function createPairingHarness(DriverClass, friendlyNames = {}) {
   const logs = [];
   const errors = [];
   const driver = Object.create(DriverClass.prototype);
+  driver._requirePairingConnection = async () => {};
   driver.log = (message) => logs.push(message);
   driver.error = (error) => errors.push(error);
   driver.util = {
@@ -151,4 +152,46 @@ test('custom repeater pairing keeps its payload and adds the same safe diagnosti
   ]);
   assert.match(logs.join('\n'), /succeeded: stage=complete/);
   assert.doesNotMatch(logs.join('\n'), new RegExp(TOKEN));
+});
+
+test('pairing refuses to claim success when the authenticated request fails', async () => {
+  const { driver, handlers } = createPairingHarness(WifiDriver);
+  delete driver._requirePairingConnection;
+  driver._diagnoseConnection = async () => ({ input: 'valid', handshake: 'passed', authentication: 'no_response' });
+  let calls = 0;
+  miioDevice = async () => { calls += 1; };
+  await assert.rejects(handlers.test_connection({ address: '192.0.2.1', token: TOKEN, polling: 60 }), /authenticated information request failed/);
+  assert.equal(calls, 0);
+});
+
+test('repair uses the saved settings without returning the token', async () => {
+  const { driver } = createPairingHarness(WifiDriver);
+  const handlers = {};
+  const received = [];
+  driver._diagnoseConnection = async (...args) => {
+    received.push(args);
+    return { input: 'valid', handshake: 'passed', authentication: 'passed' };
+  };
+  driver.onRepair({ setHandler: (name, fn) => { handlers[name] = fn; } }, {
+    getSetting: (name) => ({ address: '192.0.2.1', token: TOKEN })[name]
+  });
+  const result = await handlers.diagnose_connection();
+  assert.deepEqual(received, [['192.0.2.1', TOKEN]]);
+  assert.equal(JSON.stringify(result).includes(TOKEN), false);
+});
+
+test('repair prevents simultaneous tests for the same device across sessions', async () => {
+  const { driver } = createPairingHarness(WifiDriver);
+  let complete;
+  driver._diagnoseConnection = () => new Promise((resolve) => { complete = resolve; });
+  const device = { getSetting: () => 'value' };
+  const first = {};
+  const second = {};
+  driver.onRepair({ setHandler: (name, fn) => { first[name] = fn; } }, device);
+  driver.onRepair({ setHandler: (name, fn) => { second[name] = fn; } }, device);
+  const pending = first.diagnose_connection();
+  assert.equal((await second.diagnose_connection()).input, 'busy');
+  complete({ input: 'valid', handshake: 'passed', authentication: 'passed' });
+  await pending;
+  assert.equal(driver._repairDiagnostics.has(device), false);
 });

@@ -15812,6 +15812,11 @@
           "id": "add_device"
         }
       ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
+        }
+      ],
       "platforms": [
         "local"
       ],
@@ -16085,6 +16090,11 @@
           "id": "add_device"
         }
       ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
+        }
+      ],
       "platforms": [
         "local"
       ],
@@ -16326,6 +16336,11 @@
         },
         {
           "id": "add_device"
+        }
+      ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
         }
       ],
       "platforms": [
@@ -16687,6 +16702,11 @@
           "id": "add_device"
         }
       ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
+        }
+      ],
       "platforms": [
         "local"
       ],
@@ -16821,6 +16841,11 @@
         },
         {
           "id": "add_device"
+        }
+      ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
         }
       ],
       "platforms": [
@@ -17173,6 +17198,11 @@
           "id": "add_device"
         }
       ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
+        }
+      ],
       "platforms": [
         "local"
       ],
@@ -17445,6 +17475,11 @@
         },
         {
           "id": "add_device"
+        }
+      ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
         }
       ],
       "platforms": [
@@ -20305,6 +20340,11 @@
           "id": "add_device"
         }
       ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
+        }
+      ],
       "platforms": [
         "local"
       ],
@@ -20675,6 +20715,11 @@
           "id": "add_device"
         }
       ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
+        }
+      ],
       "platforms": [
         "local"
       ],
@@ -20944,6 +20989,11 @@
           "id": "add_device"
         }
       ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
+        }
+      ],
       "platforms": [
         "local"
       ],
@@ -21111,6 +21161,11 @@
           "id": "add_device"
         }
       ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
+        }
+      ],
       "platforms": [
         "local"
       ],
@@ -21237,6 +21292,11 @@
         },
         {
           "id": "add_device"
+        }
+      ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
         }
       ],
       "platforms": [
@@ -21470,6 +21530,11 @@
           "id": "add_device"
         }
       ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
+        }
+      ],
       "platforms": [
         "local"
       ],
@@ -21677,6 +21742,11 @@
         },
         {
           "id": "add_device"
+        }
+      ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
         }
       ],
       "platforms": [
@@ -21892,6 +21962,11 @@
         },
         {
           "id": "add_device"
+        }
+      ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
         }
       ],
       "platforms": [
@@ -22138,6 +22213,11 @@
         },
         {
           "id": "add_device"
+        }
+      ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
         }
       ],
       "platforms": [
@@ -22772,6 +22852,11 @@
           "id": "add_device"
         }
       ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
+        }
+      ],
       "platforms": [
         "local"
       ],
@@ -22976,6 +23061,11 @@
         },
         {
           "id": "add_device"
+        }
+      ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
         }
       ],
       "platforms": [
@@ -23191,6 +23281,11 @@
           "id": "add_device"
         }
       ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
+        }
+      ],
       "platforms": [
         "local"
       ],
@@ -23387,6 +23482,11 @@
           "id": "add_device"
         }
       ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
+        }
+      ],
       "platforms": [
         "local"
       ],
@@ -23562,6 +23662,11 @@
         },
         {
           "id": "add_device"
+        }
+      ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
         }
       ],
       "platforms": [
@@ -23856,6 +23961,11 @@
           "id": "add_device"
         }
       ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
+        }
+      ],
       "platforms": [
         "local"
       ],
@@ -24068,6 +24178,11 @@
         },
         {
           "id": "add_device"
+        }
+      ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
         }
       ],
       "platforms": [
@@ -25402,6 +25517,11 @@
           "id": "add_device"
         }
       ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
+        }
+      ],
       "platforms": [
         "local"
       ],
@@ -25875,6 +25995,11 @@
           "id": "add_device"
         }
       ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
+        }
+      ],
       "platforms": [
         "local"
       ],
@@ -26004,6 +26129,11 @@
         },
         {
           "id": "add_device"
+        }
+      ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
         }
       ],
       "platforms": [
@@ -26776,6 +26906,11 @@
           "id": "add_device"
         }
       ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
+        }
+      ],
       "platforms": [
         "local"
       ],
@@ -26903,6 +27038,11 @@
         },
         {
           "id": "add_device"
+        }
+      ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
         }
       ],
       "platforms": [
@@ -27033,6 +27173,11 @@
         },
         {
           "id": "add_device"
+        }
+      ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
         }
       ],
       "platforms": [
@@ -27596,6 +27741,11 @@
           "id": "add_device"
         }
       ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
+        }
+      ],
       "platforms": [
         "local"
       ],
@@ -27927,6 +28077,11 @@
           "id": "add_device"
         }
       ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
+        }
+      ],
       "platforms": [
         "local"
       ],
@@ -28196,6 +28351,11 @@
         },
         {
           "id": "add_device"
+        }
+      ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
         }
       ],
       "platforms": [
@@ -28481,6 +28641,11 @@
           "id": "add_device"
         }
       ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
+        }
+      ],
       "platforms": [
         "local"
       ],
@@ -28611,6 +28776,11 @@
         },
         {
           "id": "add_device"
+        }
+      ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
         }
       ],
       "platforms": [
@@ -28778,6 +28948,11 @@
           "id": "add_device"
         }
       ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
+        }
+      ],
       "platforms": [
         "local"
       ],
@@ -28918,6 +29093,11 @@
           "id": "add_device"
         }
       ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
+        }
+      ],
       "platforms": [
         "local"
       ],
@@ -29051,6 +29231,11 @@
           "id": "add_device"
         }
       ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
+        }
+      ],
       "platforms": [
         "local"
       ],
@@ -29182,6 +29367,11 @@
         },
         {
           "id": "add_device"
+        }
+      ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
         }
       ],
       "platforms": [
@@ -29330,6 +29520,11 @@
         },
         {
           "id": "add_device"
+        }
+      ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
         }
       ],
       "platforms": [
@@ -29495,6 +29690,11 @@
         },
         {
           "id": "add_device"
+        }
+      ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
         }
       ],
       "platforms": [
@@ -29683,6 +29883,11 @@
         },
         {
           "id": "add_device"
+        }
+      ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
         }
       ],
       "platforms": [
@@ -29992,6 +30197,11 @@
           }
         }
       ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
+        }
+      ],
       "platforms": [
         "local"
       ],
@@ -30164,6 +30374,11 @@
         },
         {
           "id": "add_device"
+        }
+      ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
         }
       ],
       "platforms": [
@@ -30491,6 +30706,11 @@
         },
         {
           "id": "add_device"
+        }
+      ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
         }
       ],
       "platforms": [
@@ -30892,6 +31112,11 @@
         },
         {
           "id": "add_device"
+        }
+      ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
         }
       ],
       "platforms": [
@@ -31315,6 +31540,11 @@
           "id": "add_device"
         }
       ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
+        }
+      ],
       "platforms": [
         "local"
       ],
@@ -31661,6 +31891,11 @@
         },
         {
           "id": "add_device"
+        }
+      ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
         }
       ],
       "platforms": [
@@ -32033,6 +32268,11 @@
           "id": "add_device"
         }
       ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
+        }
+      ],
       "platforms": [
         "local"
       ],
@@ -32353,6 +32593,11 @@
         },
         {
           "id": "add_device"
+        }
+      ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
         }
       ],
       "platforms": [
@@ -32793,6 +33038,11 @@
         },
         {
           "id": "add_device"
+        }
+      ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
         }
       ],
       "platforms": [
@@ -33370,6 +33620,11 @@
           "id": "add_device"
         }
       ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
+        }
+      ],
       "platforms": [
         "local"
       ],
@@ -33504,6 +33759,11 @@
           "id": "add_device"
         }
       ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
+        }
+      ],
       "platforms": [
         "local"
       ],
@@ -33626,6 +33886,11 @@
         },
         {
           "id": "add_device"
+        }
+      ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
         }
       ],
       "platforms": [
@@ -33770,6 +34035,11 @@
         },
         {
           "id": "add_device"
+        }
+      ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
         }
       ],
       "platforms": [
@@ -33961,6 +34231,11 @@
           "id": "add_device"
         }
       ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
+        }
+      ],
       "platforms": [
         "local"
       ],
@@ -34113,6 +34388,11 @@
         },
         {
           "id": "add_device"
+        }
+      ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
         }
       ],
       "platforms": [
@@ -34269,6 +34549,11 @@
         },
         {
           "id": "add_device"
+        }
+      ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
         }
       ],
       "platforms": [
@@ -34443,6 +34728,11 @@
         },
         {
           "id": "add_device"
+        }
+      ],
+      "repair": [
+        {
+          "id": "connection_diagnostic"
         }
       ],
       "platforms": [

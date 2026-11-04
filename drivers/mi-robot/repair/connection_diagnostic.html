@@ -1,0 +1,45 @@
+<h2>Connection test</h2>
+<p>Test this device using its saved address and token.</p>
+<button id="test" class="homey-button-primary-full">Test connection</button>
+<p id="status" role="status" aria-live="polite"></p>
+<ul id="results"></ul>
+<p id="advice"></p>
+
+<script type="text/javascript">
+  Homey.setTitle('Connection test');
+  const button = document.getElementById('test');
+  const status = document.getElementById('status');
+  const results = document.getElementById('results');
+  const advice = document.getElementById('advice');
+  function row(text) {
+    const item = document.createElement('li');
+    item.textContent = text;
+    results.appendChild(item);
+  }
+  button.addEventListener('click', async () => {
+    button.disabled = true;
+    results.textContent = '';
+    advice.textContent = '';
+    status.textContent = 'Testing connection…';
+    try {
+      const result = await Homey.emit('diagnose_connection');
+      if (result.input === 'busy') {
+        status.textContent = 'A connection test is already running.';
+        return;
+      }
+      status.textContent = 'Connection test finished.';
+      row('Saved address and token format: ' + (result.input === 'valid' ? 'valid' : 'invalid or missing'));
+      row('Device handshake: ' + (result.handshake === 'passed' ? 'response received' : result.handshake === 'not_tested' ? 'not tested' : 'no usable response'));
+      row('Authenticated information: ' + (result.authentication === 'passed' ? 'response received' : result.authentication === 'device_error' ? 'device returned an error' : result.authentication === 'not_tested' ? 'not tested' : 'no usable response'));
+      if (result.input !== 'valid') advice.textContent = 'Check the saved address and token. The token must contain 32 hexadecimal characters.';
+      else if (result.handshake !== 'passed') advice.textContent = 'Check the device address and local network, including VLAN and firewall settings. The token could not be tested.';
+      else if (result.authentication === 'device_error') advice.textContent = 'The device authenticated the request but returned an error for the information command.';
+      else if (result.authentication !== 'passed') advice.textContent = 'Check that the token belongs to this device. A network or device issue can also cause this result.';
+      else advice.textContent = 'Homey communicated with the device using the saved token.';
+    } catch (_) {
+      status.textContent = 'The connection test could not be completed.';
+    } finally {
+      button.disabled = false;
+    }
+  });
+</script>
