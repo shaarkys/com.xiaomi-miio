@@ -687,6 +687,6 @@
     "en": "Fixed missing miIO device IDs after connection interruptions, preventing Flow errors while devices otherwise remain responsive."
   },
   "3.5.50": {
-    "en": "Added connection and token diagnostics for pairing and existing Wi-Fi devices."
+    "en": "Added connection and token diagnostics for pairing and existing Wi-Fi devices, and fixed reconnect attempts continuing after a bedside lamp is removed."
   }
 }

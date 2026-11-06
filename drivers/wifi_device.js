@@ -9,6 +9,7 @@ class MiWifiDeviceDevice extends Homey.Device {
 
     async bootSequence() {
         try {
+            this._wifiStopped = false;
             // VARIABLES GENERIC
             this.deviceFailures = 0;
 
@@ -36,6 +37,7 @@ class MiWifiDeviceDevice extends Homey.Device {
     }
 
     async onDeleted() {
+        this._wifiStopped = true;
         try {
             this.homey.clearInterval(this.pollingInterval);
             this.homey.clearInterval(this.refreshInterval);
@@ -55,6 +57,7 @@ class MiWifiDeviceDevice extends Homey.Device {
     }
 
     async onUninit() {
+        this._wifiStopped = true;
         try {
             this.homey.clearInterval(this.pollingInterval);
             this.homey.clearInterval(this.refreshInterval);
@@ -317,6 +320,7 @@ class MiWifiDeviceDevice extends Homey.Device {
 
     /* create device instance and start polling */
     async createDevice() {
+        if (this._wifiStopped) return;
         /* reentrancy guard: prevent overlapping connection attempts (and the
          * orphaned/duplicate polling loops that would otherwise result) when
          * createDevice() is triggered concurrently from multiple call sites
@@ -344,10 +348,15 @@ class MiWifiDeviceDevice extends Homey.Device {
             }
             this.miio = null;
 
-            this.miio = await miio.device({
+            const device = await miio.device({
                 address: this.getSetting('address'),
                 token: this.getSetting('token')
             });
+            if (this._wifiStopped) {
+                try { device?.destroy(); } catch (e) { /* already closed */ }
+                return;
+            }
+            this.miio = device;
             if (!this.miio) {
                 throw new Error('miio.device returned null');
             }
@@ -360,6 +369,7 @@ class MiWifiDeviceDevice extends Homey.Device {
             this.startCapabilityListeners();
             this.pollDevice();
         } catch (error) {
+            if (this._wifiStopped) return;
             // mark unavailable
             this.setUnavailable(this.homey.__('device.unreachable') + error.message).catch((err) => this.error(err));
 
@@ -377,6 +387,7 @@ class MiWifiDeviceDevice extends Homey.Device {
 
     /* refresh device instance on regular interval */
     async refreshDevice() {
+        if (this._wifiStopped) return;
         try {
             this.homey.clearInterval(this.refreshInterval);
             this.refreshInterval = this.homey.setInterval(() => {

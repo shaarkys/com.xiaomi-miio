@@ -170,7 +170,7 @@ class XiaomiMiBedsideLamp2Device extends Device {
   }
 
   async retrieveDeviceData() {
-    if (this.isRetrievingDeviceData) return;
+    if (this._wifiStopped || this.isRetrievingDeviceData) return;
     this.isRetrievingDeviceData = true;
 
     try {
@@ -181,6 +181,7 @@ class XiaomiMiBedsideLamp2Device extends Device {
       }
 
       const result = await this.miio.call('get_properties', this.deviceProperties.get_properties, { retries: 1 });
+      if (this._wifiStopped) return;
       if (!this.getAvailable()) await this.setAvailable();
 
       const property = (did) => result.find((item) => item.did === did);
@@ -196,6 +197,7 @@ class XiaomiMiBedsideLamp2Device extends Device {
       if (colorTemperature !== undefined) await this.updateCapabilityValue('light_temperature', this.toHomeyColorTemperature(colorTemperature));
       if (color !== undefined) await this.updateColorCapabilities(color);
     } catch (error) {
+      if (this._wifiStopped) return;
       this.homey.clearInterval(this.pollingInterval);
 
       if (this.getAvailable()) {
