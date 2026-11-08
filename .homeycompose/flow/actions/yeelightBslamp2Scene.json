@@ -1,0 +1,29 @@
+{
+  "title": { "en": "Set lamp scene", "nl": "Lampscène instellen" },
+  "titleFormatted": { "en": "Set lamp scene to [[scene]]", "nl": "Stel lampscène in op [[scene]]" },
+  "hint": {
+    "en": "Sunrise takes 15 minutes and stays on. Sunset takes 10 minutes and turns off. Stop Effect ends the effect using its finish action. Disabling Night Light restores normal light and turns the lamp on.",
+    "nl": "Zonsopkomst duurt 15 minuten en blijft aan. Zonsondergang duurt 10 minuten en schakelt uit. Effect stoppen beëindigt het effect met de ingestelde eindactie. Normaal licht schakelt de lamp in."
+  },
+  "args": [
+    {
+      "name": "scene",
+      "type": "dropdown",
+      "title": { "en": "Scene", "nl": "Scène" },
+      "values": [
+        { "id": "night_light", "title": { "en": "Night Light", "nl": "Nachtlicht" } },
+        { "id": "normal", "title": { "en": "Normal light", "nl": "Normaal licht" } },
+        { "id": "sunrise", "title": { "en": "Sunrise", "nl": "Zonsopkomst" } },
+        { "id": "sunset", "title": { "en": "Sunset", "nl": "Zonsondergang" } },
+        { "id": "stop", "title": { "en": "Stop Effect", "nl": "Effect stoppen" } }
+      ]
+    },
+    {
+      "name": "device",
+      "type": "device",
+      "filter": "driver_id=yeelink_light_bslamp2_miot",
+      "placeholder": { "en": "Select Bedside Lamp 2", "nl": "Selecteer Bedside Lamp 2" }
+    }
+  ],
+  "platforms": ["local"]
+}

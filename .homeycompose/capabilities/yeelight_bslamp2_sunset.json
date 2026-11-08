@@ -1,0 +1,8 @@
+{
+  "type": "boolean",
+  "title": { "en": "Sunset", "nl": "Zonsondergang" },
+  "getable": false,
+  "setable": true,
+  "uiComponent": "button",
+  "icon": "/drivers/yeelink_light_bslamp2_miot/assets/sunset.svg"
+}

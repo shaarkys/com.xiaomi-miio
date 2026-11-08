@@ -31,7 +31,11 @@
     "light_mode",
     "light_temperature",
     "light_hue",
-    "light_saturation"
+    "light_saturation",
+    "yeelight_bslamp2_nightlight",
+    "yeelight_bslamp2_sunrise",
+    "yeelight_bslamp2_sunset",
+    "yeelight_bslamp2_stop"
   ],
   "capabilitiesOptions": {
     "dim": {

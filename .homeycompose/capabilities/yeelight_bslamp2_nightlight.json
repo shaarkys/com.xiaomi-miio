@@ -1,0 +1,9 @@
+{
+  "type": "boolean",
+  "title": { "en": "Night Light", "nl": "Nachtlicht" },
+  "getable": true,
+  "setable": true,
+  "uiComponent": "toggle",
+  "icon": "/drivers/yeelink_light_bslamp2_miot/assets/nightlight.svg",
+  "insights": false
+}

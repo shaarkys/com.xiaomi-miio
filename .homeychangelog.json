@@ -693,6 +693,6 @@
     "en": "Fixed reconnect attempts after removing a Xiaomi Mi Bedside Lamp 2, and added validated legacy Yeelight fallback when its MIoT commands time out."
   },
   "3.5.52": {
-    "en": "Added legacy miIO fallback for Xiaomi Mi Bedside Lamp 2 when local MIoT commands time out, covering power, brightness, colour and colour temperature."
+    "en": "Added legacy miIO fallback and Night Light, Sunrise, Sunset and Stop Effect controls with a Flow action for Xiaomi Mi Bedside Lamp 2, including existing paired lamps."
   }
 }

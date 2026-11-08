@@ -13404,6 +13404,80 @@
       },
       {
         "title": {
+          "en": "Set lamp scene",
+          "nl": "Lampscène instellen"
+        },
+        "titleFormatted": {
+          "en": "Set lamp scene to [[scene]]",
+          "nl": "Stel lampscène in op [[scene]]"
+        },
+        "hint": {
+          "en": "Sunrise takes 15 minutes and stays on. Sunset takes 10 minutes and turns off. Stop Effect ends the effect using its finish action. Disabling Night Light restores normal light and turns the lamp on.",
+          "nl": "Zonsopkomst duurt 15 minuten en blijft aan. Zonsondergang duurt 10 minuten en schakelt uit. Effect stoppen beëindigt het effect met de ingestelde eindactie. Normaal licht schakelt de lamp in."
+        },
+        "args": [
+          {
+            "name": "scene",
+            "type": "dropdown",
+            "title": {
+              "en": "Scene",
+              "nl": "Scène"
+            },
+            "values": [
+              {
+                "id": "night_light",
+                "title": {
+                  "en": "Night Light",
+                  "nl": "Nachtlicht"
+                }
+              },
+              {
+                "id": "normal",
+                "title": {
+                  "en": "Normal light",
+                  "nl": "Normaal licht"
+                }
+              },
+              {
+                "id": "sunrise",
+                "title": {
+                  "en": "Sunrise",
+                  "nl": "Zonsopkomst"
+                }
+              },
+              {
+                "id": "sunset",
+                "title": {
+                  "en": "Sunset",
+                  "nl": "Zonsondergang"
+                }
+              },
+              {
+                "id": "stop",
+                "title": {
+                  "en": "Stop Effect",
+                  "nl": "Effect stoppen"
+                }
+              }
+            ]
+          },
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=yeelink_light_bslamp2_miot",
+            "placeholder": {
+              "en": "Select Bedside Lamp 2",
+              "nl": "Selecteer Bedside Lamp 2"
+            }
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "id": "yeelightBslamp2Scene"
+      },
+      {
+        "title": {
           "en": "Set my mode / scene",
           "nl": "Stel mijn modus / scene in",
           "da": "Indstil min tilstand / scene",
@@ -33928,7 +34002,11 @@
         "light_mode",
         "light_temperature",
         "light_hue",
-        "light_saturation"
+        "light_saturation",
+        "yeelight_bslamp2_nightlight",
+        "yeelight_bslamp2_sunrise",
+        "yeelight_bslamp2_sunset",
+        "yeelight_bslamp2_stop"
       ],
       "capabilitiesOptions": {
         "dim": {
@@ -41009,6 +41087,51 @@
       "setable": true,
       "uiComponent": "button",
       "icon": "/assets/icons/stop.svg"
+    },
+    "yeelight_bslamp2_nightlight": {
+      "type": "boolean",
+      "title": {
+        "en": "Night Light",
+        "nl": "Nachtlicht"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "toggle",
+      "icon": "/drivers/yeelink_light_bslamp2_miot/assets/nightlight.svg",
+      "insights": false
+    },
+    "yeelight_bslamp2_stop": {
+      "type": "boolean",
+      "title": {
+        "en": "Stop Effect",
+        "nl": "Effect stoppen"
+      },
+      "getable": false,
+      "setable": true,
+      "uiComponent": "button",
+      "icon": "/drivers/yeelink_light_bslamp2_miot/assets/stop.svg"
+    },
+    "yeelight_bslamp2_sunrise": {
+      "type": "boolean",
+      "title": {
+        "en": "Sunrise",
+        "nl": "Zonsopkomst"
+      },
+      "getable": false,
+      "setable": true,
+      "uiComponent": "button",
+      "icon": "/drivers/yeelink_light_bslamp2_miot/assets/sunrise.svg"
+    },
+    "yeelight_bslamp2_sunset": {
+      "type": "boolean",
+      "title": {
+        "en": "Sunset",
+        "nl": "Zonsondergang"
+      },
+      "getable": false,
+      "setable": true,
+      "uiComponent": "button",
+      "icon": "/drivers/yeelink_light_bslamp2_miot/assets/sunset.svg"
     },
     "yeelight_ceil43_mode": {
       "type": "enum",
