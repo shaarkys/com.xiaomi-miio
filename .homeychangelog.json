@@ -694,5 +694,8 @@
   },
   "3.5.52": {
     "en": "Added legacy miIO fallback and Night Light, Sunrise, Sunset and Stop Effect controls with a Flow action for Xiaomi Mi Bedside Lamp 2, including existing paired lamps."
+  },
+  "3.5.53": {
+    "en": "Added Sunrise, Sunset and Stop Effect controls with a Flow action for Xiaomi Mi Bedside Lamp 2"
   }
 }
