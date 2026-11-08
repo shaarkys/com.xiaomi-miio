@@ -11,6 +11,7 @@ const COLOR_TEMPERATURE_MIN = 1700;
 const COLOR_TEMPERATURE_MAX = 6500;
 const MIOT_MODE_COLOR = 1;
 const MIOT_MODE_DAY = 2;
+const LEGACY_POLL_PROPERTIES = ['power', 'bright', 'ct', 'rgb', 'color_mode'];
 
 const mapping = {
   'yeelink.light.bslamp2': 'mapping_default',
@@ -78,7 +79,17 @@ class XiaomiMiBedsideLamp2Device extends Device {
 
       const definition = this.deviceProperties.set_properties[property];
       const payload = [{ siid: definition.siid, piid: definition.piid, value }];
-      const result = await this.miio.call('set_properties', payload, { retries: 1 });
+      const connection = this.miio;
+      let result;
+      if (this._useLegacyProtocol) {
+        return await this.setLegacyProperty(connection, property, value);
+      }
+      try {
+        result = await connection.call('set_properties', payload, { retries: 1 });
+      } catch (error) {
+        await this.tryLegacyProtocol(connection, error);
+        return await this.setLegacyProperty(connection, property, value);
+      }
       this.log(`Yeelight bslamp2 set ${property}: ${JSON.stringify(payload)} -> ${JSON.stringify(result)}`);
 
       const failed = Array.isArray(result) ? result.find((item) => item && item.code !== 0) : null;
@@ -94,6 +105,75 @@ class XiaomiMiBedsideLamp2Device extends Device {
     }
   }
 
+  async readLegacyProperties(connection) {
+    const values = await connection.call('get_prop', LEGACY_POLL_PROPERTIES, { retries: 1 });
+    const numeric = (value, min, max) => (typeof value === 'number' || (typeof value === 'string' && value.trim() !== ''))
+      && Number.isInteger(Number(value)) && Number(value) >= min && Number(value) <= max;
+    if (!Array.isArray(values) || values.length !== LEGACY_POLL_PROPERTIES.length
+      || !['on', 'off'].includes(values[0])
+      || !numeric(values[1], 1, 100)) {
+      throw new Error('Invalid Yeelight bslamp2 legacy status response');
+    }
+    const parsed = [values[0] === 'on', Number(values[1]),
+      numeric(values[2], 1700, 6500) ? Number(values[2]) : undefined,
+      numeric(values[3], 0, 0xffffff) ? Number(values[3]) : undefined,
+      numeric(values[4], 1, 3) ? Number(values[4]) : undefined];
+    return parsed.map((value, index) => ({
+      did: ['power', 'brightness', 'color_temperature', 'color', 'mode'][index], code: 0, value
+    }));
+  }
+
+  async tryLegacyProtocol(connection, miotError) {
+    // Some bslamp2 firmware exposes MIoT via MiCloud but still accepts local legacy miIO.
+    // Confirm a read before switching commands; a timeout alone does not identify the protocol.
+    if (this._wifiStopped || this.miio !== connection
+      || !['timeout', -32601].includes(miotError.code)) throw miotError;
+    let result;
+    try {
+      result = await this.readLegacyProperties(connection);
+    } catch (legacyError) {
+      throw new Error(`MIoT failed: ${miotError.message}; legacy Yeelight probe failed: ${legacyError.message}`);
+    }
+    if (this._wifiStopped || this.miio !== connection) throw miotError;
+    if (!this._useLegacyProtocol) {
+      this.log(`Yeelight bslamp2 switching to legacy commands after MIoT failure: ${miotError.message}`);
+      this._useLegacyProtocol = true;
+    }
+    return result;
+  }
+
+  async setLegacyProperty(connection, property, value) {
+    if (this._wifiStopped || this.miio !== connection) throw new Error('Lamp connection changed before command');
+    const commands = {
+      power: ['set_power', value ? 'on' : 'off'],
+      brightness: ['set_bright', value],
+      color_temperature: ['set_ct_abx', value],
+      color: ['set_rgb', value]
+    };
+    let command = commands[property];
+    if (property === 'mode') {
+      command = Number(value) === MIOT_MODE_COLOR
+        ? ['set_rgb', this.getRgbIntFromCapabilities({})]
+        : ['set_ct_abx', this.toMiotColorTemperature(this.toCapabilityValue(this.getCapabilityValue('light_temperature'), 0))];
+    }
+    const [method, parameter] = command;
+    const result = await connection.call(method, [parameter, 'smooth', 500], { retries: 1 });
+    if (!Array.isArray(result) || result.length !== 1 || result[0] !== 'ok') {
+      throw new Error(`Yeelight bslamp2 ${method} did not return ok`);
+    }
+    return result;
+  }
+
+  async readProperties() {
+    const connection = this.miio;
+    if (this._useLegacyProtocol) return this.readLegacyProperties(connection);
+    try {
+      return await connection.call('get_properties', this.deviceProperties.get_properties, { retries: 1 });
+    } catch (error) {
+      return this.tryLegacyProtocol(connection, error);
+    }
+  }
+
   async onLightCapabilities(valueObj) {
     if (typeof valueObj.dim !== 'undefined') {
       const brightness = Math.round(this.util.clamp(valueObj.dim * 100, 1, 100));
@@ -101,10 +181,14 @@ class XiaomiMiBedsideLamp2Device extends Device {
     }
 
     if (valueObj.light_mode === 'color' || typeof valueObj.light_hue !== 'undefined' || typeof valueObj.light_saturation !== 'undefined') {
-      await this.setMiotProperty('mode', MIOT_MODE_COLOR);
+      if (!this._useLegacyProtocol || (valueObj.light_hue === undefined && valueObj.light_saturation === undefined)) {
+        await this.setMiotProperty('mode', MIOT_MODE_COLOR);
+      }
       await this.updateCapabilityValue('light_mode', 'color');
     } else if (valueObj.light_mode === 'temperature' || typeof valueObj.light_temperature !== 'undefined') {
-      await this.setMiotProperty('mode', MIOT_MODE_DAY);
+      if (!this._useLegacyProtocol || valueObj.light_temperature === undefined) {
+        await this.setMiotProperty('mode', MIOT_MODE_DAY);
+      }
       await this.updateCapabilityValue('light_mode', 'temperature');
     }
 
@@ -138,7 +222,7 @@ class XiaomiMiBedsideLamp2Device extends Device {
   }
 
   toHomeyLightMode(mode) {
-    return Number(mode) === MIOT_MODE_COLOR ? 'color' : 'temperature';
+    return Number(mode) === MIOT_MODE_COLOR || (this._useLegacyProtocol && Number(mode) === 3) ? 'color' : 'temperature';
   }
 
   toHomeyColorTemperature(value) {
@@ -180,7 +264,7 @@ class XiaomiMiBedsideLamp2Device extends Device {
         return;
       }
 
-      const result = await this.miio.call('get_properties', this.deviceProperties.get_properties, { retries: 1 });
+      const result = await this.readProperties();
       if (this._wifiStopped) return;
       if (!this.getAvailable()) await this.setAvailable();
 
