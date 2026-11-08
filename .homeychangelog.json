@@ -697,5 +697,8 @@
   },
   "3.5.53": {
     "en": "Added Sunrise, Sunset and Stop Effect controls with a Flow action for Xiaomi Mi Bedside Lamp 2"
+  },
+  "3.5.54": {
+    "en": "Improved Smartmi Smart Fan Heater (zhimi.heater.nb1) timeout retries and response validation, added temperature diagnostics, and fixed LED settings."
   }
 }
