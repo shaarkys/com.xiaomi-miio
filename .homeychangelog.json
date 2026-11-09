@@ -700,5 +700,8 @@
   },
   "3.5.54": {
     "en": "Improved Smartmi Smart Fan Heater (zhimi.heater.nb1) timeout retries and response validation, added temperature diagnostics, and fixed LED settings."
+  },
+  "3.5.55": {
+    "en": "Improved Xiaomi Air Purifier 4 Pro (zhimi.airp.vb4) timeout recovery with bounded retries and ordered commands, and fixed stale polling/reconnect handling in the Advanced MIoT purifier driver."
   }
 }
