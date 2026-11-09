@@ -331,6 +331,7 @@ class AdvancedMiAirPurifierMiotDevice extends Device {
 
       // DEVICE VARIABLES
       const model = this.getStoreValue('model');
+      this.isVb4 = model === 'zhimi.airp.vb4';
       this.modelProfile = AirPurifierMiot.getModelProfile(model);
       const mappingId = this.modelProfile?.mapping || mapping[model] || mapping['zhimi.airpurifier.*'];
       this.deviceProperties = properties[mappingId];
@@ -419,6 +420,7 @@ class AdvancedMiAirPurifierMiotDevice extends Device {
 
   async setMiotProperty(property, value) {
     try {
+      if (this._wifiStopped) throw new Error('Purifier connection stopped');
       if (!this.miio) {
         this.setUnavailable(this.homey.__('unreachable')).catch(error => { this.error(error) });
         this.createDevice();
@@ -430,8 +432,19 @@ class AdvancedMiAirPurifierMiotDevice extends Device {
         throw new Error(`MIoT property ${property} is not supported by this device`);
       }
 
-      const did = String(this.miio.handle.api.id);
-      return await this.miio.call('set_properties', [{ did, siid: definition.siid, piid: definition.piid, value }], { retries: 1 });
+      const connection = this.miio;
+      return await this.runMiotOperation(connection, async () => {
+        const did = String(connection.handle.api.id);
+        const result = await this.callMiot(connection, 'set_properties', [{ did, siid: definition.siid, piid: definition.piid, value }]);
+        if (this.isVb4) {
+          const entry = Array.isArray(result) && result.find(item => item && item.siid === definition.siid && item.piid === definition.piid);
+          if (!entry || entry.code !== 0) {
+            const code = Number.isInteger(entry?.code) ? entry.code : 'missing';
+            throw new Error(`MIoT ${property} write failed (code ${code})`);
+          }
+        }
+        return result;
+      });
     } catch (error) {
       this.error(error);
       return Promise.reject(error);
@@ -508,15 +521,52 @@ class AdvancedMiAirPurifierMiotDevice extends Device {
     return Promise.resolve(true);
   }
 
-  async getMiotProperties() {
-    const miio = this.miio;
+  isCurrentMiotConnection(connection) {
+    return !this._wifiStopped && !!connection && this.miio === connection;
+  }
+
+  runMiotOperation(connection, operation) {
+    const run = () => {
+      if (!this.isCurrentMiotConnection(connection)) throw new Error('Purifier connection changed, please try again');
+      return operation();
+    };
+    if (!this.isVb4) return run();
+    // Serialize retried writes with polls, including publication of their results.
+    // A new connection must not wait for requests still pending on the old one.
+    if (this._miotQueueConnection !== connection) {
+      this._miotQueueConnection = connection;
+      this._miotQueue = Promise.resolve();
+    }
+    const request = this._miotQueue.then(run);
+    this._miotQueue = request.catch(() => {});
+    return request;
+  }
+
+  async callMiot(connection, method, params) {
+    const attempts = this.isVb4 ? 3 : 1;
+    for (let attempt = 1; attempt <= attempts; attempt++) {
+      if (!this.isCurrentMiotConnection(connection)) throw new Error('Purifier connection changed, please try again');
+      try {
+        // miio counts retries as total attempts. Keep each two-second attempt
+        // separate so replacement/deletion can cancel the remaining retries.
+        const result = await connection.call(method, params, { retries: 1 });
+        if (!this.isCurrentMiotConnection(connection)) throw new Error('Purifier connection changed, please try again');
+        return result;
+      } catch (error) {
+        if (!this.isCurrentMiotConnection(connection) || error.code !== 'timeout' || attempt === attempts) throw error;
+        this.log(`vb4 ${method} timed out; retrying (${attempt + 1}/${attempts})`);
+      }
+    }
+  }
+
+  async getMiotProperties(connection = this.miio) {
     const requestedProperties = this.deviceProperties.get_properties;
     const result = [];
 
     // Match python-miio's limit while keeping requests sequential.
     for (let offset = 0; offset < requestedProperties.length; offset += 15) {
       const batch = requestedProperties.slice(offset, offset + 15);
-      const response = await miio.call('get_properties', batch, { retries: 1 });
+      const response = await this.callMiot(connection, 'get_properties', batch);
       if (!Array.isArray(response)) {
         throw new Error(`Invalid MIoT response for property batch ${Math.floor(offset / 15) + 1}`);
       }
@@ -527,104 +577,128 @@ class AdvancedMiAirPurifierMiotDevice extends Device {
   }
 
   async retrieveDeviceData() {
+    const connection = this.miio;
+    if (!this.isCurrentMiotConnection(connection) || this._pollingConnection === connection) return;
+    this._pollingConnection = connection;
     try {
-
-      const result = await this.getMiotProperties();
-
-      /* data */
-      const onoff = AirPurifierMiot.findValidResult(result, 'power');
-      if (onoff === undefined) {
-        const powerResult = result.find(obj => obj.did === 'power');
-        const detail = powerResult?.code !== undefined ? `code ${powerResult.code}` : 'missing or empty value';
-        throw new Error(`MIoT power read failed: ${detail}`);
-      }
-      if (!this.getAvailable()) { await this.setAvailable(); }
-
-      const fanlevel = AirPurifierMiot.findValidResult(result, 'fanlevel');
-      const measure_humidity = AirPurifierMiot.findValidResult(result, 'humidity');
-      const measure_temperature = AirPurifierMiot.findValidResult(result, 'temperature');
-      const measure_pm25 = AirPurifierMiot.findValidResult(result, 'aqi');
-      const onoff_ion = AirPurifierMiot.findValidResult(result, 'anion');
-      const onoff_uv = AirPurifierMiot.findValidResult(result, 'uv');
-
-      const buzzer = AirPurifierMiot.findValidResult(result, 'buzzer');
-      const child_lock = AirPurifierMiot.findValidResult(result, 'child_lock');
-      const led = AirPurifierMiot.findValidResult(result, 'light');
-      const filter_life_remaining = AirPurifierMiot.findValidResult(result, 'filter_life_remaining');
-      const filter_hours_used = AirPurifierMiot.findValidResult(result, 'filter_hours_used');
-      const purify_volume = AirPurifierMiot.findValidResult(result, 'purify_volume');
-
-      /* capabilities */
-      await this.updateCapabilityValue("onoff", onoff.value);
-      if (measure_humidity !== undefined) {
-        await this.updateCapabilityValue("measure_humidity", measure_humidity.value);
-      }
-      if (measure_temperature !== undefined) {
-        await this.updateCapabilityValue("measure_temperature", measure_temperature.value);
-      }
-      if (measure_pm25 !== undefined) {
-        await this.updateCapabilityValue("measure_pm25", measure_pm25.value);
-      }
-
-      if (onoff_ion !== undefined) {
-        await this.updateCapabilityValue("onoff.ion", onoff_ion.value);
-      }
-      if (onoff_uv !== undefined) {
-        await this.updateCapabilityValue("onoff.uv", onoff_uv.value);
-      }
-
-      /* settings */
-      if (led !== undefined) {
-        await this.updateSettingValue("led", led.value === this.deviceProperties.device_properties.light.min ? false : true);
-      }
-      if (buzzer !== undefined) {
-        await this.updateSettingValue("buzzer", buzzer.value);
-      }
-      if (child_lock !== undefined) {
-        await this.updateSettingValue("childLock", child_lock.value);
-      }
-      if (filter_life_remaining !== undefined) {
-        await this.updateSettingValue("filter_life_remaining", filter_life_remaining.value + '%');
-      }
-      if (filter_hours_used !== undefined) {
-        await this.updateSettingValue("filter_hours_used", filter_hours_used.value + 'h');
-      }
-      if (purify_volume !== undefined) {
-        await this.updateSettingValue("purify_volume", purify_volume.value + 'm3');
-      }
-
-      /* mode capability */
-      const mode = AirPurifierMiot.findValidResult(result, 'mode');
-      const homeyMode = mode === undefined ? undefined : AirPurifierMiot.decodeValue(this.modelProfile, 'mode', mode.value);
-      if (homeyMode !== undefined && this.getCapabilityValue('airpurifier_zhimi_mode') !== homeyMode) {
-        const previous_mode = this.getCapabilityValue('airpurifier_zhimi_mode');
-        await this.setCapabilityValue('airpurifier_zhimi_mode', homeyMode);
-        await this.homey.flow.getDeviceTriggerCard('triggerModeChanged').trigger(this, {"new_mode": modes[+homeyMode], "previous_mode": modes[+previous_mode] }).catch(error => { this.error(error) });
-      }
-
-      /* device specific settings */
-      if (numericFanModels.includes(this.getStoreValue('model')) && fanlevel !== undefined) {
-        const numericFanlevel = AirPurifierMiot.decodeValue(this.modelProfile, 'fanlevel', fanlevel.value);
-        if (numericFanlevel !== undefined) {
-          await this.updateCapabilityValue("airpurifier_xiaomi_fanlevel", Number(numericFanlevel));
-        }
-      } else if (fanlevel !== undefined) {
-        const homeyFanlevel = AirPurifierMiot.decodeValue(this.modelProfile, 'fanlevel', fanlevel.value);
-        if (homeyFanlevel !== undefined) {
-          await this.updateCapabilityValue("airpurifier_zhimi_fanlevel", homeyFanlevel);
-        }
-      }
-
+      await this.runMiotOperation(connection, async () => {
+        const result = await this.getMiotProperties(connection);
+        if (!this.isCurrentMiotConnection(connection)) return;
+        await this.publishMiotState(result, connection);
+      });
     } catch (error) {
+      if (!this.isCurrentMiotConnection(connection)) return;
       this.homey.clearInterval(this.pollingInterval);
+      this.pollingInterval = null;
+      this.homey.clearTimeout(this.initialPollTimeout);
+      this.initialPollTimeout = null;
 
       if (this.getAvailable()) {
         this.setUnavailable(this.homey.__('device.unreachable') + error.message).catch(error => { this.error(error) });
       }
 
-      this.homey.setTimeout(() => { this.createDevice(); }, 60000);
+      this.homey.clearTimeout(this.recreateTimeout);
+      this.recreateTimeout = this.homey.setTimeout(() => {
+        if (!this.isCurrentMiotConnection(connection)) return;
+        this.recreateTimeout = null;
+        this.createDevice();
+      }, 60000);
+      this.error(`MIoT polling failed; reconnect scheduled in 60s: ${error.message}`);
+    } finally {
+      if (this._pollingConnection === connection) this._pollingConnection = null;
+    }
+  }
 
-      this.error(error.message);
+  async publishMiotState(result, connection) {
+    const current = () => this.isCurrentMiotConnection(connection);
+    const updateCapability = (id, value) => current() ? this.updateCapabilityValue(id, value) : undefined;
+    const updateSetting = (id, value) => current() ? this.updateSettingValue(id, value) : undefined;
+    if (!current()) return;
+
+    /* data */
+    const onoff = AirPurifierMiot.findValidResult(result, 'power');
+    if (onoff === undefined) {
+      const powerResult = result.find(obj => obj.did === 'power');
+      const detail = powerResult?.code !== undefined ? `code ${powerResult.code}` : 'missing or empty value';
+      throw new Error(`MIoT power read failed: ${detail}`);
+    }
+    if (!this.getAvailable()) { await this.setAvailable(); }
+    if (!current()) return;
+
+    const fanlevel = AirPurifierMiot.findValidResult(result, 'fanlevel');
+    const measure_humidity = AirPurifierMiot.findValidResult(result, 'humidity');
+    const measure_temperature = AirPurifierMiot.findValidResult(result, 'temperature');
+    const measure_pm25 = AirPurifierMiot.findValidResult(result, 'aqi');
+    const onoff_ion = AirPurifierMiot.findValidResult(result, 'anion');
+    const onoff_uv = AirPurifierMiot.findValidResult(result, 'uv');
+
+    const buzzer = AirPurifierMiot.findValidResult(result, 'buzzer');
+    const child_lock = AirPurifierMiot.findValidResult(result, 'child_lock');
+    const led = AirPurifierMiot.findValidResult(result, 'light');
+    const filter_life_remaining = AirPurifierMiot.findValidResult(result, 'filter_life_remaining');
+    const filter_hours_used = AirPurifierMiot.findValidResult(result, 'filter_hours_used');
+    const purify_volume = AirPurifierMiot.findValidResult(result, 'purify_volume');
+
+    /* capabilities */
+    await updateCapability("onoff", onoff.value);
+    if (measure_humidity !== undefined) {
+      await updateCapability("measure_humidity", measure_humidity.value);
+    }
+    if (measure_temperature !== undefined) {
+      await updateCapability("measure_temperature", measure_temperature.value);
+    }
+    if (measure_pm25 !== undefined) {
+      await updateCapability("measure_pm25", measure_pm25.value);
+    }
+
+    if (onoff_ion !== undefined) {
+      await updateCapability("onoff.ion", onoff_ion.value);
+    }
+    if (onoff_uv !== undefined) {
+      await updateCapability("onoff.uv", onoff_uv.value);
+    }
+
+    /* settings */
+    if (led !== undefined) {
+      await updateSetting("led", led.value === this.deviceProperties.device_properties.light.min ? false : true);
+    }
+    if (buzzer !== undefined) {
+      await updateSetting("buzzer", buzzer.value);
+    }
+    if (child_lock !== undefined) {
+      await updateSetting("childLock", child_lock.value);
+    }
+    if (filter_life_remaining !== undefined) {
+      await updateSetting("filter_life_remaining", filter_life_remaining.value + '%');
+    }
+    if (filter_hours_used !== undefined) {
+      await updateSetting("filter_hours_used", filter_hours_used.value + 'h');
+    }
+    if (purify_volume !== undefined) {
+      await updateSetting("purify_volume", purify_volume.value + 'm3');
+    }
+
+    /* mode capability */
+    const mode = AirPurifierMiot.findValidResult(result, 'mode');
+    const homeyMode = mode === undefined ? undefined : AirPurifierMiot.decodeValue(this.modelProfile, 'mode', mode.value);
+    if (current() && homeyMode !== undefined && this.getCapabilityValue('airpurifier_zhimi_mode') !== homeyMode) {
+      const previous_mode = this.getCapabilityValue('airpurifier_zhimi_mode');
+      await this.setCapabilityValue('airpurifier_zhimi_mode', homeyMode);
+      if (!current()) return;
+      await this.homey.flow.getDeviceTriggerCard('triggerModeChanged').trigger(this, {"new_mode": modes[+homeyMode], "previous_mode": modes[+previous_mode] }).catch(error => { this.error(error) });
+    }
+
+    /* device specific settings */
+    if (numericFanModels.includes(this.getStoreValue('model')) && fanlevel !== undefined) {
+      const numericFanlevel = AirPurifierMiot.decodeValue(this.modelProfile, 'fanlevel', fanlevel.value);
+      if (numericFanlevel !== undefined) {
+        await updateCapability("airpurifier_xiaomi_fanlevel", Number(numericFanlevel));
+      }
+    } else if (fanlevel !== undefined) {
+      const homeyFanlevel = AirPurifierMiot.decodeValue(this.modelProfile, 'fanlevel', fanlevel.value);
+      if (homeyFanlevel !== undefined) {
+        await updateCapability("airpurifier_zhimi_fanlevel", homeyFanlevel);
+      }
     }
   }
 

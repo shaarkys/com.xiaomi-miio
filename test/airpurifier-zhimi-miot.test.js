@@ -240,6 +240,8 @@ async function createInitializedPurifier(model = 'zhimi.airpurifier.mb3') {
   device.util = {};
   device.getStoreValue = () => model;
   device.bootSequence = () => {};
+  device.hasCapability = () => true;
+  device.log = () => {};
   device.registerCapabilityListener = () => {};
   device.getCapabilityValue = () => '0';
   device.getAvailable = () => available;
@@ -251,7 +253,8 @@ async function createInitializedPurifier(model = 'zhimi.airpurifier.mb3') {
   device.homey = {
     flow: { getDeviceTriggerCard: () => ({ trigger: async () => {} }) },
     clearInterval: () => {},
-    setTimeout: (callback, delay) => { reconnects.push({ callback, delay }); },
+    clearTimeout: () => {},
+    setTimeout: (callback, delay) => { const timer = { callback, delay }; reconnects.push(timer); return timer; },
     __: () => 'Device unavailable: '
   };
   await device.onInit();
@@ -366,5 +369,199 @@ test('failed power reads and transport timeouts never mark the purifier availabl
     assert.match(state.errors[0], failure === 'transport' ? /Call to device timed out/ : /MIoT power read failed/);
     assert.equal(state.reconnects.length, 1);
     assert.equal(state.reconnects[0].delay, 60000);
+  }
+});
+
+const transportTimeout = () => Object.assign(new Error('Call to device timed out'), { code: 'timeout' });
+const powerReply = value => [{ did: 'power', siid: 2, piid: 1, code: 0, value }];
+const deferred = () => {
+  let resolve;
+  let reject;
+  const promise = new Promise((yes, no) => { resolve = yes; reject = no; });
+  return { promise, resolve, reject };
+};
+
+test('vb4 recovers from transient polling timeouts before changing availability', async () => {
+  const state = await createInitializedPurifier('zhimi.airp.vb4');
+  let attempts = 0;
+  const batches = [];
+  state.device.miio.call = async (method, params, options) => {
+    assert.equal(method, 'get_properties');
+    assert.equal(options.retries, 1);
+    batches.push(params);
+    if (++attempts < 3) throw transportTimeout();
+    return powerReply(false);
+  };
+  await state.device.retrieveDeviceData();
+  assert.equal(attempts, 3);
+  assert.deepEqual(batches[0], state.device.deviceProperties.get_properties);
+  assert.deepEqual(batches[1], batches[0]);
+  assert.deepEqual(batches[2], batches[0]);
+  assert.deepEqual(state.capabilityUpdates, [['onoff', false]]);
+  assert.equal(state.isAvailable(), true);
+  assert.deepEqual(state.unavailableReasons, []);
+  assert.deepEqual(state.reconnects, []);
+});
+
+test('vb4 stops after three polling timeouts and tracks one cancellable reconnect', async () => {
+  const state = await createInitializedPurifier('zhimi.airp.vb4');
+  await state.device.setAvailable();
+  let attempts = 0;
+  const cleared = [];
+  state.device.homey.clearTimeout = timer => cleared.push(timer);
+  state.device.miio.call = async () => { attempts++; throw transportTimeout(); };
+  await state.device.retrieveDeviceData();
+  assert.equal(attempts, 3);
+  assert.equal(state.isAvailable(), false);
+  assert.equal(state.reconnects.length, 1);
+  assert.equal(state.device.recreateTimeout, state.reconnects[0]);
+  assert.equal(state.reconnects[0].delay, 60000);
+  assert.match(state.errors[0], /reconnect scheduled in 60s: Call to device timed out/);
+  await state.device.onUninit();
+  assert.ok(cleared.includes(state.reconnects[0]));
+  let recreated = 0;
+  state.device.createDevice = () => { recreated++; };
+  state.reconnects[0].callback();
+  assert.equal(recreated, 0);
+});
+
+test('vb4 retries absolute writes in order and a failed write does not poison the queue', async () => {
+  const state = await createInitializedPurifier('zhimi.airp.vb4');
+  const values = [];
+  state.device.miio.call = async (method, params, options) => {
+    assert.equal(method, 'set_properties');
+    assert.equal(options.retries, 1);
+    values.push(params[0].value);
+    if (params[0].value) throw transportTimeout();
+    return params.map(entry => ({ ...entry, code: 0 }));
+  };
+  const on = state.device.setMiotProperty('power', true);
+  const off = state.device.setMiotProperty('power', false);
+  await assert.rejects(on, /Call to device timed out/);
+  await off;
+  assert.deepEqual(values, [true, true, true, false]);
+});
+
+test('vb4 settings use the same bounded write retries', async () => {
+  const state = await createInitializedPurifier('zhimi.airp.vb4');
+  let attempts = 0;
+  state.device.miio.call = async (method, params) => {
+    assert.equal(method, 'set_properties');
+    assert.equal(params[0].value, false);
+    if (++attempts < 3) throw transportTimeout();
+    return params.map(entry => ({ ...entry, code: 0 }));
+  };
+  await state.device.onSettings({ newSettings: { buzzer: false }, changedKeys: ['buzzer'] });
+  assert.equal(attempts, 3);
+});
+
+test('vb4 does not retry device errors, malformed acknowledgements or non-timeout failures', async () => {
+  for (const reply of [[], null, [{ siid: 2, piid: 1, code: -4004 }], [{ siid: 2, piid: 9, code: 0 }], new Error('network closed')]) {
+    const state = await createInitializedPurifier('zhimi.airp.vb4');
+    let attempts = 0;
+    state.device.miio.call = async () => { attempts++; if (reply instanceof Error) throw reply; return reply; };
+    await assert.rejects(state.device.setMiotProperty('power', false), /write failed|network closed/);
+    assert.equal(attempts, 1);
+  }
+});
+
+test('vb4 suppresses overlapping polls and finishes publication before a queued control', async () => {
+  const state = await createInitializedPurifier('zhimi.airp.vb4');
+  const read = deferred();
+  const publishing = deferred();
+  const published = deferred();
+  const events = [];
+  state.device.miio.call = async (method, params) => {
+    events.push(method);
+    if (method === 'get_properties') return read.promise;
+    return params.map(entry => ({ ...entry, code: 0 }));
+  };
+  state.device.updateCapabilityValue = async () => { publishing.resolve(); await published.promise; events.push('published'); };
+  const poll = state.device.retrieveDeviceData();
+  await state.device.retrieveDeviceData();
+  const off = state.device.setMiotProperty('power', false);
+  read.resolve(powerReply(true));
+  await publishing.promise;
+  assert.deepEqual(events, ['get_properties']);
+  published.resolve();
+  await Promise.all([poll, off]);
+  assert.deepEqual(events, ['get_properties', 'published', 'set_properties']);
+});
+
+test('late polls cannot publish or reconnect after replacement, deletion or uninitialization', async () => {
+  for (const action of ['replace', 'delete', 'uninit']) {
+    for (const failed of [false, true]) {
+      const state = await createInitializedPurifier('zhimi.airp.vb4');
+      const pending = deferred();
+      let attempts = 0;
+      state.device.miio.call = () => { attempts++; return pending.promise; };
+      const poll = state.device.retrieveDeviceData();
+      await Promise.resolve();
+      if (action === 'replace') state.device.miio = {};
+      else if (action === 'delete') await state.device.onDeleted();
+      else await state.device.onUninit();
+      if (failed) pending.reject(transportTimeout());
+      else pending.resolve(powerReply(true));
+      await poll;
+      assert.equal(attempts, 1);
+      assert.deepEqual(state.capabilityUpdates, []);
+      assert.deepEqual(state.reconnects, []);
+      assert.deepEqual(state.unavailableReasons, []);
+    }
+  }
+});
+
+test('a replacement connection polls immediately while old operations are cancelled', async () => {
+  const state = await createInitializedPurifier('zhimi.airp.vb4');
+  const oldRead = deferred();
+  state.device.miio.call = () => oldRead.promise;
+  const oldPoll = state.device.retrieveDeviceData();
+  const oldWrite = state.device.setMiotProperty('power', true);
+  const rejectedWrite = assert.rejects(oldWrite, /connection changed/);
+  await Promise.resolve();
+  let newCalls = 0;
+  state.device.miio = { call: async () => { newCalls++; return powerReply(false); } };
+  await state.device.retrieveDeviceData();
+  assert.equal(newCalls, 1);
+  oldRead.reject(transportTimeout());
+  await Promise.all([oldPoll, rejectedWrite]);
+  assert.deepEqual(state.capabilityUpdates, [['onoff', false]]);
+  assert.deepEqual(state.reconnects, []);
+});
+
+test('a stale reconnect callback cannot replace a newer connection', async () => {
+  const state = await createInitializedPurifier('zhimi.airp.vb4');
+  state.device.miio.call = async () => { throw transportTimeout(); };
+  await state.device.retrieveDeviceData();
+  const timer = state.device.recreateTimeout;
+  state.device.miio = {};
+  let recreated = 0;
+  state.device.createDevice = () => { recreated++; };
+  timer.callback();
+  assert.equal(recreated, 0);
+});
+
+test('connection replacement during publication stops subsequent capability updates', async () => {
+  const state = await createInitializedPurifier('zhimi.airp.vb4');
+  const capabilityUpdates = [];
+  state.device.miio.call = async () => [...powerReply(true), { did: 'aqi', code: 0, value: 10 }];
+  state.device.updateCapabilityValue = async (id, value) => {
+    capabilityUpdates.push([id, value]);
+    state.device.miio = {};
+  };
+  await state.device.retrieveDeviceData();
+  assert.deepEqual(capabilityUpdates, [['onoff', true]]);
+  assert.deepEqual(state.reconnects, []);
+});
+
+test('other purifier models still make one attempt on a transport timeout', async () => {
+  for (const model of ['zhimi.airpurifier.mb3', 'zhimi.airp.va2', 'xiaomi.airp.mb5']) {
+    const state = await createInitializedPurifier(model);
+    let attempts = 0;
+    state.device.miio.call = async () => { attempts++; throw transportTimeout(); };
+    await state.device.retrieveDeviceData();
+    assert.equal(attempts, 1);
+    await assert.rejects(state.device.setMiotProperty('power', false), /Call to device timed out/);
+    assert.equal(attempts, 2);
   }
 });
