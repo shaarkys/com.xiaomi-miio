@@ -20,6 +20,9 @@ const properties = {
       { did: 'door_state', siid: 2, piid: 9 },
       { did: 'left_time', siid: 2, piid: 10 },
       { did: 'run_status', siid: 2, piid: 11 },
+      { did: 'has_washed_times', siid: 2, piid: 13 },
+      { did: 'detergent_left_level', siid: 8, piid: 1 },
+      { did: 'softener_left_level', siid: 9, piid: 1 },
     ],
   },
 };
@@ -31,12 +34,27 @@ const washerCapabilities = [
   'measure_washer_left_time',
   'xiaomi_washer_mode',
   'xiaomi_washer_spin_speed',
+  'xiaomi_washer_washed_times',
+  'xiaomi_washer_door_state',
+  'alarm_washer_door_locked',
+  'xiaomi_washer_detergent_level',
+  'xiaomi_washer_softener_level',
+  'alarm_washer_detergent_low',
+  'alarm_washer_softener_low',
 ];
 
 const washerActions = {
   start: { siid: 2, aiid: 2, did: 'call-2-2', in: [] },
   pause: { siid: 2, aiid: 3, did: 'call-2-3', in: [] },
   stop: { siid: 2, aiid: 1, did: 'call-2-1', in: [] },
+};
+
+const doorStateIds = new Set(['0', '2', '3', '4', '5', '6', '7']);
+const doorLockedStates = new Set([3, 4, 5, 6, 7]);
+
+const levelEnum = {
+  1: 'low',
+  2: 'normal',
 };
 
 class WasherMiotDevice extends Device {
@@ -97,12 +115,19 @@ class WasherMiotDevice extends Device {
   async ensureWasherCapabilities() {
     for (const capability of washerCapabilities) {
       if (!this.hasCapability(capability)) {
-        await this.addCapability(capability).catch(error => this.error(error));
+        this.log(`Adding washer capability ${capability}`);
+        try {
+          await this.addCapability(capability);
+          this.log(`Added washer capability ${capability}`);
+        } catch (error) {
+          this.error(`Failed to add washer capability ${capability}`, error);
+        }
       }
     }
   }
 
   async cleanupWasherCapabilities() {
+    // meter_power / meter_water stay removed: those local MIoT values read as 0.
     for (const capability of ['xiaomi_washer_left_time', 'meter_water', 'meter_power']) {
       if (this.hasCapability(capability)) {
         await this.removeCapability(capability).catch(error => this.error(error));
@@ -134,18 +159,56 @@ class WasherMiotDevice extends Device {
     }
   }
 
-  async retrieveDeviceData() {
+  async updateConsumableLevel(raw, enumCapability, alarmCapability, triggerId) {
+    // Unknown readings must not clear an alarm or create a later false transition.
+    if (this._wifiStopped || (raw !== 1 && raw !== 2)) return;
+    const enumValue = levelEnum[raw];
+    await this.updateCapabilityValue(enumCapability, enumValue);
+
+    if (this._wifiStopped || !this.hasCapability(alarmCapability)) return;
+    const isLow = raw === 1;
+    const previousLow = this.getCapabilityValue(alarmCapability);
+    if (previousLow === isLow) return;
     try {
-      const result = await this.miio.call('get_properties', this.deviceProperties.get_properties, { retries: 1 });
+      await this.setCapabilityValue(alarmCapability, isLow);
+    } catch (error) {
+      this.error(`Failed to update washer capability ${alarmCapability}`, error);
+      return;
+    }
+
+    // Only fire when the level actually drops to low after we have seen it normal.
+    if (!this._wifiStopped && isLow && previousLow === false) {
+      await this.homey.flow.getDeviceTriggerCard(triggerId).trigger(this, {}, {}).catch(error => this.error(error));
+    }
+  }
+
+  async retrieveDeviceData() {
+    if (this._wifiStopped || this.isRetrievingDeviceData) return;
+    this.isRetrievingDeviceData = true;
+    const connection = this.miio;
+    try {
+      const result = await connection.call('get_properties', this.deviceProperties.get_properties, { retries: 1 });
+      if (this._wifiStopped || this.miio !== connection) return;
+      if (!Array.isArray(result)) throw new Error('Invalid washer get_properties response');
       if (!this.getAvailable()) await this.setAvailable();
 
-      const power = result.find(obj => obj.did === 'power');
-      const status = result.find(obj => obj.did === 'status');
-      const fault = result.find(obj => obj.did === 'fault');
-      const mode = result.find(obj => obj.did === 'mode');
-      const spinSpeed = result.find(obj => obj.did === 'spin_speed');
-      const targetTemperature = result.find(obj => obj.did === 'target_temperature');
-      const leftTime = result.find(obj => obj.did === 'left_time');
+      // Match MIoT addresses: devices may echo a physical DID instead of our label.
+      const property = (did) => {
+        const definition = this.deviceProperties.get_properties.find(entry => entry.did === did);
+        return result.find(obj => obj && obj.siid === definition.siid && obj.piid === definition.piid
+          && obj.code === 0 && obj.value !== undefined && obj.value !== null);
+      };
+      const power = property('power');
+      const status = property('status');
+      const fault = property('fault');
+      const mode = property('mode');
+      const spinSpeed = property('spin_speed');
+      const targetTemperature = property('target_temperature');
+      const leftTime = property('left_time');
+      const washedTimes = property('has_washed_times');
+      const doorState = property('door_state');
+      const detergentLevel = property('detergent_left_level');
+      const softenerLevel = property('softener_left_level');
 
       if (power !== undefined) {
         await this.updateCapabilityValue('onoff', power.value === true || power.value === 1);
@@ -167,6 +230,36 @@ class WasherMiotDevice extends Device {
         await this.updateCapabilityValue('xiaomi_washer_spin_speed', spinSpeed.value.toString());
       }
 
+      if (washedTimes && Number.isInteger(washedTimes.value) && washedTimes.value >= 0 && washedTimes.value <= 65535) {
+        await this.updateCapabilityValue('xiaomi_washer_washed_times', washedTimes.value);
+      }
+
+      if (doorState && Number.isInteger(doorState.value)) {
+        const doorId = doorState.value.toString();
+        await this.updateCapabilityValue('xiaomi_washer_door_state', doorStateIds.has(doorId) ? doorId : 'unknown');
+        if (doorStateIds.has(doorId)) {
+          await this.updateCapabilityValue('alarm_washer_door_locked', doorLockedStates.has(doorState.value));
+        }
+      }
+
+      if (detergentLevel) {
+        await this.updateConsumableLevel(
+          detergentLevel.value,
+          'xiaomi_washer_detergent_level',
+          'alarm_washer_detergent_low',
+          'washerDetergentLow'
+        );
+      }
+
+      if (softenerLevel) {
+        await this.updateConsumableLevel(
+          softenerLevel.value,
+          'xiaomi_washer_softener_level',
+          'alarm_washer_softener_low',
+          'washerSoftenerLow'
+        );
+      }
+
       if (fault !== undefined) {
         const errorStr = this.errorCodes[fault.value] || `Unknown error: ${fault.value}`;
         await this.updateSettingValue('error', errorStr);
@@ -176,6 +269,7 @@ class WasherMiotDevice extends Device {
         await this.handleStatusChange(status.value);
       }
     } catch (error) {
+      if (this._wifiStopped || this.miio !== connection) return;
       this.homey.clearInterval(this.pollingInterval);
       if (this.getAvailable()) {
         this.setUnavailable(this.homey.__('device.unreachable') + error.message).catch(err => this.error(err));
@@ -184,6 +278,8 @@ class WasherMiotDevice extends Device {
         this.createDevice();
       }, 60000);
       this.error(error.message);
+    } finally {
+      this.isRetrievingDeviceData = false;
     }
   }
 
