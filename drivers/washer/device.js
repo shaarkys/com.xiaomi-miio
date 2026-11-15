@@ -20,6 +20,9 @@ const properties = {
       { did: 'door_state', siid: 2, piid: 9 },
       { did: 'left_time', siid: 2, piid: 10 },
       { did: 'run_status', siid: 2, piid: 11 },
+      { did: 'has_washed_times', siid: 2, piid: 13 },
+      { did: 'detergent_left_level', siid: 8, piid: 1 },
+      { did: 'softener_left_level', siid: 9, piid: 1 },
     ],
   },
 };
@@ -31,12 +34,27 @@ const washerCapabilities = [
   'measure_washer_left_time',
   'xiaomi_washer_mode',
   'xiaomi_washer_spin_speed',
+  'xiaomi_washer_washed_times',
+  'xiaomi_washer_door_state',
+  'alarm_washer_door_locked',
+  'xiaomi_washer_detergent_level',
+  'xiaomi_washer_softener_level',
+  'alarm_washer_detergent_low',
+  'alarm_washer_softener_low',
 ];
 
 const washerActions = {
   start: { siid: 2, aiid: 2, did: 'call-2-2', in: [] },
   pause: { siid: 2, aiid: 3, did: 'call-2-3', in: [] },
   stop: { siid: 2, aiid: 1, did: 'call-2-1', in: [] },
+};
+
+const doorStateIds = new Set(['0', '2', '3', '4', '5', '6', '7']);
+const doorLockedStates = new Set([3, 4, 5, 6, 7]);
+
+const levelEnum = {
+  1: 'low',
+  2: 'normal',
 };
 
 class WasherMiotDevice extends Device {
@@ -103,6 +121,7 @@ class WasherMiotDevice extends Device {
   }
 
   async cleanupWasherCapabilities() {
+    // meter_power / meter_water stay removed: those local MIoT values read as 0.
     for (const capability of ['xiaomi_washer_left_time', 'meter_water', 'meter_power']) {
       if (this.hasCapability(capability)) {
         await this.removeCapability(capability).catch(error => this.error(error));
@@ -134,6 +153,22 @@ class WasherMiotDevice extends Device {
     }
   }
 
+  async updateConsumableLevel(raw, enumCapability, alarmCapability, triggerId) {
+    const enumValue = levelEnum[raw];
+    if (enumValue) {
+      await this.updateCapabilityValue(enumCapability, enumValue);
+    }
+
+    const isLow = raw === 1;
+    const previousLow = this.getCapabilityValue(alarmCapability);
+    await this.updateCapabilityValue(alarmCapability, isLow);
+
+    // Only fire when the level actually drops to low after we have seen it normal.
+    if (isLow && previousLow === false) {
+      this.homey.flow.getDeviceTriggerCard(triggerId).trigger(this, {}, {}).catch(error => this.error(error));
+    }
+  }
+
   async retrieveDeviceData() {
     try {
       const result = await this.miio.call('get_properties', this.deviceProperties.get_properties, { retries: 1 });
@@ -146,6 +181,10 @@ class WasherMiotDevice extends Device {
       const spinSpeed = result.find(obj => obj.did === 'spin_speed');
       const targetTemperature = result.find(obj => obj.did === 'target_temperature');
       const leftTime = result.find(obj => obj.did === 'left_time');
+      const washedTimes = result.find(obj => obj.did === 'has_washed_times');
+      const doorState = result.find(obj => obj.did === 'door_state');
+      const detergentLevel = result.find(obj => obj.did === 'detergent_left_level');
+      const softenerLevel = result.find(obj => obj.did === 'softener_left_level');
 
       if (power !== undefined) {
         await this.updateCapabilityValue('onoff', power.value === true || power.value === 1);
@@ -165,6 +204,36 @@ class WasherMiotDevice extends Device {
 
       if (spinSpeed !== undefined) {
         await this.updateCapabilityValue('xiaomi_washer_spin_speed', spinSpeed.value.toString());
+      }
+
+      if (washedTimes !== undefined && washedTimes.value !== undefined && washedTimes.value !== null) {
+        await this.updateCapabilityValue('xiaomi_washer_washed_times', washedTimes.value);
+      }
+
+      if (doorState !== undefined && doorState.value !== undefined && doorState.value !== null) {
+        const doorId = doorState.value.toString();
+        await this.updateCapabilityValue('xiaomi_washer_door_state', doorStateIds.has(doorId) ? doorId : 'unknown');
+        if (doorStateIds.has(doorId)) {
+          await this.updateCapabilityValue('alarm_washer_door_locked', doorLockedStates.has(doorState.value));
+        }
+      }
+
+      if (detergentLevel !== undefined && detergentLevel.value !== undefined && detergentLevel.value !== null) {
+        await this.updateConsumableLevel(
+          detergentLevel.value,
+          'xiaomi_washer_detergent_level',
+          'alarm_washer_detergent_low',
+          'washerDetergentLow'
+        );
+      }
+
+      if (softenerLevel !== undefined && softenerLevel.value !== undefined && softenerLevel.value !== null) {
+        await this.updateConsumableLevel(
+          softenerLevel.value,
+          'xiaomi_washer_softener_level',
+          'alarm_washer_softener_low',
+          'washerSoftenerLow'
+        );
       }
 
       if (fault !== undefined) {

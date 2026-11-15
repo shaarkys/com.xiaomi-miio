@@ -1,0 +1,18 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Washed cycles",
+    "nl": "Aantal wasbeurten"
+  },
+  "getable": true,
+  "setable": false,
+  "uiComponent": "sensor",
+  "units": {
+    "en": "cycles",
+    "nl": "cycli"
+  },
+  "decimals": 0,
+  "min": 0,
+  "max": 65535,
+  "insights": true
+}

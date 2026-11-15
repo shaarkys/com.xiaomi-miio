@@ -19,7 +19,14 @@
     "measure_washer_left_time",
     "measure_temperature",
     "xiaomi_washer_mode",
-    "xiaomi_washer_spin_speed"
+    "xiaomi_washer_spin_speed",
+    "xiaomi_washer_washed_times",
+    "xiaomi_washer_door_state",
+    "alarm_washer_door_locked",
+    "xiaomi_washer_detergent_level",
+    "alarm_washer_detergent_low",
+    "xiaomi_washer_softener_level",
+    "alarm_washer_softener_low"
   ],
   "statusIndicator": "measure_washer_left_time"
 }

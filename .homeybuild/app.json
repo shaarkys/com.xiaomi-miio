@@ -187,7 +187,7 @@
       "게이트웨이"
     ]
   },
-  "version": "3.5.54",
+  "version": "3.5.55",
   "compatibility": ">=12.2.0",
   "platforms": [
     "local"
@@ -2547,6 +2547,23 @@
       },
       {
         "title": {
+          "en": "Detergent is running low",
+          "nl": "Wasmiddel bijna op"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=washer"
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "id": "washerDetergentLow"
+      },
+      {
+        "title": {
           "en": "Washing program finished",
           "nl": "Wasprogramma is klaar"
         },
@@ -2561,6 +2578,23 @@
           "local"
         ],
         "id": "washerFinished"
+      },
+      {
+        "title": {
+          "en": "Softener is running low",
+          "nl": "Wasverzachter bijna op"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=washer"
+          }
+        ],
+        "platforms": [
+          "local"
+        ],
+        "id": "washerSoftenerLow"
       },
       {
         "title": {
@@ -5525,6 +5559,84 @@
         "id": "airpurifierZhimiMode"
       },
       {
+        "id": "changeSpeed",
+        "title": {
+          "en": "Set Speed",
+          "nl": "Stel snelheid in",
+          "da": "Indstil hastighed",
+          "de": "Geschwindigkeit einstellen",
+          "es": "Ajustar velocidad",
+          "fr": "Régler la vitesse",
+          "it": "Imposta velocità",
+          "no": "Sett hastighet",
+          "sv": "Ställ in hastighet",
+          "pl": "Ustaw prędkość",
+          "ru": "Установить скорость",
+          "ko": "속도 설정"
+        },
+        "titleFormatted": {
+          "en": "Set speed to [[speed]]",
+          "nl": "Stel snelheid in op [[speed]]",
+          "da": "Indstil hastighed til [[speed]]",
+          "de": "Geschwindigkeit auf [[speed]] einstellen",
+          "es": "Ajustar velocidad a [[speed]]",
+          "fr": "Régler la vitesse à [[speed]]",
+          "it": "Imposta velocità a [[speed]]",
+          "no": "Sett hastighet til [[speed]]",
+          "sv": "Ställ in hastighet till [[speed]]",
+          "pl": "Ustaw prędkość na [[speed]]",
+          "ru": "Установить скорость на [[speed]]",
+          "ko": "[[speed]]으로 속도 설정"
+        },
+        "args": [
+          {
+            "name": "speed",
+            "title": {
+              "en": "Speed",
+              "nl": "Snelheid",
+              "da": "Hastighed",
+              "de": "Geschwindigkeit",
+              "es": "Velocidad",
+              "fr": "Vitesse",
+              "it": "Velocità",
+              "no": "Hastighet",
+              "sv": "Hastighet",
+              "pl": "Prędkość",
+              "ru": "Скорость",
+              "ko": "속도"
+            },
+            "type": "range",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "label": "%",
+            "labelDecimals": 0
+          },
+          {
+            "name": "device",
+            "type": "device",
+            "placeholder": {
+              "en": "Select Device",
+              "nl": "Selecteer apparaat",
+              "da": "Vælg enhed",
+              "de": "Gerät auswählen",
+              "es": "Seleccionar dispositivo",
+              "fr": "Sélectionner un appareil",
+              "it": "Seleziona dispositivo",
+              "no": "Velg enhet",
+              "sv": "Välj enhet",
+              "pl": "Wybierz urządzenie",
+              "ru": "Выбрать устройство",
+              "ko": "장치 선택"
+            },
+            "filter": "driver_id=zhimi-fan|dmaker-fan"
+          }
+        ],
+        "platforms": [
+          "local"
+        ]
+      },
+      {
         "id": "cleanZoneVacuum",
         "title": {
           "en": "Start zone cleaning",
@@ -5844,6 +5956,115 @@
         "id": "enableBuzzer"
       },
       {
+        "id": "enableChildLock",
+        "title": {
+          "en": "Enable Child Lock",
+          "nl": "Instellen kindbeveiliging",
+          "da": "Aktivér børnelås",
+          "de": "Kindersicherung aktivieren",
+          "es": "Activar bloqueo infantil",
+          "fr": "Activer le verrouillage enfant",
+          "it": "Abilita blocco bambini",
+          "no": "Aktiver barnelås",
+          "sv": "Aktivera barnlås",
+          "pl": "Włącz blokadę rodzicielską",
+          "ru": "Включить детский замок",
+          "ko": "어린이 잠금 장치를 활성화"
+        },
+        "titleFormatted": {
+          "en": "Set child lock [[childlock]]",
+          "nl": "Wijzig kindbeveiliging naar [[childlock]]",
+          "da": "Indstil børnelås [[childlock]]",
+          "de": "Kindersicherung setzen [[childlock]]",
+          "es": "Configurar bloqueo infantil [[childlock]]",
+          "fr": "Définir le verrouillage enfant [[childlock]]",
+          "it": "Imposta blocco bambini [[childlock]]",
+          "no": "Sett barnelås [[childlock]]",
+          "sv": "Ställ in barnlåset [[childlock]]",
+          "pl": "Ustaw blokadę rodzicielską [[childlock]]",
+          "ru": "Установить детский замок [[childlock]]",
+          "ko": "어린이 잠금 설정 [[childlock]]"
+        },
+        "args": [
+          {
+            "name": "childlock",
+            "title": {
+              "en": "Childlock",
+              "nl": "Kinderslot",
+              "da": "Børnelås",
+              "de": "Kindersicherung",
+              "es": "Bloqueo infantil",
+              "fr": "Verrouillage enfant",
+              "it": "Blocco bambini",
+              "no": "Barnelås",
+              "sv": "Barnlås",
+              "pl": "Blokada rodzicielska",
+              "ru": "Детский замок",
+              "ko": "어린이 잠금 장치"
+            },
+            "type": "dropdown",
+            "values": [
+              {
+                "id": "on",
+                "label": {
+                  "en": "On",
+                  "nl": "Aan",
+                  "da": "Til",
+                  "de": "Ein",
+                  "es": "Encendido",
+                  "fr": "Activé",
+                  "it": "Acceso",
+                  "no": "På",
+                  "sv": "På",
+                  "pl": "Włączone",
+                  "ru": "Вкл",
+                  "ko": "켜기"
+                }
+              },
+              {
+                "id": "off",
+                "label": {
+                  "en": "Off",
+                  "nl": "Uit",
+                  "da": "Fra",
+                  "de": "Aus",
+                  "es": "Apagado",
+                  "fr": "Désactivé",
+                  "it": "Spento",
+                  "no": "Av",
+                  "sv": "Av",
+                  "pl": "Wyłączone",
+                  "ru": "Выкл",
+                  "ko": "끄기"
+                }
+              }
+            ]
+          },
+          {
+            "name": "device",
+            "type": "device",
+            "placeholder": {
+              "en": "Select Device",
+              "nl": "Selecteer apparaat",
+              "da": "Vælg enhed",
+              "de": "Gerät auswählen",
+              "es": "Seleccionar dispositivo",
+              "fr": "Sélectionner l'appareil",
+              "it": "Seleziona dispositivo",
+              "no": "Velg enhet",
+              "sv": "Välj enhet",
+              "pl": "Wybierz urządzenie",
+              "ru": "Выберите устройство",
+              "ko": "장치 선택"
+            },
+            "filter": "driver_id=zhimi-fan|dmaker-fan|fan_zhimi_advanced|fan_zhimi_fan_za5"
+          }
+        ],
+        "platforms": [
+          "local"
+        ]
+      },
+      {
         "id": "enableEyecare",
         "title": {
           "en": "Switch Eyecare",
@@ -5963,115 +6184,6 @@
               "ko": "필립스 아이케어 램프 선택"
             },
             "filter": "driver_id=philips-eyecare"
-          }
-        ],
-        "platforms": [
-          "local"
-        ]
-      },
-      {
-        "id": "enableChildLock",
-        "title": {
-          "en": "Enable Child Lock",
-          "nl": "Instellen kindbeveiliging",
-          "da": "Aktivér børnelås",
-          "de": "Kindersicherung aktivieren",
-          "es": "Activar bloqueo infantil",
-          "fr": "Activer le verrouillage enfant",
-          "it": "Abilita blocco bambini",
-          "no": "Aktiver barnelås",
-          "sv": "Aktivera barnlås",
-          "pl": "Włącz blokadę rodzicielską",
-          "ru": "Включить детский замок",
-          "ko": "어린이 잠금 장치를 활성화"
-        },
-        "titleFormatted": {
-          "en": "Set child lock [[childlock]]",
-          "nl": "Wijzig kindbeveiliging naar [[childlock]]",
-          "da": "Indstil børnelås [[childlock]]",
-          "de": "Kindersicherung setzen [[childlock]]",
-          "es": "Configurar bloqueo infantil [[childlock]]",
-          "fr": "Définir le verrouillage enfant [[childlock]]",
-          "it": "Imposta blocco bambini [[childlock]]",
-          "no": "Sett barnelås [[childlock]]",
-          "sv": "Ställ in barnlåset [[childlock]]",
-          "pl": "Ustaw blokadę rodzicielską [[childlock]]",
-          "ru": "Установить детский замок [[childlock]]",
-          "ko": "어린이 잠금 설정 [[childlock]]"
-        },
-        "args": [
-          {
-            "name": "childlock",
-            "title": {
-              "en": "Childlock",
-              "nl": "Kinderslot",
-              "da": "Børnelås",
-              "de": "Kindersicherung",
-              "es": "Bloqueo infantil",
-              "fr": "Verrouillage enfant",
-              "it": "Blocco bambini",
-              "no": "Barnelås",
-              "sv": "Barnlås",
-              "pl": "Blokada rodzicielska",
-              "ru": "Детский замок",
-              "ko": "어린이 잠금 장치"
-            },
-            "type": "dropdown",
-            "values": [
-              {
-                "id": "on",
-                "label": {
-                  "en": "On",
-                  "nl": "Aan",
-                  "da": "Til",
-                  "de": "Ein",
-                  "es": "Encendido",
-                  "fr": "Activé",
-                  "it": "Acceso",
-                  "no": "På",
-                  "sv": "På",
-                  "pl": "Włączone",
-                  "ru": "Вкл",
-                  "ko": "켜기"
-                }
-              },
-              {
-                "id": "off",
-                "label": {
-                  "en": "Off",
-                  "nl": "Uit",
-                  "da": "Fra",
-                  "de": "Aus",
-                  "es": "Apagado",
-                  "fr": "Désactivé",
-                  "it": "Spento",
-                  "no": "Av",
-                  "sv": "Av",
-                  "pl": "Wyłączone",
-                  "ru": "Выкл",
-                  "ko": "끄기"
-                }
-              }
-            ]
-          },
-          {
-            "name": "device",
-            "type": "device",
-            "placeholder": {
-              "en": "Select Device",
-              "nl": "Selecteer apparaat",
-              "da": "Vælg enhed",
-              "de": "Gerät auswählen",
-              "es": "Seleccionar dispositivo",
-              "fr": "Sélectionner l'appareil",
-              "it": "Seleziona dispositivo",
-              "no": "Velg enhet",
-              "sv": "Välj enhet",
-              "pl": "Wybierz urządzenie",
-              "ru": "Выберите устройство",
-              "ko": "장치 선택"
-            },
-            "filter": "driver_id=zhimi-fan|dmaker-fan|fan_zhimi_advanced|fan_zhimi_fan_za5"
           }
         ],
         "platforms": [
@@ -8701,84 +8813,6 @@
           "local"
         ],
         "id": "humidifierZhimiModeMIoT"
-      },
-      {
-        "id": "changeSpeed",
-        "title": {
-          "en": "Set Speed",
-          "nl": "Stel snelheid in",
-          "da": "Indstil hastighed",
-          "de": "Geschwindigkeit einstellen",
-          "es": "Ajustar velocidad",
-          "fr": "Régler la vitesse",
-          "it": "Imposta velocità",
-          "no": "Sett hastighet",
-          "sv": "Ställ in hastighet",
-          "pl": "Ustaw prędkość",
-          "ru": "Установить скорость",
-          "ko": "속도 설정"
-        },
-        "titleFormatted": {
-          "en": "Set speed to [[speed]]",
-          "nl": "Stel snelheid in op [[speed]]",
-          "da": "Indstil hastighed til [[speed]]",
-          "de": "Geschwindigkeit auf [[speed]] einstellen",
-          "es": "Ajustar velocidad a [[speed]]",
-          "fr": "Régler la vitesse à [[speed]]",
-          "it": "Imposta velocità a [[speed]]",
-          "no": "Sett hastighet til [[speed]]",
-          "sv": "Ställ in hastighet till [[speed]]",
-          "pl": "Ustaw prędkość na [[speed]]",
-          "ru": "Установить скорость на [[speed]]",
-          "ko": "[[speed]]으로 속도 설정"
-        },
-        "args": [
-          {
-            "name": "speed",
-            "title": {
-              "en": "Speed",
-              "nl": "Snelheid",
-              "da": "Hastighed",
-              "de": "Geschwindigkeit",
-              "es": "Velocidad",
-              "fr": "Vitesse",
-              "it": "Velocità",
-              "no": "Hastighet",
-              "sv": "Hastighet",
-              "pl": "Prędkość",
-              "ru": "Скорость",
-              "ko": "속도"
-            },
-            "type": "range",
-            "min": 0,
-            "max": 100,
-            "step": 1,
-            "label": "%",
-            "labelDecimals": 0
-          },
-          {
-            "name": "device",
-            "type": "device",
-            "placeholder": {
-              "en": "Select Device",
-              "nl": "Selecteer apparaat",
-              "da": "Vælg enhed",
-              "de": "Gerät auswählen",
-              "es": "Seleccionar dispositivo",
-              "fr": "Sélectionner un appareil",
-              "it": "Seleziona dispositivo",
-              "no": "Velg enhet",
-              "sv": "Välj enhet",
-              "pl": "Wybierz urządzenie",
-              "ru": "Выбрать устройство",
-              "ko": "장치 선택"
-            },
-            "filter": "driver_id=zhimi-fan|dmaker-fan"
-          }
-        ],
-        "platforms": [
-          "local"
-        ]
       },
       {
         "title": {
@@ -33722,7 +33756,14 @@
         "measure_washer_left_time",
         "measure_temperature",
         "xiaomi_washer_mode",
-        "xiaomi_washer_spin_speed"
+        "xiaomi_washer_spin_speed",
+        "xiaomi_washer_washed_times",
+        "xiaomi_washer_door_state",
+        "alarm_washer_door_locked",
+        "xiaomi_washer_detergent_level",
+        "alarm_washer_detergent_low",
+        "xiaomi_washer_softener_level",
+        "alarm_washer_softener_low"
       ],
       "statusIndicator": "measure_washer_left_time",
       "id": "washer",
@@ -36228,6 +36269,39 @@
       "getable": true,
       "setable": false,
       "icon": "/assets/icons/vacuum_side_brush.svg"
+    },
+    "alarm_washer_detergent_low": {
+      "type": "boolean",
+      "title": {
+        "en": "Detergent low",
+        "nl": "Wasmiddel bijna op"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/icons/alarm_generic.svg"
+    },
+    "alarm_washer_door_locked": {
+      "type": "boolean",
+      "title": {
+        "en": "Door locked",
+        "nl": "Deur vergrendeld"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/icons/alarm_generic.svg"
+    },
+    "alarm_washer_softener_low": {
+      "type": "boolean",
+      "title": {
+        "en": "Softener low",
+        "nl": "Wasverzachter bijna op"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/icons/alarm_generic.svg"
     },
     "alarm_water_shortage": {
       "type": "boolean",
@@ -38907,6 +38981,23 @@
       "uiComponent": "sensor",
       "icon": "/assets/icons/alarm_generic.svg"
     },
+    "petfeeder_schedule_progress": {
+      "type": "number",
+      "title": {
+        "en": "Schedule progress",
+        "fr": "Progression du programme de distribution"
+      },
+      "units": {
+        "en": "%"
+      },
+      "decimals": 0,
+      "min": 0,
+      "max": 100,
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/icons/target_time.svg"
+    },
     "petfeeder_screen_display_mode": {
       "type": "enum",
       "title": {
@@ -38958,23 +39049,6 @@
       "setable": true,
       "uiComponent": "button",
       "icon": "/assets/icons/start.svg"
-    },
-    "petfeeder_schedule_progress": {
-      "type": "number",
-      "title": {
-        "en": "Schedule progress",
-        "fr": "Progression du programme de distribution"
-      },
-      "units": {
-        "en": "%"
-      },
-      "decimals": 0,
-      "min": 0,
-      "max": 100,
-      "getable": true,
-      "setable": false,
-      "uiComponent": "sensor",
-      "icon": "/assets/icons/target_time.svg"
     },
     "petfeeder_status_mode": {
       "type": "enum",
@@ -40744,6 +40818,100 @@
       "setable": true,
       "icon": "/assets/icons/water-level.svg"
     },
+    "xiaomi_washer_detergent_level": {
+      "type": "enum",
+      "title": {
+        "en": "Detergent level",
+        "nl": "Wasmiddelniveau"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "values": [
+        {
+          "id": "low",
+          "title": {
+            "en": "Low",
+            "nl": "Laag"
+          }
+        },
+        {
+          "id": "normal",
+          "title": {
+            "en": "Normal",
+            "nl": "Normaal"
+          }
+        }
+      ]
+    },
+    "xiaomi_washer_door_state": {
+      "type": "enum",
+      "title": {
+        "en": "Door state",
+        "nl": "Deurstatus"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "values": [
+        {
+          "id": "0",
+          "title": {
+            "en": "Open",
+            "nl": "Open"
+          }
+        },
+        {
+          "id": "2",
+          "title": {
+            "en": "Closed (can be opened)",
+            "nl": "Gesloten (kan geopend worden)"
+          }
+        },
+        {
+          "id": "3",
+          "title": {
+            "en": "Closed (locked)",
+            "nl": "Gesloten (vergrendeld)"
+          }
+        },
+        {
+          "id": "4",
+          "title": {
+            "en": "Locked (drying temperature high)",
+            "nl": "Vergrendeld (droogtemperatuur hoog)"
+          }
+        },
+        {
+          "id": "5",
+          "title": {
+            "en": "Locked (water temperature high)",
+            "nl": "Vergrendeld (watertemperatuur hoog)"
+          }
+        },
+        {
+          "id": "6",
+          "title": {
+            "en": "Locked (water level high)",
+            "nl": "Vergrendeld (waterniveau hoog)"
+          }
+        },
+        {
+          "id": "7",
+          "title": {
+            "en": "Locked (spin speed high)",
+            "nl": "Vergrendeld (centrifugesnelheid hoog)"
+          }
+        },
+        {
+          "id": "unknown",
+          "title": {
+            "en": "Unknown",
+            "nl": "Onbekend"
+          }
+        }
+      ]
+    },
     "xiaomi_washer_mode": {
       "type": "enum",
       "title": {
@@ -41005,6 +41173,32 @@
       "uiComponent": "button",
       "icon": "/assets/icons/pause.svg"
     },
+    "xiaomi_washer_softener_level": {
+      "type": "enum",
+      "title": {
+        "en": "Softener level",
+        "nl": "Wasverzachterniveau"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "values": [
+        {
+          "id": "low",
+          "title": {
+            "en": "Low",
+            "nl": "Laag"
+          }
+        },
+        {
+          "id": "normal",
+          "title": {
+            "en": "Normal",
+            "nl": "Normaal"
+          }
+        }
+      ]
+    },
     "xiaomi_washer_spin_speed": {
       "type": "enum",
       "title": {
@@ -41087,6 +41281,24 @@
       "setable": true,
       "uiComponent": "button",
       "icon": "/assets/icons/stop.svg"
+    },
+    "xiaomi_washer_washed_times": {
+      "type": "number",
+      "title": {
+        "en": "Washed cycles",
+        "nl": "Aantal wasbeurten"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "units": {
+        "en": "cycles",
+        "nl": "cycli"
+      },
+      "decimals": 0,
+      "min": 0,
+      "max": 65535,
+      "insights": true
     },
     "yeelight_bslamp2_nightlight": {
       "type": "boolean",

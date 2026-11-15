@@ -1,0 +1,26 @@
+{
+  "type": "enum",
+  "title": {
+    "en": "Detergent level",
+    "nl": "Wasmiddelniveau"
+  },
+  "getable": true,
+  "setable": false,
+  "uiComponent": "sensor",
+  "values": [
+    {
+      "id": "low",
+      "title": {
+        "en": "Low",
+        "nl": "Laag"
+      }
+    },
+    {
+      "id": "normal",
+      "title": {
+        "en": "Normal",
+        "nl": "Normaal"
+      }
+    }
+  ]
+}
