@@ -282,6 +282,80 @@ test('unsupported optional properties do not prevent existing power and status u
   assert.deepEqual(device.timers, []);
 });
 
+test('washerFinished fires once when a cycle auto-powers off or finishes between polls and does not duplicate', async () => {
+  const device = await createDevice();
+
+  // Initial off poll after boot does not fire triggers.
+  device.response = [
+    reading(device, 'power', false),
+    reading(device, 'status', 0),
+    reading(device, 'left_time', 0),
+    reading(device, 'has_washed_times', 198),
+  ];
+  await device.retrieveDeviceData();
+  assert.equal(device.getCapabilityValue('onoff'), false);
+  assert.deepEqual(device.triggers, []);
+
+  // Wash starts (status 3 Busy) -> fires washerStarted once.
+  device.response = [
+    reading(device, 'power', true),
+    reading(device, 'status', 3),
+    reading(device, 'left_time', 45),
+    reading(device, 'has_washed_times', 198),
+  ];
+  await device.retrieveDeviceData();
+  assert.equal(device.getCapabilityValue('onoff'), true);
+  assert.deepEqual(device.triggers, ['washerStarted']);
+
+  // Wash finishes and washer auto-powers off before next 60s poll (status 0 Off, power false) -> fires washerFinished once.
+  device.response = [
+    reading(device, 'power', false),
+    reading(device, 'status', 0),
+    reading(device, 'left_time', 0),
+    reading(device, 'has_washed_times', 199),
+  ];
+  await device.retrieveDeviceData();
+  assert.equal(device.getCapabilityValue('onoff'), false);
+  assert.equal(device.getCapabilityValue('xiaomi_washer_washed_times'), 199);
+  assert.deepEqual(device.triggers, ['washerStarted', 'washerFinished']);
+
+  // Subsequent off polls do not re-trigger washerFinished.
+  await device.retrieveDeviceData();
+  assert.deepEqual(device.triggers, ['washerStarted', 'washerFinished']);
+
+  // Next cycle starts and finishes with status 5 observed before auto-power-off -> fires washerFinished only once.
+  device.response = [reading(device, 'power', true), reading(device, 'status', 3), reading(device, 'has_washed_times', 199)];
+  await device.retrieveDeviceData();
+  assert.deepEqual(device.triggers, ['washerStarted', 'washerFinished', 'washerStarted']);
+
+  device.response = [reading(device, 'power', true), reading(device, 'status', 5), reading(device, 'has_washed_times', 200)];
+  await device.retrieveDeviceData();
+  assert.deepEqual(device.triggers, ['washerStarted', 'washerFinished', 'washerStarted', 'washerFinished']);
+
+  device.response = [reading(device, 'power', false), reading(device, 'status', 0), reading(device, 'has_washed_times', 200)];
+  await device.retrieveDeviceData();
+  assert.deepEqual(device.triggers, ['washerStarted', 'washerFinished', 'washerStarted', 'washerFinished']);
+
+  // Manual stop or power-off from Homey mid-cycle does not falsely trigger washerFinished.
+  device.response = [reading(device, 'power', true), reading(device, 'status', 3)];
+  await device.retrieveDeviceData();
+  assert.equal(device.triggers.length, 5);
+
+  await device.listeners.get('xiaomi_washer_stop')();
+  device.response = [reading(device, 'power', true), reading(device, 'status', 1), reading(device, 'left_time', 20)];
+  await device.retrieveDeviceData();
+  assert.equal(device.triggers.length, 5);
+
+  device.response = [reading(device, 'power', true), reading(device, 'status', 3)];
+  await device.retrieveDeviceData();
+  assert.equal(device.triggers.length, 6);
+
+  await device.listeners.get('onoff')(false);
+  device.response = [reading(device, 'power', false), reading(device, 'status', 0)];
+  await device.retrieveDeviceData();
+  assert.equal(device.triggers.length, 6);
+});
+
 test('overlapping polls send one request and malformed responses release the poll guard', async () => {
   const device = await createDevice();
   let resolve;
@@ -351,7 +425,7 @@ test('new capability and Flow Compose definitions match the driver and trigger I
     assert.equal(definition.getable, true);
     assert.equal(definition.setable, false);
   }
-  for (const [, , , triggerId] of consumables) {
+  for (const triggerId of ['washerStarted', 'washerFinished', ...consumables.map(([, , , id]) => id)]) {
     const definition = JSON.parse(fs.readFileSync(path.join(__dirname, '../.homeycompose/flow/triggers', `${triggerId}.json`)));
     assert.deepEqual(definition.args, [{ name: 'device', type: 'device', filter: 'driver_id=washer' }]);
   }

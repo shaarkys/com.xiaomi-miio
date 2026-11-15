@@ -51,6 +51,7 @@ const washerActions = {
 
 const doorStateIds = new Set(['0', '2', '3', '4', '5', '6', '7']);
 const doorLockedStates = new Set([3, 4, 5, 6, 7]);
+const completedStatuses = new Set([5, 6, 7]);
 
 const levelEnum = {
   1: 'low',
@@ -140,7 +141,11 @@ class WasherMiotDevice extends Device {
       if (!this.miio) {
         throw new Error('Device unreachable');
       }
-      return await this.miio.call('set_properties', [{ siid, piid, value }], { retries: 1 });
+      const result = await this.miio.call('set_properties', [{ siid, piid, value }], { retries: 1 });
+      if (siid === 2 && piid === 1 && !value && this.getStoreValue('previous_status') === 3) {
+        await this.setStoreValue('previous_status', 0);
+      }
+      return result;
     } catch (error) {
       this.error(error);
       return Promise.reject(error);
@@ -152,7 +157,11 @@ class WasherMiotDevice extends Device {
       if (!this.miio) {
         throw new Error('Device unreachable');
       }
-      return await this.miio.call('action', washerActions[action], { retries: 1 });
+      const result = await this.miio.call('action', washerActions[action], { retries: 1 });
+      if (action === 'stop' && this.getStoreValue('previous_status') === 3) {
+        await this.setStoreValue('previous_status', 1);
+      }
+      return result;
     } catch (error) {
       this.error(error);
       return Promise.reject(error);
@@ -205,13 +214,24 @@ class WasherMiotDevice extends Device {
       const spinSpeed = property('spin_speed');
       const targetTemperature = property('target_temperature');
       const leftTime = property('left_time');
+      const runStatus = property('run_status');
       const washedTimes = property('has_washed_times');
       const doorState = property('door_state');
       const detergentLevel = property('detergent_left_level');
       const softenerLevel = property('softener_left_level');
 
+      const previousOnoff = this.getCapabilityValue('onoff');
+      const previousWashedTimes = this.getCapabilityValue('xiaomi_washer_washed_times');
+      const isOn = power !== undefined ? (power.value === true || power.value === 1) : undefined;
+      const validWashedTimes = Boolean(
+        washedTimes && Number.isInteger(washedTimes.value) && washedTimes.value >= 0 && washedTimes.value <= 65535
+      );
+      const washedTimesIncreased = validWashedTimes
+        && Number.isInteger(previousWashedTimes)
+        && washedTimes.value > previousWashedTimes;
+
       if (power !== undefined) {
-        await this.updateCapabilityValue('onoff', power.value === true || power.value === 1);
+        await this.updateCapabilityValue('onoff', isOn);
       }
 
       if (leftTime !== undefined) {
@@ -230,7 +250,7 @@ class WasherMiotDevice extends Device {
         await this.updateCapabilityValue('xiaomi_washer_spin_speed', spinSpeed.value.toString());
       }
 
-      if (washedTimes && Number.isInteger(washedTimes.value) && washedTimes.value >= 0 && washedTimes.value <= 65535) {
+      if (validWashedTimes) {
         await this.updateCapabilityValue('xiaomi_washer_washed_times', washedTimes.value);
       }
 
@@ -265,8 +285,26 @@ class WasherMiotDevice extends Device {
         await this.updateSettingValue('error', errorStr);
       }
 
-      if (status !== undefined) {
-        await this.handleStatusChange(status.value);
+      let effectiveStatus = status !== undefined ? status.value : undefined;
+      if (effectiveStatus !== undefined) {
+        if (!completedStatuses.has(effectiveStatus) && runStatus && runStatus.value === 15) {
+          effectiveStatus = 5;
+        } else if (isOn === false && effectiveStatus === 3) {
+          effectiveStatus = 0;
+        }
+      } else if (runStatus && runStatus.value === 15) {
+        effectiveStatus = 5;
+      } else if (isOn === false) {
+        effectiveStatus = 0;
+      }
+
+      if (effectiveStatus !== undefined || washedTimesIncreased) {
+        await this.handleStatusChange(effectiveStatus, {
+          isOn,
+          leftTime: leftTime ? leftTime.value : undefined,
+          previousOnoff,
+          washedTimesIncreased,
+        });
       }
     } catch (error) {
       if (this._wifiStopped || this.miio !== connection) return;
@@ -283,24 +321,47 @@ class WasherMiotDevice extends Device {
     }
   }
 
-  async handleStatusChange(currentStatus) {
+  async handleStatusChange(currentStatus, { isOn, leftTime, previousOnoff, washedTimesIncreased = false } = {}) {
+    if (this._wifiStopped) return;
     const previousStatus = this.getStoreValue('previous_status');
-    if (currentStatus === previousStatus) {
+    const statusChanged = currentStatus !== undefined && currentStatus !== previousStatus;
+
+    if (!statusChanged && !washedTimesIncreased) {
       return;
     }
 
-    await this.setStoreValue('previous_status', currentStatus);
+    if (statusChanged) {
+      await this.setStoreValue('previous_status', currentStatus);
+    }
 
-    if (previousStatus === null || previousStatus === undefined) {
+    const hasPreviousStatus = previousStatus !== null && previousStatus !== undefined;
+
+    if (hasPreviousStatus && currentStatus === 3 && previousStatus !== 3) {
+      await this.homey.flow.getDeviceTriggerCard('washerStarted').trigger(this, {}, {}).catch(error => this.error(error));
       return;
     }
 
-    if (currentStatus === 3 && previousStatus !== 3) {
-      this.homey.flow.getDeviceTriggerCard('washerStarted').trigger(this, {}, {}).catch(error => this.error(error));
+    if (currentStatus === 3) {
+      return;
     }
 
-    if (currentStatus === 5 && previousStatus !== 5) {
-      this.homey.flow.getDeviceTriggerCard('washerFinished').trigger(this, {}, {}).catch(error => this.error(error));
+    // On mibx5.washer.f05gl, completion (status 5/6/7 or run_status 15) is often followed
+    // immediately by auto power-off (status 0, power false) before the next 60s poll.
+    const completedStatusTransition = completedStatuses.has(currentStatus)
+      && !completedStatuses.has(previousStatus)
+      && (hasPreviousStatus || previousOnoff === true);
+    const busyToOffTransition = (previousStatus === 3 || (!hasPreviousStatus && previousOnoff === true))
+      && (currentStatus === 0 || isOn === false);
+    const busyToIdleCompleted = previousStatus === 3
+      && currentStatus === 1
+      && (washedTimesIncreased || leftTime === 0);
+    const completedByWashCount = hasPreviousStatus
+      && !completedStatuses.has(previousStatus)
+      && (currentStatus === 0 || currentStatus === 1)
+      && washedTimesIncreased;
+
+    if (!this._wifiStopped && (completedStatusTransition || busyToOffTransition || busyToIdleCompleted || completedByWashCount)) {
+      await this.homey.flow.getDeviceTriggerCard('washerFinished').trigger(this, {}, {}).catch(error => this.error(error));
     }
   }
 }
