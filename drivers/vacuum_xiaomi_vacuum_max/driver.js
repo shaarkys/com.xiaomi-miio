@@ -8,6 +8,7 @@ const OV21GL_CONSUMABLE_LIFE_CAPABILITIES = Object.freeze([
     'vacuum_xiaomi_dust_bag_left_level'
 ]);
 const BASE_STATION_STATUS_MODELS = Object.freeze([
+    'xiaomi.vacuum.d110ch',
     'xiaomi.vacuum.d109gl',
     'xiaomi.vacuum.d102gl',
     'xiaomi.vacuum.ov43gb',
@@ -24,6 +25,7 @@ class XiaomiVacuumMiotDriver extends Driver {
         return manifestCapabilities.filter((capability) =>
             (capability !== BASE_STATION_STATUS_CAPABILITY || BASE_STATION_STATUS_MODELS.includes(model))
             && (!OV21GL_CONSUMABLE_LIFE_CAPABILITIES.includes(capability) || model === 'xiaomi.vacuum.ov21gl')
+            && (model !== 'xiaomi.vacuum.d110ch' || !['vacuum_xiaomi_path_mode_max', 'vacuum_xiaomi_carpet_mode_max'].includes(capability))
         );
     }
 }

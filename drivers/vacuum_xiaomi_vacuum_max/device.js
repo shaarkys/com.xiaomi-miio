@@ -3,6 +3,7 @@
 const Homey = require('homey');
 const Device = require('../wifi_device.js');
 const Util = require('../../lib/util.js');
+const M40 = require('../../lib/vacuum-xiaomi-m40.js');
 const { parseMapId, propertyValue, parseMapCatalog } = require('../../lib/saved-vacuum-maps.js');
 
 /* supported devices */
@@ -146,6 +147,7 @@ const OV21GL_CONSUMABLE_LIFE_CAPABILITIES = Object.freeze([
 ]);
 const X20_RAW_STATUS_MODELS = Object.freeze(['xiaomi.vacuum.d102gl', 'xiaomi.vacuum.d109gl']);
 const BASE_STATION_STATUS_MODELS = Object.freeze([
+    M40.MODEL,
     'xiaomi.vacuum.d102gl',
     'xiaomi.vacuum.d109gl',
     'xiaomi.vacuum.ov43gb',
@@ -243,6 +245,13 @@ function createBaseStationActionDescriptor(aiid) {
 }
 
 const BASE_STATION_ACTION_DESCRIPTORS = Object.freeze({
+    [M40.MODEL]: Object.freeze({
+        start_dust_collection: createBaseStationActionDescriptor(4),
+        start_mop_washing: createBaseStationActionDescriptor(6),
+        stop_mop_washing: createBaseStationActionDescriptor(17),
+        start_drying: createBaseStationActionDescriptor(8),
+        stop_drying: createBaseStationActionDescriptor(9)
+    }),
     'xiaomi.vacuum.d102gl': Object.freeze({
         start_dust_collection: createBaseStationActionDescriptor(18),
         start_mop_washing: createBaseStationActionDescriptor(19),
@@ -343,6 +352,7 @@ function getDeviceModelIdentifier(device) {
 
 /** Model → property-set */
 const mapping = {
+    [M40.MODEL]: 'properties_d110ch',
     'xiaomi.vacuum.d109gl': 'properties_d109gl',
     'xiaomi.vacuum.d102gl': 'properties_d109gl', // unchanged — you said it’s flawless
     'xiaomi.vacuum.ov43gb': 'properties_ov43gb',
@@ -365,6 +375,7 @@ const mapping = {
  * since large single-shot reads are the same shape of risk even without
  * a confirmed report yet. */
 const GET_PROPERTIES_CHUNK_SIZE = {
+    [M40.MODEL]: 1, // Matches openHAB's exact-model maxProperties setting.
     'xiaomi.vacuum.d102gl': 1
 };
 const DEFAULT_GET_PROPERTIES_CHUNK_SIZE = 5;
@@ -378,6 +389,7 @@ const MAX_ROOM_ALIAS_ENTRIES = 64;
 
 /** Property sets */
 const properties = {
+    properties_d110ch: M40.properties,
     /* Baseline (d109gl / d102gl) — unchanged except for our code hardening */
     properties_d109gl: {
         get_rooms: [{ did: 'rooms', siid: 2, piid: 16 }],
@@ -692,6 +704,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
     }
 
     _getX20BaseStationModeName(mode) {
+        if (this.getModelIdentifier() === M40.MODEL && mode === 4) return 'Self-cleaning';
         return Object.prototype.hasOwnProperty.call(X20_BASE_STATION_MODE_NAMES, mode) ? X20_BASE_STATION_MODE_NAMES[mode] : `Mode ${mode}`;
     }
 
@@ -727,8 +740,10 @@ class XiaomiVacuumMiotDeviceMax extends Device {
 
     _getC102BaseStationMode(result) {
         const statusProperty = this._getX20PollProperty(result, 'device_status', 2, 1);
+        if (this.getModelIdentifier() === M40.MODEL && (!statusProperty || statusProperty.code !== 0)) return null;
         const statusCode = this._coerceFiniteX20Number(statusProperty && statusProperty.value);
         if (statusCode === null || !Number.isInteger(statusCode)) return null;
+        if (this.getModelIdentifier() === M40.MODEL && statusCode === 30) return 4;
         if (statusCode === 8) return 1;
         if (statusCode === 9) return 3;
         if (statusCode === 22) return 2;
@@ -2439,6 +2454,22 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                 err = this.deviceProperties.error_codes[device_fault.value];
             }
 
+            let m40FaultStatus = null;
+            if (this._model === M40.MODEL) {
+                m40FaultStatus = M40.getFaultStatus(device_fault, this.getMiotProp(result, 'fault_ids'));
+                if (!m40FaultStatus || !m40FaultStatus.complete) {
+                    if (!this._m40FaultReadWarning) this.log('[M40] Fault readings incomplete; retaining alarms until a complete fault poll succeeds.');
+                    this._m40FaultReadWarning = true;
+                } else {
+                    this._m40FaultReadWarning = false;
+                }
+                if (!m40FaultStatus) {
+                    this.lastVacState = stateKey;
+                    return;
+                }
+                err = m40FaultStatus.message;
+            }
+
             const isWaterTankFault = device_fault && Number(device_fault.value) === 210030;
             if (isWaterTankFault && hasWaterTankStatus) {
                 const waterCheckValue = water_check_status && water_check_status.code === 0
@@ -2492,7 +2523,9 @@ class XiaomiVacuumMiotDeviceMax extends Device {
                     const det = this.getMiotProp(result, 'detergent_depletion_reminder');
                     detergentShortage = !!(det && det.value != null && det.value);
                 }
-                await this.updateCapabilityValue('alarm_water_shortage', waterShortageErrors.has(err) || detergentShortage);
+                if (!m40FaultStatus || m40FaultStatus.complete || m40FaultStatus.waterShortage) {
+                    await this.updateCapabilityValue('alarm_water_shortage', m40FaultStatus ? m40FaultStatus.waterShortage : waterShortageErrors.has(err) || detergentShortage);
+                }
             }
 
             let safeError = typeof err === 'string' ? err : 'Unknown Error';
@@ -2502,7 +2535,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             await this.updateCapabilityValue('vacuum_xiaomi_status', safeError);
             if (this.getSetting('error') !== err) {
                 await this.setSettings({ error: err }).catch(() => {});
-                if (device_fault && err !== 'Everything-is-ok') {
+                if ((device_fault || m40FaultStatus) && err !== 'Everything-is-ok') {
                     try {
                         await this.homey.flow.getDeviceTriggerCard('statusVacuum').trigger(this, { status: safeError });
                     } catch (_) {
@@ -3571,7 +3604,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             const idx = Number(raw);
             return Number.isNaN(idx) ? '1' : (mapping[idx] !== undefined ? mapping[idx] : '1');
         }
-        if (this.getModelIdentifier() === 'xiaomi.vacuum.c102gl') {
+        if (['xiaomi.vacuum.c102gl', M40.MODEL].includes(this.getModelIdentifier())) {
             const mapping = ['1', '2', '3', '4'];
             const idx = Number(raw);
             return Number.isNaN(idx) ? '1' : (mapping[idx] !== undefined ? mapping[idx] : '1');
@@ -3586,7 +3619,7 @@ class XiaomiVacuumMiotDeviceMax extends Device {
             const mapped = mapping[String(value)];
             return mapped !== undefined ? mapped : 0;
         }
-        if (this.getModelIdentifier() === 'xiaomi.vacuum.c102gl') {
+        if (['xiaomi.vacuum.c102gl', M40.MODEL].includes(this.getModelIdentifier())) {
             const mapping = { '1': 0, '2': 1, '3': 2, '4': 3 };
             const mapped = mapping[String(value)];
             return mapped !== undefined ? mapped : 0;
