@@ -706,5 +706,8 @@
   },
   "3.5.56": {
     "en": "The Mijia Front Load Washer Dryer Pro, model mibx5.washer.f05gl - washer cycle count, door/lock status, detergent and softener levels, and low-level Flow triggers (credits @telenut) +  Added Mijia Robot Vacuum M40 support with mop and water-level controls, dock actions, and robot/water fault reporting through the MIoT MAX driver."
+  },
+  "3.5.57": {
+    "en": "Fixed missing washing-finished Flows when the Mijia Front Load Washer Dryer Pro automatically powers off."
   }
 }
