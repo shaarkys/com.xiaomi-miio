@@ -136,26 +136,42 @@ class WasherMiotDevice extends Device {
   }
 
   async setMiotProperty(siid, piid, value) {
-    try {
-      if (!this.miio) {
-        throw new Error('Device unreachable');
-      }
-      return await this.miio.call('set_properties', [{ siid, piid, value }], { retries: 1 });
-    } catch (error) {
-      this.error(error);
-      return Promise.reject(error);
-    }
+    return this.callWasherCommand('set_properties', [{ siid, piid, value }], siid === 2 && piid === 1 && value === false);
   }
 
   async runWasherAction(action) {
+    if (!washerActions[action]) throw new Error(`Unsupported washer action: ${action}`);
+    return this.callWasherCommand('action', washerActions[action], action === 'stop', action === 'start');
+  }
+
+  async callWasherCommand(method, payload, abortsCycle = false, startsCycle = false) {
+    const connection = this.miio;
+    if (abortsCycle || startsCycle) this._washerCommandRevision = (this._washerCommandRevision || 0) + 1;
+    const commandRevision = this._washerCommandRevision || 0;
+    if (abortsCycle) this._washerAbortPending = (this._washerAbortPending || 0) + 1;
     try {
-      if (!this.miio) {
-        throw new Error('Device unreachable');
+      if (this._wifiStopped || !connection) throw new Error('Device unreachable');
+      const result = await connection.call(method, payload, { retries: 1 });
+      const acknowledgement = method === 'set_properties'
+        ? Array.isArray(result) && result.find(entry => entry && entry.siid === payload[0].siid && entry.piid === payload[0].piid)
+        : result;
+      if (!acknowledgement || acknowledgement.code !== 0) {
+        throw new Error(`Washer ${method} failed (code ${acknowledgement?.code ?? 'missing'})`);
       }
-      return await this.miio.call('action', washerActions[action], { retries: 1 });
+      if (abortsCycle || startsCycle) {
+        // Keep previous_status as observed telemetry; cancellation must survive stale busy replies and restarts.
+        await this.queueWasherState(async () => {
+          if (this._wifiStopped || this.miio !== connection || commandRevision !== (this._washerCommandRevision || 0)) return;
+          await this.setStoreValue('washer_cycle_handled', abortsCycle);
+          this.log(abortsCycle ? 'Washer cycle cancelled from Homey' : 'Washer cycle started from Homey');
+        });
+      }
+      return result;
     } catch (error) {
       this.error(error);
       return Promise.reject(error);
+    } finally {
+      if (abortsCycle) this._washerAbortPending--;
     }
   }
 
@@ -183,12 +199,13 @@ class WasherMiotDevice extends Device {
   }
 
   async retrieveDeviceData() {
-    if (this._wifiStopped || this.isRetrievingDeviceData) return;
+    if (this._wifiStopped || this.isRetrievingDeviceData || this._washerAbortPending) return;
     this.isRetrievingDeviceData = true;
     const connection = this.miio;
+    const commandRevision = this._washerCommandRevision || 0;
     try {
       const result = await connection.call('get_properties', this.deviceProperties.get_properties, { retries: 1 });
-      if (this._wifiStopped || this.miio !== connection) return;
+      if (this._wifiStopped || this.miio !== connection || commandRevision !== (this._washerCommandRevision || 0)) return;
       if (!Array.isArray(result)) throw new Error('Invalid washer get_properties response');
       if (!this.getAvailable()) await this.setAvailable();
 
@@ -205,13 +222,24 @@ class WasherMiotDevice extends Device {
       const spinSpeed = property('spin_speed');
       const targetTemperature = property('target_temperature');
       const leftTime = property('left_time');
+      const runStatus = property('run_status');
       const washedTimes = property('has_washed_times');
       const doorState = property('door_state');
       const detergentLevel = property('detergent_left_level');
       const softenerLevel = property('softener_left_level');
 
-      if (power !== undefined) {
-        await this.updateCapabilityValue('onoff', power.value === true || power.value === 1);
+      const previousWashedTimes = this.getCapabilityValue('xiaomi_washer_washed_times');
+      const isOn = power && (power.value === true || power.value === 1) ? true
+        : power && (power.value === false || power.value === 0) ? false : undefined;
+      const validWashedTimes = Boolean(
+        washedTimes && Number.isInteger(washedTimes.value) && washedTimes.value >= 0 && washedTimes.value <= 65535
+      );
+      const washedTimesIncreased = validWashedTimes
+        && Number.isInteger(previousWashedTimes)
+        && (washedTimes.value > previousWashedTimes || (previousWashedTimes === 65535 && washedTimes.value === 0));
+
+      if (isOn !== undefined) {
+        await this.updateCapabilityValue('onoff', isOn);
       }
 
       if (leftTime !== undefined) {
@@ -230,7 +258,7 @@ class WasherMiotDevice extends Device {
         await this.updateCapabilityValue('xiaomi_washer_spin_speed', spinSpeed.value.toString());
       }
 
-      if (washedTimes && Number.isInteger(washedTimes.value) && washedTimes.value >= 0 && washedTimes.value <= 65535) {
+      if (validWashedTimes) {
         await this.updateCapabilityValue('xiaomi_washer_washed_times', washedTimes.value);
       }
 
@@ -265,11 +293,19 @@ class WasherMiotDevice extends Device {
         await this.updateSettingValue('error', errorStr);
       }
 
-      if (status !== undefined) {
-        await this.handleStatusChange(status.value);
+      let effectiveStatus = status && Number.isInteger(status.value) && status.value >= 0 && status.value <= 7
+        ? status.value : undefined;
+      if (isOn === false && (effectiveStatus === undefined || effectiveStatus === 3)) effectiveStatus = 0;
+
+      if (commandRevision === (this._washerCommandRevision || 0) && this.miio === connection
+        && (effectiveStatus !== undefined || runStatus || washedTimesIncreased)) {
+        await this.handleStatusChange(effectiveStatus, {
+          runStatus: runStatus ? runStatus.value : undefined,
+          washedTimesIncreased,
+        });
       }
     } catch (error) {
-      if (this._wifiStopped || this.miio !== connection) return;
+      if (this._wifiStopped || this.miio !== connection || commandRevision !== (this._washerCommandRevision || 0)) return;
       this.homey.clearInterval(this.pollingInterval);
       if (this.getAvailable()) {
         this.setUnavailable(this.homey.__('device.unreachable') + error.message).catch(err => this.error(err));
@@ -283,25 +319,63 @@ class WasherMiotDevice extends Device {
     }
   }
 
-  async handleStatusChange(currentStatus) {
-    const previousStatus = this.getStoreValue('previous_status');
-    if (currentStatus === previousStatus) {
-      return;
-    }
+  async handleStatusChange(currentStatus, { runStatus, washedTimesIncreased = false } = {}) {
+    const commandRevision = this._washerCommandRevision || 0;
+    return this.queueWasherState(async () => {
+      const current = () => !this._wifiStopped && !this._washerAbortPending
+        && commandRevision === (this._washerCommandRevision || 0);
+      if (!current()) return;
+      const previousStatus = this.getStoreValue('previous_status');
+      let handled = this.getStoreValue('washer_cycle_handled');
+      const hasPreviousStatus = Number.isInteger(previousStatus) && previousStatus >= 0 && previousStatus <= 7;
+      const statusChanged = currentStatus !== undefined && currentStatus !== previousStatus;
 
-    await this.setStoreValue('previous_status', currentStatus);
+      // Preserve an active cycle when upgrading an installation without the new latch.
+      if (typeof handled !== 'boolean' && (previousStatus === 3 || previousStatus === 2)) {
+        await this.setStoreValue('washer_cycle_handled', false);
+        handled = false;
+      }
+      if (!current()) return;
+      if (statusChanged) {
+        await this.setStoreValue('previous_status', currentStatus);
+      }
+      if (!current()) return;
 
-    if (previousStatus === null || previousStatus === undefined) {
-      return;
-    }
+      if (currentStatus === 3 || currentStatus === 2) {
+        if (previousStatus !== 3 && previousStatus !== 2) {
+          await this.setStoreValue('washer_cycle_handled', false);
+        }
+        if (current() && hasPreviousStatus && currentStatus === 3 && statusChanged) {
+          await this.homey.flow.getDeviceTriggerCard('washerStarted').trigger(this, {}, {}).catch(error => this.error(error));
+        }
+        return;
+      }
 
-    if (currentStatus === 3 && previousStatus !== 3) {
-      this.homey.flow.getDeviceTriggerCard('washerStarted').trigger(this, {}, {}).catch(error => this.error(error));
-    }
+      // Initial terminal readings seed state; maintenance completion is not a finished wash.
+      if (!hasPreviousStatus || currentStatus === 6 || currentStatus === 7) {
+        if (handled !== true) await this.setStoreValue('washer_cycle_handled', true);
+        return;
+      }
 
-    if (currentStatus === 5 && previousStatus !== 5) {
-      this.homey.flow.getDeviceTriggerCard('washerFinished').trigger(this, {}, {}).catch(error => this.error(error));
-    }
+      if (handled === true || ((handled === null || handled === undefined) && previousStatus === 5)) return;
+      const cycleWasActive = handled === false || previousStatus === 3 || previousStatus === 2;
+      const explicitCompletion = currentStatus === 5 || runStatus === 15;
+      // Auto-off alone also occurs after cancellation. Require an increased completed-cycle counter.
+      const completedBetweenPolls = cycleWasActive && (currentStatus === 0 || currentStatus === 1) && washedTimesIncreased;
+      if (explicitCompletion || completedBetweenPolls) {
+        await this.setStoreValue('washer_cycle_handled', true);
+        if (!current()) return;
+        this.log(`Washer cycle completed (${explicitCompletion ? 'completion status' : 'cycle count increased'})`);
+        await this.homey.flow.getDeviceTriggerCard('washerFinished').trigger(this, {}, {}).catch(error => this.error(error));
+      }
+    });
+  }
+
+  async queueWasherState(operation) {
+    const pending = (this._washerStateQueue || Promise.resolve()).then(operation);
+    // Return the original rejection to the caller without poisoning later state updates.
+    this._washerStateQueue = pending.catch(() => {});
+    return pending;
   }
 }
 

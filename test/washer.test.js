@@ -82,6 +82,8 @@ async function createDevice({ failCapability } = {}) {
   device.response = [];
   device.miio = { call: async (...args) => {
     device.calls.push(args);
+    if (args[0] === 'set_properties') return args[1].map(entry => ({ ...entry, code: 0 }));
+    if (args[0] === 'action') return { ...args[1], code: 0 };
     return device.response;
   } };
   await device.onInit();
@@ -92,6 +94,11 @@ function reading(device, did, value, overrides = {}) {
   const definition = device.deviceProperties.get_properties.find(entry => entry.did === did);
   assert.ok(definition, did);
   return { ...definition, code: 0, value, ...overrides };
+}
+
+async function pollState(device, values) {
+  device.response = Object.entries(values).map(([did, value]) => reading(device, did, value));
+  await device.retrieveDeviceData();
 }
 
 test('existing washer migration adds seven capabilities once and preserves existing interfaces', async () => {
@@ -282,6 +289,306 @@ test('unsupported optional properties do not prevent existing power and status u
   assert.deepEqual(device.timers, []);
 });
 
+test('washerFinished fires once when a cycle auto-powers off or finishes between polls and does not duplicate', async () => {
+  const device = await createDevice();
+
+  // Initial off poll after boot does not fire triggers.
+  device.response = [
+    reading(device, 'power', false),
+    reading(device, 'status', 0),
+    reading(device, 'left_time', 0),
+    reading(device, 'has_washed_times', 198),
+  ];
+  await device.retrieveDeviceData();
+  assert.equal(device.getCapabilityValue('onoff'), false);
+  assert.deepEqual(device.triggers, []);
+
+  // Wash starts (status 3 Busy) -> fires washerStarted once.
+  device.response = [
+    reading(device, 'power', true),
+    reading(device, 'status', 3),
+    reading(device, 'left_time', 45),
+    reading(device, 'has_washed_times', 198),
+  ];
+  await device.retrieveDeviceData();
+  assert.equal(device.getCapabilityValue('onoff'), true);
+  assert.deepEqual(device.triggers, ['washerStarted']);
+
+  // Wash finishes and washer auto-powers off before next 60s poll (status 0 Off, power false) -> fires washerFinished once.
+  device.response = [
+    reading(device, 'power', false),
+    reading(device, 'status', 0),
+    reading(device, 'left_time', 0),
+    reading(device, 'has_washed_times', 199),
+  ];
+  await device.retrieveDeviceData();
+  assert.equal(device.getCapabilityValue('onoff'), false);
+  assert.equal(device.getCapabilityValue('xiaomi_washer_washed_times'), 199);
+  assert.deepEqual(device.triggers, ['washerStarted', 'washerFinished']);
+
+  // Subsequent off polls do not re-trigger washerFinished.
+  await device.retrieveDeviceData();
+  assert.deepEqual(device.triggers, ['washerStarted', 'washerFinished']);
+
+  // Next cycle starts and finishes with status 5 observed before auto-power-off -> fires washerFinished only once.
+  device.response = [reading(device, 'power', true), reading(device, 'status', 3), reading(device, 'has_washed_times', 199)];
+  await device.retrieveDeviceData();
+  assert.deepEqual(device.triggers, ['washerStarted', 'washerFinished', 'washerStarted']);
+
+  device.response = [reading(device, 'power', true), reading(device, 'status', 5), reading(device, 'has_washed_times', 200)];
+  await device.retrieveDeviceData();
+  assert.deepEqual(device.triggers, ['washerStarted', 'washerFinished', 'washerStarted', 'washerFinished']);
+
+  device.response = [reading(device, 'power', false), reading(device, 'status', 0), reading(device, 'has_washed_times', 200)];
+  await device.retrieveDeviceData();
+  assert.deepEqual(device.triggers, ['washerStarted', 'washerFinished', 'washerStarted', 'washerFinished']);
+
+  // Manual stop or power-off from Homey mid-cycle does not falsely trigger washerFinished.
+  device.response = [reading(device, 'power', true), reading(device, 'status', 3)];
+  await device.retrieveDeviceData();
+  assert.equal(device.triggers.length, 5);
+
+  await device.listeners.get('xiaomi_washer_stop')();
+  device.response = [reading(device, 'power', true), reading(device, 'status', 1), reading(device, 'left_time', 20)];
+  await device.retrieveDeviceData();
+  assert.equal(device.triggers.length, 5);
+
+  device.response = [reading(device, 'power', true), reading(device, 'status', 3)];
+  await device.retrieveDeviceData();
+  assert.equal(device.triggers.length, 6);
+
+  await device.listeners.get('onoff')(false);
+  device.response = [reading(device, 'power', false), reading(device, 'status', 0)];
+  await device.retrieveDeviceData();
+  assert.equal(device.triggers.length, 6);
+});
+
+test('auto power-off or idle with zero time alone is not evidence of completion', async () => {
+  for (const terminalStatus of [0, 1]) {
+    const device = await createDevice();
+    await pollState(device, { status: 3, power: true, has_washed_times: 42 });
+    await pollState(device, { status: terminalStatus, power: terminalStatus !== 0, left_time: 0, has_washed_times: 42 });
+    assert.deepEqual(device.triggers, []);
+    // A counter that updates on a later poll still completes the same cycle.
+    await pollState(device, { status: terminalStatus, power: terminalStatus !== 0, has_washed_times: 43 });
+    await device.onInit();
+    await device.retrieveDeviceData();
+    assert.deepEqual(device.triggers, ['washerFinished']);
+  }
+});
+
+test('completion is latched across auto-off, delayed count updates and a fresh device instance', async () => {
+  const device = await createDevice();
+  await pollState(device, { status: 3, has_washed_times: 42 });
+  await pollState(device, { status: 5, has_washed_times: 42 });
+  await pollState(device, { status: 0, power: false, has_washed_times: 42 });
+  assert.deepEqual(device.triggers, ['washerFinished']);
+  const restarted = await createDevice();
+  restarted.store = { ...device.store };
+  restarted.values = new Map(device.values);
+  await pollState(restarted, { status: 0, power: false, has_washed_times: 43, run_status: 15 });
+  await pollState(restarted, { status: 1, has_washed_times: 43 });
+  assert.deepEqual(restarted.triggers, []);
+  await pollState(restarted, { status: 3, has_washed_times: 43 });
+  await pollState(restarted, { status: 0, power: false, has_washed_times: 44 });
+  assert.deepEqual(restarted.triggers, ['washerStarted', 'washerFinished']);
+});
+
+test('an upgrade preserves a previously active cycle when the counter update is delayed', async () => {
+  const device = await createDevice();
+  device.store.previous_status = 3;
+  device.values.set('xiaomi_washer_washed_times', 42);
+  await pollState(device, { status: 0, has_washed_times: 42 });
+  assert.equal(device.store.washer_cycle_handled, false);
+  await pollState(device, { status: 0, has_washed_times: 43 });
+  assert.deepEqual(device.triggers, ['washerFinished']);
+});
+
+test('paused cycles can finish after auto-off, and a stale run-status cannot finish an active cycle', async () => {
+  const device = await createDevice();
+  await pollState(device, { status: 3, has_washed_times: 42, run_status: 15 });
+  await pollState(device, { status: 3, has_washed_times: 42, run_status: 15 });
+  await pollState(device, { status: 2, has_washed_times: 42 });
+  assert.deepEqual(device.triggers, []);
+  await pollState(device, { status: 0, power: false, has_washed_times: 43 });
+  assert.deepEqual(device.triggers, ['washerFinished']);
+});
+
+test('run-status completion works without a status result and does not repeat', async () => {
+  const device = await createDevice();
+  await pollState(device, { status: 3, has_washed_times: 42 });
+  await pollState(device, { run_status: 15 });
+  await device.retrieveDeviceData();
+  await pollState(device, { status: 0, power: false, has_washed_times: 43 });
+  assert.deepEqual(device.triggers, ['washerFinished']);
+});
+
+test('maintenance completion and initial terminal observations never fire a wash-finished event', async () => {
+  for (const status of [0, 1, 5, 6, 7]) {
+    const device = await createDevice();
+    await pollState(device, { status, run_status: 15, has_washed_times: 42 });
+    await device.retrieveDeviceData();
+    await pollState(device, { status: 0, has_washed_times: 43, run_status: 15 });
+    assert.deepEqual(device.triggers, []);
+  }
+  for (const status of [6, 7]) {
+    const device = await createDevice();
+    await pollState(device, { status: 3, has_washed_times: 42 });
+    await pollState(device, { status, run_status: 15, has_washed_times: 42 });
+    await pollState(device, { status: 0, has_washed_times: 43 });
+    assert.deepEqual(device.triggers, []);
+  }
+});
+
+test('unknown or failed telemetry cannot manufacture a finished cycle', async () => {
+  const device = await createDevice();
+  await pollState(device, { status: 3, power: true, has_washed_times: 42 });
+  device.response = [reading(device, 'power', 'false'), reading(device, 'status', 99),
+    reading(device, 'run_status', 15, { code: -1 }), reading(device, 'has_washed_times', 43, { code: -1 })];
+  await device.retrieveDeviceData();
+  assert.equal(device.getCapabilityValue('onoff'), true);
+  assert.equal(device.store.previous_status, 3);
+  assert.deepEqual(device.triggers, []);
+  await pollState(device, { status: 0, has_washed_times: 41 });
+  assert.deepEqual(device.triggers, []);
+});
+
+test('completed uint16 cycle-count rollover is detected', async () => {
+  const device = await createDevice();
+  await pollState(device, { status: 3, has_washed_times: 65535 });
+  await pollState(device, { status: 0, power: false, has_washed_times: 0 });
+  assert.deepEqual(device.triggers, ['washerFinished']);
+});
+
+test('successful Homey cancellation during busy or pause survives stale busy telemetry and restart', async () => {
+  for (const status of [2, 3]) {
+    for (const cancel of ['xiaomi_washer_stop', 'onoff']) {
+      const device = await createDevice();
+      await pollState(device, { status, has_washed_times: 42 });
+      await device.listeners.get(cancel)(false);
+      assert.equal(device.store.previous_status, status, 'commands must not fabricate observed status');
+      assert.equal(device.store.washer_cycle_handled, true);
+      await pollState(device, { status: 3, has_washed_times: 42 });
+      const restarted = await createDevice();
+      restarted.store = { ...device.store };
+      restarted.values = new Map(device.values);
+      await pollState(restarted, { status: 0, power: false, has_washed_times: 43, run_status: 15 });
+      assert.deepEqual(restarted.triggers, []);
+      await pollState(restarted, { status: 3, has_washed_times: 43 });
+      await pollState(restarted, { status: 0, power: false, has_washed_times: 44 });
+      assert.deepEqual(restarted.triggers, ['washerStarted', 'washerFinished']);
+    }
+  }
+});
+
+test('failed and malformed cancellation acknowledgements reject without suppressing real completion', async () => {
+  for (const cancel of ['xiaomi_washer_stop', 'onoff']) {
+    for (const result of [{ code: -4004 }, [], null, [{ siid: 2, piid: 1, code: -4004 }]]) {
+      const device = await createDevice();
+      await pollState(device, { status: 3, has_washed_times: 42 });
+      const call = device.miio.call;
+      device.miio.call = async () => result;
+      await assert.rejects(device.listeners.get(cancel)(false), /Washer .* failed/);
+      assert.equal(device.store.washer_cycle_handled, false);
+      assert.equal(device.store.previous_status, 3);
+      assert.equal(device._washerAbortPending, 0);
+      device.miio.call = call;
+      await pollState(device, { status: 0, power: false, has_washed_times: 43 });
+      assert.deepEqual(device.triggers, ['washerFinished']);
+    }
+  }
+});
+
+test('transport failure while cancelling leaves cycle armed and returns the original error', async () => {
+  const device = await createDevice();
+  await pollState(device, { status: 3, has_washed_times: 42 });
+  const call = device.miio.call;
+  const failure = new Error('command timed out');
+  device.miio.call = async () => { throw failure; };
+  await assert.rejects(device.listeners.get('onoff')(false), error => error === failure);
+  assert.equal(device.store.washer_cycle_handled, false);
+  device.miio.call = call;
+  await pollState(device, { status: 0, has_washed_times: 43 });
+  assert.deepEqual(device.triggers, ['washerFinished']);
+});
+
+test('a pre-command poll cannot overwrite cancellation and no poll runs while cancellation is pending', async () => {
+  const device = await createDevice();
+  await pollState(device, { status: 3, has_washed_times: 42 });
+  let finishPoll;
+  let finishStop;
+  let reads = 0;
+  device.miio.call = method => {
+    if (method === 'get_properties') {
+      reads++;
+      return new Promise(resolve => { finishPoll = resolve; });
+    }
+    return new Promise(resolve => { finishStop = resolve; });
+  };
+  const pendingPoll = device.retrieveDeviceData();
+  const pendingStop = device.listeners.get('xiaomi_washer_stop')();
+  finishPoll([reading(device, 'status', 5), reading(device, 'has_washed_times', 43)]);
+  await pendingPoll;
+  await device.retrieveDeviceData();
+  assert.equal(reads, 1);
+  assert.deepEqual(device.triggers, []);
+  assert.equal(device.getCapabilityValue('xiaomi_washer_washed_times'), 42);
+  finishStop({ code: 0 });
+  await pendingStop;
+  assert.equal(device.store.washer_cycle_handled, true);
+});
+
+test('a late command acknowledgement after deletion cannot write cycle state', async () => {
+  const device = await createDevice();
+  await pollState(device, { status: 3 });
+  let resolve;
+  device.miio.call = () => new Promise(done => { resolve = done; });
+  const pending = device.listeners.get('xiaomi_washer_stop')();
+  device._wifiStopped = true;
+  resolve({ code: 0 });
+  await pending;
+  assert.equal(device.store.washer_cycle_handled, false);
+});
+
+test('cancellation during status persistence is serialized and cannot fire a stale completion', async () => {
+  const device = await createDevice();
+  await pollState(device, { status: 3 });
+  const setStoreValue = device.setStoreValue;
+  let releaseStatus;
+  let statusStarted;
+  const entered = new Promise(resolve => { statusStarted = resolve; });
+  device.setStoreValue = async (key, value) => {
+    if (key === 'previous_status') {
+      statusStarted();
+      await new Promise(resolve => { releaseStatus = resolve; });
+    }
+    return setStoreValue(key, value);
+  };
+  const pendingStatus = device.handleStatusChange(5);
+  await entered;
+  const pendingStop = device.listeners.get('xiaomi_washer_stop')();
+  releaseStatus();
+  await Promise.all([pendingStatus, pendingStop]);
+  assert.equal(device.store.washer_cycle_handled, true);
+  assert.deepEqual(device.triggers, []);
+});
+
+test('completion persistence failure is logged and no Flow is fired before state is saved', async () => {
+  const device = await createDevice();
+  await pollState(device, { status: 3, has_washed_times: 42 });
+  const setStoreValue = device.setStoreValue;
+  device.setStoreValue = async (key, value) => {
+    if (key === 'washer_cycle_handled') throw new Error('store failed');
+    return setStoreValue(key, value);
+  };
+  await pollState(device, { status: 5 });
+  assert.deepEqual(device.triggers, []);
+  assert.match(device.errors[0][0], /store failed/);
+  device.setStoreValue = setStoreValue;
+  await device.retrieveDeviceData();
+  assert.deepEqual(device.triggers, ['washerFinished']);
+});
+
 test('overlapping polls send one request and malformed responses release the poll guard', async () => {
   const device = await createDevice();
   let resolve;
@@ -351,7 +658,7 @@ test('new capability and Flow Compose definitions match the driver and trigger I
     assert.equal(definition.getable, true);
     assert.equal(definition.setable, false);
   }
-  for (const [, , , triggerId] of consumables) {
+  for (const triggerId of ['washerStarted', 'washerFinished', ...consumables.map(([, , , id]) => id)]) {
     const definition = JSON.parse(fs.readFileSync(path.join(__dirname, '../.homeycompose/flow/triggers', `${triggerId}.json`)));
     assert.deepEqual(definition.args, [{ name: 'device', type: 'device', filter: 'driver_id=washer' }]);
   }
