@@ -12,6 +12,7 @@ Module._load = function loadWithHomeyStub(request, parent, isMain) {
 const WifiDevice = require('../drivers/wifi_device.js');
 const VacuumDevice = require('../drivers/vacuum_mi_rockrobo_vacuum_advanced/device.js');
 Module._load = originalModuleLoad;
+const DeviceInfo = require('miio/lib/device_info');
 
 function createTimers() {
   const timeouts = [];
@@ -78,8 +79,8 @@ test('repeated S5 status timeouts schedule only one reconnect and never call a n
   await fixture.device.retrieveDeviceData();
 
   assert.deepEqual(calls, [
-    { method: 'get_status', params: [], options: { retries: 1 } },
-    { method: 'get_status', params: [], options: { retries: 1 } }
+    { method: 'get_status', params: [], options: { retries: 2 } },
+    { method: 'get_status', params: [], options: { retries: 2 } }
   ]);
   assert.equal(fixture.timeouts.length, 1);
   assert.equal(fixture.timeouts[0].delay, 60000);
@@ -90,6 +91,34 @@ test('repeated S5 status timeouts schedule only one reconnect and never call a n
   fixture.fire(fixture.timeouts[0]);
   assert.equal(fixture.device.createCalls, 1);
   assert.equal(fixture.device.recreateTimeout, null);
+});
+
+test('Advanced Roborock retries a timed-out status read without requiring model metadata', async () => {
+  const info = new DeviceInfo(null, 1, '127.0.0.1', 54321);
+  const requests = [];
+  const timeout = Object.assign(new Error('Call to device timed out'), { code: 'timeout' });
+  info.handshake = async () => {};
+  info._sendAndWaitForResponse = async () => {
+    const request = JSON.parse(info.packet.data);
+    requests.push(request);
+    if (request.method === 'get_status') {
+      if (request.id === 1) throw timeout;
+      return [{ fan_power: 101, battery: 80, state: 8 }];
+    }
+    if (request.method !== 'get_room_mapping') return [];
+  };
+  const fixture = createVacuum(info);
+  fixture.device.getCapabilityValue = () => 80;
+
+  await fixture.device.retrieveDeviceData();
+
+  assert.deepEqual(requests.map(({ method, id }) => [method, id]), [
+    ['get_status', 1], ['get_status', 101], ['get_consumable', 102],
+    ['get_clean_summary', 103], ['get_room_mapping', 104]
+  ]);
+  assert.deepEqual(fixture.unavailable, []);
+  assert.deepEqual(fixture.errors, []);
+  assert.equal(fixture.timeouts.length, 0);
 });
 
 test('S5 skips overlapping polls and ignores a timeout from a replaced connection', async () => {

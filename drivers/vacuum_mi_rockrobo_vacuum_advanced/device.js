@@ -260,7 +260,8 @@ class MiRobotAdvancedDevice extends Device {
 
     this._pollInProgress = true;
     try {
-      const result = await miio.call("get_status", [], { retries: 1 });
+      // miio counts total attempts. A second attempt uses a fresh request ID after a timeout.
+      const result = await miio.call("get_status", [], { retries: 2 });
       if (this.miio !== miio) return;
       if (!this.getAvailable()) { await this.setAvailable(); }
       this.homey.clearTimeout(this.recreateTimeout);

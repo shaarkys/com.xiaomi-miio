@@ -709,5 +709,8 @@
   },
   "3.5.57": {
     "en": "Fixed missing washing-finished Flows when the Mijia Front Load Washer Dryer Pro automatically powers off."
+  },
+  "3.5.58": {
+    "en": "The Advanced Roborock driver now retries a timed-out status check once before marking the vacuum unavailable."
   }
 }
