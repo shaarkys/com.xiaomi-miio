@@ -3,6 +3,9 @@
 const Homey = require('homey');
 const Device = require('../wifi_device.js');
 const Util = require('../../lib/util.js');
+const { models } = require('miio');
+const MiioVacuum = require('miio/lib/devices/vacuum');
+const { openRoborockConnection } = require('../../lib/isolated-roborock');
 
 /* basic supported devices */
 // https://home.miot-spec.com/spec/rockrobo.vacuum.v1
@@ -249,10 +252,54 @@ class MiRobotAdvancedDevice extends Device {
     }, 60000);
   }
 
+  async _recoverStatusConnection(previous) {
+    let candidate;
+    let stage = 'handshake';
+    try {
+      candidate = await openRoborockConnection({
+        address: this.getSetting('address'),
+        token: this.getSetting('token'),
+        model: previous.miioModel,
+      });
+      if (this._wifiStopped || this.miio !== previous) return;
+
+      stage = 'get_status';
+      const result = await candidate.call('get_status', [], { retries: 1 });
+      if (this._wifiStopped || this.miio !== previous) return;
+      if (!Array.isArray(result) || !Number.isInteger(result[0]?.state)
+        || !Number.isFinite(result[0]?.battery)) {
+        throw new Error('Incomplete vacuum status');
+      }
+
+      // The same client must carry subsequent reads and Flow commands.
+      const connection = candidate;
+      this.miio = connection;
+      candidate = null;
+      try {
+        // abstract-things can rearm an in-flight poll after destroy() clears its timer.
+        // Retire only this instance so a late timer cannot restart its network traffic.
+        previous.internalPoll = () => {};
+        previous.removeAllListeners?.();
+        await previous.destroy();
+      } catch (error) {
+        this.error('Could not release the previous vacuum connection', error);
+      }
+      if (this._wifiStopped || this.miio !== connection) return;
+      await this.startCapabilityListeners();
+      this.log('Vacuum status recovered on a fresh miIO connection');
+      return { connection, result };
+    } catch (error) {
+      if (this._wifiStopped || this.miio !== previous) return;
+      throw new Error(`Vacuum status timed out; fresh connection ${stage} failed: ${error.message}`);
+    } finally {
+      if (candidate) await candidate.destroy();
+    }
+  }
+
   async retrieveDeviceData() {
     if (this._pollInProgress) return;
 
-    const miio = this.miio;
+    let miio = this.miio;
     if (!miio) {
       this._schedulePollReconnect();
       return;
@@ -260,8 +307,19 @@ class MiRobotAdvancedDevice extends Device {
 
     this._pollInProgress = true;
     try {
-      // miio counts total attempts. A second attempt uses a fresh request ID after a timeout.
-      const result = await miio.call("get_status", [], { retries: 2 });
+      let result;
+      try {
+        // miio counts total attempts. A second attempt uses a fresh request ID after a timeout.
+        result = await miio.call("get_status", [], { retries: 2 });
+      } catch (error) {
+        if (this._wifiStopped || this.miio !== miio) return;
+        // Keep model-specific command implementations on their original clients.
+        if (error.code !== 'timeout' || models[miio.miioModel] !== MiioVacuum) throw error;
+        const recovery = await this._recoverStatusConnection(miio);
+        if (!recovery) return;
+        miio = recovery.connection;
+        result = recovery.result;
+      }
       if (this.miio !== miio) return;
       if (!this.getAvailable()) { await this.setAvailable(); }
       this.homey.clearTimeout(this.recreateTimeout);

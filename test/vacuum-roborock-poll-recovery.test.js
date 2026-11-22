@@ -3,10 +3,15 @@
 const assert = require('node:assert/strict');
 const test = require('node:test');
 const Module = require('node:module');
+const { EventEmitter } = require('node:events');
 
+let openRecoveryConnection;
 const originalModuleLoad = Module._load;
 Module._load = function loadWithHomeyStub(request, parent, isMain) {
   if (request === 'homey') return { Device: class Device {} };
+  if (request === '../../lib/isolated-roborock') {
+    return { openRoborockConnection: (options) => openRecoveryConnection(options) };
+  }
   return originalModuleLoad.call(this, request, parent, isMain);
 };
 const WifiDevice = require('../drivers/wifi_device.js');
@@ -119,6 +124,76 @@ test('Advanced Roborock retries a timed-out status read without requiring model 
   assert.deepEqual(fixture.unavailable, []);
   assert.deepEqual(fixture.errors, []);
   assert.equal(fixture.timeouts.length, 0);
+});
+
+function createTimedOutRoborock() {
+  const original = {
+    miioModel: 'roborock.vacuum.a65',
+    async call() { throw Object.assign(new Error('Call to device timed out'), { code: 'timeout' }); },
+    async destroy() { this.closed = true; }
+  };
+  const fixture = createVacuum(original);
+  fixture.device.getSetting = (key) => ({ address: '127.0.0.1', token: '0'.repeat(32) })[key];
+  return { original, ...fixture };
+}
+
+test('a recovered Roborock uses the validated connection for later polls and cleaning', async () => {
+  const { original, device, errors, unavailable, timeouts } = createTimedOutRoborock();
+  const calls = [];
+  const candidate = Object.assign(new EventEmitter(), {
+    async call(method, params, options) {
+      calls.push(method);
+      if (method === 'get_status') {
+        assert.equal(options.retries, calls.length === 1 ? 1 : 2);
+        return [{ state: 3, battery: 80, fan_power: 101 }];
+      }
+      if (method !== 'get_room_mapping') return [];
+    },
+    async clean() { calls.push('clean'); }
+  });
+  let opened = 0;
+  openRecoveryConnection = async (options) => {
+    assert.equal(options.model, 'roborock.vacuum.a65');
+    assert.equal(++opened, 1);
+    return candidate;
+  };
+  device.setCapabilityValue = async () => {};
+  await device.retrieveDeviceData();
+  await device.onCapabilityOnoffVacuumcleaner(true);
+  await device.retrieveDeviceData();
+  assert.equal(device.miio, candidate);
+  assert.equal(candidate.listenerCount('batteryLevelChanged'), 1);
+  assert.equal(original.closed, true);
+  assert.deepEqual(calls, ['get_status', 'get_consumable', 'get_clean_summary', 'get_room_mapping',
+    'clean', 'get_status', 'get_consumable', 'get_clean_summary', 'get_room_mapping']);
+  assert.deepEqual([errors.length, unavailable.length, timeouts.length], [0, 0, 0]);
+});
+
+test('invalid or timed-out status on a fresh connection closes it and schedules one reconnect', async () => {
+  for (const status of [[], new Error('timed out')]) {
+    const { original, device, errors, unavailable, timeouts } = createTimedOutRoborock();
+    const candidate = {
+      async call() { if (status instanceof Error) throw status; return status; },
+      async destroy() { this.closed = true; }
+    };
+    openRecoveryConnection = async () => candidate;
+    await device.retrieveDeviceData();
+    assert.equal(candidate.closed, true);
+    assert.equal(device.miio, original);
+    assert.equal(unavailable.length, 1);
+    assert.match(errors[0].message, /fresh connection get_status failed/);
+    assert.deepEqual(timeouts.map((timer) => timer.delay), [60000]);
+  }
+});
+
+test('a fresh connection arriving after teardown is closed without replacing the device', async () => {
+  const { device, errors, unavailable, timeouts } = createTimedOutRoborock();
+  const candidate = { async destroy() { this.closed = true; } };
+  openRecoveryConnection = async () => { await device.onUninit(); return candidate; };
+  await device.retrieveDeviceData();
+  assert.equal(candidate.closed, true);
+  assert.equal(device.miio, null);
+  assert.deepEqual([errors.length, unavailable.length, timeouts.length], [0, 0, 0]);
 });
 
 test('S5 skips overlapping polls and ignores a timeout from a replaced connection', async () => {
