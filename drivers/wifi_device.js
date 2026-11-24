@@ -392,26 +392,7 @@ class MiWifiDeviceDevice extends Homey.Device {
             this.homey.clearInterval(this.refreshInterval);
             this.refreshInterval = this.homey.setInterval(() => {
                 this.log('Hourly refresh: recreating device connection for ' + this.getName());
-
-                /* stop the current polling loop before tearing down the connection,
-                 * otherwise a pending poll tick could still fire against a null/stale
-                 * miio instance during the reconnect window below */
-                this.homey.clearInterval(this.pollingInterval);
-                this.pollingInterval = null;
-                this.homey.clearTimeout(this.initialPollTimeout);
-                this.initialPollTimeout = null;
-
-                if (this.miio) {
-                    try {
-                        this.miio?.destroy();
-                    } catch (e) {
-                        /* ignore double-close */
-                    }
-                    this.miio = null;
-                }
-                this.homey.setTimeout(() => {
-                    this.createDevice();
-                }, 2000);
+                this.refreshDeviceConnection();
             }, 3600000 + this.util.getRandomTimeout(600));
         } catch (error) {
             this.setUnavailable(this.homey.__('device.unreachable') + error.message).catch((error) => {
@@ -422,6 +403,28 @@ class MiWifiDeviceDevice extends Homey.Device {
             this.createDevice();
             this.error(error.message);
         }
+    }
+
+    refreshDeviceConnection() {
+        /* stop the current polling loop before tearing down the connection,
+         * otherwise a pending poll tick could still fire against a null/stale
+         * miio instance during the reconnect window below */
+        this.homey.clearInterval(this.pollingInterval);
+        this.pollingInterval = null;
+        this.homey.clearTimeout(this.initialPollTimeout);
+        this.initialPollTimeout = null;
+
+        if (this.miio) {
+            try {
+                this.miio?.destroy();
+            } catch (e) {
+                /* ignore double-close */
+            }
+            this.miio = null;
+        }
+        this.homey.setTimeout(() => {
+            this.createDevice();
+        }, 2000);
     }
 
     /* log device info */

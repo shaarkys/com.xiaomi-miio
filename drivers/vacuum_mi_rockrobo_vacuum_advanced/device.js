@@ -5,6 +5,7 @@ const Device = require('../wifi_device.js');
 const Util = require('../../lib/util.js');
 const { models } = require('miio');
 const MiioVacuum = require('miio/lib/devices/vacuum');
+const checkResult = require('miio/lib/checkResult');
 const { openRoborockConnection } = require('../../lib/isolated-roborock');
 
 /* basic supported devices */
@@ -242,6 +243,95 @@ class MiRobotAdvancedDevice extends Device {
     }
   }
 
+  supportsCleaningRecovery() {
+    const model = this.miio?.miioModel || this.getStoreValue('model');
+    return models[model] === MiioVacuum;
+  }
+
+  refreshDeviceConnection() {
+    if (!this.supportsCleaningRecovery()) return super.refreshDeviceConnection();
+    // createDevice coordinates the hourly replacement with Flow and poll recovery.
+    return this.createDevice();
+  }
+
+  async createDevice() {
+    // Startup, hourly refresh and Wi-Fi backoff can all reach this method.
+    // A validated recovery fulfils their pending reconnect as well.
+    if (this._statusRecovery) {
+      let recovered;
+      try {
+        recovered = await this._statusRecovery;
+      } catch {
+        // The pending recovery failed. Continue with the normal Wi-Fi reconnect.
+      }
+      if (recovered && this.miio === recovered.connection) return;
+    }
+    if (!this._connectionSetup) {
+      // Keep the socket alive until acknowledgement of any writes already sent.
+      const setup = this._cleaningWrites?.size
+        ? Promise.allSettled(this._cleaningWrites).then(() => super.createDevice())
+        : super.createDevice();
+      this._connectionSetup = setup.finally(() => { this._connectionSetup = null; });
+    }
+    return this._connectionSetup;
+  }
+
+  async onCapabilityOnoffVacuumcleaner(value, opts) {
+    if (!value || !this.supportsCleaningRecovery()) return super.onCapabilityOnoffVacuumcleaner(value, opts);
+    await this.runRoborockCleaning('app_start', []);
+    return this.setCapabilityValue('vacuumcleaner_state', 'cleaning');
+  }
+
+  async onCapabilityVacuumcleanerState(value, opts) {
+    if (!['cleaning', 'spot_cleaning'].includes(value) || !this.supportsCleaningRecovery()) {
+      return super.onCapabilityVacuumcleanerState(value, opts);
+    }
+    await this.runRoborockCleaning(value === 'cleaning' ? 'app_start' : 'app_spot', []);
+    await this.setCapabilityValue('onoff', true);
+  }
+
+  async runRoborockCleaning(method, params, rawResult = false) {
+    let connection = this.miio;
+    this.log(`Cleaning action received (${method}, available=${this.getAvailable()})`);
+    try {
+      if (this._connectionSetup) {
+        await this._connectionSetup;
+        connection = this.miio;
+      }
+      if (this._wifiStopped) throw new Error('Vacuum connection was stopped');
+      if (this._statusRecovery || this._statusFailed || !this.getAvailable() || !connection) {
+        const recovered = await this._recoverStatusConnection(connection);
+        if (!recovered || this._wifiStopped || this.miio !== recovered.connection) {
+          throw new Error('Vacuum connection changed during recovery');
+        }
+        connection = recovered.connection;
+      }
+
+      // A missing acknowledgement can mean the vacuum already started. Send once.
+      const options = { retries: 1 };
+      if (!rawResult) {
+        options.refresh = ['state'];
+        if (method !== 'app_spot') options.refreshDelay = 1000;
+      }
+      const write = connection.call(method, params, options);
+      if (!this._cleaningWrites) this._cleaningWrites = new Set();
+      this._cleaningWrites.add(write);
+      let result;
+      try {
+        result = await write;
+      } finally {
+        this._cleaningWrites.delete(write);
+      }
+      if (!rawResult) checkResult(result);
+      this.log(`Vacuum replied to cleaning action (${method})`);
+      if (rawResult) return result;
+    } catch (error) {
+      if (error.code === 'timeout' && connection === this.miio) this._statusFailed = true;
+      this.error(`Cleaning action failed (${method}): ${error.message}`);
+      throw error;
+    }
+  }
+
   _schedulePollReconnect() {
     if (this.recreateTimeout || this._creatingDevice) return;
 
@@ -252,20 +342,32 @@ class MiRobotAdvancedDevice extends Device {
     }, 60000);
   }
 
-  async _recoverStatusConnection(previous) {
+  _recoverStatusConnection(previous) {
+    if (!this._statusRecovery) {
+      this._statusRecovery = this._openStatusConnection(previous).finally(() => {
+        this._statusRecovery = null;
+      });
+    }
+    return this._statusRecovery;
+  }
+
+  async _openStatusConnection(previous) {
     let candidate;
     let stage = 'handshake';
+    let current = previous;
     try {
+      if (this._cleaningWrites?.size) await Promise.allSettled(this._cleaningWrites);
+      if (this._wifiStopped || this._connectionSetup || this.miio !== previous) return;
       candidate = await openRoborockConnection({
         address: this.getSetting('address'),
         token: this.getSetting('token'),
-        model: previous.miioModel,
+        model: previous?.miioModel || this.getStoreValue('model'),
       });
-      if (this._wifiStopped || this.miio !== previous) return;
+      if (this._wifiStopped || this._creatingDevice || this.miio !== previous) return;
 
       stage = 'get_status';
       const result = await candidate.call('get_status', [], { retries: 1 });
-      if (this._wifiStopped || this.miio !== previous) return;
+      if (this._wifiStopped || this._creatingDevice || this.miio !== previous) return;
       if (!Array.isArray(result) || !Number.isInteger(result[0]?.state)
         || !Number.isFinite(result[0]?.battery)) {
         throw new Error('Incomplete vacuum status');
@@ -273,23 +375,34 @@ class MiRobotAdvancedDevice extends Device {
 
       // The same client must carry subsequent reads and Flow commands.
       const connection = candidate;
+      current = connection;
       this.miio = connection;
       candidate = null;
       try {
         // abstract-things can rearm an in-flight poll after destroy() clears its timer.
         // Retire only this instance so a late timer cannot restart its network traffic.
-        previous.internalPoll = () => {};
-        previous.removeAllListeners?.();
-        await previous.destroy();
+        if (previous) {
+          previous.internalPoll = () => {};
+          previous.removeAllListeners?.();
+          await previous.destroy();
+        }
       } catch (error) {
         this.error('Could not release the previous vacuum connection', error);
       }
       if (this._wifiStopped || this.miio !== connection) return;
       await this.startCapabilityListeners();
+      if (this._wifiStopped || this.miio !== connection) return;
+      this._statusFailed = false;
+      this.homey.clearTimeout(this.recreateTimeout);
+      this.recreateTimeout = null;
+      if (!this.pollingInterval) await this.pollDevice();
+      if (this._wifiStopped || this.miio !== connection) return;
+      stage = 'availability update';
+      if (!this.getAvailable()) await this.setAvailable();
       this.log('Vacuum status recovered on a fresh miIO connection');
       return { connection, result };
     } catch (error) {
-      if (this._wifiStopped || this.miio !== previous) return;
+      if (this._wifiStopped || this.miio !== current) return;
       throw new Error(`Vacuum status timed out; fresh connection ${stage} failed: ${error.message}`);
     } finally {
       if (candidate) await candidate.destroy();
@@ -297,7 +410,7 @@ class MiRobotAdvancedDevice extends Device {
   }
 
   async retrieveDeviceData() {
-    if (this._pollInProgress) return;
+    if (this._pollInProgress || this._statusRecovery || this._wifiStopped) return;
 
     let miio = this.miio;
     if (!miio) {
@@ -315,12 +428,14 @@ class MiRobotAdvancedDevice extends Device {
         if (this._wifiStopped || this.miio !== miio) return;
         // Keep model-specific command implementations on their original clients.
         if (error.code !== 'timeout' || models[miio.miioModel] !== MiioVacuum) throw error;
+        this._statusFailed = true;
         const recovery = await this._recoverStatusConnection(miio);
         if (!recovery) return;
         miio = recovery.connection;
         result = recovery.result;
       }
       if (this.miio !== miio) return;
+      this._statusFailed = false;
       if (!this.getAvailable()) { await this.setAvailable(); }
       this.homey.clearTimeout(this.recreateTimeout);
       this.recreateTimeout = null;
@@ -419,6 +534,7 @@ class MiRobotAdvancedDevice extends Device {
     } catch (error) {
       if (this.miio !== miio) return;
 
+      this._statusFailed = true;
       this.homey.clearInterval(this.pollingInterval);
       this.pollingInterval = null;
       this.homey.clearTimeout(this.initialPollTimeout);

@@ -238,6 +238,9 @@ class XiaomiMiioApp extends Homey.App {
       .registerRunListener(async (args) => {
         try {
           const zones = JSON.parse("[" + args.zones + "]");
+          if (args.device.supportsCleaningRecovery?.()) {
+            return await args.device.runRoborockCleaning('app_zoned_clean', zones);
+          }
           return await args.device.miio.cleanZones(zones);
         } catch (error) {
           return Promise.reject(error.message);
@@ -256,6 +259,9 @@ class XiaomiMiioApp extends Homey.App {
             return await args.device.miio.call("action", { siid: 2, aiid: 3, did: "call-2-3", in: rooms }, { retries: 1 });
           } else {
             const rooms = JSON.parse("[" + args.rooms + "]");
+            if (args.device.supportsCleaningRecovery?.()) {
+              return await args.device.runRoborockCleaning('app_segment_clean', rooms);
+            }
             return await args.device.miio.cleanRooms(rooms);
             //return await args.device.miio.call("app_segment_clean",  [{"segments": rooms, "repeat": repeats}], { retries: 1 });
           }
@@ -268,7 +274,11 @@ class XiaomiMiioApp extends Homey.App {
       .registerRunListener(async (args) => {
         try {
           const rooms = JSON.parse("[" + args.rooms + "]");
-          return await args.device.miio.call("app_segment_clean",  [{"segments": rooms, "repeat": args.repeats}], { retries: 1 });
+          const segments = [{ segments: rooms, repeat: args.repeats }];
+          if (args.device.supportsCleaningRecovery?.()) {
+            return await args.device.runRoborockCleaning('app_segment_clean', segments, true);
+          }
+          return await args.device.miio.call("app_segment_clean", segments, { retries: 1 });
         } catch (error) {
           return Promise.reject(error.message);
         }

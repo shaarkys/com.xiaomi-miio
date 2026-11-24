@@ -8,7 +8,8 @@ const { EventEmitter } = require('node:events');
 let openRecoveryConnection;
 const originalModuleLoad = Module._load;
 Module._load = function loadWithHomeyStub(request, parent, isMain) {
-  if (request === 'homey') return { Device: class Device {} };
+  if (request === 'homey') return { Device: class Device {}, App: class App {} };
+  if (request === './lib/MiHub') return class MiHub {};
   if (request === '../../lib/isolated-roborock') {
     return { openRoborockConnection: (options) => openRecoveryConnection(options) };
   }
@@ -16,6 +17,7 @@ Module._load = function loadWithHomeyStub(request, parent, isMain) {
 };
 const WifiDevice = require('../drivers/wifi_device.js');
 const VacuumDevice = require('../drivers/vacuum_mi_rockrobo_vacuum_advanced/device.js');
+const App = require('../app.js');
 Module._load = originalModuleLoad;
 const DeviceInfo = require('miio/lib/device_info');
 
@@ -141,15 +143,19 @@ test('a recovered Roborock uses the validated connection for later polls and cle
   const { original, device, errors, unavailable, timeouts } = createTimedOutRoborock();
   const calls = [];
   const candidate = Object.assign(new EventEmitter(), {
+    miioModel: original.miioModel,
     async call(method, params, options) {
       calls.push(method);
       if (method === 'get_status') {
         assert.equal(options.retries, calls.length === 1 ? 1 : 2);
         return [{ state: 3, battery: 80, fan_power: 101 }];
       }
+      if (method === 'app_start') {
+        assert.equal(options.retries, 1);
+        return ['ok'];
+      }
       if (method !== 'get_room_mapping') return [];
-    },
-    async clean() { calls.push('clean'); }
+    }
   });
   let opened = 0;
   openRecoveryConnection = async (options) => {
@@ -165,8 +171,211 @@ test('a recovered Roborock uses the validated connection for later polls and cle
   assert.equal(candidate.listenerCount('batteryLevelChanged'), 1);
   assert.equal(original.closed, true);
   assert.deepEqual(calls, ['get_status', 'get_consumable', 'get_clean_summary', 'get_room_mapping',
-    'clean', 'get_status', 'get_consumable', 'get_clean_summary', 'get_room_mapping']);
+    'app_start', 'get_status', 'get_consumable', 'get_clean_summary', 'get_room_mapping']);
   assert.deepEqual([errors.length, unavailable.length, timeouts.length], [0, 0, 0]);
+});
+
+test('a delivered cleaning action restores polling after an outage and sends the command once', async () => {
+  const { device, original, timeouts } = createTimedOutRoborock();
+  const logs = [];
+  device.log = (message) => logs.push(message);
+  openRecoveryConnection = async () => { throw new Error('handshake timeout'); };
+  await device.retrieveDeviceData();
+  assert.equal(device.getAvailable(), false);
+  const retry = timeouts[0];
+  let restarted = 0;
+  device.pollDevice = async () => { device.pollingInterval = {}; restarted++; };
+  device.setCapabilityValue = async () => {};
+  const calls = [];
+  openRecoveryConnection = async () => Object.assign(new EventEmitter(), {
+    miioModel: original.miioModel,
+    async call(method, params, options) {
+      calls.push([method, options.retries]);
+      return method === 'get_status' ? [{ state: 8, battery: 90 }] : ['ok'];
+    }
+  });
+  await device.onCapabilityVacuumcleanerState('cleaning');
+  assert.deepEqual(calls, [['get_status', 1], ['app_start', 1]]);
+  assert.ok(logs.some(line => line.includes('app_start, available=false')));
+  assert.equal(retry.active, false);
+  assert.equal(restarted, 1);
+  assert.equal(device.getAvailable(), true);
+});
+
+test('poll and Flow share a pending handshake; a lost command acknowledgement is propagated without replay', async () => {
+  const { device, original } = createTimedOutRoborock();
+  let opens = 0;
+  let release;
+  const opening = new Promise(resolve => { release = resolve; });
+  let entered;
+  const started = new Promise(resolve => { entered = resolve; });
+  openRecoveryConnection = () => { opens++; entered(); return opening; };
+  const poll = device.retrieveDeviceData();
+  await started;
+  const start = device.onCapabilityOnoffVacuumcleaner(true);
+  const writes = [];
+  release(Object.assign(new EventEmitter(), {
+    miioModel: original.miioModel,
+    async call(method, params, options) {
+      if (method === 'get_status') return [{ state: 8, battery: 90, fan_power: 101 }];
+      if (method === 'app_start') {
+        writes.push(options.retries);
+        throw Object.assign(new Error('ack timeout'), { code: 'timeout' });
+      }
+      if (method !== 'get_room_mapping') return [];
+    }
+  }));
+  await assert.rejects(start, /ack timeout/);
+  await poll;
+  assert.equal(opens, 1);
+  assert.deepEqual(writes, [1]);
+});
+
+test('failed handshake during a cleaning action preserves the reconnect timer and sends no command', async () => {
+  const { device, timeouts } = createTimedOutRoborock();
+  openRecoveryConnection = async () => { throw new Error('hello timed out'); };
+  await device.retrieveDeviceData();
+  await assert.rejects(device.onCapabilityOnoffVacuumcleaner(true), /handshake failed: hello timed out/);
+  assert.equal(timeouts.length, 1);
+  assert.equal(timeouts[0].active, true);
+  assert.equal(device.getAvailable(), false);
+});
+
+test('shared Wi-Fi backoff firing during Flow recovery accepts the validated client', async (t) => {
+  const { device, original, timeouts, fire } = createTimedOutRoborock();
+  delete device.createDevice;
+  device.getStoreValue = () => original.miioModel;
+  device.pollDevice = async () => { device.pollingInterval = {}; };
+  const sharedSetup = t.mock.method(require('miio'), 'device', async () => { throw new Error('offline'); });
+  await device.createDevice();
+  assert.equal(timeouts[0].delay, 10000);
+
+  let finishStatus;
+  let entered;
+  const reading = new Promise(resolve => { entered = resolve; });
+  const calls = [];
+  const candidate = Object.assign(new EventEmitter(), {
+    miioModel: original.miioModel,
+    async call(method) {
+      calls.push(method);
+      if (method === 'get_status') {
+        entered();
+        return new Promise(resolve => { finishStatus = resolve; });
+      }
+      return ['ok'];
+    }
+  });
+  openRecoveryConnection = async () => candidate;
+  device.setCapabilityValue = async () => {};
+  const start = device.onCapabilityOnoffVacuumcleaner(true);
+  await reading;
+  fire(timeouts[0]);
+  finishStatus([{ state: 8, battery: 90 }]);
+  await start;
+  assert.equal(sharedSetup.mock.callCount(), 1);
+  assert.equal(device.miio, candidate);
+  assert.deepEqual(calls, ['get_status', 'app_start']);
+});
+
+test('registered cleaning cards keep arguments, return values and other driver routes', async () => {
+  const cards = new Map();
+  const card = id => ({ registerRunListener: listener => cards.set(id, listener) });
+  const app = new App();
+  app.homey = { settings: { on() {} }, flow: { getActionCard: card, getConditionCard: card, getDeviceTriggerCard: card } };
+  app.log = () => {};
+  await app.onInit();
+  const calls = [];
+  const { device } = createVacuum({
+    miioModel: 'roborock.vacuum.a65',
+    async call(method, params, options) {
+      calls.push([method, params, options.retries]);
+      return ['ok'];
+    }
+  });
+  device.getStoreValue = () => device.miio.miioModel;
+  assert.equal(await cards.get('cleanZoneVacuum')({ device, zones: '[1,2,3,4,1]' }), undefined);
+  assert.equal(await cards.get('vacuumRoomCleaning')({ device, rooms: '16,17' }), undefined);
+  assert.deepEqual(await cards.get('vacuumRoomCleaningRepeats')({ device, rooms: '16,17', repeats: 2 }), ['ok']);
+  assert.deepEqual(calls, [
+    ['app_zoned_clean', [[1, 2, 3, 4, 1]], 1], ['app_segment_clean', [16, 17], 1],
+    ['app_segment_clean', [{ segments: [16, 17], repeat: 2 }], 1]
+  ]);
+  const legacy = { getStoreValue: () => 'other', miio: { cleanZones: zones => zones, cleanRooms: rooms => rooms, call: (...args) => args } };
+  assert.deepEqual(await cards.get('cleanZoneVacuum')({ device: legacy, zones: '[1,2]' }), [[1, 2]]);
+  assert.deepEqual(await cards.get('vacuumRoomCleaning')({ device: legacy, rooms: '16,17' }), [16, 17]);
+  assert.deepEqual(await cards.get('vacuumRoomCleaningRepeats')({ device: legacy, rooms: '16', repeats: 2 }),
+    ['app_segment_clean', [{ segments: [16], repeat: 2 }], { retries: 1 }]);
+});
+
+test('hourly refresh preserves a delivered Flow while its isolated status read is pending', async () => {
+  const { device, original, fire } = createTimedOutRoborock();
+  delete device.createDevice;
+  device.getName = () => 'Test vacuum';
+  device.util = { getRandomTimeout: () => 0 };
+  device.setCapabilityValue = async () => {};
+  openRecoveryConnection = async () => { throw new Error('handshake timeout'); };
+  await device.retrieveDeviceData();
+  await device.refreshDevice();
+  let entered;
+  let finishStatus;
+  const reading = new Promise(resolve => { entered = resolve; });
+  const calls = [];
+  openRecoveryConnection = async () => Object.assign(new EventEmitter(), {
+    miioModel: original.miioModel,
+    async call(method) {
+      calls.push(method);
+      if (method === 'get_status') {
+        entered();
+        return new Promise(resolve => { finishStatus = resolve; });
+      }
+      return ['ok'];
+    }
+  });
+  const start = device.onCapabilityOnoffVacuumcleaner(true);
+  await reading;
+  fire(device.refreshInterval);
+  assert.equal(device.miio, original);
+  finishStatus([{ state: 8, battery: 90 }]);
+  await start;
+  assert.deepEqual(calls, ['get_status', 'app_start']);
+  assert.equal(device.getAvailable(), true);
+});
+
+test('hourly refresh waits for an outstanding cleaning acknowledgement before closing its socket', async (t) => {
+  const { device, original, fire } = createTimedOutRoborock();
+  delete device.createDevice;
+  device.getName = () => 'Test vacuum';
+  device.util = { getRandomTimeout: () => 0 };
+  device.setCapabilityValue = async () => {};
+  const sharedSetup = t.mock.method(require('miio'), 'device', async () => { throw new Error('offline'); });
+  await device.refreshDevice();
+  device._statusFailed = true;
+  let sent;
+  let acknowledge;
+  const pending = new Promise(resolve => { sent = resolve; });
+  const calls = [];
+  const candidate = Object.assign(new EventEmitter(), {
+    miioModel: original.miioModel,
+    async call(method) {
+      calls.push(method);
+      if (method === 'get_status') return [{ state: 8, battery: 90 }];
+      sent();
+      return new Promise(resolve => { acknowledge = resolve; });
+    },
+    destroy() { this.closed = true; }
+  });
+  openRecoveryConnection = async () => candidate;
+  const start = device.onCapabilityOnoffVacuumcleaner(true);
+  await pending;
+  fire(device.refreshInterval);
+  assert.equal(candidate.closed, undefined);
+  assert.equal(sharedSetup.mock.callCount(), 0);
+  acknowledge(['ok']);
+  await start;
+  await device._connectionSetup;
+  assert.equal(candidate.closed, true);
+  assert.equal(sharedSetup.mock.callCount(), 1);
+  assert.deepEqual(calls, ['get_status', 'app_start']);
 });
 
 test('invalid or timed-out status on a fresh connection closes it and schedules one reconnect', async () => {
