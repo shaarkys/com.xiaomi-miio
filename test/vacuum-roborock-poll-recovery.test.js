@@ -128,9 +128,44 @@ test('Advanced Roborock retries a timed-out status read without requiring model 
   assert.equal(fixture.timeouts.length, 0);
 });
 
+test('only the S7 Max Ultra sends a fresh hello before each scheduled status poll on the same client', async () => {
+  for (const model of ['roborock.vacuum.a65', 'roborock.vacuum.a62']) {
+    const requests = [];
+    const hello = Buffer.alloc(32, 0xff);
+    hello.writeUInt32BE(0x21310020, 0);
+    hello.writeUInt32BE(1, 8);
+    hello.writeUInt32BE(100, 12);
+    const socket = {
+      send(packet, offset, length, port, address, done) {
+        if (packet.length === 32) {
+          requests.push('hello');
+          queueMicrotask(() => info.onMessage(hello));
+        } else {
+          const { method, id } = JSON.parse(info.packet.data);
+          const reply = method === 'get_status' ? [{ state: 15, battery: 90 }] : undefined;
+          if (method === 'get_status') requests.push(id);
+          queueMicrotask(() => info.promises.get(id).resolve(reply));
+        }
+        done();
+      }
+    };
+    const info = new DeviceInfo({ socket }, 1, '127.0.0.1', 54321);
+    info.packet.token = Buffer.alloc(16, 1);
+    info.onMessage(hello);
+    const connection = { miioModel: model, handle: { api: info }, call: info.call.bind(info) };
+    const { device, errors } = createVacuum(connection);
+    await device.retrieveDeviceData();
+    await device.retrieveDeviceData();
+    assert.deepEqual(requests, model.endsWith('.a65') ? ['hello', 1, 'hello', 5] : [1, 5]);
+    assert.equal(device.miio, connection);
+    assert.deepEqual(errors, []);
+  }
+});
+
 function createTimedOutRoborock() {
   const original = {
     miioModel: 'roborock.vacuum.a65',
+    handle: { api: { packet: {}, handshake: async () => {} } },
     async call() { throw Object.assign(new Error('Call to device timed out'), { code: 'timeout' }); },
     async destroy() { this.closed = true; }
   };
@@ -144,6 +179,7 @@ test('a recovered Roborock uses the validated connection for later polls and cle
   const calls = [];
   const candidate = Object.assign(new EventEmitter(), {
     miioModel: original.miioModel,
+    handle: { api: { packet: {}, handshake: async () => {} } },
     async call(method, params, options) {
       calls.push(method);
       if (method === 'get_status') {
@@ -173,6 +209,23 @@ test('a recovered Roborock uses the validated connection for later polls and cle
   assert.deepEqual(calls, ['get_status', 'get_consumable', 'get_clean_summary', 'get_room_mapping',
     'app_start', 'get_status', 'get_consumable', 'get_clean_summary', 'get_room_mapping']);
   assert.deepEqual([errors.length, unavailable.length, timeouts.length], [0, 0, 0]);
+});
+
+test('a failed pre-poll hello sends no status request on the old socket and keeps the existing reconnect path', async () => {
+  const { original, device, errors, timeouts } = createTimedOutRoborock();
+  const logs = [];
+  let statusReads = 0;
+  device.log = (message) => logs.push(message);
+  original.call = async () => { statusReads++; };
+  original.handle.api.handshake = async () => {
+    throw Object.assign(new Error('hello timed out'), { code: 'timeout' });
+  };
+  openRecoveryConnection = async () => { throw new Error('isolated hello timed out'); };
+  await device.retrieveDeviceData();
+  assert.equal(statusReads, 0);
+  assert.ok(logs.includes('Roborock miIO handshake timed out before status poll'));
+  assert.match(errors[0].message, /fresh connection handshake failed/);
+  assert.deepEqual(timeouts.map((timer) => timer.delay), [60000]);
 });
 
 test('a delivered cleaning action restores polling after an outage and sends the command once', async () => {

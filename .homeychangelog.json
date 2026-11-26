@@ -715,5 +715,8 @@
   },
   "3.5.59": {
     "en": "Advanced Roborock can now recover status updates and Flow commands using a fresh local connection after repeated timeouts."
+  },
+  "3.5.60": {
+    "en": "Improved reconnection for Advanced Roborock cleaning Flows after status timeouts."
   }
 }

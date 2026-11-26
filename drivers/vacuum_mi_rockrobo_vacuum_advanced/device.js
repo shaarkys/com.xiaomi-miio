@@ -8,6 +8,8 @@ const MiioVacuum = require('miio/lib/devices/vacuum');
 const checkResult = require('miio/lib/checkResult');
 const { openRoborockConnection } = require('../../lib/isolated-roborock');
 
+const S7_MAX_ULTRA = 'roborock.vacuum.a65';
+
 /* basic supported devices */
 // https://home.miot-spec.com/spec/rockrobo.vacuum.v1
 // https://home.miot-spec.com/spec/rockrobo.vacuum.m1s
@@ -421,11 +423,24 @@ class MiRobotAdvancedDevice extends Device {
     this._pollInProgress = true;
     try {
       let result;
+      let refreshingHandshake = miio.miioModel === S7_MAX_ULTRA;
       try {
+        if (refreshingHandshake) {
+          const api = miio.handle.api;
+          // The pinned miio client skips its hello while the last device stamp is fresh.
+          // Expire it to refresh the handshake on the same socket and request sequence.
+          if (!api.handshakePromise) api.packet._serverStampTime = 0;
+          await (api.handshakePromise || api.handshake());
+          if (this._wifiStopped || this.miio !== miio) return;
+          refreshingHandshake = false;
+        }
         // miio counts total attempts. A second attempt uses a fresh request ID after a timeout.
         result = await miio.call("get_status", [], { retries: 2 });
       } catch (error) {
         if (this._wifiStopped || this.miio !== miio) return;
+        if (refreshingHandshake && error.code === 'timeout') {
+          this.log('Roborock miIO handshake timed out before status poll');
+        }
         // Keep model-specific command implementations on their original clients.
         if (error.code !== 'timeout' || models[miio.miioModel] !== MiioVacuum) throw error;
         this._statusFailed = true;
