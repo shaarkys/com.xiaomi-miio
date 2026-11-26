@@ -718,5 +718,8 @@
   },
   "3.5.60": {
     "en": "Improved reconnection for Advanced Roborock cleaning Flows after status timeouts."
+  },
+  "3.5.61": {
+    "en": "Advanced Roborock now refreshes the S7 Max Ultra’s miIO handshake before status polling to help reduce intermittent timeouts."
   }
 }
